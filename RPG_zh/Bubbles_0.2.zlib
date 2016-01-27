@@ -1,0 +1,210 @@
+//Constants
+
+//Ghost Attrib utes Indices
+const int GHOST_BUBBLE_ITEM_ID 		= 0;
+const int GHOST_BUBBLE_ITEM_TIMER 	= 1;
+const int GHOST_BUBBLE_BUTTON_ID 	= 2;
+const int GHOST_BUBBLE_BUTTON_TIMER 	= 3;
+const int GHOST_BUBBLE_FLAG 		= 4;
+
+//Bubble FFC Script Local Array Indices
+const int GHOST_BUBBLE_ARR_ITM 		= 0;
+const int GHOST_BUBBLE_ARR_ITMDUR 	= 1;
+const int GHOST_BUBBLE_ARR_BTN 		= 2;
+const int GHOST_BUBBLE_ARR_BTNDUR 	= 3;
+
+//Operation Array Values
+const int JINXED_BUTTONS = 512;	//offset for Jinxed Button Timers
+
+//Values (for reference)
+const int GHOST_BUBBLE_AFFECT_NONE = 0;
+const int GHOST_BUBBLE_AFFECT_ITEM = 1;
+const int GHOST_BUBBLE_AFFECT_BUTTON = 2;
+const int GHOST_BUBBLE_AFFECT_BOTH = 3;
+const int GHOST_BUBBLE_INFINITE_DUR = -1;
+
+//Buttons
+const int JINX_BTN_A 		= 0;
+const int JINX_BTN_B 		= 1;
+const int JINX_BTN_L 		= 2;
+const int JINX_BTN_R 		= 3;
+const int JINX_BTN_UP 		= 4;
+const int JINX_BTN_DOWN 	= 5;
+const int JINX_BTN_LEFT 	= 6;
+const int JINX_BTN_RIGHT 	= 7;
+const int JINX_BTN_START 	= 8;
+const int JINX_BTN_MAP 		= 9;
+const int JINX_BTN_EX1 		= 10;
+const int JINX_BTN_EX2 		= 11;
+const int JINX_BTN_EX3 		= 12;
+const int JINX_BTN_EX4 		= 13;
+	
+//Array
+int JinxedItems[555]; //HOlds timers for jinxed items, and buttons. 
+
+
+
+
+
+ffc script Bubbles{
+	void run(int enemID){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid); //Init the enemy, and set tis properties...
+		Ghost_SetFlag(GHF_NORMAL);  //Can be stunned, affected by clocks, has knockback.
+		Ghost_SetFlag(GHF_FULL_TILE_MOVEMENT); //Will not move onto partially solid combos. 
+		Ghost_SetFlag(GHF_4WAY); //4-Way walking.
+		
+		int bubblevars[5]; //Array to hold variables.
+		
+		//Initialise array values using ghost properties. 
+		bubblevars[GHOST_BUBBLE_ARR_ITM] 	= ghost->Attributes[GHOST_BUBBLE_ITEM_ID];
+		bubblevars[GHOST_BUBBLE_ARR_ITMDUR] 	= ghost->Attributes[GHOST_BUBBLE_ITEM_TIMER];
+		bubblevars[GHOST_BUBBLE_ARR_BTN] 	= ghost->Attributes[GHOST_BUBBLE_BUTTON_ID];
+		bubblevars[GHOST_BUBBLE_ARR_BTNDUR] 	= ghost->Attributes[GHOST_BUBBLE_BUTTON_TIMER];
+		
+		
+		
+		while(ghost->HP > 0){
+			
+			//if ( LinkCollision(this){
+			//	if ( bubblevars[GHOST_BUBBLE_ARR_ITM] && Link->Item[bubblevars[GHOST_BUBBLE_ARR_ITM]] && !JinxedItems[bubblevars[GHOST_BUBBLE_ARR_ITM]] ) {
+			//		JinxedItems[bubblevars[GHOST_BUBBLE_ARR_ITM]] = bubblevars[GHOST_BUBBLE_ARR_ITMDUR];
+			//	}
+			//		
+			//	if ( bubblevars[GHOST_BUBBLE_ARR_BTN] && !JinxedItems[bubblevars[GHOST_BUBBLE_ARR_BTNDUR]] ) {
+			//		JinxedItems[JINXED_BUTTONS+ bubblevars[GHOST_BUBBLE_ARR_BTN]] = bubblevars[GHOST_BUBBLE_ARR_BTNDUR];
+			//	
+			//	}
+			//	
+			//}
+			
+			
+			if ( LinkCollision(ghost)  && ( Link->Action == LA_GOTHURTLAND || Link->Action == LA_GOTHURTWATER ) ){
+				if ( bubblevars[GHOST_BUBBLE_ARR_ITM] && Link->Item[bubblevars[GHOST_BUBBLE_ARR_ITM]] && JinxedItems[bubblevars[GHOST_BUBBLE_ARR_ITM]] != -1 ) {
+					JinxedItems[bubblevars[GHOST_BUBBLE_ARR_ITM]] = bubblevars[GHOST_BUBBLE_ARR_ITMDUR];
+				}
+					
+				if ( bubblevars[GHOST_BUBBLE_ARR_BTN] && JinxedItems[bubblevars[GHOST_BUBBLE_ARR_BTNDUR]] != -1 ) {
+					JinxedItems[JINXED_BUTTONS+ bubblevars[GHOST_BUBBLE_ARR_BTN]] = bubblevars[GHOST_BUBBLE_ARR_BTNDUR];
+				
+				}
+				
+			}
+			
+			Ghost_Waitframe(this,ghost);
+		}
+		this->Data = 0;
+		this->Script = 0;
+		Quit();
+	}
+}
+
+
+ffc script AntiBubbles{
+	void run(int enemID){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid); //Init the enemy, and set tis properties...
+		Ghost_SetFlag(GHF_NORMAL);  //Can be stunned, affected by clocks, has knockback.
+		Ghost_SetFlag(GHF_FULL_TILE_MOVEMENT); //Will not move onto partially solid combos. 
+		Ghost_SetFlag(GHF_4WAY); //4-Way walking.
+		
+		int bubblevars[5]; //Array to hold variables.
+		
+		//Initialise array values using ghost properties. 
+		bubblevars[GHOST_BUBBLE_ARR_ITM] 	= ghost->Attributes[GHOST_BUBBLE_ITEM_ID];
+		bubblevars[GHOST_BUBBLE_ARR_ITMDUR] 	= ghost->Attributes[GHOST_BUBBLE_ITEM_TIMER];
+		bubblevars[GHOST_BUBBLE_ARR_BTN] 	= ghost->Attributes[GHOST_BUBBLE_BUTTON_ID];
+		bubblevars[GHOST_BUBBLE_ARR_BTNDUR] 	= ghost->Attributes[GHOST_BUBBLE_BUTTON_TIMER];
+		
+		
+		
+		while(ghost->HP > 0){
+			
+			//if ( LinkCollision(this){
+			//	if ( bubblevars[GHOST_BUBBLE_ARR_ITM] && Link->Item[bubblevars[GHOST_BUBBLE_ARR_ITM]] && !JinxedItems[bubblevars[GHOST_BUBBLE_ARR_ITM]] ) {
+			//		JinxedItems[bubblevars[GHOST_BUBBLE_ARR_ITM]] = bubblevars[GHOST_BUBBLE_ARR_ITMDUR];
+			//	}
+			//		
+			//	if ( bubblevars[GHOST_BUBBLE_ARR_BTN] && !JinxedItems[bubblevars[GHOST_BUBBLE_ARR_BTNDUR]] ) {
+			//		JinxedItems[JINXED_BUTTONS+ bubblevars[GHOST_BUBBLE_ARR_BTN]] = bubblevars[GHOST_BUBBLE_ARR_BTNDUR];
+			//	
+			//	}
+			//	
+			//}
+			
+			
+			if ( LinkCollision(ghost) && ( Link->Action == LA_GOTHURTLAND || Link->Action == LA_GOTHURTWATER ) ){
+				if ( bubblevars[GHOST_BUBBLE_ARR_ITM] && JinxedItems[bubblevars[GHOST_BUBBLE_ARR_ITM]] ) {
+					JinxedItems[bubblevars[GHOST_BUBBLE_ARR_ITM]] = 0;
+				}
+					
+				if ( bubblevars[GHOST_BUBBLE_ARR_BTN] && JinxedItems[bubblevars[GHOST_BUBBLE_ARR_BTNDUR]] ) {
+					JinxedItems[JINXED_BUTTONS+ bubblevars[GHOST_BUBBLE_ARR_BTN]] = 0;
+				
+				}
+				
+			}
+			
+			Ghost_Waitframe(this,ghost);
+		}
+		this->Data = 0;
+		this->Script = 0;
+		Quit();
+	}
+}
+
+
+void JinedItems(int arr){
+	if ( Link->PressA && arr[GetEquipmentA()] ) Link->PressA = false;
+	if ( Link->PressB && arr[GetEquipmentB()] ) Link->PressB = false;
+	if ( Link->InputA && arr[GetEquipmentA()] ) Link->InputA = false;
+	if ( Link->InputB && arr[GetEquipmentB()] ) Link->InputB = false;
+}
+
+void JinedButtons(int arr){
+	if ( Link->PressA && arr[JINXED_BUTTONS + JINX_BTN_A] ) 	Link->PressA = false;
+	if ( Link->PressB && arr[JINXED_BUTTONS + JINX_BTN_B] ) 	Link->PressB = false;
+	if ( Link->InputA && arr[JINXED_BUTTONS + JINX_BTN_A] ) 	Link->InputA = false;
+	if ( Link->InputB && arr[JINXED_BUTTONS + JINX_BTN_B] ) 	Link->InputB = false;
+	
+	if ( Link->PressL && arr[JINXED_BUTTONS + JINX_BTN_L] ) 	Link->PressL = false;
+	if ( Link->PressR && arr[JINXED_BUTTONS + JINX_BTN_R] ) 	Link->PressR = false;
+	if ( Link->InputL && arr[JINXED_BUTTONS + JINX_BTN_L] ) 	Link->InputL = false;
+	if ( Link->InputR && arr[JINXED_BUTTONS + JINX_BTN_R] ) 	Link->InputR = false;
+
+	if ( Link->PressUp && arr[JINXED_BUTTONS + JINX_BTN_UP] ) 	Link->PressUp = false;
+	if ( Link->PressDown && arr[JINXED_BUTTONS + JINX_BTN_DOWN] ) 	Link->PressDown = false;
+	if ( Link->InputUp && arr[JINXED_BUTTONS + JINX_BTN_UP] ) 	Link->InputUp = false;
+	if ( Link->InputDown && arr[JINXED_BUTTONS + JINX_BTN_DOWN ] ) 	Link->InputDown = false;
+	
+	if ( Link->PressLeft && arr[JINXED_BUTTONS + JINX_BTN_LEFT] ) 	Link->PressLeft = false;
+	if ( Link->PressRight && arr[JINXED_BUTTONS + JINX_BTN_RIGHT] ) Link->PressRight = false;
+	if ( Link->InputLeft && arr[JINXED_BUTTONS + JINX_BTN_LEFT] ) 	Link->InputLeft = false;
+	if ( Link->InputRight && arr[JINXED_BUTTONS + JINX_BTN_RIGHT] ) Link->InputRight = false;
+	
+	if ( Link->PressStart && arr[JINXED_BUTTONS + JINX_BTN_START] ) Link->PressStart = false;
+	if ( Link->PressMap && arr[JINXED_BUTTONS + JINX_BTN_MAP] ) 	Link->PressMap = false;
+	if ( Link->InputStart && arr[JINXED_BUTTONS + JINX_BTN_START] ) Link->InputStart = false;
+	if ( Link->InputMap && arr[JINXED_BUTTONS + JINX_BTN_MAP] ) 	Link->InputMap = false;
+	
+	if ( Link->PressEx1 && arr[JINXED_BUTTONS + JINX_BTN_EX1] ) 	Link->PressEx1 = false;
+	if ( Link->PressEx2 && arr[JINXED_BUTTONS + JINX_BTN_EX2] ) 	Link->PressEx2 = false;
+	if ( Link->InputEx1 && arr[JINXED_BUTTONS + JINX_BTN_EX1] ) 	Link->InputEx1 = false;
+	if ( Link->InputEx2 && arr[JINXED_BUTTONS + JINX_BTN_EX2] ) 	Link->InputEx2 = false;
+	
+	if ( Link->PressEx3 && arr[JINXED_BUTTONS + JINX_BTN_EX3] ) 	Link->PressEx3 = false;
+	if ( Link->PressEx4 && arr[JINXED_BUTTONS + JINX_BTN_EX4] ) 	Link->PressEx4 = false;
+	if ( Link->InputEx3 && arr[JINXED_BUTTONS + JINX_BTN_EX3] ) 	Link->InputEx3 = false;
+	if ( Link->InputEx4 && arr[JINXED_BUTTONS + JINX_BTN_EX4] ) 	Link->InputEx4 = false;
+}
+
+void ReduceJinxTimers(int arr){
+	for ( int q = 0; q <=SizeOfArray(arr); q++ ) {
+		if ( arr[q] > 0 ) arr[q]--;
+	}
+}
+
+//Main function to call before Waitdraw() as Jinxes(JinxedItems);
+void Jinxes(int arr){
+	JinedItems(arr);
+	JinxedButtons(arr);
+	ReduceJinxTimers(arr);
+}

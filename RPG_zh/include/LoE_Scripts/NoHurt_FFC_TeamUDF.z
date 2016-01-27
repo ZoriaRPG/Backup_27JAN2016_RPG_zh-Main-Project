@@ -1,0 +1,100 @@
+import "stdCombos.zh"
+
+ffc script NoSpillBlood{
+	//int hp = Link->HP;
+	//int hpLast;
+	void run (int cmbType, int sens, int size){
+		while(true){
+		//hpLast = hp;
+		//hp = Link->HP;
+			for(int i = 1; i < Screen->NumNPCs(); i++){ 
+				npc enem = Screen->LoadNPC(i);
+				if ( LinkCollision(enem) ) {
+					Link->Action = LA_NONE;
+					Link->HitDir = -1;
+				}
+			}
+			if ( LinkComboTypeCollision(cmbType, sens) ) {
+				Game->PlaySound(0);
+				//Link->Action = LA_NONE;
+				//Link->HitDir = -1;
+				
+				
+				
+				if ( Link->Dir == DIR_DOWN) {
+					Link->Action = LA_FROZEN;
+					Link->HitDir = DIR_UP;
+					//if ( Link->InputDown ) {
+					//	Link->InputDown = false;
+					//}
+					//if ( Link->PressDown ) {
+						Link->PressDown = false;
+					//}
+				}
+				if ( Link->Dir == DIR_RIGHT) {
+					Link->Action = LA_FROZEN;
+					Link->HitDir = DIR_LEFT;
+					//if ( Link->InputRight ) {
+					//	Link->InputRight = false;
+					//};
+					//if ( Link->PressRight ) {
+					//	Link->PressRight = false;
+					//}
+				}
+				if ( Link->Dir == DIR_LEFT) {
+					Link->Action = LA_FROZEN;
+					Link->HitDir = DIR_RIGHT;
+					//if ( Link->InputRight ) {
+					//	Link->InputRight = false;
+					//}
+					//if ( Link->PressLeft ) {
+					//	Link->PressLeft = false;
+					//}
+				}
+				if ( Link->Dir == DIR_UP) {
+					Link->Action = LA_FROZEN;
+					Link->HitDir = DIR_LEFT;
+					//if ( Link->InputUp ) {
+					//	Link->InputUp = false;
+					//}
+					//if ( Link->PressUp ) {
+					//	Link->PressUp = false;
+					//}
+				}
+			}
+			Waitframe();
+		}
+	}
+}
+
+
+void SetEnemyHP(int enemyToModify, int val, bool hpLink){
+	for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+		int lhp = Game->Counter[CR_LIFE];
+		if ( enem->ID == enemyToModify ) {
+			if ( hpLink == true ) {
+				enem->HP = lhp;
+			}
+			else {
+				enem->HP = val;
+			}
+		}
+	}
+}
+
+
+void SetEnemyHP(int enemyToModify, int val, bool hpLink, bool duh){
+	for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+		int lhp = Link->HP;
+		if ( enem->ID == enemyToModify ) {
+			if ( hpLink == true ) {
+				enem->HP = lhp;
+			}
+			else {
+				enem->HP = val;
+			}
+		}
+	}
+}

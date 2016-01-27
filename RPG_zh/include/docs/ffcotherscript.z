@@ -1,0 +1,60 @@
+//FFC Scripts- Other
+
+flyingFaerie
+
+Insect(bool bee)//If true, bug is a bee that attacks enemies.
+
+scoopWater(bool special)//If true, water is special. Purpose unknown.
+
+//D0- Base power
+//D1- How long it takes to charge.
+//D2- Sprite to use.
+//D3- Speed of projectile.
+
+BoltFFC{
+    void run(int basePower, int chargeTime, int arrowSprite, int speed){
+
+//D0- Whether to remove?
+//D1- Message to be played, if any.
+//D2- Sound to be made.
+//D3- Bit of data to store information in. I'm not sure which data this is referencing.
+
+electricRemove{
+    void run(int removeFromItem, int message, int soundFX, int dataBit)
+
+//D0- Item to give.
+//D1- How message looks?
+//D2- What message is.
+//D3- Sound to make.
+//D4- Bit of data to store information in. I'm not sure which data this is referencing.
+//D5- Whether something is solid. Not sure which something.
+	
+pickUpSpecialItem{
+    void run(int giveItem, int messageLook, int messagePickup, int soundFX, int dataBit, int issolid){
+
+//D0- Item to remove from.
+//D1- Message to play, if any.
+//D2- Sound to make.
+//D3- Bit of data to store information in. I'm not sure which data this is referencing.
+	
+waitForMessage_thenRemoveFFC{
+    void run(int removeFromItem, int message, int soundFX, int dataBit)
+
+//I think this is a different version of the one above. Not sure what the differences are.
+	
+waitForMessage_thenRemoveFFC_Rev2{
+    void run(int removeFromItem, int message, int soundFX, int dataBit)
+
+//D0- Original enemy
+//D1- Level 2 enemy.
+//D3- Level 3 enemy.
+//D4- Level 4 enemy.
+//D5- Item to trigger first, second and third change. Stored as separate bits.
+//	  Example: If items 13,23 and 42 are needed the argument would be- 132342.	
+	
+DigiVolvingEnemy{
+    void run(int originalEnemy, int L2_ENEMY, int L3_ENEMY, int L4_ENEMY, int item001_item002_item003) {
+
+//Handles evolving ghosted enemies.
+	
+Ghost_Digivolve

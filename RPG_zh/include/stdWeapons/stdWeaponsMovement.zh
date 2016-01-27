@@ -1,0 +1,83 @@
+//Makes FFC bounce off solid combos. Don`t call it too often. Otherwise Lweapon can be stuck in a wall.
+void Bounce (ffc ball, lweapon l){
+	if (Screen->isSolid(l->X+l->HitWidth/2, l->Y)) {
+		ball->Vy= -(ball->Vy);
+		return;
+	}
+	if (Screen->isSolid(l->X+l->HitWidth/2, l->Y+l->HitHeight)) {
+		ball->Vy= -(ball->Vy);
+		return;
+	}
+	if (Screen->isSolid(l->X, l->Y+l->HitHeight/2)) {
+		ball->Vx= -(ball->Vx);
+		return;
+	}
+	if (Screen->isSolid(l->X+l->HitWidth, l->Y+l->HitHeight/2)) {
+		ball->Vx= -(ball->Vx);
+		return;
+	}
+	if (Screen->isSolid(l->X, l->Y)){
+		ball->Vx= -(ball->Vx);
+		ball->Vy= -(ball->Vy);
+		return;
+	}
+	if (Screen->isSolid(l->X, l->Y+l->HitHeight)){
+		ball->Vx= -(ball->Vx);
+		ball->Vy= -(ball->Vy);
+		return;
+	}
+	if (Screen->isSolid(l->X+l->HitWidth, l->Y+l->HitHeight)){
+		ball->Vx= -(ball->Vx);
+		ball->Vy= -(ball->Vy);
+		return;
+	}
+	if (Screen->isSolid(l->X+l->HitWidth, l->Y)){
+		ball->Vx= -(ball->Vx);
+		ball->Vy= -(ball->Vy);
+		return;
+	}	
+}
+
+//Puts FFC at position where it`s Lweapon`s wall collision just recently occured.
+//Do you remember the same function in Game Maker?
+void MoveToSolidContactPosition(ffc f, lweapon l){
+	f->X= f->X - f->Vx;
+	f->Y= f->Y - f->Vy;
+	while (!WallCollision8way(l)){
+		f->X= f->X+Sign(f->Vx);
+		f->Y= f->Y+Sign(f->Vy);
+		LweaponPosUpdate(f, l);
+	}
+}
+
+//Set FFC`s position using polar coordinate system with origin point, radius and angle set.
+//Best used with circling Lweapons.
+void SetPolarCoordinates (ffc f, int oX, int oY, float radius, int angle){
+	f->X=oX+(radius*Cos(angle));
+	f->Y=oY+(radius*Sin(angle));	
+}
+
+//Causes FFC to be affected by Sidewiew Gravity.
+void AffectedByGravity (ffc l ){
+	if (l->Vy>TERMINAL_VELOCITY){
+		l->Vy=TERMINAL_VELOCITY;
+		l->Ay=0;
+	}
+	else l->Ay=GRAVITY;
+}
+
+//Sets FFC to move in one of cardinal directions at given speed.
+void SetStraightMotion4(ffc f, float speed){
+	if (Link->Dir==DIR_RIGHT)f->Vx=speed;
+	else if (Link->Dir==DIR_LEFT)f->Vx=-(speed);
+	else if (Link->Dir==DIR_UP)f->Vy=-(speed);
+	else f->Vy=speed;
+}
+
+//Same as previous function, but in specific direction (no reading Link`s one).
+void SetStraightMotion4(ffc f, int dir, float speed){
+	if (dir==DIR_RIGHT)f->Vx=speed;
+	else if (dir==DIR_LEFT)f->Vx=-(speed);
+	else if (dir==DIR_UP)f->Vy=-(speed);
+	else f->Vy=speed;
+}

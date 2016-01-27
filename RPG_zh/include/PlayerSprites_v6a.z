@@ -1,0 +1,229 @@
+import "std.zh"
+int PlayerSprites[2050] = {88};
+
+const int OLD_LINK_TILE = 1;
+const int ZQ_LAST_TILE = 65519;
+const int ZQ_BLANK_TILE = 65518;
+
+const int TILES_BACKUP = 62560;
+const int TILES_BLANK = 65000;
+
+const int BASE_TILE = 35620;
+const int TILE_LENGTH = 260; //EACH TILE PAGE CONTAINS 259 TILES.
+
+const int ZQ_SPRITE_BLANK = 255;
+
+//bool IsInvisible;
+//bool TilesCopiedInvis;
+//bool TilesCopiedVis = true;
+
+int LastLinkX;
+int LastLinkY;
+//bool LinkMoved;
+//int PlayerFrameDelay; //These need to be in an array, to match the size of PlayerSprites (512)
+//int PlayerFrame;
+
+//int IsInvisible[512]; //Array to hold if Link should be invisible, per DMAP.
+//int SpriteAnimFrameDelay[512];
+//int SpriteAnimFrames[512];
+
+void SetPlayerSpriteFrames(int dmap, int frames){
+	PlayerSprites[dmap+EW_PLAYER_SPRITE_ANIM] = frames;
+}
+
+int GetPlayerSpriteFrames(int dmap){
+	return PlayerSprites[dmap+EW_PLAYER_SPRITE_ANIM];
+}
+
+void IncreasePSF(int dmap){
+	PlayerSprites[dmap+EW_PLAYER_SPRITE_ANIM]++;
+}
+
+void SetPlayerSpriteAnimDelay(int dmap, int delay){
+	PlayerSprites[dmap+EW_PLAYER_SPRITE_ANIM_DELAY] = delay;
+}
+
+int GetPlayerSpriteAnimDelay(int dmap){
+	return PlayerSprites[dmap+EW_PLAYER_SPRITE_ANIM_DELAY];
+}
+
+void IncreasePSAD(int dmap){
+	PlayerSprites[dmap+EW_PLAYER_SPRITE_ANIM_DELAY]++;
+}
+
+void SetIsInvisible(int dmap, bool setting){
+	int set;
+	if ( setting ) set = 1;
+	PlayerSprites[dmap+EW_PLAYER_INVISIBLE] = set;
+}
+
+void SetIsInvisible(int dmap, int value){
+	PlayerSprites[dmap+EW_PLAYER_INVISIBLE] = value;
+}
+
+bool GetIsInvisible(int dmap){
+	bool set = PlayerSprites[dmap+EW_PLAYER_INVISIBLE];
+	if ( set ) return true;
+	else return false;
+}
+
+//Call in ~Init to set up sprites for each DMAP.
+void SetPlayerSpriteOptions(int dmap, int sprite, bool invis, int frames, int delay){
+	SetPlayerSprite(dmap,sprite);
+	SetIsInvisible(dmap,invis);
+	SetPlayerSpriteFrames(dmap,frames);
+	SetPlayerSpriteAnimDelay(dmap,delay);
+}
+
+global script Init{
+	void run(){
+		SetPlayerSpriteOptions(0,88,true,6,10);
+	}
+}
+
+void PlayerTilesCopied(int setting){
+	PlayerSprites[SPRITES_COPIED] = setting;
+}
+
+int PlayerTilesCopied(){
+	return PlayerSprites[SPRITES_COPIED];
+}
+
+void PlayerTilesRestored(int setting){
+	PlayerSprites[SPRITES_RESTORED] = setting;
+}
+
+int PlayerTilesRestored(){
+	return PlayerSprites[SPRITES_RESTORED];
+}
+	
+//condense these all into one array, and then use these constants:
+
+const int EW_PLAYER_SPRITE = 0;
+const int EW_PLAYER_INVISIBLE = 512;
+const int EW_PLAYER_SPRITE_ANIM = 1024;
+const int EW_PLAYER_SPRITE_ANIM_DELAY = 1536;
+const int SPRITES_COPIED = 2048;
+const int SPRITES_RESTORED = 2049;
+
+const int INVIS_NOT_COPIED = 1;
+const int INVIS_COPIED = 2;
+const int VIS_NOT_COPIED = 3;
+const int VIS_COPIED = 0;
+
+global script active{
+	void run(){
+		//Link->Invisible = true;
+		int SpriteLink[512]={88}; //Populate with the sprite for Link, based on the DMAP.
+		int LinkTile;
+		int curDMAP;
+		while ( true ) {
+			//Trace(Link->Tile);
+			if ( Game->GetCurDMap() != curDMAP ) curDMAP = Game->GetCurDMap();
+			if ( Link->PressEx1 ) {
+				if ( !GetIsInvisible( Game->GetCurDMap() ) ) {
+					SetIsInvisible(Game->GetCurDMap(),true);
+				}
+				else SetIsInvisible(Game->GetCurDMap(),false);
+			}
+			
+			//if ( Link->X == LastLinkX && Link->Y == LastLinkY ) LinkMoved = false;
+			//if ( Link->X != LastLinkX || Link->Y != LastLinkY ) {
+			//	LastLinkY = Link->Y;
+			//	LastLinkX = Link->X;
+			//	LinkMoved = true;
+			//}
+			//PlayerFrameDelay++;
+			IncreasePSAD( Game->GetCurDMap() );
+			
+			if ( GetPlayerSpriteAnimDelay(curDMAP) >= 10 ) {
+				SetPlayerSpriteAnimDelay( Game->GetCurDMap() , 0 );
+				IncreasePSF( Game->GetCurDMap() );
+			}
+			if ( GetPlayerSpriteFrames(Game->GetCurDMap() ) == 6  ) SetPlayerSpriteFrames(Game->GetCurDMap(),0);
+			
+			
+			if ( GetIsInvisible( Game->GetCurDMap() ) && !PlayerTilesCopied() ) {
+				for ( int q = 0; q < TILE_LENGTH; q++ ) {
+					CopyTile(BASE_TILE+q, TILES_BACKUP+q);
+					CopyTile(TILES_BLANK+q, BASE_TILE+q);
+				}
+				PlayerTilesCopied(1);
+				PlayerTilesRestored(0);
+			}
+			
+			if ( !GetIsInvisible(Game->GetCurDMap() ) && !PlayerTilesRestored() ) {
+				for ( int q = 0; q < TILE_LENGTH; q++ ) {
+					CopyTile(TILES_BACKUP+q, BASE_TILE+q); 
+				}
+				PlayerTilesCopied(0);
+				PlayerTilesRestored(1);
+			}
+			
+			
+			LinkTile = Link->Tile;
+			//if ( IsInvisible && !TilesCopiedInvis && TilesCopiedVis ) {
+			//	TilesCopiedVis = false;
+			//	TilesCopiedInvis = true;
+			//	for ( int q = 0; q < TILE_LENGTH; q++ ) {
+			//		CopyTile(BASE_TILE+q, TILES_BACKUP+q);
+			//		CopyTile(TILES_BLANK+q, BASE_TILE+q);
+			//	}
+			//	
+			//}
+			//if ( !IsInvisible && TilesCopiedInvis && !TilesCopiedVis ) {
+			//	TilesCopiedInvis = false;
+			//	TilesCopiedVis = true;
+			//	
+			//	int S_Rest[]="Restoring Tiles";
+			//	TraceS(S_Rest);
+			//	for ( int q = 0; q < TILE_LENGTH; q++ ) {
+			//		CopyTile(TILES_BACKUP+q, BASE_TILE+q); 
+			//		//CopyTile(TILES_BLANK+q, TILES_BACKUP+q);
+			//	}
+				
+				
+			//}
+			
+			//if ( Link->Tile != ZQ_BLANK_TILE ) {
+			//	CopyTile(LinkTile,ZQ_LAST_TILE);
+			//	CopyTile(ZQ_BLANK_TILE,LinkTile);
+			//}
+			eweapon PlayerSprite = Screen->CreateEWeapon(EW_SCRIPT10);
+			PlayerSprite->X = Link->X;
+			PlayerSprite->Y = Link->Y;
+			PlayerSprite->CollDetection = false;
+			PlayerSprite->Dir = Link->Dir;
+			PlayerSprite->Flip = Link->Flip;
+			//PlayerSprite->Frame = GetPlayerSpriteFrames(Game->GetCurDMap());
+			
+			int player_sprite = PlayerSprites[curDMAP];
+			if ( player_sprite == 0 ) player_sprite = ZQ_SPRITE_BLANK;
+			PlayerSprite->UseSprite(player_sprite);
+			Waitdraw();
+			//if ( LinkMoved) 
+			PlayerSprite->DeadState = WDS_DEAD;
+			//PlayerSprite(PlayerSprite,SpriteLink);
+			Waitframe();
+		}
+	}
+	void PlayerSprite(int SpriteLink, int sprite){
+		SpriteLink[0] = sprite;
+	}
+	
+}
+
+void SetPlayerSprite(int dmap, int sprite){
+	PlayerSprites[dmap] = sprite;
+}
+
+item script PlayerSprites{ 
+	void run(int SpriteLink){
+		//PlayerSprites[0]=Rand(1,50);
+		//if ( !IsInvisible ) {
+		//	IsInvisible = true;
+		//}
+		//else IsInvisible = false;
+		
+	}
+}

@@ -1,0 +1,16 @@
+Menu Options
+
+//Stats
+
+Done    Set Next
+
+Set next opens a dialogue, allong the player to set which stat will increase 
+next. This resets at every level, and if is a value of '0', a stat will be 
+selected at random.
+
+set a global varible to forward on-screen FFC object interaction details
+such as item/object names, to TangoD[].
+
+Read that variable into TangoD when interacting with the FFCs.
+
+The Items menu will read this value, to create a menu entry for interaction.

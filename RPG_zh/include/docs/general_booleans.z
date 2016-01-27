@@ -1,0 +1,54 @@
+//General Booleans
+
+// Returns TRUE if there is a collision between a combo and an Lweapon on screen.
+CmbLWeaponCollision (int loc, lweapon f)
+
+GetIsInvisible(int dmap)//Returns true if invisible on a dmap.
+
+lWeaponExists(int LType)//Returns true if a certain Lweapon is on screen.
+
+IsTappingSolidCombo (lweapon sword)//True if Link is tapping solid combo with scripted sword.
+
+SV_OnGround() // Detects if Link is on a solid combo, mainly to be used in Sideview.
+
+SV_UnderCombo() // Detects if Link is under a solid combo, mainly to be used in Sideview.
+
+IsBlankFFC()//True if ffc isn't being used.
+
+FreeFFC()//Um, the same as above?
+		//Also, only search up to max ffc slot. There are two copies of that.
+
+WaitForInput(int button)//True if button is input.
+
+WaitForPress(int button)//True if button is pressed.
+
+LinkInAngleOfVision ( npc ghost, int angle )//True if Link in angle relative to Npc.
+
+OnBlock()//True if combo is right type?
+
+IsFromItem(lweapon lw, int itemNumber) {   //// Return true if the given lweapon is from the given item.
+
+IsFromItemClass(lweapon lw, int itemClass) {   //// Return true if the given lweapon is from the given item class.
+ 
+LinkInAngleOfVision2 ( npc ghost, int angle ){
+    //Check angle to Link against angle of vision
+
+//Returns TRUE if Link is facing FFC and is sufficiently close to it`s side.
+FacingFFC(ffc f, int distance)
+
+//Returns TRUE if Link is facing right side of FFC and is sufficiently close to it.
+LinkRightRelativeToFFC( ffc f, int distance)
+
+//Returns TRUE if Link is facing left side of FFC and is sufficiently close to it.
+LinkLeftRelativeToFFC( ffc f, int distance)
+
+//Returns TRUE if Link is facing top side of FFC and is sufficiently close to it.
+LinkUpRelativeToFFC( ffc f, int distance)
+
+//Returns TRUE if Link is facing bottom side of FFC and is sufficiently close to it.
+LinkDownRelativeToFFC( ffc f, int distance)
+
+//Returns True if Link can shoot sword beams with the current sword
+CanThrowSwordBeams(bool beamheartsprecentile, int beamhearts)//Percentage needed, hearts needed.
+
+fireSpells()//Triggers fire menu when called by Tango.

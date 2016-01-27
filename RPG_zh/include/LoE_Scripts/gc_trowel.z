@@ -1,0 +1,19 @@
+int SecretTimer = -1;
+ 
+item script Trowel {
+  void run() {
+    int loc = ComboAt(Link->X + 8 + InFrontX(Link->Dir, 0),
+                      Link->Y + 8 + InFrontY(Link->Dir, 0));
+					  Game->PlaySound(57);
+    if (ComboFI(loc, CF_SCRIPT1)) {
+      SecretTimer = 10;}}}
+ 
+global script Active {
+  void run() {
+    while (true) {
+     
+      if(SecretTimer > -1) {
+        SecretTimer--;
+        if (SecretTimer == -1) {
+          Screen->TriggerSecrets();}}
+      Waitframe();}}}

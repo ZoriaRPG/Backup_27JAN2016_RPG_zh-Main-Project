@@ -1,0 +1,185 @@
+///// 2016
+
+int DirRev(int dir) {
+	int bypassshields = 0;
+	if ( DIR > 7 ) {
+		bypassshields = 8;
+		dir = dir - 8;
+	}
+	if ( dir == DIR_LEFT) return DIR_RIGHT + bypassshields;
+	if ( dir == DIR_DOWN) return DIR_UP + bypassshields;
+	if ( dir == DIR_UP) return DIR_DOWN + bypassshields;
+	if ( dir == DIR_RIGHT) return DIR_LEFT + bypassshields;
+	if ( dir == DIR_DOWNLEFT) return DIR_UPRIGHT + bypassshields;
+	if ( dir == DIR_DOWNRIGHT) return DIR_UPLEFT + bypassshields;
+	if ( dir == DIR_UPLEFT) return DIR_DOWNRIGHT + bypassshields;
+	if ( dir == DIR_UPRIGHT) return DIR_DOWNLEFT + bypassshields;
+}
+	
+
+int SpeedRev(int speed, int reduceinertia){
+	if ( speed > 0 ) speed = ((speed * -1) + reduceiertia);
+	if ( speed < 0 ) speed = ((speed * -1) - reduceinertia);
+	return speed;
+}
+
+//Accepts the mass, and velocity if two objects. Determins the acceleration on impact. 
+//Returns the net change that would affect both objects. 
+int ImpactVelocity(int mass1, int velocity1, int mass2, int velociy2 ) { //, int time){ //time is sed here, as the amount of time that both objects are in contact.
+	int momentum1 = mass1*velocity1; //mv1
+	int momentum2 = mass2*velociy2; //mv2
+	//int accel1;
+	//int accel2;
+	return momentum1 - momentum2;
+}
+
+//Accepts the mass, and velocity if two objects. Determins the acceleration on impact. 
+//Returns the change of acceleration for object 'B'. 
+int ImpactVelocityA(int massA, int velocityA, int massB, int velociyB ) { //, int time){ //time is sed here, as the amount of time that both objects are in contact.
+	int momentumA = massA*velocityA; //mv1
+	int momentumB = massB*velociyB; //mv2
+	int accelA = momentumA - momentumB;
+	int accelB = momentumB - momentumA;
+	return momentumA;
+}
+
+//Accepts the mass, and velocity if two objects. Determins the acceleration on impact. 
+//Returns the change of acceleration for object 'B'.
+int ImpactVelocityB(int massA, int velocityA, int massB, int velociyB ) { //, int time){ //time is sed here, as the amount of time that both objects are in contact.
+	int momentumA = massA*velocityA; //mv1
+	int momentumB = massB*velociyB; //mv2
+	int accelA = momentumA - momentumB;
+	int accelB = momentumB - momentumA;
+	return momentumB;
+}
+
+//Accepts the mass, and velocity if two weapons. Determins the acceleration on impact. 
+//Changes the Step of both to reflect their mass on collision. 
+void ImpactVelocity(lweapon a, eweapon b, int massA, int velocityA, int massB, int velociyB ) { //, int time){ //time is sed here, as the amount of time that both objects are in contact.
+	int momentumA = massA*velocityA; //mv1
+	int momentumB = massB*velociyB; //mv2
+	int accelA = momentumA - momentumB;
+	int accelB = momentumB - momentumA;
+	a->Step += accelA;
+	b->Step += accelB;
+}
+
+void ImpactVelocityF(){} //FFC version that will change the direction, and speed of moving ffcs on collision. 
+
+//Returns centre of lweapon, with option to include its HitXOffset
+int CenterX(lweapon anLWeapon, bool trueoffset) { 
+	if ( trueoffset ) return anLWeapon->X+8*anLWeapon->TileWidth + anLWeapon->HitXOffset;
+	else return CenterX(anLWeapon);
+}
+
+//Returns centre of lweapon, with option to include its HitYOffset
+int CenterY(lweapon anLWeapon, bool trueoffset) {
+	if ( trueoffset ) return anLWeapon->Y+8*anLWeapon->TileHeight + anLWeapon->HitYOffset;
+	else return CenterX(anLWeapon);
+}
+
+//Returns centre of eweapon, with option to include its HitXOffset
+int CenterX(eweapon anEWeapon, bool trueoffset) { 
+	if ( trueoffset ) return anEWeapon->X+8*anEWeapon->TileWidth + anEWeapon->HitXOffset;
+	else return CenterX(anEWeapon);
+}
+
+//Returns centre of eweapon, with option to include its HitYOffset
+int CenterY(eweapon anEWeapon, bool trueoffset) {
+	if ( trueoffset ) return anEWeapon->Y+8*anEWeapon->TileHeight + anEWeapon->HitYOffset;
+	else return CenterX(anEWeapon);
+}
+
+//Returns centre of eweapon, with option to include its HitXOffset
+int CenterX(npc n, bool trueoffset) { 
+	if ( trueoffset ) return n->X+8*n->TileWidth + n->HitXOffset;
+	else return CenterX(n);
+}
+
+//Returns centre of eweapon, with option to include its HitYOffset
+int CenterY(npc n, bool trueoffset) {
+	if ( trueoffset ) return n->Y+8*n->TileHeight + n->HitYOffset;
+	else return CenterX(n);
+}
+
+////////////////
+
+//Returns centre of lweapon, with option to include its HitXOffset
+int CenterX(lweapon anLWeapon, bool trueoffset, bool drawoffset) { 
+	int lx = anLWeapon->X+8*anLWeapon->TileWidth;
+	if ( trueoffset ) lx += anLWeapon->HitXOffset;
+	if ( drawoffset ) lx += anLWeapon->DrawXOffset;
+	return lx;
+}
+
+//Returns centre of lweapon, with option to include its HitYOffset
+int CenterY(lweapon anLWeapon, bool trueoffset, bool drawoffset) {
+	int ly = anLWeapon->Y+8*anLWeapon->TileHeight;
+	if ( trueoffset ) ly += anLWeapon->HitYOffset;
+	if ( drawoffset ) ly += anLWeapon->DrawYOffset;
+	return ly;
+}
+
+//Returns centre of eweapon, with option to include its HitXOffset
+int CenterX(eweapon anEWeapon, bool trueoffset, bool drawoffset) { 
+	int ex = anEWeapon->X+8*anEWeapon->TileWidth;
+	if ( trueoffset ) ex += anEWeapon->HitXOffset;
+	if ( drawoffset ) ex += anEWeapon->DrawXOffset;
+	return ex;
+}
+
+//Returns centre of eweapon, with option to include its HitYOffset
+int CenterY(eweapon anEWeapon, bool trueoffset, bool drawoffset) {
+	int ey = anEWeapon->Y+8*anEWeapon->TileHeight;
+	if ( trueoffset ) ey += anEWeapon->HitYOffset;
+	if ( drawoffset ) ey += anEWeapon->DrawYOffset;
+	return ey;
+}
+
+//Returns centre of eweapon, with option to include its HitXOffset
+int CenterX(npc n, bool trueoffset, bool drawoffset) { 
+	int nx = n->X+8*n->TileWidth;
+	if ( trueoffset ) nx += n->HitXOffset;
+	if ( drawoffset ) nx += n->DrawXOffset;
+	return nx;
+}
+
+//Returns centre of eweapon, with option to include its HitYOffset
+int CenterY(npc n, bool trueoffset, bool drawoffset) {
+	int ny = n->Y+8*n->TileHeight;
+	if ( trueoffset ) nx += n->HitYOffset;
+	if ( drawoffset ) nx += n->DrawYOffset;
+	return nx;
+}
+
+////////////////
+
+int CenterLinkX(bool hitoffset) { 
+	if ( hitoffset ) return Link->X + 8 * Link->TileWidth + Link->HitXOffset;
+	else return Link->X + 8 * Link->TileWidth;
+}
+
+int CenterLinkY() {
+	if ( hitoffset ) return Link->Y + 8 * Link->TileHeight + Link->HitYOffset;
+	else return Link->Y + 8 * Link->TileHeight;
+}
+
+int CenterLinkX(bool hitoffset, bool drawoffset) { 
+	int lx = Link->X + 8 * Link->TileWidth;
+	if ( hitoffset ) lx += Link->HitXOffset;
+	if ( drawoffset ) lx += Link->DrawXOffset;	
+	return lx;
+}
+
+int CenterLinkY() {
+	int ly = Link->Y + 8 * Link->TileHeight;
+	if ( hitoffset ) ly += Link->HitYOffset;
+	if ( drawoffset ) ly += Link->DrawYOffset;	
+	return ly;
+}
+
+
+//Returns the direction of the vector from (0, 0) to point, in degrees from -180 to 180. (0 = right)
+float Angle(int x, int y) {
+  return ArcTan(x, y)*57.2958;
+}

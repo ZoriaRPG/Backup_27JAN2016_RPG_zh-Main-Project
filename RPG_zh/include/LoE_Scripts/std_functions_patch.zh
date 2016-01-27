@@ -1,0 +1,40 @@
+//A shorthand way to get a combo inherent flag on the current layer.
+//Layer 0 is the screen itself.
+int GetLayerComboI(int layer, int pos) {
+  if (layer==0)
+    return Screen->ComboI[pos];
+  else
+    return Game->GetComboInherentFlag(Screen->LayerMap(layer), Screen->LayerScreen(layer), pos);
+}
+
+//A shorthand way to set a combo inherent flag on the current layer.
+//Layer 0 is the screen itself.
+void SetLayerComboI(int layer, int pos, int flag) {
+  if (layer == 0)
+    Screen->ComboI[pos] = flag;
+  else
+    Game->SetComboInherentFlag(Screen->LayerMap(layer), Screen->LayerScreen(layer), pos, flag);
+}
+
+//A shorthand way to get a combo CSet on the current layer.
+//Layer 0 is the screen itself.
+int GetLayerComboC(int layer, int pos) {
+  if (layer==0)
+    return Screen->ComboC[pos];
+  else
+    return Game->GetComboCSet(Screen->LayerMap(layer), Screen->LayerScreen(layer), pos);
+}
+
+//A shorthand way to set a combo CSet on the current layer.
+//Layer 0 is the screen itself.
+void SetLayerComboC(int layer, int pos, int cset) {
+  if (layer == 0)
+    Screen->ComboC[pos] = cset;
+  else
+    Game->SetComboCSet(Screen->LayerMap(layer), Screen->LayerScreen(layer), pos, cset);
+}
+
+bool ChooseB(){
+	if ( Rand(0,1) == 0 ) return false;
+	else return true;
+}

@@ -1,0 +1,61 @@
+//GC Misc-Options Menu
+
+float tangoUserOptions[6]=(0,0,0,0,0,0);
+const int TC_BG = 0;
+const int TG_TEXT = 1;
+const int TG_TRANSPARENCY = 2;
+const int TG_TRN = 2;
+const int TG_BORDER = 3;
+const int TG_TXT_SPEED = 4;
+const int TG_BUTTON_SCHEME = 5;
+
+//Misc Menu
+
+//Game Options Menu
+
+//Text Speed (Menu)
+// -Normal
+// -Fast
+// -Slow
+
+//Button Options Menu
+
+// -Control Scheme A
+// -Control Scheme B
+
+
+//Dialogue Colours Menu
+
+//Box Background (Menu)
+//- Black
+//- Blue
+// -Green
+// -Red
+// -Violet
+// -Orange
+// -Yellow
+// -Grey
+
+//Box Text (Menu)
+//- Black
+//- Blue
+// -Green
+// -Red
+// -Violet
+// -Orange
+// -Yellow
+// -Grey
+
+//Box Border (Menu)
+//- Black
+//- Blue
+// -Green
+// -Red
+// -Violet
+// -Orange
+// -Yellow
+// -Grey
+
+//Box Transparency (Menu)
+// -Off
+// -On

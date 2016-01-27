@@ -1,0 +1,92 @@
+Set-up of this library is not [i]technically complicated[/i], but can be time-consuming, depending on how many timers you need, and how you want to remember them, and their values, when using functions in instructions.
+
+The included [b]ZIP archive[/b] contains a basic list of commands in a text file, with details on usage.
+
+Detailed information on using Timers.zh follows, that [i]assumes you are a novice at ZScript.[/i] 
+
+[b][u]A Note About Arrays[/u][/b]
+
+This library uses a single [i]array[/i] to hold all of its timer values, and the default array has ten (integer) elements. Thus, if you need more than ten timers, you will need to expand the side of the array.
+
+It looks like this:
+[code=auto:0]int Timers[10]={0,0,0,0,0,0,0,0,0,0};
+[/code]
+Simply change the value '10' to the value that you need (max 255), and add additional zeros to the set, separated by commas; save for the last value, that should not have a comma. (See above.)
+
+Next, you will need to define your constants, so that they'll be useful.
+
+[b][u]Constants Set-Up[/u][/b]
+
+The header includes dummy constants for the included array, TV_MYTIMER_1 , to TV_MYTIMER_10 , that you should change to something you will easily remember, that doesn't conflict with other defined constants, or variables. For this reason, it's best to use a prefix--in this case, TI_, for [u]TI[/u]mer, and later TD for Timer Duration--followed by the name of the timer. TD_DUCK, or TD_EXPLOSION, would be good examples of easy to remember constants.
+
+The number on the right side of these constants matches it to the array, so that you can easily modify the timer values, later.
+
+If you have expanded the size of your array beyond 10 elements, you will want to add more constants for your additional timers here. The first element of an array is '0', and for that reason, TV_MYTIMER_1 = 0 : A reference to TV_MYTIMER_1 is passed as the value '0, when reading from, or writing to the array.
+
+You may assign multiple constants to one index value, either for the purpose of naming conventions (e,g. TV_RED, TV_RUBY), or for other reasons; however you will want to avoid this unless you intend to use [i]either term[/i] to reference the [u]same[/u] timer.
+
+The next set of constants, is a series of [i]Duration Values[/i], with the prefix 'TD_' (Timer Duration). These are not assigned to the array indices, but rather, they are a count (in frames) for pre-set durations. You may want to establish your own naming here too, but I've provided a list of pre-defined time durations, including fractional-seconds, seconds, and minutes.
+
+You may use these as-is, and utilise multiplications thereof, or combinations thereof, to define durations; else specify a duration directly in an instruction,
+
+[b]Note[/b] If you need very long timers, you may need to use tiered timers to expand beyond the ZC MAX_INT limitations.
+
+You will see that the number to the right of these is the length, [u]in frames[/u], for that constant, so if you have any durations that you expect to need commonly, this is the place to add them.
+
+[b]Note:[/b] You can manually enter values for timer durations as numbers, when coding instructions.
+
+[b][u]Using the Libraries[/u][/b]
+
+Once you have established your values, you can begin using the functions. The code includes a sample global active script, that runs one timer.
+
+[u]Timer Initialisation[/u]
+The idea is that for each timer that you have running, you run this pair of functions:
+ 
+[code=auto:0]setTimer(TI_MY_TIMER,TD_TIME);
+reduceTimer(TI_MY_TIMER);
+[/code]
+The first instruction, initiates the timer that you specify as TI_MY_TIMER, with a staring count of TD_TIME.
+
+The second, when running in any loop, that has a Waitframe() instruction at its end, will decrement the same timer by '1' each frame. It is also overloaded to accept a custom value that you may specify:
+ 
+[code=auto:0]reduceTimer(TI_MY_TIMER,3);
+[/code]
+This would reduce a timer by a value of '3' per frame.
+
+The setTimer() function will not reset the value of the timer when run in a loop, [b][i]until[/i][/b][/i] that timer reaches '0'; and when that happens, it will [i]automatically[/i] reset to the value specified as TD_TIME.
+
+[u]Using Timers[/u]
+
+To use these timers, you call upon either the boolean functions checkTimer() and zeroTimer(). The first, checkTimer is less sensitive, and will return 'true' when the timer is at 1, or less; whereas the second, zeroTimer() is strict, and returns 'true' when the timer is exactly zero.
+
+You may call these as any boolean condition:[/i]
+
+
+ 
+[code=auto:0]if ( checkTimer(TI_MY_TIMER_1 ) {
+    //Do something
+}
+[/code]
+Whatever instructions you placed where 'Do something' is noted, would execute when the timer TI_MY_TIMER_1 dropped below a value of '1'.
+
+As an alternative, you may use the function returnTimer() to read the [b]exact[/b] value of the timer, and use that as a condition. This can be useful in some circumstances, and you may use this with conditional statements (if, else, else if) similarly to the boolean conditions, or write custom-defined booleans to meet your needs.
+
+Usage Syntax:
+ 
+[code=auto:0]checkTimer(TI_TIMER);
+zeroTimer(TI_TIMER);
+returnTimer(TI_TIMER);
+[/code]
+The remaining function allows arbitrary manipulation of timer values.
+
+Example:
+ 
+[code=auto:0]changeTimer(TI_MY_TIMER,151);
+[/code]
+This would set the timer 'TI_MY_TIMER' to a value of '151', without regard to whatever value it holds at present.
+
+[b][u]Advanced Use[/u][/b]
+
+The above, is the most basic usage of this library, and Timers.zh includes methods of multiple, en-masse timer creation, and manipulation. Please read the enclosed documentation for more information.
+
+This version (v1.5) released on 24th September, 2014, requires no other libraries, or headers.

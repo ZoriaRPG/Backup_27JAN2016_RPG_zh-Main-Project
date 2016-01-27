@@ -1,0 +1,520 @@
+//import "std.zh"
+//import "stdArguments.zh"
+//import "stdWeapons.zh"
+//import "stdCombos.zh"
+//import "stdWeaponsExtra.zh"
+//import "particles.zh"
+
+const int CR_LEVEL = 13; //Counter used to track Link`s XP level.
+const int I_C_SROLL_SPINATTACK = 94; //Item needed to perform Spin Attack technique.
+const int I_C_SCROLL_HURRICANE = 98; //Item needed to perform Hurricane Spin technique.
+const int SPINATTACK_NUMSPINS = 1; // Number of spins for Spin attack.
+const int PERILBEAM_MAXHP = 16; //Maximum HP Link should have to perform Peril Beam attack.
+const int HURRICANE_NUMSPINS = 20; // Number of spins for Hurricane Spin. 
+const int BEAM_FFCSCRIPT = 44; //Sword Beam FFC script.
+const int SPINATTACK_DAMAGE_MODIFIER = 2;//Spin Attack damage multiplier
+const int HURRICANE_DAMAGE_MODIFIER = 4;//Hurricane Spin damage multiplier
+const int TAP_SECRET_FLAG1 = 6; //Trigger flags detected by tapping with sword while charging.
+const int TAP_SECRET_FLAG2 = 11;//Another detectable flag.
+const int SLASH_ITEM_DROP_SET = 12;//Item drop set used to determine items dropped by slashed plants.
+const int SPR_GRASS_CLIPPINGS = 112;
+const int SPR_BUSH_CLIPPINGS = 113;
+const int SPR_FLOWER_CLIPPINGS = 114;
+
+////  SCRIPTED SWORD
+//
+//D0:
+//  ###**.**** - Sword`s tabbing sprite.
+//  ***##.#*** - Sword`s slashing sprite.
+//  *****.*### - Sword beam sprite. Must be facing right.
+//D1:
+//  *##**.**** - Number of dice that determines base damage.
+//  ***##.**** - Maximum number on base dice.
+//  *****.##** - Maximum number on dice per level.
+//  *****.**## - Number of dice applied to damage per level.
+//D2:
+//  *###*.**** - Sword attack SFX.
+//  ****#.##** - Sword beam launch SFX.
+//  *****.**#* - Set to 1 -> Allow Slash.
+//D3:
+//  #****.**** - Set to 1 -> Beam Hearts is precentile.
+//  *###*.**** - Hearts required to shoot sword beams.
+//  ****#.**** - Set to 1 -> Beam Penetrates enemies.
+//  *****.*### - Beam shard particle sprite.
+//D4:
+//  #****.**** - Set to 1 -> Beam damage is precentile from sword damage.
+//  *###*.**** - Damage from Sword beam.
+//  ****#.**** - Set to 1 -> Use only half of the Link`s current XP level to scale damage from Sword beams
+//  *****.*### - Amount of damage to apply to sword beams for each effective level.
+//D5:
+//  *###*.**** - Main Sword trigger flag. Hit it with this sword directly to trigger secrets.
+//  ****#.##** - Sword Beam trigger flag. Hitting it with Sword Beams from this sword triggers secrets.
+//
+////
+
+ffc script RPGSword{
+	void run( int sprites, int dicedamage, int sounds, int beams, int beamdamage, int triggers){
+		//I. Obtain values inputed into arguments via stdArguments.zh
+		//1. Sprites
+		int stabsprite = GetValue3Upper987(sprites);
+		int slashsprite = GetValue3Mid654(sprites);
+		int beamsprite = GetValue3Lower321(sprites);
+		//2. Damage
+		int dicenum = GetValue287(dicedamage);
+		int basedice = GetValue265(dicedamage);
+		int leveldice = GetValue243(dicedamage);
+		int diceperlevel = GetValue221(dicedamage);
+		//3. SoundEffects
+		int mainsfx = GetValue3Upper876(sounds);
+		int beamsfx = GetValue3Lower543(sounds);
+		bool slash = (GetDigit(sounds, -3)>0);
+		//4. Sword beams
+		bool beamheartsprecentile = (GetDigit(beams, 4)>0);
+		int beamhearts = GetValue3Upper876(beams);
+		bool beampenetrator = (GetDigit(beams, 0)>0);
+		int shardsprite = GetValue3Lower321(beams);
+		//5. Damage from sword beams
+		bool beamdamageprecentile = (GetDigit(beamdamage, 4)>0);
+		int bdamage = GetValue3Upper876(beamdamage);
+		bool hlevelbeams = (GetDigit(beamdamage, 0)>0);
+		int bdamagescale = GetValue3Lower321(beamdamage);
+		//6. Secret trigger flags
+		int swordtrigger = GetValue3Upper876(triggers);
+		int beamtrigger = GetValue3Lower543(triggers);
+		
+		//II.Calculate current damage in this run, based on dice and Link`s level.
+		//   As well as other initialization processes
+		int swordid = this->InitD[7];
+		int sworddir = Link->Dir;
+		int curlevel = Game->Counter[CR_LEVEL];
+		int halflevel = curlevel/2;
+		int curdamage = RollDice (dicenum, basedice);
+		int maxbeams = 1;
+		if (leveldice >= 0) curdamage = curdamage + RollDice(curlevel, leveldice);
+		
+		//III. Create pseudo-Sword lweapon and maintain it`s state until it plays trough all
+		//3 frames of animation
+		Game->PlaySound(mainsfx); //Sword swinging sound
+		Link->Action = LA_ATTACKING;
+		lweapon sword = LweaponInit (this, LW_SCRIPT10, curdamage, stabsprite); //Create main sword lweapon
+		sword->Dir = Link->Dir;
+		if ((Game->Generic[GEN_CANSLASH])&&(slash)){ //Check if Link can slash
+			sworddir = CWDir4way(sworddir);
+			SwordUpdate (sword, sworddir, stabsprite, 16); //Updates sprite and hitbox offset depending on actual sword direction, not "sword->dir".
+			for (int i=1; i<=3; i++){ 
+				if(sword->isValid()){
+			LweaponPosUpdate( this, sword); // Put lweapon at Link`s position
+			if (i==1) SlashSlashableCombos(sword);
+			TriggerUpdate (sword, swordtrigger, SFX_SECRET, true); //Detect "sword"
+			TriggerUpdate (sword, 90, SFX_SECRET, true); //and "strike" trigger flags.
+			UseEnemyDefense(sword, 0, NPCD_SWORD); //Use "sword" defense entry when interacting with enemies
+			PenetratorUpdate(sword); //Prevent sword from disappearing on enemy hit.
+			Waitframe();
+				}
+			}
+			sworddir = CCWDir8Way(sworddir); //Next CCW sword direction.
+			SwordUpdate (sword, sworddir, slashsprite, 12);
+			for (int i=1; i<=3; i++){
+				if(sword->isValid()){
+			LweaponPosUpdate( this, sword);
+			if (i==1) SlashSlashableCombos(sword);
+			TriggerUpdate (sword, swordtrigger, SFX_SECRET, true);
+			TriggerUpdate (sword, 90, SFX_SECRET, true);
+			UseEnemyDefense(sword, 0, NPCD_SWORD);
+			PenetratorUpdate(sword);
+			Waitframe();
+				}
+			}
+			sworddir = CCWDir8Way(sworddir); //Final slashing frame. 
+			SwordUpdate (sword, sworddir, stabsprite, 16);
+			for (int i=1; i<=3; i++){
+				if(sword->isValid()){
+			LweaponPosUpdate( this, sword);
+			if (i==1) SlashSlashableCombos(sword);
+			TriggerUpdate (sword, swordtrigger, SFX_SECRET, true);
+			TriggerUpdate (sword, 90, SFX_SECRET, true);
+			UseEnemyDefense(sword, 0, NPCD_SWORD);
+			PenetratorUpdate(sword);
+			Waitframe();
+				}
+			}
+		}
+		else{ //Link does not have slash alility.
+			sworddir = Link->Dir;
+			SwordUpdate (sword, sworddir, stabsprite, 12); //The stabbing animation has 2 frames
+			for (int i=1; i<=7; i++){
+				if(sword->isValid()){
+			LweaponPosUpdate( this, sword);
+			if (i==1) SlashSlashableCombos(sword);
+			TriggerUpdate (sword, swordtrigger, SFX_SECRET, true);
+			TriggerUpdate (sword, 90, SFX_SECRET, true);
+			UseEnemyDefense(sword, 0, NPCD_SWORD);
+			PenetratorUpdate(sword);
+			Waitframe();
+				}
+			}
+			SwordUpdate (sword, sworddir, stabsprite, 8);
+			for (int i=1; i<=3; i++){
+				if(sword->isValid()){
+			LweaponPosUpdate( this, sword);
+			if (i==1) SlashSlashableCombos(sword);
+			TriggerUpdate (sword, swordtrigger, SFX_SECRET, true);
+			TriggerUpdate (sword, 90, SFX_SECRET, true);
+			UseEnemyDefense(sword, 0, NPCD_SWORD);
+			PenetratorUpdate(sword);
+			Waitframe();
+				}
+			}
+		}
+		//IV. Launch sword beam, if Link is able to do this.
+		if(CanThrowSwordBeams(beamheartsprecentile, beamhearts)){
+			sword->Dir = Link->Dir; //So Link shoot beam in proper direction
+			LaunchSwordBeam(sword, beamsfx, beamdamageprecentile, curdamage, hlevelbeams, bdamage, bdamagescale, beamsprite, beampenetrator, beamtrigger, shardsprite, maxbeams);
+		}
+		//if (sword->isValid()) Remove(sword);
+		// -- Next step can be run if Link has Scroll: Spin Attack item.
+		if (!(Link->Item[I_C_SROLL_SPINATTACK])){
+			ClearFFC(this); //Link doesn`t have "Spin Attack" scroll. End here.
+			if (sword->isValid()) Remove(sword);
+			Quit();
+		}
+		//V. Charging for Spin Attack or even Hurricane Spin.
+		SwordUpdate (sword, sworddir, stabsprite, 8);
+		Link->Action=LA_CHARGING; //GLITCHING!!
+		sword->Dir = Link->Dir;
+		int taptimer = 0; //This var is used time tapping for sword while charging.
+		int chargeready = 0; //Charge state.
+		int chargetimer = 0; //Used to determine how long Link has charging sword attack.
+		int chargetime = 128; //Spin Attack charge time.
+		if (Link->Item[I_CHARGERING1]) chargetime = 64;// Take care for Charge Rings.
+		if (Link->Item[I_CHARGERING2]) chargetime = 32;
+		int hurricanechargetime = 256; //Hurricane Spin charge time
+		if (Link->Item[I_CHARGERING1]) hurricanechargetime = 128;
+		if (Link->Item[I_CHARGERING2]) hurricanechargetime = 64; //Again, Charge Rings should be accounted.
+		while (IsPressingUseButton(swordid)){
+			if (Link->Action >2){ //An external force has interrupted charging process. The end.
+				if (sword->isValid()) Remove(sword);
+				ClearFFC(this);
+				Quit();
+			}
+			if (!(sword->isValid())){//Sword has disappeared somehow...
+				Link->Action=LA_NONE;
+				ClearFFC(this);
+				Quit();
+			}
+			//Link->Action = LA_CHARGING;
+			Link->Dir = sworddir;//Link should always look at his sword.
+			this->X = Link->X;
+			this->Y = Link->Y;
+			LweaponPosUpdate(this, sword); //And sword Lweapon should always at Link`s position
+			chargetimer++; // Update charge timer.
+			if ((chargetimer>chargetime)&&(chargeready==0)){
+				Game->PlaySound(SFX_CHARGE1);
+				chargeready = 1; //Time for Spin Attack
+			}
+			if ((chargetimer>hurricanechargetime)&&(chargeready<2)){
+				if (Link->Item[I_C_SCROLL_HURRICANE]){
+				if (AmmoManager(CR_MAGIC,16,118)){//Hurricane spin eats magic. Set cost at 16 MP. 
+					Game->PlaySound(SFX_CHARGE2);
+					chargeready=2;// Hurricane spin is ready!!
+				}
+				}
+			}
+			if (IsTappingSolidCombo (sword)){ //Tapping solid walls to find out if there are bomb-able ones.
+				taptimer++;
+				if (taptimer>15){
+					SwordUpdate (sword, sworddir, stabsprite, 12);
+					if ((ComboFlagCollision (TAP_SECRET_FLAG1, sword))||(ComboFlagCollision (TAP_SECRET_FLAG2, sword))){
+						Game->PlaySound(SFX_TAP2);
+					}
+					else Game->PlaySound(SFX_TAP1);
+					taptimer = 0;
+				}
+				else SwordUpdate (sword, sworddir, stabsprite, 8);
+			}
+			Waitframe();
+		}
+		//VI. SPIN, SPIN, SPIN!!!
+		int numspins =0;
+		int startspindir = Link->Dir;
+		if (chargeready == 0){ //Button released too early
+			if (sword->isValid()) Remove(sword);
+				ClearFFC(this);
+				Quit();
+		}
+		if (chargeready == 1){//Spin Attack was charged.
+			curdamage = curdamage*SPINATTACK_DAMAGE_MODIFIER;
+			numspins = SPINATTACK_NUMSPINS; //Apply damage modifier and set number of spins.
+		}
+		else if (chargeready == 2){
+			curdamage = curdamage*HURRICANE_DAMAGE_MODIFIER;
+			numspins = HURRICANE_NUMSPINS;// Ditto for hurricane spin
+		}
+		maxbeams = 4; //Set maximum of sword beams for Cross Beams item.
+		for (int i=1; i<=numspins;i++){ //LET`S ROLL!!
+			Game->PlaySound(SFX_SPINATTACK);// Play spin-attack sound for every cycle of spinning.	
+			for (int d = 1; d <=8; d++){ //8 directions of compass.
+			if (Link->Action > 2){// Spinning interrupted.
+				if (sword->isValid()) Remove(sword);
+				ClearFFC(this);
+				Quit();
+			}
+			if (!(sword->isValid())){// Sword goes POOF.
+				Link->Action=LA_NONE;
+				ClearFFC(this);
+				Quit();
+			}
+			//Link->Action = LA_ATTACKING;
+			if ((Game->Generic[GEN_CANSLASH])&&(slash)) sworddir = CCWDir8Way( sworddir);
+			else{
+				d++; //Or else Link can do twice as more spins as needed if he can`t slash
+				sworddir = CCWDir4Way( sworddir); //Check if Link can alash and update accordingly
+			}
+			if (sworddir >3) SwordUpdate (sword, sworddir, slashsprite, 12); //Diagonal sword positions should be closer to Link than cardinal ones.
+			else SwordUpdate (sword, sworddir, stabsprite, 12);
+			int frames = 2; //Determine frame delay.
+			if ((Game->Generic[GEN_CANSLASH])&&(slash)) frames = 1;
+			for (int i=1; i<=frames; i++){
+				if(sword->isValid()){
+					this->X = Link->X; //Put sword at Link`s position.
+			this->Y = Link->Y;
+			sword->Dir = sworddir;
+			if (sworddir<4) Link->Dir = sworddir;// Again, Link should always face his sword.
+			LweaponPosUpdate( this, sword);// Do other sheinangans.
+			if (i==1) SlashSlashableCombos(sword);
+			TriggerUpdate (sword, swordtrigger, SFX_SECRET, true);
+			TriggerUpdate (sword, 90, SFX_SECRET, true);
+			UseEnemyDefense(sword, 0, NPCD_SWORD);
+			PenetratorUpdate(sword);
+			Waitframe();
+				}
+			}
+			//Cross beams technique.
+			if ((Link->Item[I_CROSSSCROLL])&&(CanThrowSwordBeams(beamheartsprecentile, beamhearts))){
+				if ((sworddir<4)&&(i==numspins)){
+					LaunchSwordBeam(sword, beamsfx, beamdamageprecentile, curdamage, hlevelbeams, bdamage, bdamagescale, beamsprite, beampenetrator, beamtrigger, shardsprite, maxbeams);
+				}
+			}
+			}
+		}
+		//VII. Finita la comedia.
+		if (sword->isValid()) Remove(sword);
+		ClearFFC(this);
+		Quit();
+	}
+}
+
+//Returns a total of number of dice rolls. Dicetype means maximum value that can be rolled in dice.
+//int RollDice(int numdice, int dicetype){
+//	int dicetotal = 0;
+//	for (int dice = 1; dice <= numdice; dice++){
+//		int roll = Rand(1, dicetype);
+//		dicetotal = dicetotal+roll;
+//	}
+//	return dicetotal;
+//}
+
+//Returns True if Link can shoot sword beams with the current sword
+bool CanThrowSwordBeams(bool beamheartsprecentile, int beamhearts){
+	if (Link->Item[I_PERILSCROLL]){ //Scroll: Peril Beam.
+		if (Link->HP <= PERILBEAM_MAXHP) return true;
+		}
+	if (beamheartsprecentile){
+		 int reqhp = beamhearts/100*(Link->MaxHP);
+		 if (Link->HP >= reqhp) return true;
+	}
+	else if (Link->HP >= beamhearts) return true;
+	return false;
+}
+
+//Launches sword beam used as FFC weapon.
+void LaunchSwordBeam(lweapon sword, int beamsfx, bool beamdamageprecentile, int curdamage, bool hlevelbeams, int bdamage, int bdamagescale, int beamsprite, bool pen, int btrigger, int shardsprite, int maxbeams){
+	int uselevel = 0;
+	int beamdamage = 0;
+	int bdir = sword->Dir;
+	if ((CountFFCsRunning(BEAM_FFCSCRIPT))>=maxbeams) return; //Check if there is already too many sword beams flying
+	if (hlevelbeams) uselevel = (Floor((Game->Counter[CR_LEVEL])/2));
+	else uselevel = Game->Counter[CR_LEVEL];
+	if (beamdamageprecentile){ //Determine beam damage.
+		beamdamage = (curdamage*bdamage/100)+(bdamagescale*uselevel);
+	}
+	else beamdamage = bdamage + (bdamagescale*uselevel);
+	Game->PlaySound(beamsfx);
+	int pent = Cond (pen, 1, 0); // Beam Penetrates Enemies.
+	int args[8] = {beamsprite, beamdamage, pent, bdir, btrigger, shardsprite, 0, 0};
+	int n = RunFFCScript(BEAM_FFCSCRIPT, args); // Launch Sword Beam FFC script.
+	ffc runs;
+	if (n>0) runs = Screen->LoadFFC(n);
+	runs->X = (sword->X)+(sword->DrawXOffset); //Put FFC at sword`s position
+	runs->Y = (sword->Y)+(sword->DrawYOffset);
+}
+
+ffc script SwordBeam{
+	void run(int beamsprite, int bdamage, int pen, int bdir, int btrigger, int shardsprite){
+		lweapon beam = CreateNewWeapon (this, LW_SCRIPT9, bdamage, beamsprite);
+		beam->Dir = bdir; //Set beam`s direction
+		//if (bdir >= 2) beam->DrawYOffset = 1;
+		//beam->Flash = true;
+		//beam->FlashCSet = 7;
+		LweaponSpriteUpdate (beam, beamsprite, 0); //Update sword beam sprite depending on direction.
+		SetStraightMotion4(this, bdir, 3);// Function in stdWeapons.zh
+		while (beam->isValid()){
+			LweaponPosUpdate( this, beam); //Update beam`s position.
+			UseEnemyDefense(beam, 0, NPCD_BEAM); //Use "Beam" defense entry for enemies.
+			if (pen > 0) PenetratorUpdate (beam); //Beam Penetrates enemies.
+			TriggerUpdate (beam, btrigger, 27, true); //Trigger "sword beam"
+			TriggerUpdate (beam, 90, 27, true);// and "strike" trigger flags.
+			Waitframe();
+		}
+		int angle = 135; //Beam shard prticles
+		lweapon shard;
+		for (int i=1; i<=4; i++){
+			shard  = CreateAnimation ((this->X), (this->Y), shardsprite, 0, 0, 0, 0, 30, false);
+			SetAngularMovement(shard, angle, 1.5);
+			if (i == 1) shard->Flip = 2;
+			if (i == 2) shard->Flip = 3;
+			if (i == 3) shard->Flip = 1;
+			angle = angle-90;
+		}
+		while ( shard->isValid()) Waitframe(); //Wait until particles disappear.
+		ClearFFC(this);//The end.
+	}
+}
+
+//Updates sword sprite and hitbox offsets depending on it`s direction. Also determines sprite flipping. 
+void SwordUpdate (lweapon sword, int dir, int sprite, int offset){
+	sword->UseSprite(sprite);
+	if (dir == DIR_UP){
+		sword->DrawXOffset = 0;
+		sword->HitXOffset = 0;
+		sword->DrawYOffset = -offset;
+		sword->HitYOffset = -offset;
+		sword->Flip=0;
+	}
+	else if (dir == DIR_RIGHTUP){
+		sword->DrawXOffset = offset;
+		sword->HitXOffset = offset;
+		sword->DrawYOffset = -offset;
+		sword->HitYOffset = -offset;
+		sword->Flip=0;
+	}
+	else if (dir == DIR_RIGHT){
+		sword->DrawYOffset = 0;
+		sword->HitYOffset = 0;
+		sword->DrawXOffset = offset;
+		sword->HitXOffset = offset;
+		sword->DrawYOffset = 2;
+		sword->HitYOffset = 2;
+		sword->Flip = 4;
+	}
+	else if (dir == DIR_RIGHTDOWN){
+		sword->DrawXOffset = offset;
+		sword->HitXOffset = offset;
+		sword->DrawYOffset = offset;
+		sword->HitYOffset = offset;
+		sword->Flip = 2;
+	}
+	else if (dir == DIR_DOWN){
+		sword->DrawXOffset = 0;
+		sword->HitXOffset = 0;
+		sword->DrawYOffset = offset;
+		sword->HitYOffset = offset;
+		sword->Flip = 2;
+	}
+	else if (dir == DIR_LEFTDOWN){
+		sword->DrawXOffset = -offset;
+		sword->HitXOffset = -offset;
+		sword->DrawYOffset = offset;
+		sword->HitYOffset = offset;
+		sword->Flip = 3;
+	}
+	else if (dir == DIR_LEFT){
+		sword->DrawYOffset = 0;
+		sword->HitYOffset = 0;
+		sword->DrawXOffset = -offset;
+		sword->HitXOffset = -offset;
+		sword->DrawYOffset = 2;
+		sword->HitYOffset = 2;
+		sword->Flip = 7;
+	}
+	else if (dir == DIR_LEFTUP){
+		sword->DrawXOffset = -offset;
+		sword->HitXOffset = -offset;
+		sword->DrawYOffset = -offset;
+		sword->HitYOffset = -offset;
+		sword->Flip = 1;
+	}
+}
+
+//Returns TRUE if Link tries to tap solid combo with scripted sword.
+bool IsTappingSolidCombo (lweapon sword){
+	if (Screen->isSolid((Link->X + 8), (Link->Y - 1))){
+		if ((Link->InputUp)&&(sword->Dir == DIR_UP)) return true;
+	}
+	if (Screen->isSolid((Link->X + 8), (Link->Y + 17))){
+		if ((Link->InputDown)&&(sword->Dir == DIR_DOWN)) return true;
+	}
+	if (Screen->isSolid((Link->X - 1), (Link->Y + 8))){
+		if ((Link->InputLeft)&&(sword->Dir == DIR_LEFT)) return true;
+	}
+	if (Screen->isSolid((Link->X + 17), (Link->Y + 8))){
+		if ((Link->InputRight)&&(sword->Dir == DIR_RIGHT)) return true;
+	}
+	return false;
+}
+
+void SlashSlashableCombos(lweapon sword){
+	int slashable[] = {24,132,25,133,29,137,130,138,57,136,141,55,134,131,139,56,135};
+	bool slashnext[] = {false,false,false,false,true,true,true,true,false,false,true,false,false,true,true,false,false};
+	//bool continious[] = {false,true,false,true,false,true,false,true,false,true,false,false,true,false,true,false,true};
+	bool dropitem[] = {false,false,true,true,false,false,true,true,true,true,true,true,true,true,true,true,true};
+	int sprites[] = {0,0,0,0,0,0,0,0,1,1,1,2,2,2,2,3,3};
+	for (int i =0; i<= 16; i++){
+		int ctype = slashable[i];
+		for (int cmb=0; cmb<176; cmb++){
+			int type = Screen->ComboT[cmb];
+		if ((type==ctype)&&(ComboCollision (cmb, sword))){
+			int cx = ComboX(cmb);
+			int cy = ComboY(cmb);
+			if (slashnext[i]) Screen->ComboD[cmb]++;
+			else {
+				Screen->ComboD[cmb] = Screen->UnderCombo;
+				Screen->ComboC[cmb] = Screen->UnderCSet;
+			}
+			if (i>7) Game->PlaySound(SFX_GRASSCUT);
+			if (dropitem[i]){
+				npc drop = Screen->CreateNPC(116);
+				drop->X = cx;
+				drop->Y = cy;
+				drop->CollDetection = false;
+				drop->ItemSet = SLASH_ITEM_DROP_SET;
+				drop->HP = 0;
+			}
+			if (sprites[i] == 1){
+				int angle = -135;
+				for (int i = 1; i<=3; i++){
+				lweapon clippings = CreateAnimation (cx, cy, SPR_GRASS_CLIPPINGS, 0, 0, 0, 0, 15, false);
+				SetAngularMovement(clippings, angle, 0.5);
+				angle = angle+45;
+				}
+			}
+			if (sprites[i] == 2){
+				int angle = -135;
+				for (int i = 1; i<=4; i++){
+				lweapon clippings = CreateAnimation (cx, cy, SPR_BUSH_CLIPPINGS, 0, 0, 0, 0, 30, false);
+				SetAngularMovement(clippings, angle, 0.5);
+				angle = angle+90;
+				}
+			}
+			if (sprites[i] == 3){
+				int angle = -135;
+				for (int i = 1; i<=4; i++){
+				lweapon clippings = CreateAnimation (cx, cy, SPR_FLOWER_CLIPPINGS, 0, 0, 0, 0, 30, false);
+				SetAngularMovement(clippings, angle, 0.5);
+				angle = angle+90;
+				}
+			}
+			}
+		}
+	}
+}

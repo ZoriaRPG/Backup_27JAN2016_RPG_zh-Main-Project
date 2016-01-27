@@ -1,0 +1,75 @@
+//Usable Clock (Or other things??)
+//D0 - Item to use for clock.(or whatever) If doing clock, this needs to be a clock item with duration set.
+//Note: The default clock item is 4.
+//D1 - Amount of time to Jinx link. (0 for no Jinx)
+//Note: The Jinx can be used to create a small pause before the item
+//can be used again. You can also make it the clock duration, but this
+//is only recommended in quests that aren't using the B+A item setting
+//configuration.
+
+item script usedclock{
+
+void run(int clockitem, int jinxtime){
+
+item givenclock = Screen->CreateItem(4);
+givenclock->X = Link->X;
+givenclock->Y = Link->Y;
+givenclock->Z = Link->Z;
+Link->ItemJinx = 2;
+
+
+}
+
+}
+
+//Timestop Scroll
+item script timestopscroll{
+void run(int clockitem, int jinxtime){
+if (Game->Counter[CR_SCRIPT1] >= 1){
+Game->Counter[CR_SCRIPT1] -= 1;
+item givenclock = Screen->CreateItem(4);
+givenclock->X = Link->X;
+givenclock->Y = Link->Y;
+givenclock->Z = Link->Z;
+Link->ItemJinx = 2;
+}
+    else{
+    Game->PlaySound(errorsfx);
+    }
+
+}
+
+}
+
+//Healing Scroll
+item script Healingscroll{
+void run(){
+if (Game->Counter[CR_SCRIPT8] >= 1){
+Game->Counter[CR_SCRIPT8] -= 1;
+        Link->HP += 100;
+        Game->PlaySound(39);
+    }
+    else{
+    Game->PlaySound(errorsfx);
+    }
+
+}
+
+}
+
+//Talyxiux Scroll
+item script Talyxiuxscroll{
+void run(){
+if (Game->Counter[CR_SCRIPT9] >= 1){
+Game->Counter[CR_SCRIPT9] -= 1;
+        Link->MP += 100;
+ 
+        Game->PlaySound(39);
+    }
+    else{
+    Game->PlaySound(errorsfx);
+    }
+
+}
+
+}

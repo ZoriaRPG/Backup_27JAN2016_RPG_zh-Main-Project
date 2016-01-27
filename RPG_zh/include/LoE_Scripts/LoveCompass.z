@@ -1,0 +1,15 @@
+int DistanceScreenEdgeXNorth(){
+	
+}
+
+int DistanceScreenEdgeXSouth(){
+	
+}
+
+int DistanceScreenEdgeXEast(){
+	
+}
+
+int DistanceScreenEdgeXWest(){
+	
+}

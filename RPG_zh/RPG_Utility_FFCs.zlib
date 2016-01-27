@@ -1,0 +1,49 @@
+//Utility FFcs v 0.2 for RPG.zh v0.97.7/2
+
+////////////////////
+/// Game Effects ///
+////////////////////
+
+// Creates a sound, and/or triggers effects if Link collides with this ffc.
+// Arguments
+// D0: The ID of the sound to play. if set to a value of '0', there will be no sound effect.
+// D1: Set to a value of '1' or higher, to trigger screen secrets. 
+//   --> This can be expanded to accept other values, as flags, to trigger events. 
+// D2: Set to a value of '0' to make secret triggers temporary. 
+//     Set to a value other than zero (e.g. '1', '-1', '-3.024' ; anything non-zero) to make them permanent. 
+// D3: In theory, this would constrain the WIDTH of the hitbox of the effect. 
+//     Set to a value of the hitbox width, in pixels.
+// D4: In theory, this would constrain the HEIGHT of the hitbox of the effect.
+//     Set to a value of the hitbox width, in pixels.
+// D5: Set to a value of '1', 2', '3', '4', '5', '6', or '7'; if you want triggering this to be
+//     a ONE-TIME-EVENT. This will store a value in a screen register (Screen->D[reg]) that is evaluated
+//     by the script, and if that register is NON-ZERO, the script will execute. If this argument
+//     is set to '0', the script will always execute. Thus, Screen->D[0] cannot be used for this value. 
+
+ffc script CollisionTrigger{
+	void run(int sfx, int triggerSecret, int perm, int effectWidth, int effectHeight, int reg){
+		bool triggered;
+		if ( effectWidth ) this->EffectWidth = effectWidth;
+		if ( effectHeight ) this->EffectHeight = effectHeight;
+		while(true){
+			if ( reg && Screen->D[reg] ) continue;
+			if ( !triggered && LinkCollision(this) ) {
+				triggered = true;
+				Game->PlaySound(sfx);
+				if ( triggerSecret ) Screen->TriggerSecrets();
+				if ( triggerSecret && perm ) Screen->State[ST_SECRET] = true;
+				if ( reg ) Screen->D[reg]++;
+			}
+			Waitframe();
+		}
+	}
+}
+
+ffc script BigFFC{
+	void run(int tileWidth, int tileHeight, int effectWidth, int effectHeight){
+		this->TileHeight = tileHeight;
+		this->TileWidth = tileWidth;
+		this->EffectWidth = effectWidth;
+		this->EffectHeight = effectHeight;
+	}
+}

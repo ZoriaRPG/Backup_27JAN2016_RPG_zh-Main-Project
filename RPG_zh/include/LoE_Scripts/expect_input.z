@@ -1,0 +1,87 @@
+//Expect Input on Controller Buttons
+
+bool WaitForInput(int button){
+	if ( press == BUTTON_B && Link->InputB ) {
+		Link->InputB = false;
+		return true;
+	}
+	if ( press == BUTTON_A && Link->InputA ) {
+		Link->InputA = false;
+		return true;
+	}
+	if ( press == BUTTON_L && Link->InputL ) {
+		Link->InputL = false;
+		return true;
+	}
+	if ( press == BUTTON_R && Link->InputR ) {
+		Link->InputR = false;
+		return true;
+	}
+	if ( press == BUTTON_START && Link->InputStart ) {
+		Link->InputStart = false;
+		return true;
+	}
+	if ( press == BUTTON_UP && Link->InputUp ) {
+		Link->InputUp = false;
+		return true;
+	}
+	if ( press == BUTTON_DOWN && Link->InputDown ) {
+		Link->InputDown = false;
+		return true;
+	}
+	if ( press == BUTTON_LEFT && Link->InputLeft ) {
+		Link->InputLeft = false;
+		return true;
+	}
+	if ( press == BUTTON_RIGHT && Link->InputRight ) {
+		Link->InputRight = false;
+		return true;
+	}
+	if ( press == BUTTON_MAP && Link->InputMap ) {
+		Link->InputMap = false;
+		return true;
+	}
+}
+
+bool WaitForPress(int press){
+	if ( press == BUTTON_B && Link->PressB ) {
+		Link->PressB = false;
+		return true;
+	}
+	if ( press == BUTTON_A && Link->PressA ) {
+		Link->PressA = false;
+		return true;
+	}
+	if ( press == BUTTON_L && Link->PressL ) {
+		Link->PressL = false;
+		return true;
+	}
+	if ( press == BUTTON_R && Link->PressR ) {
+		Link->PressR = false;
+		return true;
+	}
+	if ( press == BUTTON_START && Link->PressStart ) {
+		Link->PressStart = false;
+		return true;
+	}
+	if ( press == BUTTON_UP && Link->PressUp ) {
+		Link->PressUp = false;
+		return true;
+	}
+	if ( press == BUTTON_DOWN && Link->PressDown ) {
+		Link->PressDown = false;
+		return true;
+	}
+	if ( press == BUTTON_LEFT && Link->PressLeft ) {
+		Link->PressLeft = false;
+		return true;
+	}
+	if ( press == BUTTON_RIGHT && Link->PressRight ) {
+		Link->PressRight = false;
+		return true;
+	}
+	if ( press == BUTTON_MAP && Link->PressMap ) {
+		Link->PressMap = false;
+		return true;
+	}
+}

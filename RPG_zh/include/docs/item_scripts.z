@@ -1,0 +1,467 @@
+//Item Scripts
+
+// D0: Number of starting bombs to give with this bomb bag. If positive, the player will be given that many bombs.
+	//You may pass a negative value here, to award super-bombs, instead. 
+// D1: Bomb Bag to Give: Small Bag ( 81 ), Medium Bag ( 82 ), Large Bag ( 83 ), Magic Bag ( 106 ) , or custom.
+// D2: Override counnter increase? : No ( 0 ), Yes ( Enter amount ).
+// D3: Sound Effect to play: Special Item ( 20 ), or custom.
+// D4: Message String ID to display (if any). None ( 0 ), or custom. 
+// D5: Hold-Up Animation to use: None ( 0 ) , 1-Hand ( 1 ), 2-Hand ( 2 ) , 1-Hand-Water ( 3 ), 2-Hand-Water ( 4 ).
+// D6: Bomb to give (PICK-UP ANIMATION): Bomb ( 3 ) , Bomb Ammo 1 ( 77 ), Ammo 4 ( 78 ), Ammo 8 ( 79 ), Ammo 30 ( 80 ), 
+				       //Bomb Bag ( 81 ), Medium Bomb Bag ( 82 ) , Large Bomb Bag ( 83 ), 
+				       //Magic Bomb Bag ( 106 ), SBomb ( 48 ) or custom. 
+	//This should match the item ID to which you attach this script!
+
+BombPickupNoFFC
+	void run(int giveBombs, int bombBag, int bombMaxOverride, int playSFX, int showMessage, int holdUp, int bombID)
+
+// D0: Number of starting bombs to give with this bomb bag. If positive, the player will be given that many bombs.
+	//You may pass a negative value here, to award super-bombs, instead. 
+// D1: Bomb Bag to Give: Small Bag ( 81 ), Medium Bag ( 82 ), Large Bag ( 83 ), Magic Bag ( 106 ) , or custom.
+// D2: Override counnter increase? : No ( 0 ), Yes ( Enter amount ).
+// D3: Sound Effect to play: Special Item ( 20 ), or custom.
+// D4: Message String ID to display (if any). None ( 0 ), or custom. 
+// D5: Hold-Up Animation to use: None ( 0 ) , 1-Hand ( 1 ), 2-Hand ( 2 ) , 1-Hand-Water ( 3 ), 2-Hand-Water ( 4 ).
+// D6: Bomb to give (PICK-UP ANIMATION): Bomb ( 3 ) , Bomb Ammo 1 ( 77 ), Ammo 4 ( 78 ), Ammo 8 ( 79 ), Ammo 30 ( 80 ), 
+				       //Bomb Bag ( 81 ), Medium Bomb Bag ( 82 ) , Large Bomb Bag ( 83 ), 
+				       //Magic Bomb Bag ( 106 ), SBomb ( 48 ) or custom. 
+	//This should match the item ID to which you attach this script!
+// D7: SuperBomb Maximum Increase: None ( 0 ) , or ( specify amount ). If a positive number, the maximum number of Super Bombs
+	//that the player can carry, will be *increased* by this value. 
+	//Pass a negative value here, to set Super Bombs to a specific, arbitrary cap. 
+
+BombPickupWithFFC
+	void run(int giveBombs, int bombBag, int bombMaxOverride, int playSFX, int showMessage, int holdUp, int bombID, int SBombMaxPlus)
+	
+// D0: Number of starting arrows to give with this bow.
+// D1: Quiver to Give: Small Quiver ( 74 ), medium Quiver ( 75 ), Large Quiver ( 76 ), Magic Quiver ( 105 ) , or custom.
+// D2: Type of arrow to give with bow: Wooden ( 13 ), Silver ( 14 ), Gold ( 57 ), or custom.
+// D3: Sound Effect to play: Special Item ( 20 ), or custom.
+// D4: Message String ID to display (if any). None ( 0 ), or custom. 
+// D5: Hold-Up Animation to use: None ( 0 ) , 1-Hand ( 1 ), 2-Hand ( 2 ) , 1-Hand-Water ( 3 ), 2-Hand-Water ( 4 ).
+// D6: Bow to give: Bow ( 15 ) , Longbow ( 68 ), or custom. This should match the item ID to which you attach this script!
+
+BowPickup{
+	void run(int giveArrows, int quiver, int arrowType, int playSFX, int showMessage, int holdUp, int bowID){
+	
+BowPickupWithFFC{
+	void run(int giveArrows, int quiver, int arrowType, int playSFX, int showMessage, int holdUp, int bowID)
+
+//D0- Script number
+//D1- Rate of automatic fire.
+//D2- Sprite to use. Arrows?
+//D3- Item ID. Arrows or bow?
+	
+AutofireBow {
+    void run(int ffcscript, int fireRate, int sprite, int itemID)
+
+//Arguments:
+// D0: The sound to play for dropping the bomb. 
+// D1: The count er to use. If set to '0', it will default to CR_BOMBS for a normal bomb, 
+// and CR_SBOMBS for a super bomb. This argument allows you to specify a custom counter.
+// D2: The sound effect to play for an error, including too many bombs on screen, or out of bombs in the counter.
+// D3: Set to '1' or higher, to make the item srop super bombs. Otherwise, leave at '0'/
+// D4: The maximum number of bombs that the player may have on-screen at any one time. 
+// --> You want to set this argument, as not setting it, will allow the player to drop up to 255 bombs, providing 
+// --> that they have sufficient ammunition. Normal values are between '1' and '4'. 
+// D5: Set to a value of '1' to allow Link to drop bombs while jumping. 
+
+BombDrop_CustomItemclass{
+	void run(int sound, int counter, int errorSFX, int super, int maxOnscreen, int allowLinkZ)
+	
+// D0: Number of starting bombs to give with this bomb bag. If positive, the player will be given that many bombs.
+	//You may pass a negative value here, to award super-bombs, instead. 
+// D1: Bomb Bag to Give: Small Bag ( 81 ), Medium Bag ( 82 ), Large Bag ( 83 ), Magic Bag ( 106 ) , or custom.
+// D2: Override counnter increase? : No ( 0 ), Yes ( Enter amount ).
+// D3: Sound Effect to play: Special Item ( 20 ), or custom.
+// D4: Message String ID to display (if any). None ( 0 ), or custom. 
+// D5: Hold-Up Animation to use: None ( 0 ) , 1-Hand ( 1 ), 2-Hand ( 2 ) , 1-Hand-Water ( 3 ), 2-Hand-Water ( 4 ).
+// D6: Bomb to give (PICK-UP ANIMATION): Bomb ( 3 ) , Bomb Ammo 1 ( 77 ), Ammo 4 ( 78 ), Ammo 8 ( 79 ), Ammo 30 ( 80 ), 
+				       //Bomb Bag ( 81 ), Medium Bomb Bag ( 82 ) , Large Bomb Bag ( 83 ), 
+				       //Magic Bomb Bag ( 106 ), SBomb ( 48 ) or custom. 
+	//This should match the item ID to which you attach this script!
+// D7: SuperBomb Maximum Increase: None ( 0 ) , or ( specify amount ) .
+
+BombPickup{
+	void run(int giveBombs, int bombBag, int bombMaxOverride, int playSFX, int showMessage, int holdUp, int bombID, int SBombMaxPlus){
+		
+//Set to the item that will shift between BONDED and CONJURED items.
+//D0 will set the timer value, if desired, by setting a value greater than zero to that argument.
+
+ConjureSwap{
+	void run(int timerValue) {
+
+//Set as Item Pick-Up Script on an item to ENABLE CONJURATION.
+//D0: Set the timer in frames.
+//D1: Set the minimum MP needed to swap items.
+//D2: Set the base, bonded item.
+//D3: Set the item to conjure dor the duration of the timer.
+
+enableConjuration{
+    void run(int timerValue, int minMP, int bondedItem, int conjuredItem){
+
+//Set to an item, and aet D0 to the desired tie, to allow different timer rates as a PICK-UP script.. 
+changeConjureTimer{
+    void run(int timerValue)
+	
+// Set as pick-up script on swords. Speciy the nornal sword level, 1, 2, 3, or 4 as D0.
+// The nornal magical sword is the third sword, and thus, D0 for that item would be set to '3'.
+// This sets the array values so that doubled swords are only enabled if the player has the doubling item.
+
+swordPickUp{
+    void run(int level){
+	
+//Three arguments feed to ffc of slot number.
+ffcLaunch{
+	void run(int arg0, int arg1, int arg2, int FFCSLot)
+
+//I don't know what these arguments represent.
+bomblast{
+	void run(int phi, int pi, int beta
+
+D0: MP cost per use.                                          ///
+/// D1: Speed that Subweapon Travels across screen; suggest 240.  ///
+/// D2: Amount of Damage that Subweapon Deals to Enemies.         ///
+/// D3: Sprite used by Subweapon; select from:                    ///
+///            Quest->Graphics->Sprites->WeaponsMisc.             ///   
+/// D4: Maximum number of projectiles allowed at once.            ///
+/// D5: Error Sound Effects.                                      ///
+/// D6: Item Sound Effects.  Select sounds from:                  ///
+///            Quest->Audio->SFX Data                             ///   
+/// D7: Delay before Link can use item again.                     ///     
+/////////////////////////////////////////////////////////////////////
+
+
+arrowProjectile{
+    void run(int magicCost, int speed, int power, int spriteUsed, int maxProjectiles, int SXF_ERROR, int SFX_ITEM, int multiply)
+    	
+//D0: Damage to deal
+//D1: Weap/Misc sprite to use (34 is golden arrow sprite)
+//D2: Magic required (expended as you start charging) (8)
+//D3: Speed of the arrow (same scale as enemy step speed) (500 for normal; 2500 for super)
+//D4: # of the FFC script (check as you assign it to a slot)
+//D5 Colour of Flash (suggest 1)
+//D6 Duration of Flash (suggest 45)
+//D7 MP Cost to use
+
+BoltSpell{
+    void run(int basePower, int arrowSprite, int magicCost, int speed, int Script_ID, int Color, int Duration){
+
+//D0: Speed that Boomerang travels across screen; suggest 240+  ///
+/// D1: Amount of Damage that Subweapon Deals to Enemies.         ///
+/// D2: Sprite used by Subweapon; select from:                    ///
+///            Quest->Graphics->Sprites->Weapons/Misc.            ///   
+/// D3: Maximum number of projectiles allowed at once.            ///
+/// D4: Item Sound Effects.  Select sounds from:                  ///
+/// D5: Custom Deadstate   .                                      ///
+///            0: Boomerang (Bounce)                              ///    
+///            1: Pierce (Alive)                                  ///
+///            2: Single Use (Dead)                               ///
+/// D6: Custom Counter for this item (as ammo).                   ///
+/// D7: Ammo cost for custom counter.                             ///
+
+customBoomerang{
+    void run(int speed, int power, int spriteUsed, int maxProjectiles, int itemSound, int customDeadstate, int brangCounter, int brangCost) {
+   
+//D0: Damage to deal
+//D1: Weap/Misc sprite to use (34 is golden arrow sprite)
+//D2: Magic required (expended as you start charging) (8)
+//D3: Speed of the arrow (same scale as enemy step speed) (500 for normal; 2500 for super)
+//D4: # of the FFC script (check as you assign it to a slot)
+//D5 Colour of Flash (suggest 1)
+//D6 Duration of Flash (suggest 45)
+//D7 MP Cost to use
+
+RodOfCalmen{
+    void run(int basePower, int arrowSprite, int magicCost, int speed, int Script_ID, int Color, int Duration){
+
+//D0- Power of attack.	
+	
+bombodositem{        
+   void run(int power)	
+   
+//D0 Bombos_Action Script Slot
+//D1 The comboID of the combo to replace Link with.
+//D2 The number of flames that comprise the ring, 1-16
+//D3 the revolution speed of the flames.
+//D4 The radius of the flame circle before it starts closing in on Link.
+//D5 Number of Explosions.
+//D6 Number of frames between each explosion.
+//D7 Explosion Damage
+
+Bombos_Item{
+    void run(int ffcScriptNum, int comboNum, int flameNum, float speed, float radius, int explosionNum, int explosionSpread, int explosionDamage)
+
+D0: MP cost per use.                                          ///
+/// D1: Speed that Subweapon Travels across screen; suggest 240.  ///
+/// D2: Amount of Damage that Subweapon Deals to Enemies.         ///
+/// D3: Sprite used by Subweapon; select from:                    ///
+///            Quest->Graphics->Sprites->WeaponsMisc.             ///   
+/// D4: Maximum number of projectiles allowed at once.            ///
+/// D5: Error Sound Effects.                                      ///
+/// D6: Item Sound Effects.  Select sounds from:                  ///
+///            Quest->Audio->SFX Data                             ///   
+/// D7: Delay before Link can use item again.                     ///     
+/////////////////////////////////////////////////////////////////////
+
+
+twoPart{
+    void run(int magicCost, int speed, int power, int spriteUsed, int maxProjectiles, int errorSFX, int SFX_ITEM, int nouse)
+    
+//D0: Number of Bullets to expend when Activating Subweapon.    ///
+/// D1: Time bwfore Link can use Subweapon Again (ROF) in frames. ///
+/// D2: Rounds weapon can hold.                                   ///
+/// D3: Amount of Damage that Subweapon Deals to Enemies.         ///
+/// D4: Speed that Subweapon Travels across screen; suggest 240.  ///
+/// D5: Sprite used by Subweapon; select from:                    ///
+///            Quest->Graphics->Sprites->WeaponsMisc.             ///   
+/// D6: Counter for Amo Boxes for this weapon                     ///
+/// D7: Counter to use for this weapon.                           ///     
+/// Note: Reload time is twice the time of ROF.                   ///    
+/////////////////////////////////////////////////////////////////////
+
+Firearm{
+    void run(int ammo, int nouse, int ShotsPerLoad, int power, int speed, int SWsprite, int AmmoToLoad, int GunCounter) {
+       
+  This item is used if you want the player to MANUALLY reload. ///
+/// D0: Set to Counter for Type of Amunition You are Using       ///
+/// D1: Set to Counter for Firearm Being Loaded.                 ///
+/// D2: Amount of Rounds to Give player on Loading.              ///
+/// D3: Time before Link can use this item again.                ///    
+////////////////////////////////////////////////////////////////////
+
+AmmoLoad{
+	void run(int AmmoCounter, int GunCounter, int GunAmount, int nouse)
+
+//D0: Set to Counter for Type of Amunition You are Using       ///
+/// D1: Amount of Ammo Boxes to Gain                             ///
+/// D2: Minimum Aount to Increase CounterMax; suggest 1.         ///  
+////////////////////////////////////////////////////////////////////
+
+AmmoPickup{
+	void run(int AmmoCounter, int amount, int increaseAmmoCount)
+
+//D0: Damage
+//D1: Speed of projectile in pixels per frame.
+//D2: Sprite to use from Quest->Graphics->Sprites->Weapons/Misc.
+//D3: Distance of starting sprite.
+//D4: Sound effect from Quest->Audio->SFX
+//D5: Cost for item; applied against cpunter set in D6.
+//D6: Counter to use; see std_consants.zh.
+//D7: Eror sound, from Quest->Audio->SFX Data.
+
+fireRod{
+    void run(float rodPower, float rodSpeed, int rodSprite, float rodDistance, int rodSound, int rodCost, int rodCounter, errorSound){
+
+D0: MP or Counter cost per use.                                     ///
+/// D1: Speed that Subweapon Travels across screen; suggest 240.        ///
+/// D2: Amount of Damage that Subweapon Deals to Enemies.               ///
+/// D3: Sprite used by Subweapon; select from:                          ///
+///            Quest->Graphics->Sprites->WeaponsMisc.                   ///   
+/// D4: The counter to use for this item (numeric from std_constants.zh ///
+/// D5: Error Sound Effects.                                            ///
+/// D6: Item Sound Effects.  Select sounds from:                        ///
+///            Quest->Audio->SFX Data                                   ///   
+/// D7: The kind of LWeapon to generate (numeric) from std_constants.zh ///     
+/////////////////////////////////////////////////////////////////////////// 
+
+
+ProjectileLWeapon{
+    void run(int Cost, int speed, int power, int spriteUsed, int CountertoUse, int SXF_ERROR, int SFX_ITEM, int lType){
+
+//D0- Sound to play when activated.
+//D1- Sound to play when deactivated.
+//D2- How long effect lasts?
+//D3- Slot for ffc script.
+//D4- Sound to make if you can't use them.
+//There's a related unfinished ffc script.
+	
+gogglesOfRevealing{
+    void run(int onSFX, int offSFX, int duration, int Script_ID, int ErrorSFX)
+
+D0 (#.x)    : Number of Hearts to Use when Activating Subweapon.      ///
+/// D0 (x.0###) : MP to Use when Activating Subweapon.                    ///
+/// D1 (#.x)    : Colour of Screen Flash.                                 ///
+/// D1 (x.0###) : Duration of Screen Flash.                               ///
+/// D2 (#.x)    : Amount of Damage that Subweapon Deals to Enemies.       ///
+/// D2 (x.0###) : Speed that Subweapon Travels across screen; suggest 60. ///
+/// D3 (#.x)    : FFC Slot for FFC Effects.                               ///
+/// D3 (x.0###) : Other Item Counter Used by Subweapon (if any).          ///
+/// D4 (#.x)    : Type of lweapon to generate (see std_constsnts.zh).     ///
+/// D4 (x.0###) : Time bfore Link can use Subweapon Again.                ///
+/// D5 (#.x)    : Sound Effects for using this Subweapon.                 ///
+/// D5 (x.0###) : Error Sound Effects for this Subweapon.                 ///
+///                     Select Sounds from Quest->Audio->SFX Data         ///
+/// D6 (#.x)    : Item number (in item editor) for this Subweapon.        ///
+/// D6 (x.0###) : Sprite used by Subweapon; select from:.                 ///
+///                     Quest->Graphics->Sprites->WeaponsMisc.            ///
+/// D7 (#.x)    : SWITCHES                                                ///      
+/////////////////////////////////////////////////////////////////////////////
+
+SubweaponV{
+	void run (int hearts_magic, int colour_duration, int power_speed, int FFC_Slot_SpecialCounter, int LType_nouse, int SFX_Weapon_SFX_ERROR, int ItemNumber_SWSprite, int switches)
+
+//D0- Sound when activated.
+//D1- Sound when deactivated.
+//D2- Random dice type.
+//D3- Related to above somehow.
+	
+StaffofJhkarr{
+    void run(int CaneonSFX, int CaneoffSFX, int dieType, int cap)
+	
+//Magical Key
+//D0 - Item to use for clock.(or whatever) If doing clock, this needs to be a clock item with duration set.
+//Note: The default clock item is 4.
+//D1 - Amount of time to Jinx link. (0 for no Jinx)
+//Note: The Jinx can be used to create a small pause before the item
+//can be used again. You can also make it the clock duration, but this
+//is only recommended in quests that aren't using the B+A item setting
+//configuration.
+
+magicalkey{
+	void run(int keyitem, int jinxtime)
+	
+//Item power: Same scale as any other item's damage stat
+//D0: Time (in frames) to charge the arrow (Recommended: 25)
+//D1: Weap/Misc sprite to use (34 is golden arrow sprite)
+//D2: Magic required (expended as you start charging) (8)
+//D3: Speed of the arrow (same scale as enemy step speed) (500 for normal; 2500 for super)
+//D4: # of the FFC script (check as you assign it to a slot)
+lightArrow{
+    void run(int chargeTime, int arrowSprite, int magicCost, int speed, int ffcScriptNum){
+ 
+//D0- Sound to make when activated.
+//D1- Sound to make when deactivated.
+ 
+MirrorMemories{
+    void run(int RingonSFX, int RingoffSFX)
+
+//D0: diceToRoll, number of dice to roll for base damage.
+//D1: dieType, the base Die Type for weapon.	
+	
+rollDiceIISword {
+    void run (int dice, int dieType)
+	
+//D0: diceToRoll, number of dice to roll for base damage.
+//D1: dieType, the base Die Type for weapon.
+//D2: byLevel, add scaling damage per level.
+//D3: useHalfLevel, use 1/2 level, instead of full level, for scaling damage.
+//D4: levelDie, die type to roll per level for scaling damage.
+//D5: dieCap, if rolling by level, the maximum number of additional dice to roll.
+
+//D6: pierce, 0 not piercing, 1 piercing.
+//D7: 
+
+rollDiceIISword_Scaling {
+    void run (int diceToRoll, int dieType, int byLevel, int useHalfLevel, int levelDie, int dieCap, int pierce)
+
+//This script has no arguments, so I guess it sets itself up.
+
+NightFallRolled
+
+/// Whip XII ////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/// D0 (#.x)    : Number of Hearts to Use when Activating Subweapon.      ///
+/// D0 (x.0###) : HP to Use when Activating Subweapon.                    ///
+/// D1 (#.x)    : Damage to Enemies.                                      ///
+/// D1 (x.0###) : Duration to Stun Enemies (in frames).                   ///
+/// D2 (#.x)    : Base Tile for whip item.                                ///
+/// D2 (x.0###) : CSet for Whip Tile.                                     ///
+/// D3 (#.x)    : FFC Slot for WhipPartI FFC Effects.                     ///
+/// D3 (x.0###) : FFC Slot for WhipSecondTile FFC.                        ///
+/// D4 (#.x)    : Type of lweapon to generate (see std_constsnts.zh).     ///
+/// D4 (x.0###) : Time bfore Link can use Subweapon Again.                ///
+/// D5 (#.x)    : Sound Effects for using this Subweapon.                 ///
+/// D5 (x.0###) : Error Sound Effects for this Subweapon.                 ///
+///                     Select Sounds from Quest->Audio->SFX Data         ///
+/// D6 (#.x)    : Item number (in item editor) for this Subweapon.        ///
+/// D6 (x.0###) : Slot of eFlash FFC.                                     ///
+///        select from: Quest->Graphics->Sprites->WeaponsMisc.            ///
+/// D7 (#.x)    : SWITCHES                                                ///      
+/////////////////////////////////////////////////////////////////////////////
+// Whip Item Originally By: jsm116 //////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+
+WhipXII{
+    void run(int hearts_pain, int hurt_stun, int tile_cset, int FFCSlot1_FFCSlot2, int lType_nouse, int sfx_errorFX, int itemnumber_eFlashFFC, int switches)
+
+//D0= How many dice to roll.
+//D1- Max number on each dice.
+//D2- Sound to make.
+//D3- Message to play.
+//D4- Type of restoration.
+//    Zero- Restore HP.
+//	  One- Restore MP.
+//	  Two- Restore HP and MP.
+//	  Three- Restore 2 times MP.
+//    Four- Restore HP and 2 times MP. Note- script has wrong phrasing here.
+	
+rolledHPMP_Restore {
+    void run(int diceNumber, int dieType, int restoreSound, int restoreMessage, int restoreType)
+	
+//Item power: Same scale as any other item's damage stat
+//D0: Time (in frames) to charge the arrow (Recommended: 25)
+//D1: Weap/Misc sprite to use (34 is golden arrow sprite)
+//D2: Magic required (expended as you start charging) (8)
+//D3: Speed of the arrow (same scale as enemy step speed) (500 for normal; 2500 for super)
+//D4: # of the FFC script (check as you assign it to a slot)
+stazerGun{
+	void run(int chargeTime, int arrowSprite, int magicCost, int speed, int ffcScriptNum)
+	
+/Usable Clock (Or other things??)
+//D0 - Item to use for clock.(or whatever) If doing clock, this needs to be a clock item with duration set.
+//Note: The default clock item is 4.
+//D1 - Amount of time to Jinx link. (0 for no Jinx)
+//Note: The Jinx can be used to create a small pause before the item
+//can be used again. You can also make it the clock duration, but this
+//is only recommended in quests that aren't using the B+A item setting
+//configuration.
+
+usedclock{
+	void run(int clockitem, int jinxtime)
+	
+//Timestop Scroll. Same arguments as above.
+timestopscroll{
+	void run(int clockitem, int jinxtime)
+	
+Healingscroll//Heals HP if Counter Script 8 is greater than one.
+
+//Talyxiux Scroll
+Talyxiuxscroll//Heals HP if Counter Script 9 is greater than one.
+
+//D0- Type of dice.
+//D1- Cap on level?
+
+tremor{        
+   void run(int dieType, int levelCap)
+   
+Trowel//Trigger screen secrets if combo in front of Link has flag script one.
+
+D0: MP cost per use.                                          ///
+/// D1: Speed that Subweapon Travels across screen; suggest 240.  ///
+/// D2: Amount of Damage that Subweapon Deals to Enemies.         ///
+/// D3: Sprite used by Subweapon; select from:                    ///
+///            Quest->Graphics->Sprites->WeaponsMisc.             ///   
+/// D4: Maximum number of projectiles allowed at once.            ///
+/// D5: Error Sound Effects.                                      ///
+/// D6: Item Sound Effects.  Select sounds from:                  ///
+///            Quest->Audio->SFX Data                             ///   
+/// D7: Delay before Link can use item again.                     ///     
+/////////////////////////////////////////////////////////////////////
+
+
+MagicProjectile{
+    void run(int magicCost, int speed, int power, int spriteUsed, int maxProjectiles, int errorSFX, int SFX_ITEM, int nouse)
+
+//Increase counter by amount.	
+increaseCounter {
+    void run(int counter, int amount)
+
+//Decrease counter by amount.	
+decreaseCounter {
+    void run(int counter, int amount)
+
+//Set counter to amount.	
+setCounter {
+    void run(int counter, int amount)

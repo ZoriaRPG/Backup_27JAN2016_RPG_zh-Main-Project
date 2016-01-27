@@ -1,0 +1,313 @@
+//NPC AI
+//v0.1.4/1
+//Rudimentary AI Functions
+
+float EnemyMove[640]; //10*32*2
+//The first ten, are the number of enemies. Adjust as needed.
+//The next 32, is the maximum distance of a screen, in half-tiles.
+//The *2 is to allow direction.
+
+const int ENEMY_1 = 0;
+const int ENEMY_2 = 1;
+const int ENEMY_3 = 2;
+const int ENEMY_4 = 3;
+const int ENEMY_5 = 4;
+const int ENEMY_6 = 5;
+const int ENEMY_7 = 6;
+const int ENEMY_8 = 7;
+const int ENEMY_9 = 8;
+const int ENEMY_10 = 9;
+
+const int ENEMY_MOVE_1 = 0;
+
+
+const int ENEMY_MOVE_DISTANCE = 0;
+
+const int ENEMY_MOVE_DIRECTION = 320;
+const int ENEMY_MOVEMENT_OFFSET = 32; //The offset in the array.
+
+//Attempt to aim an attack at another npc of any type. 
+int AimEWeaponAtPointer(eweapon a, npc n) {
+	
+}
+
+//Attempt to aim eweapon at another eweapon. May have some use. 
+int AimEWeaponAtPointer(eweapon a, eweapon e) {
+	
+}
+
+//Attempt to aim eweapon at lweapon, to cancel it out (parry)
+int AimEWeaponAtPointer(eweapon a, lweapon l) {
+	
+}
+
+//Try to aim and fire an weapon at an item. WIll pick up item and five to enemy, if successful. 
+int AimEWeaponAtPointer(eweapon a, item i) {
+	//if ( Collision(a,i) return i->ID;
+}
+
+float GetEnemyMoveDistance(int enemy, int moveNumber){
+	return EnemyMove[ enemy + ( moveNumber * ENEMY_MOVEMENT_OFFSET ) ] * 16; //Return the move distance in pixels.
+}
+
+float GetEnemyMoveDirection(int enemy, int moveNumber){
+	return EnemyMove[ (enemy * ENEMY_MOVE_DIRECTION ) + ( moveNumber * ENEMY_MOVEMENT_OFFSET ) ];
+}
+
+//Enemy 0's first direction is 320, second direction 320+32
+
+void StoreEnemyMoveDistance(int enemy, int moveNumber, int distance){
+	EnemyMove[ enemy + ( moveNumber * ENEMY_MOVEMENT_OFFSET ) ] = distance;
+}
+
+void StoreEnemyMoveDirection(int enemy, int moveNumber, int dir){
+	EnemyMove[ (enemy * ENEMY_MOVE_DIRECTION ) + ( moveNumber * ENEMY_MOVEMENT_OFFSET ) ] = dir;
+}
+
+bool EnemyHitByWeapon(lewapon l, npc n){
+	return Collision(l,n);
+}
+
+void EnemyHomesWhenHit(npc n, lweapon l, int miscIndex, int amount, bool multiply){
+	if ( EnemyHitByWeapon(n,l) && !n->Misc[miscIndex] ) {
+		n->Misc[miscIndex] = 1;
+		if ( multiply ) n->Homing = n->Homing * amount;
+		else n->Homing += amount;
+	}
+}
+
+void EnemyHomesWhenPerceivingThreat(npc n, int miscIndex, int amount, bool multiply){
+	if ( EnemyPerceiveThreat(n) && !n->Misc[miscIndex] ) {
+		n->Misc[miscIndex] = 1;
+		if ( multiply ) n->Homing = n->Homing * amount;
+		else n->Homing += amount;
+	}
+}
+
+
+void EnemyAttack(npc n, int type, int weapList){ 	//'weapon' is a reserved keyowrd/token, so I changed it 
+							//to 'weaplIST' 
+							//int weapList will need to be an array, passed in here.
+							//*Z 20NOV15 07:26GMT
+	if(type == ENEMY_ATTACK_SHOOT)
+	{
+		//We ned to read the weapon list, and make a determination of what weapon to use here. 
+		int weap = weapList[0]; //Placeholder for list function. 
+		eweapon ewep = Screen->CreateEWeapon(weap);
+
+		float shootX;
+		float shootY;
+		
+		if(n->Dir == DIR_UP)	//Direction should be based on other dynamics. Only the attack type matters here. ?
+		{			//A function to determine attack direction needs to precede this, and then 
+					//we need to store those values, and read them in here, along with aim types and such.
+					//This will ultimately use ghost attack functions too. 
+			shootX = n->X;
+			
+			shootY = n->Y - (ewep->HitHeight / 2);
+		}
+		else if(n->Dir == DIR_DOWN)
+		{
+			shootX = n->X;
+			
+			shootY = n->Y + n->HitHeight + (ewep->HitHeight / 2);
+		}
+		else if(n->Dir == DIR_LEFT)
+		{
+			shootX = n->X - (ewep->HitWidth / 2);
+			
+			shootY = n->Y;
+		}
+		else if(n->Dir == DIR_RIGHT)
+		{
+			shootX = n->X + n->HitWidth + (ewep->HitWidth / 2);
+			
+			shootY = n->Y;
+		}
+		else if(n->Dir == DIR_LEFTUP)
+		{
+			shootX = n->X - (ewep->HitWidth / 2);
+			
+			shootY = n->Y - (ewep->HitHeight / 2);
+		}
+		else if(n->Dir == DIR_RIGHTUP)
+		{
+			shootX = n->X + n->HitWidth + (ewep->HitWidth / 2);
+			
+			shootY = n->Y - (ewep->HitHeight / 2);
+		}
+		else if(n->Dir == DIR_LEFTDOWN)
+		{
+			shootX = n->X - (ewep->HitWidth / 2);
+			
+			shootY = n->Y + n->HitHeight + (ewep->HitHeight / 2);
+		}
+		else if(n->Dir == DIR_RIGHTDOWN)
+		{
+			shootX = n->X + n->HitWidth + (ewep->HitWidth / 2);
+			
+			shootY = n->Y + n->HitHeight + (ewep->HitHeight / 2);
+		}
+		else
+		{
+			shootX = npc->X;
+			shootY = npc->Y;
+		}
+		
+		ewep->X = shootX;
+		ewep->Y = shootY;
+	}
+}
+
+void EnemyParry(){
+}
+
+float EnemyRetreat(){} //Move to a safe distance, and make checks for next action.
+float EnemyTactics(){} //Decide on a complex pattern
+float EnemyFollowPattern(int pattern){} //Follow a predetermined pattern.
+	
+int EnemySavingThrow(int type, int mindset, int penaltyOrBonus){}
+
+float EnemyPerceiveIncomingAttack(){}
+	
+	
+float EnemyPerceiveThreat(){}
+	
+float EnemyPerceivePlayerCharacter(int charType){}
+	
+float EnemyPerceiveFollowerNPC(){}
+	
+float EnemyChaseFollowerNPC(){}
+	
+void EnemyDodgeAttack(){}
+	
+void EnemyEvadeThreat(){}
+	
+float EnemyFindPathToItem(){}
+float EnemyFindPathToPlayer(){}
+float EnemyFindPathToNPC(){}
+	
+float EnemyFriendlyFire(){} //Avoid friendly fire
+	
+float EnemyFlankTarget(){} //Flank the target of an attack.
+float EnemySurroundTarget(){} //As flank, but more than two. 
+float EnemySeekItemDrops(){} //Find Hearts, if enemy HP is low. 
+float EnhemySeekHealthBoost(){}
+float EnemyStealItemFromPlayer(){}
+float EnemyUseItem(){} //Use item from own inventory. Requires an inventory list per enemy.
+
+float EnemySkillCheck(int enemySkillChance){
+	int check = Rand(1,100);
+	if ( check <= enemySkillChance ) return 1;
+	return 0;
+}
+	
+float EnemyInventories[256*20]; //Items held by an enemy, to use, or potentially drop. 
+float EnemyWeaponSelection[256*10]; //Weapons that the enemy can use.
+float EnemySpellSelection[256*20]; //Spells that the enemy can use. 
+	
+int EnemyChooseWeapon(){} //Choose a weapon for use to attack a target.
+int EnemyChooseSpell(){}
+	
+int EnemyIsInjured(){} //Returns total amount of damage enemy has suffered.
+void EnemyFindAndStoreMovementPath(){} //Find a apth to a target, and store it in an array.
+void EnemyExecuteMove(){} //Moves along the path.
+
+int EnemyMakeSkillCheck(int type, int mindset, int penaltyorBonus){};
+			
+float EnemyDecision(int basis, int mindset, int stat, int skill, int type){}
+			
+
+float EnemySkillsAndStats[256*20]; //Statistics and skills for each enemy. 
+
+const int ENEMY_STAT_MUSC
+const int ENEMY_STAT_
+const int ENEMY_STAT_
+const int ENEMY_STAT_
+const int ENEMY_STAT_
+const int ENEMY_STAT_
+
+const int ENEMY_SKILL_AWARENESS
+const int ENEMY_SKILL_SWORDS
+const int ENEMY_SKILL_RANGED_WEAPONS
+const int ENEMY_SKILL_SPELLS
+	
+const int ENEMY_MINDSET_ANGRY
+const int ENEMY_MINDSET_NORMAL
+const int ENEMY_MINDSET_FRIGHTENED
+const int ENEMY_MINDSET_PANICKED
+const int ENEMY_MINDSET_ARROGANT
+
+// Stabbing a weapon forward, or possibly in case of ranged weapons (eg. fireballs), only fires them a short distance.
+const int ENEMY_ATTACK_STAB
+// Slashes a weapon, perhaps makes a ranged weapon fire in a "wavy" pattern.
+const int ENEMY_ATTACK_SLASH
+// Would be like a slash, except around the entire enemy. Possibly could fire in each 4 or 8 directions around an enemy.
+const int ENEMY_ATTACK_SPIN
+// Would shoot a weapon such as a fireball. Possibly would "throw" other weapons (eg. spears, swords, etc).
+const int ENEMY_ATTACK_SHOOT
+
+
+const int ENEMY_ATTACK_ENERGY //Energy weapons.
+const int ENEMY_ATTACK_SWORDS
+const int ENEMY_ATTACK_SPEARS
+const int ENEMY_ATTACK_BOWS
+const int ENEMY_ATTACK_GUNS
+const int ENEMY_ATTACK_LASER //Laser beams, not from a weapon. 
+const int ENEMY_ATTACK_CLAW //Attach without a melee or ranged weapon. Claws, bare hands, and such. 
+const int ENEMY_ATTACK_GRAB //Latch onto the player.
+const int ENEMY_ATTACK_SWALLOW //Swallow the player.
+const int ENEMY_ATTACK_GORE //Charge/gore attack with horns, pikes, spears.
+
+const int ENEMY_ATTACK_AREA_ATTACK //Anything with a radius effect.
+
+const int ENEMY_ATTACK_SPELL		//Spells, and spell categories. 
+const int ENEMY_ATTACK_SPELL_FIRE
+const int ENEMY_ATTACK_SPELL_ICE
+const int ENEMY_ATTACK_SPELL_AIR
+const int ENEMY_ATTACK_SPELL_LIT //Lightning
+const int ENEMY_ATTACK_SPELL_WATER
+const int ENEMY_ATTACK_SPELL_EARTH
+const int ENEMY_ATTACK_SPELL_SONIC
+const int ENEMY_ATTACK_SPELL_ACID
+const int ENEMY_ATTACK_SPELL_DARKNESS
+const int ENEMY_ATTACK_SPELL_LIGHT
+const int ENEMY_ATTACK_SPELL_ALTERATION //Transmuting magic
+
+const int ENEMY_ATTACK_AIM_* //Aim types
+
+
+
+const int ENEMY_ATTACK_BREATH //Breath weapons, for dragons, and the like
+const int ENEMY_ATTACK_SPECIAL_ABILITY //Special quality or ability, like petrification gaze. 
+
+const int ENEMY_ACTION_INIT_CHECK //Roll init.
+
+const int ENEMY_ACTION_NONE
+const int ENEMY_ACTION_MOVE
+const int ENEMY_ACTION_LOOK
+const int ENEMY_ACTION_THINK
+const int ENEMY_ACTION_PERCEIVE
+const int ENEMY_ACTION_FIND_PATH
+
+const int ENEMY_ACTION_CHECK_* //Skill checks. 
+
+const int ENEMY_ACTION_DEFEND
+const int ENEMY_ACTION_PARRY
+const int ENEMY_ACTION_DODGE
+const int ENEMY_ACTION_BLOCK
+
+const int ENEMY_ACTION_ATTACK
+const int ENEMY_ACTION_CAST //Cast Spell
+
+const int ENEMY_ACTION_PLEA
+const int ENEMY_ACTION_SPEAK
+const int ENEMY_ACTION_TAUNT
+
+const int ENEMY_ACTION_RETREAT
+const int ENEMY_ACTION_RUN //Run away.
+const int ENEMY_ACTION_RUSH //Rush at target.
+const int ENEMY_ACTION_COWER
+const int ENEMY_ACTION_HIDE
+const int ENEMY_ACTION_CHARGE
+const int ENEMY_ACTION_LEAD //Lead other enemies in actions. 

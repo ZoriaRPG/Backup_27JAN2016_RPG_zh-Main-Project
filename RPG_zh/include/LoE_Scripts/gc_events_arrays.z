@@ -1,0 +1,77 @@
+//Game EVents Arrays, Tables, and Functions
+
+///Table
+/// Daleks: { Saucers Appear, Saucers Land, Daleks Emerge, Daleks Kill People, 
+///Daleks Emerge Further, Dalek Saucer Open, Dalek Boss Killed, Dalek Saucer Stolen }
+
+bool dalekEvents[8] = { false, false, false, false, false, false, false, false };
+
+int dalekEventsAsInt[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+//Set Dalek Events as Bools.
+
+void setDalekAppearance() {
+    dalekEvents[0] = true;
+}
+
+void setDalekLanding() {
+    dalekEvents[1] = true;
+}
+
+void setDalekEmerge() {
+    dalekEvents[2] = true;
+}
+
+void setDalekFirstExtermination() {
+    dalekEvents[3] = true;
+}
+
+void setDalekConquest() {
+    dalekEvents[4] = true;
+}
+
+void setDalekShipOpen() {
+    dalekEvents[5] = true;
+}
+
+void setDalekSupremeDalekDead() {
+    dalekEvents[6] = true;
+}
+
+void setDalekShipStolen() {
+    dalekEvents[7] = true;
+}
+
+//Set Dalek Events as Ints
+
+void setDalekAppearanceAsInt() {
+    dalekEventsAsInt[0] = 1;
+}
+
+void setDalekLandingAsInt() {
+    ddalekEventsAsInt[1] = 1;
+}
+
+void setDalekEmergeAsInt() {
+    dalekEventsAsInt[2] = 1;
+}
+
+void setDalekFirstExterminationAsInt() {
+    dalekEventsAsInt[3] = 1;
+}
+
+void setDalekConquestAsInt() {
+    ddalekEventsAsInt[4] = 1;
+}
+
+void setDalekShipOpenAsInt() {
+    dalekEventsAsInt[5] = 1;
+}
+
+void setDalekSupremeDalekDeadAsInt() {
+    dalekEventsAsInt[6] = 1;
+}
+
+void setDalekShipStolenAsInt() {
+    dalekEventsAsInt[7] = 1;
+}

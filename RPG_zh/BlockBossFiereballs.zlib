@@ -1,0 +1,10 @@
+//Block Boss Projectiles
+
+void BlockBossFireballs(int itm){
+	if ( Link->Item[itm] ) {
+		for ( int q = 1; q <= Screen->NumEWeapons(); q++ ) {
+			eweapon e = Screen->LoadEWeapon(q);
+			if ( e->ID == EW_BOSSFIREBALL ) e->ID = EW_FIREBALL;
+		}
+	}
+}

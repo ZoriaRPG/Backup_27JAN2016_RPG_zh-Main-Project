@@ -1,0 +1,348 @@
+//Item Durability, Damage, and Repair
+//Item value, for selling
+//Item lore unlocked
+//Item FFC
+//v0.2
+//Uses Item->Misc]
+
+//Item->Misc[] constanrts. Misc[] is index size 16. //Items->Misc is not store din inventory.
+//It is only items on a given screen, so this needs revision.
+
+const int ITEM_ID = 16; //ITEM_ID * itm + CONSTANT below
+const int ITEM_MAX HP = 0;
+const int ITEM_DAMAGE = 1;
+const int ITEM_HARDNESS = 2;
+const int ITEM_REGEN = 3;
+const int ITEM_REGEN_RATE = 4;
+const int ITEM_REPAIR_COST = 5;
+const int ITEM_REPAIR_REGEN_REQUIREMENT = 6;
+const int ITEM_VALUE = 7;
+const int ITEM_LORE_UNLOCKED = 8;
+const int ITEM_FFC = 9;
+const int ITEM_STRING = 10;
+const int ITEM_DESIRED_BY = 11;
+const int ITEM_UPGRADES_TO = 12; //High side of float.
+const int ITEM_DOWNGRADES_TO = 12; //Low side of float.
+const int ITEM_SLIPPED_AWAY_RANGE = 13;
+const int ITEM_DMAP_SCREEN = 14;
+const int ITEM_X_Y = 15;
+
+void LostItemAt(int itm, int x, int y){
+	int thisScreen = Game->GetCurScreen();
+	int thisDMAP = Game->GetCurDMap();
+	//Store item coordinates in array.
+}
+	
+	
+void LostItemAt(int itm, int x, int y, int dmap, int screen){
+
+	//Store item coordinates in array.
+}
+
+//This function removes an item from inventory, and stores its location in the array.
+//It needs to calculate where the item lands, based on the position of the player when he loses it. 
+//Paired with TooHeavyToSwing() this can cause interesting results. 
+//It needs to score a value in screen D (NOT the item number) that we can later read back. 
+//If we only store that an item was lost on that screen, rather than its item ID, we can use a for loop 
+//toread from the array for any items marked/flagged as being on that screen.
+void LostItem(int itm){ 
+	int thisScreen = Game->GetCurScreen();
+	int thisDMAP = Game->GetCurDMap();
+	int dir; //We need 8 directions.
+	int distance;
+	int maxDist = ItemSlippedRange(itm);
+	int baseX = Link->X;
+	int baseY = Link->Y;
+	//Calculate range, trajectory, and distance, then find the x/y value for it. 
+}
+
+int ItemLostOnThisScreen(){
+	int curDMAP = Game->GetCurDMap();
+	int curScreen = Game->GetCurScreen();
+	int itmScreen;
+	int itemDMAP;
+	for ( int q = ITEM_DMAP_SCREEN; q < 4096; q+16 ) {
+		itmScreen = GetLowArgument(ItemStats[q]);
+		itmDMAP = GetHighArgument(ItemStats[q]);
+		if ( thisScreen == curScreen && thisDMAP == curDMAP ) {
+			return ItemStats[q];
+		}
+	}
+	return 0; //We aren't concerned with I_RUPEE1, so we can use 0 for boolen control.
+}
+
+const int LOSTITEM = 6; //Screen->D for a lost item.
+//We need tgo set Screen->D to 0 if we pick up a lst item there.
+
+void CheckForLostItems(){
+	int curDMAP = Game->GetCurDMap();
+	int curScreen = Game->GetCurScreen();
+	//Read Screen->D[LOSTITEM]. If > 0, then we know an item is on this screen.
+}
+
+void LostItems(){
+	if ( ItemLostOnThisScreen() ){
+		if ( !ItemLostOnThisScreen()->IsValid() ){
+			LostItemCoordinates( ItemLostOnThisScreen );
+		}
+	}
+}
+		
+
+void LostItemCoordinates(int itm){
+	itemdata it = Game->LoadItemData(itm);
+	//int itemMap = ItemStats[(ITEM_ID * itm) + stat]
+	
+	//int itemMap = GetHighArgument((ITEM_ID * itm) + [ITEM_DMAP_SCREEN]);
+	//int itemScreen = GetLowArgument((ITEM_ID * itm) + [ITEM_DMAP_SCREEN]);
+	//int itemX = GetHighArgument((ITEM_ID * itm) + [ITEM_X_Y]);
+	//int itemY = GetLowArgument((ITEM_ID * itm) + [ITEM_X_Y]);
+	
+	int itemX;
+	int itemY;
+	
+	int itemMap = GetHighArgument(ItemStats((ITEM_ID * itm) + [ITEM_DMAP_SCREEN]);
+	int itemScreen = GetLowArgument(ItemStats((ITEM_ID * itm) + [ITEM_DMAP_SCREEN]);
+
+	int thisScreen = Game->GetCurScreen();
+	int thisDMAP = Game->GetCurDMap();
+	
+	if it->IsValid(){
+		it->Misc[ITEM_DMAP_SCREEN] = ItemStats((ITEM_ID * itm) + [ITEM_DMAP_SCREEN]);
+		it->Misc[ITEM_X_Y] = ItemStats((ITEM_ID * itm) + [ITEM_X_Y]);
+		itemX = GetHighArgument(it->Misc[ITEM_X_Y]);
+		itemY = GetLowArgument(it->Misc[ITEM_X_Y]);
+		
+		
+		it->X = itemX;
+		it->Y = itemY;
+		
+	else {	
+		if ( thisScreen == itemScreen && thisMap == itemMap ) {
+			itemX = GetHighArgument(ItemStats[(ITEM_ID * itm) + ITEM_X_Y]);
+			itemY = GetLowArgument(ItemStats[(ITEM_ID * itm) + ITEM_X_Y]);
+			CreateItemAt(itm, itemX, itemY);
+		}
+	}
+}
+
+float ItemStats[4096]; //A fast way of using item stats, without needing itemdata.
+
+void ItemStats(int itm){
+	itemdata it = Game->LoadItemData(itm);
+	for ( int q = 0; q <= 16; q++ ){
+		ItemStats[q] = it->Misc[q];
+	}
+}
+
+
+
+int ItemStats(int itm, int stat, bool screen){
+	if ( array ) { 
+		itemdata it = Game->LoadItemData(itm); //Returns a stat from an item on the screen.
+		return it->Misc[stat];
+	}
+	return ItemStats[(ITEM_ID * itm) + stat]; //Return a stored value from ItemStats[]
+}
+
+void ItemStats(int itm, int stat, int value){
+	ItemStats[(ITEM_ID * itm) + stat] = value;
+}
+
+int ItemStats(int itm, int stat){
+	return ItemStats[(ITEM_ID * itm) + stat];
+}
+
+void ItemStats_to_ItemMisc(int itm){
+	itemdata it = Game->LoadItemData(itm);
+	int thisItem = ( itm * ITEM+ID );
+	int r = 0;
+	for ( int q = thisItem; q <= (thisItem + 16); q++ ){
+		it->Misc[r] = ItemStats[q];
+		r++;
+	}
+}
+
+void ItemStats(int itm, int stat, int value, int action){
+	itemdata it = Game->LoadItemData(itm);
+	for ( int q = 0; q <= 16; q++ ){
+		if ( action == 0 ) {
+			it->Misc[q] = ItemStats[q]; //Set to item.
+		}
+		else if ( action == 1 ) { //Load to array.
+			ItemStats[q] = it->Misc[q];
+		}
+	}
+}
+
+void SetItemStats(int itm){
+	itemdata it = Game->LoadItemData(itm);
+	for ( int q = 0; q <= 16; q++ ){
+		it->Misc[q] = ItemStats[(ITEM_ID * itm) + q];
+	}
+}
+
+void ItemStats(int itm, bool set){
+	itemdata it = Game->LoadItemData(itm);
+	for ( int q = 0; q <= 16; q++ ){
+		if ( set ) {
+			it->Misc[q] = ItemStats[ITEM_ID * itm) + q];
+		}
+		else {
+			ItemStats[ITEM_ID * itm) + q] = it->Misc[q];
+		}
+	}
+}
+
+
+void ClearItemStats(){
+	for ( int q = 0; 1 <= 16; q++ ) {
+		ItemStats[q] = 0;
+	}
+}
+
+int ItemUpradesTo(int itm){
+	int val = GetHighArgument(ItemStats[(ITEM_ID * itm) + ITEM_UPGRADES_TO];
+	return val;
+}
+
+int ItemDowngradesTo(int itm){
+	int val = GetHighArgument(ItemStats[(ITEM_ID * itm) + ITEM_DOWNGRADES_TO];
+	return val;
+}
+
+int ItemHP(int itm){
+	int val = ItemStats[(ITEM_ID * itm) + ITEM_HP];
+	return val;
+}
+
+int ItemDamage(int itm){
+	int val = ItemStats[(ITEM_ID * itm) + ITEM_DAMAGE];
+	return val;
+}
+
+int ItemRegen(int itm){
+	int val = ItemStats[(ITEM_ID * itm) + ITEM_REGEN];
+	return val;
+}
+
+int ItemRegenRate(int itm){
+	int val = ItemStats[(ITEM_ID * itm) + ITEM_REGEN_RATE];
+	return val;
+}
+
+int ItemRepairCost(int itm){
+	int val = ItemStats[(ITEM_ID * itm) + ITEM_REPAIR_COST];
+	return val;
+}
+
+int ItemRepairRequire(int itm){
+	int val = GetHighArgument(ItemStats[(ITEM_ID * itm) + ITEM_REPAIR_REGEN_REQUIREMENT]);
+	return val;
+}
+
+int ItemRegenRequire(int itm){
+	int val = GetLowArgument(ItemStats[(ITEM_ID * itm) + ITEM_REPAIR_REGEN_REQUIREMENT]);
+	return val;
+}
+
+int ItemValue(int itm){
+	int val = ItemStats[(ITEM_ID * itm) + ITEM_VALUE];
+	return val;
+}
+
+int ItemFFC(int itm){
+	int val = ItemStats[(ITEM_ID * itm) + ITEM_FFC];
+	return val;
+}
+
+int ItemString(int itm){
+	int val = ItemStats[(ITEM_ID * itm) + ITEM_STRING];
+	return val;
+}
+
+int ItemString(int itm){ //Returns a vakue that should be tied to an NPC. Requires that all NPCs are stored in an array/structure.
+	int val = ItemStats[(ITEM_ID * itm) + ITEM_DESIRED_BY];
+	return val;
+}
+
+int ItemSlippedRange(int itm){
+	int val = ItemStats[(ITEM_ID * itm) + ITEM_SLIPPED_AWAY_RANGE];
+	return val;
+}
+
+int ItemLostMap(int itm){
+	int val = GetHighArgument(ItemStats[(ITEM_ID * itm) + ITEM_DMAP_SCREEN]);
+	return val;
+}
+
+int ItemLostScreen(int itm){
+	int val = GetLowArgument(ItemStats[(ITEM_ID * itm) + ITEM_DMAP_SCREEN]);
+	return val;
+}
+
+int ItemLostX(int itm){
+	int val = GetHighArgument(ItemStats[(ITEM_ID * itm) + ITEM_X_Y]);
+	return val;
+}
+
+int ItemLostY(int itm){
+	int val = GetLowArgument(ItemStats[ (ITEM_ID * itm) + ITEM_X_Y ]);
+	return val;
+}
+
+//const int SET = 0;
+//const int LOAD = 1
+
+
+//Applies damage to an item, soaking the item hardness first. 
+//(Damage below the hardness rating will not damage it.)
+void DamageItem(int itm, int amount){
+	ItemStats[(ITEM_ID * itm) + ITEM_DAMAGE] += (amount - ItemStats[(ITEM_ID * itm) + ITEM_HARDNESS]);
+}
+
+//Damages an item, with the option to ignore hardness. (Energy damage ignores hardness.)
+void DamageItem(int itm, int amount, bool ignoreHardness){
+	if ( ignoreHardness ) {
+			ItemStats[(ITEM_ID * itm) + ITEM_DAMAGE] += amount;
+	}
+	else {
+		ItemStats[(ITEM_ID * itm) + ITEM_DAMAGE] += (amount - ItemStats[(ITEM_ID * itm) + ITEM_HARDNESS]);
+	}
+}
+
+//Returns true if item has taken at least half its HP in damage.
+bool ItemHalfBroken(int itm){
+	float max = ItemHP(itm) - ( ItemHP(itm) * 0.5 );
+	int threshold = Floor(max);
+	int damage = ItemDamage(itm);
+	if ( damage >= threshold ) {
+		return true;
+	}
+	return false;
+}
+
+//Returns true if an item is damaged to the point that it must be repaired before using it again.
+//The item remains in OwnsItems[], but is removed from inventory until repaired. 
+bool ItemBroken(int itm){
+	int threshold = ItemHP(itm);
+	int damage = ItemDamage(itm);
+	if ( damage >= threshold ) {
+		return true;
+	}
+	return false;
+}
+
+
+
+void _ItemStats(int itm, int action){
+	itemdata it = Game->LoadItemData(itm);
+	for ( int q = 0; q <= 16; q++ ){
+		if ( action == 0 ) {
+			it->Misc[q] = ItemStats[q]; //Set to item.
+		}
+		else if ( action == 1 ) { //Load to array.
+			ItemStats[q] = it->Misc[q];
+		}
+	}
+}

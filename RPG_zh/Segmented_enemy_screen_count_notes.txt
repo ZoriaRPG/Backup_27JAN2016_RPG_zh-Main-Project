@@ -1,0 +1,42 @@
+Gleeok Count
+Body = 1
+heads = 1 each
+Head and body both trace with an id of 62 (gleeok)
+So, gleeok is body + heads for counting.
+	BUT...
+	when a head is killed, the fire head counts as an ADDITIONAL enemy of both the same ID and type.
+	
+	So, if you have a 4-head gleeok, with two heads severed, 
+	it counts as SEVEN instances of its ID (core, plus four heads, plus two detatched)
+
+	We need to invalidate the severed heads by their tile ID...sigh...
+
+As does patra. 1 ( core ) and 1 ( each orbit ) including BS version
+
+Moldorm is 1 + total number of segments. 
+
+as does lanmola ( 1 + segments in e editor ) 
+
+Manhaldla (4 heads) traces as only one enemy of its ID (!) but the number of enemies traces as one (core) plus one per hand
+the hands trace as IDs 0, 1, 2, and 3
+
+Manhaldla 2 (8 heads) traces as only one enemy of its ID, but as 9 total npcs (ID, plus 00 through 07).
+
+gohma traces as only one NPC, at all times.
+
+Aquamentus is only one too
+
+diddogger is also only one
+
+dodong (regular, and BS versions) is only one
+
+NPC ID 00 - None, or manhandla hand
+01 manhandla hand
+02 "
+03 " 
+04 " 
+05 "
+06 "
+07 "
+
+NPC IDs 00 through ?? are clearly reserved for system use. 

@@ -1,0 +1,8 @@
+//Critical Bugs to Fix, and Patch Functions
+//Fix all for loops with Screen->NumberNPCs() to use NumOfNPCs() instead.
+//Fix all for loops with < or > SizeOfArray to be <= or >= SizeOfArray() 
+
+//Corrects the Array Size for use with < or > for loops. 
+int Array(int arr){
+	return SizeOfArray(arr) + 1;
+}

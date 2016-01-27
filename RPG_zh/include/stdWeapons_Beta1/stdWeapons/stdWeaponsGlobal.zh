@@ -1,0 +1,18 @@
+global script StdWeaponsActive{
+	void run(){
+		while(true){
+			
+			UpdateLweaponZH();
+			
+			Waitdraw();
+			
+			
+			Waitframe();
+		}
+	}
+}
+
+//Template for stdWeapons-related global functions.
+void UpdateLweaponZH(){
+}
+

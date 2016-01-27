@@ -1,0 +1,143 @@
+//import "std.zh" //In case you need it.
+
+/////////////////////////////////////////////////
+//Import mandatory script headers and packages.//
+/////////////////////////////////////////////////
+
+//import "ffcscript.zh"  //In case you need it.
+//import "string.zh" //In case you need it.
+//import "ghost.zh" //In case you need it.
+//import "ghost_legacy.zh" //In case you need it.
+//import "std_extra.zh" //In case you need it.
+
+/////////////////////////////////////////////////////////////////////
+// Set up environment, Base Ints, Consts, Floats, Bools, Vars, etc.//
+// Set Sounds in Quest->Audio->SFX Data  ////////////////////////////
+/////////////////////////////////////////////////////////////////////
+
+
+/////////////////
+/// Firearm /////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/// D0: Number of Bullets to expend when Activating Subweapon.    ///
+/// D1: Time bwfore Link can use Subweapon Again (ROF) in frames. ///
+/// D2: Rounds weapon can hold.                                   ///
+/// D3: Amount of Damage that Subweapon Deals to Enemies.         ///
+/// D4: Speed that Subweapon Travels across screen; suggest 240.  ///
+/// D5: Sprite used by Subweapon; select from:                    ///
+///            Quest->Graphics->Sprites->WeaponsMisc.             ///   
+/// D6: Counter for Amo Boxes for this weapon                     ///
+/// D7: Counter to use for this weapon.                           ///     
+/// Note: Reload time is twice the time of ROF.                   ///    
+/////////////////////////////////////////////////////////////////////
+
+item script Firearm{
+    void run(int ammo, int nouse, int ShotsPerLoad, int power, int speed, int SWsprite, int AmmoToLoad, int GunCounter) {
+        if (Game->Counter[GunCounter] >= ammo) { //If the player has shots remaining...
+            Game->Counter[GunCounter] -= ammo; //Reduce ammo count for firearm.
+            Link->ItemJinx = nouse; //Time between shots in frames - the Rate of Fire.
+            lweapon subweapon; //Initiates the subweapon routines.
+            Link->Action = LA_ATTACKING; //Make attacking movement for Link sprite.
+            Game->PlaySound(SFX_GUN);
+            subweapon = NextToLink(LW_ARROW, 8); //Create in front of Link in the direction he is facing.
+            subweapon->UseSprite(SWsprite); // Sets Graphics for projectile
+            currentDamage = rollDie(power);
+            subweapon->Damage = currentDamage; //Sets Damage of projectile.
+            subweapon->Step = speed;  //Sets Speed of Projectile - suggest 240.
+		    if(subweapon->isValid()) { 
+                subweapon->DeadState=-1; //This doesn;t seem to work as expected.
+                //set to alive if within screen boundaries
+            }
+            subweapon->DeadState = WDS_ALIVE;
+            
+            if ( Game->Counter[GunCounter] < 1 ) {
+                if ( Game->Counter[AmmoToLoad] >=1 ) {
+                    Game->Counter[AmmoToLoad] -= 1; //Decreases ammo box counter.
+                    Game->Counter[GunCounter] += ShotsPerLoad; //Increses rounds in Gun
+                    Game->PlaySound(SFX_RELOAD); //Play reloading SFX set in constants above.
+	                Link->ItemJinx = (nouse * 2); //Take twice as long to reload as you set the ROF.
+                }   
+                else {
+                    Game->PlaySound(80);
+                }
+            }
+        }
+        
+        else {        
+            Game->PlaySound(SFX_ERROR);
+        }
+    }
+}
+
+
+
+
+//////////////////
+/// Ammo Reload ////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+/// This item is used if you want the player to MANUALLY reload. ///
+/// D0: Set to Counter for Type of Amunition You are Using       ///
+/// D1: Set to Counter for Firearm Being Loaded.                 ///
+/// D2: Amount of Rounds to Give player on Loading.              ///
+/// D3: Time before Link can use this item again.                ///    
+////////////////////////////////////////////////////////////////////
+
+item script AmmoLoad{
+void run(int AmmoCounter, int GunCounter, int GunAmount, int nouse){
+if (Game->Counter[AmmoCounter] >= 1 && Game->Counter[GunCounter] <= 0){ //If the player has ammo on hand and gun is not empty.
+Game->Counter[AmmoCounter] -= 1; //Recuce ammo counter by one.
+Game->Counter[GunCounter]+=GunAmount; //Increase shots in gun by amount set in D2.
+Link->ItemJinx = nouse; //Cannot use reload for time set in D3, measured in frames.
+Game->PlaySound(SFX_RELOAD); //Play reloading SFX.
+}
+    else{
+    Game->PlaySound(SFX_ERROR); //If gun is loaded, or player is out of rounds to load it, play error SFX.
+    }
+}
+}
+
+
+///////////////////////////////////
+///// Counters Reference //////////
+///////////////////////////////////
+/// CR_SCRIPT1            = 7;  ///
+/// CR_SCRIPT2            = 8;  ///
+/// CR_SCRIPT3            = 9;  ///
+/// CR_SCRIPT4            = 10; ///
+/// CR_SCRIPT5            = 11; ///
+/// CR_SCRIPT6            = 12; ///
+/// CR_SCRIPT7            = 13; ///
+/// CR_SCRIPT8            = 14; ///
+/// CR_SCRIPT9            = 15; ///
+/// CR_SCRIPT10           = 16; ///
+/// CR_SCRIPT11           = 17; ///
+/// CR_SCRIPT12           = 18; ///
+/// CR_SCRIPT13           = 19; ///
+/// CR_SCRIPT14           = 20; ///
+/// CR_SCRIPT15           = 21; ///
+/// CR_SCRIPT16           = 22; ///
+/// CR_SCRIPT17           = 23; ///
+/// CR_SCRIPT18           = 24; ///
+/// CR_SCRIPT19           = 25; ///
+/// CR_SCRIPT20           = 26; ///
+/// CR_SCRIPT21           = 27; ///
+/// CR_SCRIPT22           = 28; ///
+/// CR_SCRIPT23           = 29; ///
+/// CR_SCRIPT24           = 30; ///
+/// CR_SCRIPT25           = 31; ///
+///////////////////////////////////
+
+//////////////////
+/// Ammo Pickup ////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+/// D0: Set to Counter for Type of Amunition You are Using       ///
+/// D1: Amount of Ammo Boxes to Gain                             ///
+/// D2: Minimum Aount to Increase CounterMax; suggest 1.         ///  
+////////////////////////////////////////////////////////////////////
+
+item script AmmoPickup{
+void run(int AmmoCounter, int amount, int increaseAmmoCount){
+Game->Counter[AmmoCounter]+=amount;
+Game->MCounter[AmmoCounter]+=increaseAmmoCount;
+}
+}

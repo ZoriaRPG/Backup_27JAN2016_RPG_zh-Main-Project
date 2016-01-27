@@ -1,0 +1,41 @@
+int GetRemainderAsInt(int v)
+{
+    int r = (v - (v << 0)) * 10000;
+    return r;
+}
+
+// This function breaks up the value of an argument into individual digits. It is combined with the function GetDigit below.
+
+
+int GetDigit(int n, int place)
+{
+	place = Clamp(place, -4, 4);
+	if(place < 0)
+	{
+		n = GetRemainderAsInt(n);
+		place += 4;
+	}
+
+	int r = ((n / Pow(10, place)) % 10) << 0;
+	return r;
+}
+
+int GetHighArgument(int arg) {
+    return arg >> 0;
+}
+
+int GetLowArgument(int arg) {
+    return (arg - (arg >> 0)) * 10000;
+}
+
+int GetPartialArg(int arg, int place, int num){
+	place = Clamp(place, -4, 4);
+	int r;
+	int adj = 1;
+	for(int i = num-1; i > -1; i--){
+		if(place - i < -4) continue;
+		r += GetDigit(arg, place - i) * adj;
+		adj *= 10;
+	}
+	return r;
+}

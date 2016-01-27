@@ -1,0 +1,160 @@
+
+////////////////////
+/// Grimoire ////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/// D0 (#.x)    : Number of Hearts to Use when Activating Subweapon.      ///
+/// D0 (x.0###) : MP to Use when Activating Subweapon.                    ///
+/// D1 (#.x)    : Colour of Screen Flash.                                 ///
+/// D1 (x.0###) : Duration of Screen Flash.                               ///
+/// D2 (#.x)    : Amount of Damage that Subweapon Deals to Enemies.       ///
+/// D2 (x.0###) : Speed that Subweapon Travels across screen; suggest 60. ///
+/// D3 (#.x)    : FFC Slot for FFC Effects.                               ///
+/// D3 (x.0###) : Other Item Counter Used by Subweapon (if any).          ///
+/// D4 (#.x)    : Type of lweapon to generate (see std_constsnts.zh).     ///
+/// D4 (x.0###) : Time bfore Link can use Subweapon Again.                ///
+/// D5 (#.x)    : Sound Effects for using this Subweapon.                 ///
+/// D5 (x.0###) : Error Sound Effects for this Subweapon.                 ///
+///                     Select Sounds from Quest->Audio->SFX Data         ///
+/// D6 (#.x)    : Item number (in item editor) for this Subweapon.        ///
+/// D6 (x.0###) : Sprite used by Subweapon; select from:.                 ///
+///                     Quest->Graphics->Sprites->WeaponsMisc.            ///
+/// D7 (#.x)    : SWITCHES                                                ///      
+/////////////////////////////////////////////////////////////////////////////
+
+item script SubweaponV{
+	void run (int hearts_magic, int colour_duration, int power_speed, int FFC_Slot_SpecialCounter, int LType_nouse, int SFX_Weapon_SFX_ERROR, int ItemNumber_SWSprite, int switches) {
+		int hearts = GetHighArgument(hearts_magic);
+		int magic = GetLowArgument(hearts_magic);
+		int colour = GetHighArgument(colour_duration);
+		int duration = GetLowArgument(colour_duration);
+		int power = GetHighArgument(power_speed);
+		int speed = GetLowArgument(power_speed);
+		int FFC_Slot = GetHighArgument(FFC_Slot_SpecialCounter);
+		int itemCounter = GetLowArgument(FFC_Slot_SpecialCounter);
+		int LType = GetHighArgument(LType_nouse);
+		int nouse = GetLowArgument(LType_nouse);
+		int SFX_Weapon = GetHighArgument(SFX_Weapon_SFX_ERROR);
+		int ERROR_SFX = GetLowArgument(SFX_Weapon_SFX_ERROR);
+		int ItemNumber = GetHighArgument(ItemNumber_SWSprite);
+		int SWSprite = GetLowArgument(ItemNumber_SWSprite);
+		
+		//code for enabling SWITCHES 1-8
+		
+		
+			
+		int switch0 = GetDigit(switches, 0);
+		int switch1 = GetDigit(switches, 1);
+		int switch2 = GetDigit(switches, 2);
+		int switch3 = GetDigit(switches, 3);
+		int switch4 = GetDigit(switches, 4);
+		int switch5 = GetDigit(switches, -1);
+		int switch6 = GetDigit(switches, -2);
+		int switch7 = GetDigit(switches, -3);
+		int switch8 = GetDigit(switches, -4);
+
+		if (NumLWeaponsOf(LType) < Game->Counter[itemCounter]){
+			if ((Game->Counter[CR_RUPEES] >= hearts) && (Game->Counter[CR_MAGIC] >= magic)){
+				Game->Counter[CR_RUPEES] -= hearts;
+				Game->Counter[CR_MAGIC] -= magic;
+				//Game->Counter[itemCounter] -= itemCounterDecrease;
+				Link->ItemJinx = nouse;
+				lweapon subweapon;
+				Link->Action = LA_ATTACKING;
+				subweapon = NextToLink(LType, 8);                        //Create in front of Link
+				subweapon->UseSprite(SWSprite);                            //Graphics
+				subweapon->Damage = power;                                    //Damage
+				subweapon->Step = speed;                                    //Speed
+				int args[8] = {colour, duration};
+				RunFFCScript(FFC_Slot, args);
+				Game->PlaySound(SFX_Weapon);
+		
+				for ( int i = 0; i < 30; i++ ){ //For 30 frames
+					subweapon->DeadState = WDS_ALIVE; //Keep it alive at all times
+					Waitframe();
+				}
+				subweapon->DeadState = WDS_ALIVE;}  			
+				else{
+				Game->PlaySound(ERROR_SFX);
+				}
+			}
+			else{
+			//Using Switch 0, place 0xxxx.xxxx ; need working example of simple function.
+			if (switch0 == 0){
+				return;
+				}
+			else if (switch0 == 1){
+				//do this
+				Game->PlaySound(1);
+				}
+			//Using Switch 1, place x0xxx.xxxx ; need working example of simple function.
+			if (switch1 == 0){
+				return;
+				}
+			else if (switch1 == 1){
+				//do this
+				Game->PlaySound(2);
+				}
+			//Using Switch 2, place xx0xx.xxxx ; need working example of simple function.
+			if (switch2 == 0){
+				return;
+				}
+			else if (switch2 == 1){
+				//do this
+				Game->PlaySound(3);
+				}
+			//Using Switch 3, place xxx0x.xxxx ; need working example of simple function.
+			if (switch4 == 0){
+				return;
+				}
+			else if (switch3 == 1){
+				//do this
+				Game->PlaySound(4);
+				}
+			//Using Switch 4, place xxxx0.xxxx ; need working example of simple function.
+			if (switch4 == 0){
+				return;
+				}
+			else if (switch4 == 1){
+				//do this
+				Game->PlaySound(5);
+				}
+			//Using Switch 5, place xxxxx.0xxx ; need working example of simple function.
+			if (switch5 == 0){
+				return;
+				}
+			else if (switch5 == 1){
+				//do this
+				Game->PlaySound(6);
+				}
+			//Using Switch 6, place xxxxx.x0xx ; need working example of simple function.
+			if (switch6 == 0){
+				return;
+				Game->PlaySound(7);
+				}
+			else if (switch6 == 1){
+				//do this
+				}
+			//Using Switch 7, place xxxxx.xx0x ; need working example of simple function.
+			if (switch7 == 0){
+				return;
+				}
+			else if (switch7 == 1){
+				//do this
+				Game->PlaySound(8);
+				}
+			//Using Switch 8, place xxxxx.xxx0 ; need working example of simple function.
+			if (switch8 == 0){
+				return;
+				}
+			else if (switch8 == 1){
+				//do this
+				Game->PlaySound(9);
+				}
+			}
+			
+		}
+
+	}
+
+
+

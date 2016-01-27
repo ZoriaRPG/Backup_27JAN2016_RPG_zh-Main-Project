@@ -1,0 +1,203 @@
+///RPG Weapons
+///v0.3 for RPG.zh v0.96.9/2
+
+////////////////////////////////
+/// Weapons, Armour, Shields ///
+////////////////////////////////
+
+//Constants
+
+const int SHIELD_LOST = 0; //Set message to display when losing a sheild.
+const int SWORD_LOST = 0; //Set message to display when losing a sword.
+const int ARMOUR_LOST = 0; //Set message to display when losing armour. 
+
+const int DEF_SLASH = 0;
+const int DEF_PIERCE = 1;
+const int DEF_BLUDGEON = 2;
+const int DEF_ENERGY = 3;
+const int DEF_STUN = 4;
+const int DEF_PHYSICAL = 5;
+const int DEF_FALLING = 6;
+
+const int DEF_MAGIC = 7;
+const int DEF_FIRE = 8;
+const int DEF_ICE = 9;
+const int DEF_AIR = 10;
+const int DEF_EARTH = 11;
+const int DEF_SONIC = 12;
+const int DEF_DARKNESS = 13;
+const int DEF_LIGHT = 14;
+
+const int DEF_CORRUPTION = 15;
+const int DEF_DEPRAVITY = 16;
+const int DEF_PURITY = 17;
+const int DEF_RIGHTEOUS = 18;
+
+const int DEF_CONFUSION = 19;
+
+//Arrays
+
+int NPC_SCRIPT_DEFENSE[1000]; //An array, to hold NPC defence flags.
+
+float armourDefenseArray[20]={0,0,0,0,0,0,0,0,0,0,
+                             0,0,0,0,0,0,0,0,0,0};
+
+//Vars
+
+bool hasShield;
+bool shieldMessage = true;
+bool hasSword;
+bool swordMessage = true;
+bool hasArmour;
+bool armourMessage = true;
+
+//Intent: Enemies that eat equipment.
+
+
+
+///////////////////
+/// For Weapons ///
+///////////////////
+
+int currentDamage; // A placeholder for storing the damage value of items.
+int beamMultiplier = 0.5; //A placeholder for storing a variable multiplier.
+bool WSpierce = false; //Used to determine of a weapon is piercing
+
+bool WeaponCreated[40]; // Used for NWS v1, to tell the game engine to use the NWS global functions for a given weapon.
+
+
+//Functions
+
+/////////////////////////////////////////////
+/// Armour, Swords, and Shields Functions ///
+/////////////////////////////////////////////
+
+void checkEatenItems() {   
+//Place this in your main while loop, to display messages to the player if an item is eaten.
+    if ( hasShield == false && shieldMessage == false ){
+    shieldMessage = true;
+    Screen->Message(SHIELD_LOST);
+    }
+    if ( hasSword == false && swordMessage == false ){
+    swordMessage = true;
+    Screen->Message(SWORD_LOST);
+    }
+    if ( hasArmour == false && swordMessage == false ){
+    armourMessage = true;
+    Screen->Message(ARMOUR_LOST);
+    }
+}
+
+/// Weapon Damage System
+
+void Set_Weapon_Damage(int index){
+ for(int i = 0; i<40; i++){
+  if(WeaponCreated[i]){
+   for(int j = 1; j <= Screen->NumLWeapons(); j++){
+    lweapon l = Screen->LoadLWeapon(j);
+    //Trace(l->Misc[1]);
+    //if(l->ID == i && l->Misc[1] > 0){
+    if(l->ID == j){
+     l->Misc[1] = (currentDamage + 1000);
+     l->Damage = currentDamage;
+     Trace(l->Misc[1]);
+    }
+   }
+  }
+ }
+}
+
+
+//Scripts
+
+///////////////////////////////
+/// Armour, Weapon & Shield ///
+///////////////////////////////
+
+
+item script pickUpEatableShield {
+    void run(){
+        bool hasShield = true;
+        bool shieldMessage = false;
+    }
+}
+    
+item script pickUpEatableSword{
+    void run() {
+        bool hasSword = true;
+        bool swordMessage = false;
+    }
+}
+
+item script pickUpEatableArmour{
+    void run(){
+        bool hasArmour = true;
+        bool armourMessage = false;
+    }
+}
+
+//int currentDamage;
+
+item script fluxWeaponDamage{
+	//D0: ####.xxxxx -> Amount to reduce counter.
+	//D0: xxxx.##### -> Counter to decrement.
+	
+	//D1: Step Speed
+	
+	//D2: ####.xxxxx -> Number of Dice to Roll; If one per level, set this to 0. 
+	//D2: xxxx.##### -> Type of die to roll. If set to 0, this will not add extra damage. 
+	
+	void run(int cost_and_Counter, int speed, int dieDice, int spriteUsed, int maxProjectiles, int sfxError, int sfxItem, int LW_Type){
+		
+		int useCounter = ( cost_and_Counter >> 0 );
+		int cost = ( ( cost_and_Counter - (cost_and_Counter >> 0)) * 10000 );
+		
+		int dice = ( dieDice >> 0 );
+		int dieType = ( ( dieDice - (dieDice >> 0)) * 10000 );
+		
+		if ( dice == 0 ) {
+			dice = Game->Counter[CR_LEVEL];
+		}
+		if ( LW_Type == 0 ) {
+			LW_Type = LW_ARROW; //Do something is user forgets to fill in D7 field.
+		}
+		if ( speed == 0 ) {
+			speed = 100; //Ensure that a step speed of zero is impossible. 
+		}
+		if ( maxProjectiles == 0 ) {
+		    maxProjectiles = 9999; //Ensure that the user does not forget to make it possible to use the item.
+		}
+		if ( ( Game->Counter[useCounter] >= cost && NumLWeaponsOf(LW_Type) < maxProjectiles ) || ( cost == 0  && NumLWeaponsOf(LW_Type) < maxProjectiles ) ) {
+			//Fill in the numbers for counter consumption and number of projectiles allowed on screen
+       
+			Game->Counter[useCounter] -= cost; //fill in the magic consumption here as well
+			lweapon fluxWeap = Screen->CreateLWeapon(LW_Type);
+			fluxWeap->UseSprite(spriteUsed); // the number of the sprite used for the projectile. Use two tiles, the first for up/down, the second for left/right
+			fluxWeap->X = Link->X; //Find Link's Position X
+			fluxWeap->Y = Link->Y; //Find Link's Position Y
+			fluxWeap->Dir = Link->Dir; //Find the Direction that Link is facing.
+			fluxWeap->Step = speed; // the speed the projectile travels
+			fluxWeap->Damage = ( Roll(dice,dieType) ); //the damage the projectile will do
+			Game->PlaySound(sfxItem); // the sound effect for the weapon
+				//Link->ItemJinx = (nouse * 1); //Set delay between firing. Change multiplier if desired, but set base in argument D7.
+			if(Link->Dir == DIR_DOWN) //If Link is facing down...
+			    {
+			    fluxWeap->Flip = 2; //Change direction of spriteUsed to down.
+			    }
+			if(Link->Dir == DIR_RIGHT) //If Link is facing right.
+			    {
+			    fluxWeap->Tile += 1; //Use next tile as well.
+			    }
+			if(Link->Dir == DIR_LEFT)
+			    {
+			    fluxWeap->Tile += 1; //If Link is facing left.
+			    fluxWeap->Flip = 1; //Flip spriteUsed tile and use next tile as well.
+			    }
+				
+		}
+			
+		else{
+			Game->PlaySound(sfxError); //If out of MP, play ERROR SOund Effects.
+		}
+	}
+}

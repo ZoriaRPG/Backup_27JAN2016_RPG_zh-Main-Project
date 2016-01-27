@@ -1,0 +1,15 @@
+item script MirrorMemories{
+    void run(int RingonSFX, int RingoffSFX){
+        if ( !Is(RINGON) && Link->MP > 0 ){
+            Is(RINGON,true);
+            Game->PlaySound(RingonSFX);
+            
+            Link->CollDetection = false;
+            Link->Invisible = true;
+        }
+        else if ( Is(RINGON) ){
+            Is(RINGON,false);
+            Game->PlaySound(RingoffSFX);
+        }
+    }
+}

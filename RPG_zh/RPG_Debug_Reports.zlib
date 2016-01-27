@@ -1,0 +1,443 @@
+//Print Screen as Combo IDs
+
+void PrintScreenComboD(int layer){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo IDs for this Screen are: ";
+	
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	TraceS(S_Combos);
+	TraceNL();
+	for ( int q = 0; q < 176, q++ ) {
+		Trace(GetLayerComboD(layer,q));
+		if ( q % 16 == 0 ) TraceNL();
+	}
+	TraceNL();
+}
+
+
+			
+void PrintScreenComboD(){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo IDs for this Screen are: ";
+	int S_Layer[]="The present layer is: ";
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	
+	
+	TraceNL();
+	for ( int w = 0; w < 7; w++ ) {
+		for ( int q = 0; q < 176, q++ ) {
+		
+		
+			if ( q == 0 ) {
+				TraceS(S_Layer);
+				TraceNL();
+				Trace(w);
+				TraceNL();
+				TraceS(S_Combos);
+				TraceNL();
+			}
+			
+			Trace(GetLayerComboD(layer,q));
+			if ( q % 16 == 0 ) TraceNL();
+		}
+	}
+	TraceNL();
+}
+
+//Print Screen as Combo Typess
+
+void PrintScreenComboT(int layer){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo Types for this Screen are: ";
+	
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	TraceS(S_Combos);
+	TraceNL();
+	for ( int q = 0; q < 176, q++ ) {
+		Trace(GetLayerComboT(layer,q));
+		if ( q % 16 == 0 ) TraceNL();
+	}
+	TraceNL();
+}
+
+
+			
+void PrintScreenComboT(){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo Types for this Screen are: ";
+	int S_Layer[]="The present layer is: ";
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	
+	
+	TraceNL();
+	for ( int w = 0; w < 7; w++ ) {
+		for ( int q = 0; q < 176, q++ ) {
+		
+		
+			if ( q == 0 ) {
+				TraceS(S_Layer);
+				TraceNL();
+				Trace(w);
+				TraceNL();
+				TraceS(S_Combos);
+				TraceNL();
+			}
+			
+			Trace(GetLayerComboT(layer,q));
+			if ( q % 16 == 0 ) TraceNL();
+		}
+	}
+	TraceNL();
+}
+
+//Print Screen as Combo Flags
+
+void PrintScreenComboF(int layer){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo Flags for this Screen are: ";
+	
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	TraceS(S_Combos);
+	TraceNL();
+	for ( int q = 0; q < 176, q++ ) {
+		Trace(GetLayerComboF(layer,q));
+		if ( q % 16 == 0 ) TraceNL();
+	}
+	TraceNL();
+}
+
+
+			
+void PrintScreenComboF(){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo Flags for this Screen are: ";
+	int S_Layer[]="The present layer is: ";
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	
+	
+	TraceNL();
+	for ( int w = 0; w < 7; w++ ) {
+		for ( int q = 0; q < 176, q++ ) {
+		
+		
+			if ( q == 0 ) {
+				TraceS(S_Layer);
+				TraceNL();
+				Trace(w);
+				TraceNL();
+				TraceS(S_Combos);
+				TraceNL();
+			}
+			
+			Trace(GetLayerComboF(layer,q));
+			if ( q % 16 == 0 ) TraceNL();
+		}
+	}
+	TraceNL();
+}
+
+//Print Screen as Combo Inherent Flags
+
+void PrintScreenComboI(int layer){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo Inherent Flags for this Screen are: ";
+	
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	TraceS(S_Combos);
+	TraceNL();
+	for ( int q = 0; q < 176, q++ ) {
+		Trace(GetLayerComboI(layer,q));
+		if ( q % 16 == 0 ) TraceNL();
+	}
+	TraceNL();
+}
+
+
+			
+void PrintScreenComboI(){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo Inherent Flags for this Screen are: ";
+	int S_Layer[]="The present layer is: ";
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	
+	
+	TraceNL();
+	for ( int w = 0; w < 7; w++ ) {
+		for ( int q = 0; q < 176, q++ ) {
+		
+		
+			if ( q == 0 ) {
+				TraceS(S_Layer);
+				TraceNL();
+				Trace(w);
+				TraceNL();
+				TraceS(S_Combos);
+				TraceNL();
+			}
+			
+			Trace(GetLayerComboI(layer,q));
+			if ( q % 16 == 0 ) TraceNL();
+		}
+	}
+	TraceNL();
+}
+
+//Print Screen as Combo CSets
+
+void PrintScreenComboC(int layer){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo CSets for this Screen are: ";
+	
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	TraceS(S_Combos);
+	TraceNL();
+	for ( int q = 0; q < 176, q++ ) {
+		Trace(GetLayerComboC(layer,q));
+		if ( q % 16 == 0 ) TraceNL();
+	}
+	TraceNL();
+}
+
+
+			
+void PrintScreenComboC(){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo CSets for this Screen are: ";
+	int S_Layer[]="The present layer is: ";
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	
+	
+	TraceNL();
+	for ( int w = 0; w < 7; w++ ) {
+		for ( int q = 0; q < 176, q++ ) {
+		
+		
+			if ( q == 0 ) {
+				TraceS(S_Layer);
+				TraceNL();
+				Trace(w);
+				TraceNL();
+				TraceS(S_Combos);
+				TraceNL();
+			}
+			
+			Trace(GetLayerComboC(layer,q));
+			if ( q % 16 == 0 ) TraceNL();
+		}
+	}
+	TraceNL();
+}
+
+//Print Screen as Combo Walkability
+
+void PrintScreenComboS(int layer){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo Walkability for this Screen are: ";
+	
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	TraceS(S_Combos);
+	TraceNL();
+	for ( int q = 0; q < 176, q++ ) {
+		Trace(GetLayerComboS(layer,q));
+		if ( q % 16 == 0 ) TraceNL();
+	}
+	TraceNL();
+}
+
+
+			
+void PrintScreenComboS(){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	int S_Map[]="The present map is: ";
+	int S_Screen[]="The present screen is: ";
+	int S_DMAP[]="The Present DMap is: ";
+	int S_Combos[]="The Combo Walkability for this Screen are: ";
+	int S_Layer[]="The present layer is: ";
+	TraceNL();
+	TraceS(S_MAP);
+	Trace(curMap);
+	TraceNL();
+	TraceS(S_DMAP);
+	Trace(curDMAP);
+	TraceNL;
+	TraceS(S_Screen);
+	Trace(curScreen);
+	TraceNL();
+	
+	
+	TraceNL();
+	for ( int w = 0; w < 7; w++ ) {
+		for ( int q = 0; q < 176, q++ ) {
+		
+		
+			if ( q == 0 ) {
+				TraceS(S_Layer);
+				TraceNL();
+				Trace(w);
+				TraceNL();
+				TraceS(S_Combos);
+				TraceNL();
+			}
+			
+			Trace(GetLayerComboS(layer,q));
+			if ( q % 16 == 0 ) TraceNL();
+		}
+	}
+	TraceNL();
+}

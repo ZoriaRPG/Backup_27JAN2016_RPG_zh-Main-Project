@@ -1,0 +1,649 @@
+//Constants
+//v0.3.3 for RPG.zh 0.97.7
+
+//Game Environment Constants
+const int NUM_OF_DMAPS = 512; //Set to number of DMaps used in a quest.
+const int NUM_OF_MAPS = 256; //Set to number of maps used in a quest.
+
+
+
+/// Constants for GameEvents[] and GameDynamics[]
+
+//Constant for GameDynamics
+
+//Constants 0 to 499 reserved.
+
+//Items should be at the head (first 256 index positions to avoid constant duplications. Other constants should start at 300. 
+
+
+const int IT_BOTTLE_1 = 256; //items beyong the normal 0 to 255. 
+
+
+
+
+
+
+//Game events start at 500.
+
+const int TRAINING = 500;
+const int HVYLAXTA = 501;
+const int BREAK_SEAL_WATER = 502;
+const int FREE_FIRE_DAEMON = 503;
+const int PACT_FIRE = 504;
+const int UNLEASH_FIRE = 505;
+
+const int FIND_CENOTAPH = 510;
+
+const int PACT_GOLD_DRAGON = 515;
+
+const int FIRST_SERNARAN = 520;
+
+const int FIRST_MONTH = 550;
+const int SECOND_MONTH = 551;
+const int THIRD_MONTH = 552;
+const int FIRST_SEASON = 553;
+const int SECOND_SEASON = 554;
+const int THIRD_SEASON = 555;
+const int FOURTH_SEASON = 556;
+
+const int SECOND_WAVE = 560;
+const int DALEKS_APPEAR = 565;
+const int DALEKS_LAND = 570;
+const int DALEK_ASSAULT = 575;
+const int EXTERMINATION = 580;
+const int STEAL_SAUCER = 585;
+const int SPACE_FLIGHT = 590;
+const int BREAK_SEAL_DARKNESS = 595;
+
+
+//Player Events for Engine Routines begin at 800
+
+const int LINK_HURT = 800; //Used to determine if the player was damaged this frame.
+				//Needed to circumvent ZC engine hurt effects, and other things.
+				//In GameEvents, this reads true if Link was hurt, but
+				//we may also use a function to store the game that frame in GameDynamics, 
+				//and return that value. 
+				//This is useful for displaying damage. 
+
+const int SCREENCHANGED = 810; //Used to do things that only occur with screen transitions, to determine
+const int SCREENUPDATED = 811; //if the player has changed screens.
+const int UPDATESCREEN = 812;
+
+const int GAMESAVESTATED = 899; //In RPG_Backup.zlib -> Denotes that Menu->Save has been used to permit Menu->Restore
+
+
+
+//Treasure chest constants, 900 to 949.
+//Constants for Treasure Cests
+//Treasure chest FFCs should write into these values on collision, to determine the values of any given chest.
+//This will work by reading distance and facing dir. If the player is within the set distance and facing the 
+//correct way, these values are stored intot he array. Otherwise, the FFC writes all zeros to these fields.
+//If the values are non-sero, then a function TreasureChest() , and all menu fucntions (Search, Examine, Disarm
+//, and such will operate on the present values stored here. 
+
+//Most are boolen values, but should be stored as floats, to allow multiple types. 
+const int TREASURE = 900; //Array pos 50. + One of the following ?
+
+const int TR_CHEST = 0;
+const int TR_CHEST_STATE = 0; //Used to determine if the combo should be an open chest, or closed chest.
+//This can be merged with TR_CLOSED, or have the same value. 
+////////Settings
+const int CHEST_CLOSED = 0; //The value stored in GameDynamics[TREASURE+TR_CLOSED] will dtermine if it's open
+const int TR_CLOSED = 0; 
+const int CHEST_OPEN = 1;  //Or closed. These are the values to store in that index.
+const int TR_OPEN = 0; 
+
+const int TR_LOCKED = 1; //Determines the locked state.
+////////Settings
+const int TR_UNLOCKED = 0; //The state of [TREASURE+TR_LOCKED] value if unlocked.
+const int TR_NORMALLOCKED = 1; //Value if normally locked.
+const int TR_BIGLOCKED = 2; //Value if big key locked.
+const int TR_WIZARDLOCKED = 3; //Value if wizard locked locked. Set TR_WIZARDLOCKED + LEVEL for difficulty. 
+
+const int TR_TRAPS = 2; //Used to determine if any traps are used.
+////////Settings
+const int TR_NOTRAPS = 0;
+const int TR_DISARMED = 1;
+const int TR_DISPELLED = 2;
+const int TR_TRAPPED =  10; //10 to 49 is level of normal trap.
+const int TR_SPELLED = 50; //59 to 99 is level of spell trap.
+
+const int TR_ENEM = 3; //Set this to the enemy ID of an enemy to spawn.
+const int TR_ENEM_DEAD = 4; //Set this if the enemy is dead.
+
+const int TR_SEARCHED = 4;
+const int TR_ASSENSED = 5;
+
+const int TR_ITEM = 6; //Set this to the ID of the item in the chest.
+const int TR_ITEM_TAKEN = 7; //Set this to 1 if the item was taken. otherwise, set to 0 to put back.
+
+const int TR_MESSAGE = 7; //The message to play when examining the chest.
+const int TR_MSG = 7; //Shortcut for TR_MESSAGE
+
+const int TR_SKILL_REQUIRED = 8; //Skill level required to examine chest. 
+
+//951 to 999
+
+
+//Environmental constants start at 1000. Reserved to 1199.
+
+
+
+
+
+const int INDOORS = 1010;
+const int UNDERGROUND = 1012;
+const int OUTDOORS = 1013;
+
+//const int XPCOUNT = 1003; //XP is now its own array (a float) and will need space in this array to store float to int conversions.
+//const int XPSUM = 1004; //The CONVERTED values here, should adjust counters or thing sused to display them in game, and need to append leading ciphers.
+//const int PLAYERLEVEL = 1005; //The present level of the player.
+//const int OLD_LEVEL = 1006; //The prior level of the player. Needed or comparison functions. 
+//const int NEXTLEVELAT = 1007;
+//const int XPONES = 1008;
+//const int XPTHOUSANDS = 1009;
+//const int XPMILLIONS = 1010;
+
+
+
+
+//const int SAVESCREEN= 1020; //In RPG_Backup.zlib
+//const int SAVEDMAP = 1021;
+//const int SAVEX = 1022;
+//const int SAVEY = 1023;
+//const int GAME_SAVED = 1024;
+
+const int CHEATLEVEL = 1030;
+
+
+const int NOMENU = 1100; //A bool.
+const int LINKSEEN = 1101; //Bool
+const int DRINKS_LEFT = 1102; //An int.
+const int DET_F1 = 1103; 
+const int DET_F2 = 1104;
+const int DET_RAD = 1105;
+const int DET_SLOWER = 1106;
+const int DET_BOMBS = 1107;
+const int DET_R1 = 1108;
+const int DET_R2 = 1109;
+const int DET_SLOWERA = 1110;
+const int USEBOMBODO = 1111;
+
+const int RINGTIMER = 1112;
+const int BYRNATIMER = 1113;
+const int BOOTSTIMER = 1114; 
+
+const int OWNSTAFF = 1115; //bool. The code for this is in gc_global and in gc_jhkarr_NWS
+const int OWNNIGHTFALL = 1116;
+const int OWNSWORDOFLIGHT = 1117;
+
+const int RINGON = 1118; //bool
+const int BYRNAON = 1119; //bool
+const int BOOTSON = 1120; //bool
+const int GOGGLESON = 1121; //bool
+const int GOGGLESTIMER = 1122; //int
+
+const int FFCS_SUSPENDED = 1123; //bool, tango
+
+const int EVERSAVED = 1124; //bool, RPG_Backup.zlib
+const int SAVEANDQUIT = 1125; //bool, RPG_Backup.zlib
+
+//1126 unused
+const int D20MODS = 1127; //Used by RPG_Stats.zlib
+const int TIMERITEM = 1128;
+const int TIMERVALUE = 1129;
+const int CIGARPICKUP = 1130;
+
+const int STAT_MOD_MULTIPLIER = 1131;
+const int STATMODMULTIPLIER = 1131;
+
+const int LASTITEMUSED = 1132;
+const int LAST_ITEM_USED = 1132;
+
+const int PLAYINGMESSAGE = 1133;
+
+//1134
+
+//Player Actions
+const int MENUTALK = 1134;
+const int MENU_TALK = 1134;
+const int PLAYERTALKING = 1135;
+const int PLAYER_TALKING = 1135;
+//const int PLAYERSEARCHING = 1136; //This already exists somewhere. Find it, and fix it. 
+const int PLAYER_LISTENING = 1136;
+const int PLAYERSEARCHING = 1137;
+const int PLAYER_SEARCHING = 1137;
+const int PLAYEREXAMINING = 1138;
+const int PLAYER_EXAMINING = 1138;
+const int PLAYERDISARMING = 1139;
+const int PLAYER_DISARMING = 1139;
+const int PLAYERTAKINGITEM = 1140;
+const int PLAYER_TAKING_ITEM = 1140;
+const int PLAYERCHECKING = 1141;
+const int PLAYER_CHECKING = 1141;
+const int PLAYERLOOKING = 1142;
+const int PLAYER_LOOKING = 1142;
+const int PLAYERVISTA = 1143;
+const int PLAYER_VISTA = 1143;
+
+const int MENUOPEN = 1144;
+const int MENU_OPEN = 1144;
+const int EQUIPITEM = 1145;
+const int EQUIP_ITEM = 1145;
+
+const int FIRSTPLAY = 1146;
+const int FIRST_PLAY = 1146;
+
+const int BREATHEUNDERWATER = 1147;
+const int BREATHE_UNDERWATER = 1147;
+
+//1050 to 1099
+
+const int CHALLENGE_NUMBER = 1151;
+const int CHALENGENUMBER = 1151;
+
+// Player actions start at 1200. Reserved to 1499, to leave room for future expansion. This includes triggers *caused* by menu choices.
+
+const int TALKING = 1200;
+const int SEARCHING = 1201;
+const int LOOKING = 1202;
+const int EXAMINING = 1203;
+const int EQUIPPING = 1204;
+
+const int VISTA = 1205;
+
+//Menu-based actions (e.g. to open menus) start at 1500, reserved to 1599, although this is likely ovekill.
+const int MENU = 1300;
+
+//Spell effetcs start at 1600, reserved through 1800. 
+
+const int CASTING = 1600;
+
+//Status of the PRESENT chracter should start at 2000. Status (saved) for alternatite characters should start at 4000.
+//The number of fields for PRESENT status (the active character, should be identical to the number of fields given per character
+//in C_STATS constants, starting at 4000.
+
+//Essentially, 2000-3999 is the character that is active.
+//4000 to 5999 is char one. 
+//6000 to 7999 is char two.
+//8000 to 9999 is char three.
+//10000 to 11999 is char four.
+
+//When the player shifts characters, the present values at 2000 to 3999 are copied (saved) into
+//the indices for that character, so if the present character is char 2, indices 2000 to 3999 are
+//copied to indices 6000 to 7999.
+
+//Then, the values for the character being selected are moved into the active character indices, shifting
+//all the values for that character. 
+
+//This also changes inventory, available spells, and other things, allowing for entirely different stats
+//for each character. It requires a function to backup the indices, and move others into the active char 
+//indices; and then a series of functions to set all Link-> variables, such as Link->Items to the values 
+//stored in the active char indices. 
+
+//Player status starts at 2000, and must allow for 4x sets of these variables, to allow four characters. 
+//Each character has 100 index positions reserved, so this is reserved through 2399.
+
+///! These ar enot correct. Establish when the number of values per character is fixed.
+const int MAIN_CHARACTER = 0; //Add this to main character when checking/setting status.
+const int SECOND_CHARACTER = 100; //Add this when checking for second character.
+const int THIRD_CHARACTER = 200; //Add this when checking for third character.
+const int FOURTH_CHARACTER = 300; //Add this when checking for fourth character.
+
+const int PRESENT_CHARACTER = 2000; //This replaced int presentCharacter in RPG_Experimental.zlib
+///Sets up rows and columns for characters
+
+//These now belong with character things, ast 2000 to 12000
+
+const int PLAYERHP = 2000;
+const int PLAYER_HP = 2000;
+const int CURRENT_HP = 2000;
+const int LAST_HP = 2001;
+
+
+const int STAT_HP = 2002;
+const int STAT_MP = 2004;
+
+
+const int STAT_XP_ONES = 2011;
+const int STAT_XP_THOUSANDS = 2012;
+const int STAT_XP_MILLIONS = 2013;
+
+const int STAT_MUSCLE = 2014;
+const int STAT_MUSC = 2014;
+const int STAT_BODY = 2015;
+const int STAT_MIND = 2016;
+const int STAT_MYST = 2017;
+const int STAT_INFL = 2018;
+const int STAT_LUCK = 2019;
+
+//2023 (23) to 2030 (30) reserved.
+
+//XP needed for next level goes here. 
+
+const int C_STATS = 0; //Stats are 1 to ?.
+const int C_HP = 0;
+const itn C_PRESENT_HP = 0;
+const int C_LAST_HP = 1;
+const int C_MAXHP = 2;
+const int C_MP = 3;
+const int C_MAXMP = 4;
+const int C_LEVEL = 5;
+const int C_XP = 6;
+const int C_XP_ONES = 7;
+const int C_XP_THOUSANDS = 8;
+const int C_XP_MILLIONS = 9;
+const int C_XP_NEXT = 10;
+const int C_XP_NEXT_ONES = 11;
+const int C_XP_NEXT_THOUSANDS = 12;
+const int C_CP_NEXT_MILLIONS = 13;
+
+const int C_STAT = 14;
+const int C_MUSC = 0; //C_STAT + this
+const int C_BODY = 1;
+const int C_MIND = 2;
+const int C_MYST = 3;
+const int C_INFL = 4;
+const int C_LUCK = 5;
+const int C_ALIGN = 20; 
+
+const int C_LAW = 0; //C_ALIGN + this
+const int C_CHAOS = 1; //C_ALIGN + this
+const int C_GOOD = 2; //C_ALIGN + this
+const int C_EVIL = 3; //C_ALIGN + this
+
+const int C_SKILL = 31;
+//Skills 31 to 40 reserved.
+
+const int SKILL_LORE = 2031;
+const int SKILL_ = 2032; 
+const int MAX_LORE_ = 2039; //Sets true for each Lore skill when maximised.
+const int SKILL_LEVEL = 2040; //Used only in GameDynamics[].
+
+const int C_SPRITE = 40;
+const int PLAYER_SPRITE = 2040; //The sprite called by PlayerSprite() and set by ChangePlayerSprite().
+	//This will be used with functions local to the global active script, in conjunction with an lweapon
+	//that has collision off. This type of feature will work in 2,50.0, and 2.50.2, but not in 2.50.1!
+
+//...
+
+const int XPONES_NEXT = 16000; //Deprecated
+const int XPTHOUSANDS_NEXT = 16001; //Deprecated
+const int XPMILLIONS_NEXT = 16002; //Deprecated
+
+// Skills per character. Starting at 2500, and rserved through 2899. 
+//This leaves many wasted slots, but we need to use the same character modifier onstatnts here, so the gap between character skills must be 100. 
+//We can fill this later. 
+
+
+
+
+
+///! These need to move to 4000
+//const int C_ID = 2000; //Number of fields per character.
+//const int C_MAIN = 4000; // Main character
+//const int C_TWO = 6000; //Second Character (needs name) 
+//const int C_THREE = 8000; //Third Character (needs name)
+//const int C_FOUR = 10000; //Third Character (needs name)
+
+
+
+
+
+
+//General Status for Active Character 2600 to 2650 Reserved for this.
+const int STARVING = 2100;
+const int DYING = 2101;
+const int POISONED = 2102;
+const int CURSED = 2103;
+const int DEAD = 2104; //This status is important due to having multiple characters: isn't as pointless as it seems.
+const int MARRIED = 2105;
+const int IMPRISONED = 2106;
+const int CAPTURED = 2107;
+const int SEALED = 2108; //Seal player magic.
+const int SEEN = 2109; //Line of sight puzzles.
+const int INVISIBLE = 2110; //For invisibility items, in conjunction with STATUS_SEEN, and to pass some barriers.
+const int ETHEREAL = 2111; //Able to walk through some barriers.
+const int EMPEROR = 2112;
+const int SWIMMING = 2113; //RPG_Engine.zlib
+
+
+const int C_STATUS = 100; //Status
+const int C_STARVING = 0; //C_STATUS + this
+const int C_DYING = 1;
+const int C_POISONED = 2;
+const int C_CURSED = 3;
+const int C_DEAD = 4; //This status is important due to having multiple characters: isn't as pointless as it seems.
+const int C_MARRIED = 5;
+const int C_IMPRISONED = 6;
+const int C_CAPTURED = 7;
+const int C_SEALED = 8; //Seal player magic.
+const int C_SEEN = 9; //Line of sight puzzles.
+const int C_INVISIBLE = 10; //For invisibility items, in conjunction with STATUS_SEEN, and to pass some barriers.
+const int C_ETHEREAL = 11; //Able to walk through some barriers.
+const int C_EMPEROR = 12;
+//13 to 30 reserved.
+
+
+//SWIMMING needs to be here. //Done.
+
+//Replaced with one-word constants.
+const int STATUS_STARVING = 2100;
+const int STATUS_DYING = 2101;
+const int STATUS_POISONED = 2102;
+const int STATUS_CURSED = 2103;
+const int STATUS_DEAD = 2104; //This status is important due to having multiple characters: isn't as pointless as it seems.
+const int STATUS_MARRIED = 2105;
+const int STATUS_IMPRISONED = 2106;
+const int STATUS_CAPTURED = 2107;
+const int STATUS_SEALED = 2108; //Seal player magic.
+const int STATUS_SEEN = 2109; //Line of sight puzzles.
+const int STATUS_INVISIBLE = 2110; //For invisibility items, in conjunction with STATUS_SEEN, and to pass some barriers.
+const int STATUS_ETHEREAL = 2111; //Able to walk through some barriers.
+const int STATUS_EMPEROR = 2112;
+
+const int C_SPELLS = 200; //200 to 299 reserved.
+
+
+const int C_ITEMS = 300; //Items at 2000 + 300 to 555;
+
+
+
+
+
+
+
+//Spells known per character. Again, we need a 100 space gap here. 
+//Starts at 3000, reserved through 3399.
+
+const int SPELL_FIRE_1 = 3000;
+const int SPELL_FIRE_2 = 3001;
+
+//3400 to 3499 unused.
+
+const int BTN_SLOT_A = 3400;
+const int BTN_SLOT_B = 3401;
+const int BTN_SLOT_L = 3402;
+const int BTN_SLOT_R = 3403;
+const int BTN_SLOT_START = 3404;
+const int BTN_SLOT_SELECT = 3405;
+const int BTN_SLOT_UP = 3406;
+const int BTN_SLOT_DOWN = 3407;
+const int BTN_SLOT_LEFT = 3408;
+const int BTN_SLOT_RIGHT = 3409;
+const int BTN_SLOT_EX1 = 3410;
+const int BTN_SLOT_EX2 = 3411;
+const int BTN_SLOT_EX3 = 3412;
+const int BTN_SLOT_EX4 = 3413;
+const int BTN_SLOT_MOUSE_L = 3414;
+const int BTN_SLOT_MOUSE_R = 3415;
+
+//Button Constants for Using Buttons
+const int A = 1;
+const int B = 0;
+const int L = 2;
+const int R = 3;
+const int LEFT = 4;
+
+
+
+//Classes known per character. Starts at 3500, reserved through 3899.
+
+
+
+const int CLASS_SORC = 3500; //Classes, learnt or adopted by player. Used for skill checks, and some events.
+const int CLASS_WIZARD = 3501;
+const int CLASS_SAGE = 3502;
+const int CLASS_SWORDMASTER = 3503;
+const int CLASS_SOLDIER = 3504;
+const int CLASS_SCIENTIST = 3505;
+const int CLASS_PSYCHIC = 3506;
+const int CLASS_BIOVIZIR = 3507;
+const int CLASS_PILOT = 3508;
+const int CLASS_TECH = 3509;
+
+//There will be large gaps here to use for other things once we know all of the values. 
+//We can interleve values for all four characters by ensuring that ach starts at the same distance from another KEY value, and ends within a valid range.
+
+//3900 to 3999 unused.
+
+//CHaracter values for each character start at 4000, reserved through 9999
+
+const int C_ID = 2000; //Number of fields per character.
+const int C_MAIN = 4000; // Main character
+const int C_TWO = 6000; //Second Character (needs name) 
+const int C_THREE = 8000; //Third Character (needs name)
+const int C_FOUR = 10000; //Third Character (needs name)
+
+
+//Dialogue options, and speech start at 15000. Reserved through 24999.
+//This includes QUESTIONS that the player may ask, that work with menu. 
+//Use STRCPY to copy strings from scripts to this array, and this will allow them to be read from a menu as a global variable. (This...SHOULD...work.)
+//Any script should be able to copy a hardcoded string to this array, and from that point, a menu can read what strings are present  
+//that aren't blank and display those in any speech menu via the ASK command. (?)
+
+const int AGREE = 15000;
+const int DISAGREE = 15001;
+
+//8001 through 8192 unused. 
+
+/// Time of Day
+
+//Constants for GameClock[]
+
+const int ORANGE = 10; //Set to orange-sundet colour.
+const int SLATEBLUE = 11; //Set to slate blue, dusk colour.
+const int NIGHTBLUE = 12; //Set to nighttime, darker blue-grey-teal.
+
+const int CLOCKFRAMES = 0;
+const int SECOND = 1;
+const int SEGMENT = 2;
+const int MINUTE = 3;
+const int ROUND = 3;
+const int TURN = 4;
+const int SPAN = 5;
+const int HOUR = 6;
+const int DAY = 7;
+const int WEEK = 8;
+const int MONTH = 9;
+const int YEAR = 10;
+const int ANNUA = 10;
+
+
+//Daycycle colours. Change to correct values.
+
+const int DAYCYCLE = 110; //game Dynamics Array index.
+const int DAWN = 0;
+const int DAYTIME = 1;
+const int SUNSET = 2;
+const int DUSK = 0;
+const int TWILIGHT = 0;
+const int NIGHTTIME = 4;
+
+//Daycycle Rectangle overlay Constants
+
+const int D_TRANS = 50; //Daycycle overlay transparency.
+const int D_LAYER = 6; //Daycycle overlay layer.
+const int D_SIZEX = 255; //Width of Daycycle overlay.
+const int D_SIZEY = 255; //heigth of Daycycle overlay.
+const int D_POSX = 0; //X top-left position of Daycycle rectangle.
+const int D_POSY = 0; //Y top-left position of Daycycle rectangle.
+const int D_POSX2 = 256; //X2 bottom-right position of Daycycle rectangle.
+const int D_POSY2 = 172; //Y2 bottom-right  position of Daycycle rectangle.
+const int D_ROTX = 0; //Daycycle overlay rotation on X axis. 
+const int D_ROTY = 0; //Daycycle overlay rotation on Y axis. 
+const int D_ROTDEG = 0; //Daycycle overlay rotation degrees.
+const int D_SCALE = 1; //Scale of Daycycle overlay rectangle.
+
+//Weather overlay constants.
+
+const int W_TRANS = 20; //Weather transparency.
+const int W_LAYER = 5; //Weather layer.
+
+
+/// Other constants
+
+const int DETONATE_FFCSLOT = 1;
+
+//const int DROP_ENEMY_ID = 0;v//Defined in RPG_Items.zlib
+
+//Owns items
+
+const int I_SWORDOFLIGHT = 152;
+const int I_STAFF_OF_JHKARR = 172;
+const int I_STAFF_OF_JHKARR1 = 88;
+
+
+/// Primary Game Events
+
+const int DALEKLANDING = 505;
+
+///Function Constants
+
+const int BUMP = -32000; //Set a value to pass to allow ++ easily.
+const int KICK = -32001; //Set a value to pass to allow -- easily.
+const int ADD = -32002; //A boolean switch to add a specific value.
+const int SUB = -32003; //A boolean switch to subtract a specific value. 
+
+const int PLACE_TEN_THOUSANDS = 4;
+const int PLACE_THOUSANDS = 3;
+const int PLACE_HUNDREDS = 2;
+const int PLACE_TENS = 1;
+const int PLACE_ONES = 0;
+const int PLACE_TENTHS = -1;
+const int PLACE_HUNDREDTHS = -2;
+const int PLACE_THOUSANDTHS = -3;
+const int PLACE_TEN_THOUSANDTHS = -4;
+
+//CSets
+
+const int CSET1 	= 0;
+const int CSET2 	= 16;
+const int CSET3 	= 32;
+const int CSET4 	= 48;
+const int CSET5 	= 64;
+const int CSET6 	= 80;
+const int CSET7 	= 96;
+const int CSET8 	= 112;
+const int CSET9 	= 128;
+const int CSET10 	= 144;
+const int CSET11 	= 160;
+const int CSET12 	= 176;
+const int CSET13 	= 192;
+const int CSET14 	= 208;
+const int CSET15 	= 224;
+const int CSET16 	= 240;
+
+//screen->D Constants
+
+const int SD_FLAGS = 7; //Screen->D[7] is for flags.
+const int SD_FLAG0 = -4 ; //Template for flag values.
+const int SD_FLAG1 = -3 ; //Template for flag values.
+const int SD_FLAG2 = -2 ; //Template for flag values.
+const int SD_FLAG3 = -1 ; //Template for flag values.
+const int SD_FLAG4 = 0 ; //Template for flag values.
+const int SD_FLAG5 = 1 ; //Template for flag values.
+const int SD_FLAG6 = 2 ; //Template for flag values.
+const int SD_FLAG7 = 3 ; //Template for flag values.
+const int SD_FLAG8 = 4 ; //Template for flag values.
+

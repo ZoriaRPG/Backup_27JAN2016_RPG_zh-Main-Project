@@ -1,0 +1,13 @@
+item script restoremagic{
+  void run(int m, int h){
+    if(Link->HP >= m && Link->MP < Link->MaxMP){
+        Link->HP += 0;
+        Link->MP += 200;
+        Game->PlaySound(healsfx);
+    }
+    else{
+    Game->PlaySound(errorsfx);
+    }
+    
+  }
+}

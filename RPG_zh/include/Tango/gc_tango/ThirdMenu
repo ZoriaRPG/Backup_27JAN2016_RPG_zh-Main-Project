@@ -1,0 +1,85 @@
+bool UtilitySpellsMenu(){
+
+    int lineBreak[]="@26";
+    int menuEnd[]="@domenu(1)@suspend()";
+
+    
+    int line2[]="@26";
+    int line1[]="@choice(1)!Escape@tab(56)@choice(2)Done@26";
+
+
+    
+    SetUpWindow(WINDOW_SLOT_3, WINDOW_STYLE_3, 32, 32, SIZE_LARGE);
+        Tango_LoadString(WINDOW_SLOT_3, line1);
+        Tango_AppendString(WINDOW_SLOT_3, line2);
+        Tango_AppendString(WINDOW_SLOT_3, menuEnd);
+        Tango_ActivateSlot(WINDOW_SLOT_3);
+    
+    
+    while(!Tango_MenuIsActive()){
+        
+        Waitframe();
+    }
+    
+    // Save the state again...
+    int slotState[274];
+    int menuState[60];
+    int cursorPos;
+    Tango_SaveSlotState(WINDOW_SLOT_3, slotState);
+    Tango_SaveMenuState(menuState);
+    
+    int done=0;
+    int choice;
+    while(true)
+    {
+    
+        while(Tango_MenuIsActive())
+        {
+            
+            cursorPos=Tango_GetMenuCursorPosition();
+          
+            Waitframe();
+        }
+        
+        choice=Tango_GetLastMenuChoice();
+        if(choice==0) // Canceled
+            done=2;
+            
+        else if(choice == 1) 
+        {
+           EscapeMenu();
+        }
+	
+	else if(choice == 2) 
+        {
+            done = 2;
+        }
+         
+        else if (Link->PressEx1){
+                done = 2;
+        }
+        else
+            done=2;
+
+        
+
+        
+        if(done>0){
+            
+            break;
+        }
+        else
+        {
+            Tango_RestoreSlotState(WINDOW_SLOT_3, slotState);
+            Tango_RestoreMenuState(menuState);
+            Tango_SetMenuCursorPosition(cursorPos);
+        }
+    }
+    
+    Tango_ClearSlot(WINDOW_SLOT_3);
+    
+    if(done==1)
+        return true; // Tell parent menu to close
+    else
+        return false; // Tell parent not to close
+}

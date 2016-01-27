@@ -1,0 +1,149 @@
+///Menu Interaction
+
+///Look FFCs
+
+///Search FFCs
+
+///Examine FFCs
+
+///Map the distance between Link and an FFC, and compare his direction in relative terms.
+// Determine if Link is on any given side of the FFC +/-X and +/-Y, and decide if he's facing the FFC.
+// Decide if Link is close enough to the FFC.
+
+//Bools
+
+bool isInRange(int maxDistX, int maxDistY){
+    if distanceLink((LinkX, this) > maxDistX) {
+        if distanceLink((LinkY, this < maxDistY) {
+        return true;
+        }
+    }
+    else return false;
+}
+
+bool requiresLeft(){
+    if ( LinkDir == Left ) {
+    return true;
+    }
+    else return false;
+}
+
+bool acceptsLeft(){
+}
+
+bool rejectsLeft(){
+    if ( LinkDir == Left ){
+    return false;
+    }
+    else return true;
+}
+
+bool requiresRight(){
+    if ( LinkDir == right ) {
+    return true;
+    }
+    else return false;
+}
+
+bool acceptsRight(){
+}
+
+bool rejectsRight(){
+    if ( LinkDir == right ){
+    return false;
+    }
+    else return true;
+}
+
+bool requiresUp(){
+    if ( LinkDir == up ) {
+    return true;
+    }
+    else return false;
+}
+
+bool acceptsUp(){
+}
+
+bool rejectsUp(){
+    if ( LinkDir == up ){
+    return false;
+    }
+    else return true;
+}
+
+bool requiresDown(){
+    if ( LinkDir == down ) {
+    return true;
+    }
+    else return false;
+}
+
+bool acceptsDown(){
+}
+
+bool rejectsDown(){
+    if ( LinkDir == down ){
+    return false;
+    }
+    else return true;
+}
+
+bool isFacingThis(int maxDistX, int maxDistY, bool dirLeft, bool dirRight, bool dirUp, bool dirDown){
+    if distanceLink((LinkX, this) > maxDistX) {
+        if distanceLink((LinkY, this < maxDistY) {
+            //check directional bools
+            bool requiresLeft;
+            bool requiresRight;
+            bool requiresUp;
+            bool RequiresDown;
+            bool worksLeft;
+            bool worksRight;
+            bool worksUp;
+            bool worksUp;
+            bool facingFFC;
+            
+            bool leftOK;
+            bool rightOK;
+            bool upOK;
+            bool downOK;
+            
+            //0 TOuching
+            //1 Direction OK
+            //2 Direction Required
+            //Direction Prohibited
+            
+            if ( dirLeft == true && LinkDir == left ){
+                leftOK = true;
+            }
+            else if ( dirLeft == true && !LinkDir == left ){
+                leftOK = false;
+            }
+            else if ( dirLeft == false ){
+                leftOK = true;
+            }
+            
+            if ( dirRight == true && LinkDir == right ){
+                rightOK = true;
+            }
+            else if ( dirRight == true && !LinkDir == right ){
+                rightOK = false;
+            }
+            else if ( dirRight == false ){
+                rightOK = true;
+            }
+            
+            if ( dirDown == true && LinkDir == right ){
+                rightOK = true;
+            }
+            else if ( dirDown == true && !LinkDir == right ){
+                rightOK = false;
+            }
+            else if ( dirDown == false ){
+                rightOK = true;
+            }
+            
+            
+            if ( dirRight == true && LinkDir == right )
+                facingFFC = true;
+            

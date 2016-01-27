@@ -1,0 +1,21 @@
+void UseItemsInWater(int press_button){
+	if ( Is(SWIMMING) ){
+		if ( Link->PressA && GetEquipmentA() != I_DIVE && GetEquipmentA() != I_PADDLE && press_button == SWIM_PRESS_A ) {
+			Link->Action = LA_NONE; //Link's tile may be wrong for one frame, so 
+						// We may need to substitute a tile for one frame to 
+						//match his swimming tile.
+			Link->InputA = true;
+			running = false;
+			Waitframe(); //If we don;t wait here, the item won't activate. 
+		}
+		if ( Link->PressB && GetEquipmentB() != I_DIVE && GetEquipmentB() != I_PADDLE && press_button == SWIM_PRESS_B ) {
+			Link->Action = LA_NONE;
+			Link->InputB = true;
+			running = false;
+			Waitframe();
+		}
+		Link->Action = LA_SWIMMING;
+		Waitframe();
+		}
+	}
+}

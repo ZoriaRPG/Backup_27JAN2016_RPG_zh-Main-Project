@@ -1,0 +1,19 @@
+void Version(){
+	int GameName[]="Legacy of Emperors Alpha 0.74";
+	int Release[]="Release 58 SR.N3A";
+	int ScriptVersion[]="RPG.zh Version (Alpha) 0.97.2/2";
+	int BuildNumber[]="Build Number 01";
+	int BuildDate[]="08 JUNE, 2015 - 18:28GMT";
+	
+	TraceNL();
+	TraceS(GameName);
+	TraceNL();
+	TraceS(Release);
+	TraceNL();
+	TraceS(BuildNumber);
+	TraceNL();
+	TraceS(BuildDate);
+	TraceNL();
+	TraceS(ScriptVersion);
+	TraceNL();
+}

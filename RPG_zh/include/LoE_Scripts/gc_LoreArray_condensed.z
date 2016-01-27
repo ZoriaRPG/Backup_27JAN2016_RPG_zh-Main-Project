@@ -1,0 +1,105 @@
+int loreSkill = 1; //Sets current skill type.
+
+//Establish array:
+
+//Setting array elements:
+
+int skillCheckArray[32] = { 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0 };
+                        
+// Elements will need to be modified, with initial values, to work with functions.
+
+
+// Establish rows.
+int loreRow = 0;
+setLoreArrayRow = ( 8 * loreRow );
+// +8 * 0 for row 0, +8 * 1 for row 1, + 8 * 2 for row 2, etc.
+
+//Establish Columns
+int loreColumn;
+
+
+//Function to select a row:
+void setLoreRow(int rowValue) {
+    loreRow = ( 8 * rowValue );
+}
+
+
+//Example: 
+//Function to select a column.
+void setCurrentLoreColumn(int columnValue){
+    loreColumn = columnValue;
+}
+
+int loreValue = ( loreRow + loreColumn );
+//Establish a singular pointer, for int functions that must return a value.
+//e.g. return skillCheckArray[loreValue];
+
+Use Columns & Rows to Specify an Element:
+
+skillCheckArray[loreValue] = 0; 
+//Uses loreRow, a global value, to determine the row, + loreColumn, a global variable
+//to determine the column, then changes the value of the specified element.
+
+//*** Example
+//*** rowValue = 1;
+//*** columnValue = 4;
+//*** skillCheckArray[loreValue] = 6; //This would set the value of item002_messageFailure, in the table below, to a value of 6.
+//***
+
+//Function to read a value, using the above:
+
+void loreCheck(){
+
+    int thisItem; //Need a way to point to the item being checked.
+    int itemNumber = 0;
+    int levelUnlocked = 1
+    int lastChecked = 2;
+    int nextCheck = 3;
+    int messageFailure = 4;
+    int messageSuccess = 5;
+    int upgradeItem = 6;
+    int result = 7;
+    int thisItemRow;
+    int currentLevel = Game->Counter[CR_LEVEL];
+    int currentSkillLevel = ( loreSkill * 10 ) + getMindStat();
+    bool success;
+    int itemSlot = skillCheckArray[thisItemRow + itemNumber];
+    
+    //Needs a way to determine the item in question, to select a row.
+    
+    if ( skillCheckArray[thisItemRow + nextCheck] <= currentLevel &&
+        skillCheckArray[thisItemRow + lastChecked] < currentLevel ) {
+        checkDie = rollDie(100);
+        if ( checkDie < currentSkillLevel ) {
+            success = true;
+        }
+        else {
+            success = false;
+        }
+        
+        if ( success == true ) {
+            skillCheckArray[thisItemRow + levelUnlocked] += 1;
+            UnlockItem(thisItem, skillCheckArray[thisItemRow + levelUnlocked]);
+            skillResult(skillCheckArray[thisItemRow + result]);
+            Screen->Message(skillCheckArray[thisItemRow + messageSuccess]);
+        }
+        
+        else if ( success == false ) {
+            skillCheckArray[thisItemRow + lastChecked] = currentLevel;
+            skillCheckArray[thisItemRow + nextCheck] = ( currentLevel + 1 );
+            Screen->Message(skillCheckArray[thisItemRow + messageFailure]);
+        }
+    }
+            
+
+//TABLE
+//        item001, item001_levelUnlocked, item001_lastChecked, item001_nextCheck, item001_messageFailure, item001_messageSuccess, item001_upgrade, item 001_result,
+//        item002, item002_levelUnlocked, item002_lastChecked, item002_nextCheck, item002_messageFailure, item002_messageSuccess, item002_upgrade, item_002_result,
+//        item003, item003_levelUnlocked, item003_lastChecked, item003_nextCheck, item003_messageFailure, item003_messageSuccess, item003_upgrade, item_002_result,
+//        item004, item004_levelUnlocked, item004_lastChecked, item004_nextCheck, item004_messageFailure, item004_messageSuccess, item004_upgrade, item_004_result
+//        };
+
+

@@ -1,0 +1,328 @@
+// Status Afflictions
+
+
+/////////////////////
+///  RESISTANCES  ///
+///   TAINT AND   ///
+/// SAVING THROWS ///
+/////////////////////
+
+const int SAVE_VS_POISON = 0;
+const int SAVE_VS_STUN = 1; 
+const int SAVE_VS_FATIGUE = 2;
+const int SAVE_VS_MAGIC = 3;
+const int SAVE_VS_PSYCHIC = 4;
+const int SAVE_VS_FIRE = 5;
+const int SAVE_VS_WATER = 6;
+const int SAVE_VS_AIR = 7;
+const int SAVE_VS_EARTH = 8;
+const int SAVE_VS_LIGHT = 9;
+const int SAVE_VS_DARKNESS = 10;
+const int SAVE_VS_SONIC = 11;
+const int SAVE_VS_PETRIFICATION = 12;
+const int SAVE_VS_FEAR = 13;
+const int SAVE_VS_DEATH = 14; //Instant-Death Spells
+const int SAVE_VS_HORROR = 15;
+const int SAVE_VS_INSANITY = 16;
+const int SAVE_VS_CORRUPTION = 17;
+const int SAVE_VS_DEPRAVITY = 18;
+const int SAVE_VS_RIGHTEOUSNESS = 19;
+const int SAVE_VS_PURITY = 20;
+const int SAVE_VS_FATE = 21; //Curses
+
+
+int savingThrows[22]={  0, // Posion
+                        0, // Stun
+                        0, // Fatigue
+                        0, // Magic
+                        0, // Psychic
+                        0, // Fire
+                        0, // Water
+                        0, // Air
+                        0, // Earth
+                        0, // Light
+                        0, // Darkness
+                        0, // Sonic
+                        0, // Petrification
+                        0, // Fear
+                        0, // Death
+                        0, // Horror
+                        0, // Insanity
+                        0, // Corruption
+                        0, // Depravity
+                        0, // Righteousness
+                        0, // Purity
+                        0}; // Fate
+                        
+const int RESIST_FIRE = 0;
+const int RESIST_WATER = 1;
+const int RESIST_AIR = 2;
+const int RESIST_EARTH = 3;
+const int RESIST_LIGHT = 4;
+const int RESIST_DARKNESS = 5;
+const int RESIST_SONIC = 6;
+        
+int elementalResistance[7]={0, //Fire & Heat
+                            0, //Water & Ice
+                            0, //Air & Electricity
+                            0, //Earth & Acid
+                            0, //Light
+                            0, //Darkness
+                            0}; //Sonic
+                            
+                            
+const int TAINT_CORRUPTION = 0;
+const int TAINT_DEPRAVITY = 1;
+const int TAINT_RIGHTOUSNESS = 2;
+const int TAINT_PURITY = 4;
+
+int taintArray[4]={ 0, //Corruption
+                    0, //Depravity
+                    0, //Righteusness
+                    0}; //Purity
+
+bool savingThrow(int type, bool useTaint){
+    int modifierValue;
+    int modifierBase;
+    int modifierSubtotal;
+    int modifierTotalValue;
+    int luckModifier = getLuckMod();
+    int taintModifier;
+    int energyModifier;
+    int includeTaint;
+    int finalSaveValue;
+    int rollSavingThrow;
+    if ( type == SAVE_VS_FATIGUE ||
+        type == SAVE_VS_SONIC ) {
+        modifierValue = getMuscMod();
+    }
+    if ( type == SAVE_VS_POISON ||
+        type == SAVE_VS_STUN ||
+        type == SAVE_VS_DEATH ||
+        type == SAVE_VS_PETRIFICATION ) {
+        modifierValue = getBodyMod();
+    }
+    if ( type == SAVE_VS_PSYCHIC ||
+        type == SAVE_VS_FEAR ||
+        type == SAVE_VS_HORROR ||
+        type == SAVE_VS_INSANITY ) {
+        modifierValue = getMindMod();
+    }
+    if ( type == SAVE_VS_MAGIC ||
+        type == SAVE_VS_FIRE ||
+        type == SAVE_VS_WATER ||
+        type == SAVE_VS_AIR ||
+        type == SAVE_VS_EARTH ||
+        type == SAVE_VS_LIGHT ||
+        type == SAVE_VS_DARKNESS ) {
+        modifierValue = getMystMod();
+    }
+    if ( type == SAVE_VS_CORRUPTION ||
+        type == SAVE_VS_DEPRAVITY ||
+        type == SAVE_VS_RIGHTEOUSNESS ||
+        type == SAVE_VS_PURITY ) {
+        modifierValue = getMystMod();
+    }
+    if ( type == SAVE_VS_FATE ) {
+        modifierValue = getLuckStat();
+    }
+    if ( type == SAVE_VS_FIRE ) {
+        energyModifier = ( elementalResistance[RESIST_FIRE] );
+    }
+    if ( type == SAVE_VS_WATER ) {
+        energyModifier = ( elementalResistance[RESIST_WATER] );
+    }
+    if ( type == SAVE_VS_AIR ) {
+        energyModifier = ( elementalResistance[RESIST_AIR] );
+    }
+    if ( type == SAVE_VS_EARTH ) {
+        energyModifier = ( elementalResistance[RESIST_EARTH] );
+    }
+    if ( type == SAVE_VS_LIGHT ) {
+        energyModifier = ( elementalResistance[RESIST_LIGHT] );
+    }
+    if ( type == SAVE_VS_DARKNESS ) {
+        energyModifier = ( elementalResistance[RESIST_DARKNESS] );
+    }
+    if ( type == SAVE_VS_SONIC ) {
+        energyModifier = ( elementalResistance[RESIST_SONIC] );
+    }
+    
+    if ( type == SAVE_VS_CORRUPTION ) {
+        taintModifier = ( taintArray[TAINT_PURITY] - taintArray[TAINT_CORRUPTION] );
+    }
+    if ( type == SAVE_VS_DEPRAVITY ) {
+        taintModifier = ( taintArray[TAINT_RIGHTOUSNESS] - taintArray[TAINT_DEPRAVITY] );
+    }
+    if ( type == SAVE_VS_RIGHTEOUSNESS ) {
+        taintModifier = ( taintArray[TAINT_DEPRAVITY] - taintArray[TAINT_RIGHTOUSNESS] );
+    }
+    if ( type == SAVE_VS_PURITY ) {
+        taintModifier = ( taintArray[TAINT_CORRUPTION] - taintArray[TAINT_PURITY] );
+    }
+    
+    
+    modifierBase = ( modifierValue + energyModifier + energyModifier );
+    if ( useTaint == true ) {
+        modifierSubtotal = ( modifierBase + taintModifier );
+    }
+    else if ( useTaint == false ) {
+        modifierSubtotal = modifierBase;
+    }
+    if ( type == SAVE_VS_FATE ) {
+        modifierTotalValue = modifierSubtotal;
+    }
+    else {
+        modifierTotalValue = ( modifierSubtotal + luckModifier );
+    }
+    
+    finalSaveValue = ( modifierTotalValue * 10 );
+    
+    rollSavingThrow = rollDie(100);
+    
+    if ( rollSavingThrow > finalSaveValue ) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
+int makeSavingThrow(int type, int minDamage, int maxDamage, bool damageStat, int statToDamage, bool useTaint, bool damageHP, bool damageMaxHP, bool damageMP, bool damageMaxMP, bool specialEffect) {
+    bool madeSavingThrow;
+    int damageValue;
+    damageValue = Rand(minDamage, maxDamage);
+    
+    if ( useTaint ) {
+        if ( savingThrow(type, true) ){
+            madeSavingThrow = true;
+        }
+        else {
+            madeSavingThrow = false;
+        }
+    }
+    
+    else if ( !useTaint ) {
+        if ( savingThrow(type, false) ){
+            madeSavingThrow = true;
+        }
+        else {
+            madeSavingThrow = false;
+        }
+    }
+    
+    if ( madeSavingThrow == false ) {
+        
+        if ( damageStat ) {
+            if ( statsArray[statToDamage] > damageValue ) {
+                statsArray[statToDamage] -= damageValue;
+            }
+            else {
+                statsArray[statToDamage] = 0;
+            }
+        }
+        else if ( !damageStat ) {
+            if ( damageHP ) {
+                Link->HP -= damageValue;
+            }
+            if ( damageMP ) {
+                Link->MP -= damageValue;
+            }
+            if ( damageMaxHP ) {
+                Link->MaxHP -= damageValue;
+            }
+            if ( damageMaxMP ) {
+                Link->MaxMP -= damageValue;
+            }
+        }
+        
+            
+        if ( specialEffect ) {
+            if ( type == SAVE_VS_STUN )
+            if ( SAVE_VS_FATIGUE ) {
+                //fatigue(damageValue);
+            }
+            if ( SAVE_VS_MAGIC ){
+                //
+            }
+            if ( SAVE_VS_PSYCHIC ) {
+                //
+            }
+            if ( SAVE_VS_FIRE ) {
+                //playerOnFire(duration)
+                //duration is set by damageValue * 100 in frames
+            }
+            if ( SAVE_VS_WATER ) {
+                //
+            }
+            if ( SAVE_VS_AIR ) {
+                //
+            }
+            if ( SAVE_VS_EARTH ) {
+                //
+            }
+            if ( SAVE_VS_LIGHT ) {
+                //
+            }
+            if ( SAVE_VS_DARKNESS ) {
+                //
+            }
+            if ( SAVE_VS_SONIC ) {
+                //
+            }
+            if ( SAVE_VS_PETRIFICATION ){
+                //for damagevalue * 100 frames, WaitNoAction().
+            }
+            if ( SAVE_VS_FEAR ) {
+                //
+            }
+            if ( SAVE_VS_DEATH ) {
+                Link->HP = 0;
+            }
+            if ( SAVE_VS_HORROR ) {
+                //
+            }
+            if ( SAVE_VS_INSANITY ) {
+                //
+            }
+            if ( SAVE_VS_CORRUPTION ) {
+                taintArray[TAINT_CORRUPTION] += damageValue;
+            }
+            if ( SAVE_VS_DEPRAVITY ) {
+                taintArray[TAINT_DEPRAVITY] += damageValue;
+            }
+            if ( SAVE_VS_RIGHTEOUSNESS ) {
+                taintArray[TAINT_RIGHTOUSNESS] += damageValue;
+            }
+            if ( SAVE_VS_PURITY ) {
+                taintArray[TAINT_PURITY] += damageValue;
+            }
+            if ( SAVE_VS_FATE ) {
+                //Jinxes & Curses
+            }
+        }
+    }
+    else {
+    }
+}
+
+/// CURSES ///
+
+///Increase Magic Costs
+///This would only work in the item editor panel. 
+//I need to go through, in every script that uses magic, and multiply the MP cost as follows:
+// cost = MP * Game->Generic[GEN_MAGICDRAINRATE]
+
+void SetMagicCost(int amount){
+	Game->Generic[GEN_MAGICDRAINRATE] = amount;
+}
+
+void IncreaseMagicCost(){
+	Game->Generic[GEN_MAGICDRAINRATE]++;
+}
+
+void DecreaseMagicCost(){
+	Game->Generic[GEN_MAGICDRAINRATE]--;
+}
+
+

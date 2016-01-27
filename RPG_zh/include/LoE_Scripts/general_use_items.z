@@ -1,0 +1,121 @@
+item script restoreForCost {
+    void run(int cost, int amount, int restore, int counter){
+        int useCounter;
+        if ( counter > 0 ) {
+            useCounter = counter;
+            if ( Game->Counter[counter] >= cost ){
+                
+        }
+        else {
+            useCounter = CR_LIFE;
+        }
+    
+   
+// Baic script to restore magic for HP:
+
+item script magicForHP {
+    void run(int hp, int mp, int sfx, int errorSound) {
+        if ( Link->HP >= hp ) {
+            Game->PlaySound(sfx);
+            Link->MP += mp;
+        }
+        else {
+            if ( errorSound > 0 ) {
+                Game->PlaySound(errorSound);
+            }
+        }
+    }
+}
+
+// Basic script to restore health for MP:
+     
+item script healthForMP {
+    void run(int mp, int hp, int sfx, int errorSound) {
+        if ( Link->MP >= mp ) {
+            Game->PlaySound(sfx);
+            Link->HP += hp;
+        }
+        else {
+            if ( errorSound > 0 ) {
+                Game->PlaySound(errorSound);
+            }
+        }
+    }
+}     
+
+// Baic script to restore magic for HP,only if MP is not full:
+
+item script magicForHP {
+    void run(int hp, int mp, int sfx, int errorSound) {
+        if ( Link->MP < Link->MaxMP && Link->HP >= hp ) {
+            Game->PlaySound(sfx);
+            Link->MP += mp;
+        }
+        else {
+            if ( errorSound > 0 ) {
+                Game->PlaySound(errorSound);
+            }
+        }
+    }
+}
+
+// Baic script to restore health for MP, only if HP is not full:
+
+item script magicForHP {
+    void run(int mp, int hp, int sfx, int errorSound) {
+        if ( Link->HP < Link->MaxHP && Link->MP >= mp ) {
+            Game->PlaySound(sfx);
+            Link->HP += hp;
+        }
+        else {
+            if ( errorSound > 0 ) {
+                Game->PlaySound(errorSound);
+            }
+        }
+    }
+}
+
+//Script to increase any counter by a set amount. You can use negative values to reverse this, instead reducing a counter.
+
+item script increaseCounter {
+    void run(int counter, int amount) {
+        Game->Counter[counter] += amount;
+    }
+}
+
+//Script to reduce any counter by a set amount. You can use negative values to reverse this, instead adding to a counter
+
+item script decreaseCounter {
+    void run(int counter, int amount) {
+        Game->Counter[counter] -= amount;
+    }
+}
+
+//Script to set counter to exact, specified amount:
+item script setCounter {
+    void run(int counter, int amount) {
+        Game->Counter[counter] = amount;
+    }
+}
+
+
+//Script to increase any counter by a set amount, at the cost of another counter, at a set amount.           
+            
+item script restoreForCost {
+    void run(int counter, int cost, int restore, int amount, int sound, int errorSound){
+        int useCounter;
+        useCounter = counter;
+        if ( Game->Counter[counter] >= cost ) {
+                if ( sound > 0 ) {
+                    Game->PlaySound(sound);
+                }
+                Game->Counter[restore] += amount;
+        }
+        else {
+            if ( errorSound > 0 ) {
+                Game-PlaySound(errorSound);
+            }
+        }
+    }
+}
+            

@@ -1,0 +1,6 @@
+//Returns Link->Jump as an int. For whatever reason, this is recorded to allegro.log as a float, and some ZC versions
+//have a bug involving this value, so we Floor it first.
+int LinkJump(){
+	int jmp = Floor(Link->Jump); //Floor Link->Jump to ensure that a value of 0.050 is '0'.
+	return jmp; //Return the floored value.
+}

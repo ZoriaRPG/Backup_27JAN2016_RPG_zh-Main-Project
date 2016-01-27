@@ -1,0 +1,32 @@
+int MyArray[10];
+
+
+item script rubbish{ 
+	void run(){
+		int x = 1;
+		atcive.rubbish(x);
+		working = true;
+	}
+}
+
+global script atcive{
+	void run(){
+		int MyArray[20];
+		int x = SizeOfArray(MyArray);
+		Trace(x);
+		while ( true ) {
+			Trace(MyArray[1]);
+			working = false;
+			Waitframe();
+		}
+	}
+	void rubbish(int MyArray){
+		Trace(SizeOfArray(MyArray));
+		MyArray[1] = 100;
+	}
+}
+
+
+
+
+

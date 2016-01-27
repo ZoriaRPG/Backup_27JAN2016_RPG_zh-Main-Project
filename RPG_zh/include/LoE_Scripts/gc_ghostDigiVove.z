@@ -1,0 +1,32 @@
+ffc script DigiVolvingEnemy{
+    void run(int originalEnemy, int L2_ENEMY, int L3_ENEMY, int L4_ENEMY, int item001_item002_item003) {
+    int item001
+    }
+}
+
+ffc script Ghost_Digivolve {
+    void run (int enemyID ){
+        int replaceWith1 = ghost->Attributes[3];
+        int replaceWith2;
+        int replaceWith3;
+        int replacedEnemy = enemyID;
+        int thisEnemy;
+    
+        if ( Link->Item[DigiVolve] == true ) {
+            npc enemy = replacedEnemy;
+            enemy->OriginalTile = 10484;
+            enemy->CollDetection = false;
+            enemy->Weapon = WPN_NONE;
+    
+            npc ghost = CreateNPCAt(replaceWith1, enemy->X, enemy->Y); //Create enemyReplace at their position.
+            thisEnemy = ghost;
+        }
+    
+    
+    
+    
+        if ( thisEnemy->HP < 1 ) {
+            Remove(Remove(enemy); //Remove enemyOriginal); //Remove enemyOriginal
+        }
+    }
+}

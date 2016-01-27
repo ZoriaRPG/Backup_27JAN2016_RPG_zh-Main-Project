@@ -1,0 +1,118 @@
+//const int SFX_SAVE_ERROR = 88; //In gc_menus_GameMenu.z
+//const int SFX_SAVE_SUCCESS = 93; //In gc_menus_GameMenu.z
+
+bool RestoreMenu()
+{
+    //SetUpWindow(WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32, SIZE_LARGE);
+    //int spellFormat[]="@choice(%d)Spell %d";
+    int lineBreak[]="@26";
+    int menuEnd[]="@domenu(1)@suspend()";
+    //int spellIce[]="@choice(%d)Water/Ice";
+    //int spellFire[]="@choice(%d)Fire/Heat";
+    
+    //for(int i=1; i<9; i++)
+    //{
+    //    int buffer[40];
+    //    sprintf(buffer, spellFormat, i, i);
+    //    Tango_AppendString(WINDOW_SLOT_2, buffer);
+    //    if(i<7)
+    //        Tango_AppendString(WINDOW_SLOT_2, lineBreak);
+    //}
+    
+    int line1[]="@choice(1)Restore@26";
+    int line2[]="@choice(2)Cancel@26";
+    
+    //@choice(2)Light@domenu(1)@suspend()
+    
+    SetUpWindow(WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32, SIZE_LARGE);
+        Tango_LoadString(WINDOW_SLOT_2, line1);
+        Tango_AppendString(WINDOW_SLOT_2, line2);
+        Tango_AppendString(WINDOW_SLOT_2, menuEnd);
+        Tango_ActivateSlot(WINDOW_SLOT_2);
+    
+    
+    //Tango_AppendString(WINDOW_SLOT_2, menuEnd);
+    //Tango_ActivateSlot(WINDOW_SLOT_2);
+    
+    while(!Tango_MenuIsActive()){
+        
+        Waitframe();
+    }
+    
+    // Save the state again...
+    int slotState[274];
+    int menuState[60];
+    int cursorPos;
+    Tango_SaveSlotState(WINDOW_SLOT_2, slotState);
+    Tango_SaveMenuState(menuState);
+    
+    bool done = false;
+    int choice;
+    while(true)
+    {
+    
+        while(Tango_MenuIsActive())
+        {
+            
+            cursorPos=Tango_GetMenuCursorPosition();
+          
+            Waitframe();
+        }
+        
+        choice=Tango_GetLastMenuChoice();
+        if(choice==0) // Canceled
+            done=true;
+            
+        else if(choice == 1) 
+        {
+		if ( !GameSaveStated() ) {
+			Game->PlaySound(SFX_SAVE_ERROR);
+			int text[]="No Quick Save to Restore";
+			Tango_ClearSlot(3);
+			ShowString(text, WINDOW_SLOT_5, WINDOW_STYLE_2, 48, 48);
+			menuArg=choice;
+		}
+		else{
+			RestoreGame(false);
+			return true;
+			done = true;
+			//menuArg=choice;
+		}
+        }
+        
+        else if(choice == 2) 
+        {
+	
+           done = true;
+        }
+        
+
+            
+        else if (Link->PressEx1){
+                done = true;
+        }
+        else
+            done=true;
+
+        
+
+        
+        if(done){
+            
+            break;
+        }
+        else
+        {
+            Tango_RestoreSlotState(WINDOW_SLOT_2, slotState);
+            Tango_RestoreMenuState(menuState);
+            Tango_SetMenuCursorPosition(cursorPos);
+        }
+    }
+    
+    Tango_ClearSlot(WINDOW_SLOT_2);
+    
+    if(done)
+        return true; // Tell parent menu to close
+    else
+        return false; // Tell parent not to close
+}

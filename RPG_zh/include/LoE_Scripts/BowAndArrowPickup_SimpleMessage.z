@@ -1,0 +1,37 @@
+const int ITM_HOLD1LAND = 1;
+const int ITM_HOLD2LAND = 2;
+const int ITM_HOLD1WATER = 3;
+const int ITM_HOLD2WATER = 4;
+
+void HoldUpItem(int itm, int holdType){
+	if ( holdType == ITM_HOLD1LAND ) {
+		Link->Action = LA_HOLD1LAND;
+		Link->HeldItem = itm;
+	}
+	if ( holdType == ITM_HOLD2LAND ) {
+		Link->Action = LA_HOLD2LAND;
+		Link->HeldItem = itm;
+	}
+	if ( holdType == ITM_HOLD1WATER ) {
+		Link->Action = LA_HOLD1WATER;
+		Link->HeldItem = itm;
+	}
+	if ( holdType == ITM_HOLD2WATER ) {
+		Link->Action = LA_HOLD2WATER;
+		Link->HeldItem = itm;
+	}
+}
+	
+
+item script BowPickup{
+	void run(int arrowCount, int giveArrows, int quiver, int arrowType, int playSFX, int showMessage, int holdUp, int bowID){
+		if ( quiver && !Link->item[quiver] ) Link->Item[quiver] = true;
+		if ( arrowType && !Link->Item[arrowType] ) Link->Item[arrowType] = true;
+		if ( giveArrows ) Game->Counter[CR_ARROWS] += giveArrows;
+		if ( giveArrows < 0 ) Game->Counter[CR_RUPEES] += giveArrows;
+		if ( playSFX ) Game->PlaySound(playSFX);
+		if ( holdUp && bowID ) HoldUpItem(bowID,holdUp);
+		if ( showMessage ) Screen->Message(showMessage);
+	}
+}
+		

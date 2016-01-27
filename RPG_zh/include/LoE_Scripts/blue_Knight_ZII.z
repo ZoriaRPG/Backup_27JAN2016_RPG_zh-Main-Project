@@ -1,0 +1,389 @@
+import "std.zh"
+
+ffc script ScrollLR
+{
+	float jTime;
+	float yStart;
+	bool bJumping;
+	int jump_pause;
+	int max_floor;
+
+	/////////////////////////////
+	// This function handles sideview left/right scrolling (b15+)
+	// Length: Length (in pixels) of the room. 768 = 3 screen widths.
+	// nOpenStart: start of open area of background (0 = no open area)
+	// nOpenEnd: end of open area of background (0 = no open area)
+	// nFFC_Cnt: the number of ffcs to scroll.
+	// nStartSolidFFC: The starting range of solid ffcs.
+	// nEndSolidFFC: The end range of solid ffcs.
+	// 
+	// The first ffc contain these arguments.
+	// All ffc x positions are stored in an encode format
+	// to allow them to be positioned anywhere in the virtual screen.
+	// EncodeX = X/16. So scrolling ffcs must be place on tile boundaries.
+	/////////////////////////////
+	void run(int Length, int MaxFloorHeight, int nOpenStart, int nOpenEnd, int nFFC_Cnt, int nStartSolidFFC, int nEndSolidFFC)
+	{
+		int nDelay = 0;
+		int nLastLinkX = Link->X;
+		int nLastLinkY = Link->Y;
+		int x;
+		int i;
+		int vX = Link->X;
+		int nNPCCnt = 0;
+		int item_locX = -1;
+		int item_locY = -1;
+		int lastNPC_X0 = 0;
+		bool bOnGround=false;
+		ffc CurFFC;
+		npc CurNPC;
+
+		int nCeiling = Screen->ComboD[ ComboAt(0,0) ];
+		int nFloor = Screen->ComboD[ ComboAt(0,160) ];
+		int nB0 = Screen->ComboD[ ComboAt(0,16) ];
+		int nB1 = Screen->ComboD[ ComboAt(0,32) ];
+		int nB2 = Screen->ComboD[ ComboAt(0,48) ];
+		int nB3 = Screen->ComboD[ ComboAt(0,64) ];
+		int nB4 = Screen->ComboD[ ComboAt(0,80) ];
+		int nB5 = Screen->ComboD[ ComboAt(0,96) ];
+		int nB6 = Screen->ComboD[ ComboAt(0,112) ];
+		int nB7 = Screen->ComboD[ ComboAt(0,128) ];
+		int nB8 = Screen->ComboD[ ComboAt(0,144) ];
+
+		max_floor = MaxFloorHeight;
+
+		jTime = 0;
+		jump_pause = 0;
+		bJumping = false;
+
+		//decode x position into Ax for each FFC.
+		//As long as we don't want to auto. move the FFCs
+		//and we reset the Velocity each frame (to 0) then we 
+		//can store whatever we want in Ax and Ay.
+		for (i=1; i<nFFC_Cnt+1; i++)
+		{
+			CurFFC = Screen->LoadFFC(i);
+			CurFFC->Ax = CurFFC->X*16;
+		}
+
+		//Scroll offset for floor/ceiling/background tiles.
+		int nScrollOffs = 0;
+
+		//now determine where in the virtual screen Link is based
+		//on his starting position...
+		//For now < 128 = 0, > 128 = end.
+		if ( Link->X > 128 )
+		{
+			//ok put him at the end, max scroll...
+			vX = Link->X + Length-256;
+		}
+
+		while (true)
+		{
+			//clear up/down
+			Link->InputUp = false;
+			Link->InputDown = false;
+
+			//go ahead and jump
+			Link->Y = nLastLinkY;
+			jump();
+
+			//compute desired movement.
+			int nMove = Link->X - nLastLinkX;
+
+			if ( nMove < -1) { nMove = -1; }
+			else if ( nMove > 1) { nMove = 1; }
+			
+			if (Link->InputRight)
+			{ nMove = 1; Link->Dir = DIR_RIGHT; }
+			else if ( Link->InputLeft )
+			{ nMove = -1; Link->Dir = DIR_LEFT; }
+
+			int nMoveY = Link->Y - nLastLinkY;
+
+			//Check if Link can move, check collisions against the ffcs.
+			int nColMask = HandleCollisions(nStartSolidFFC, nEndSolidFFC, vX+nMove, nLastLinkY+nMoveY);
+			
+			//nColMask is the collision edges:
+			// 0 = no collisions.
+			// 1 = left
+			// 2 = right
+			// 4 = top
+			// 8 = bottom
+			//16 = near ground.
+			if ( (nMove>0&&!(nColMask&1)) || (nMove<0&&!(nColMask&2)) )
+			{
+				vX += nMove;
+				Link->X = nLastLinkX + nMove;
+			}
+			else
+			{
+				Link->X = nLastLinkX;
+				nMove = 0;
+			}
+
+			if ( (nMoveY<0&&!(nColMask&8)) || (nMoveY>0&&!(nColMask&4)) || nMoveY == 0 )
+			{
+				Link->Y = nLastLinkY + nMoveY;
+			
+				if ( Link->Y >= max_floor )
+				{
+					bOnGround = true;
+				}
+				else if ( nMoveY )
+				{
+					bOnGround = false;
+				}
+				else
+				{
+					bOnGround = (nColMask&16);
+				}
+			}
+			else
+			{
+				Link->Y = nLastLinkY;
+				bJumping = false;
+				bOnGround = true;
+			}
+
+			//Make Link fall if not jumping and not on the ground..
+			//Should use real gravity like the jumping does....
+			if ( !bOnGround && !bJumping )
+			{
+				Link->Y+=2;
+			}
+			else
+			{
+				Link->Fall = 0;
+			}
+
+			//now handle scrolling
+			if ( vX < 0 ) { vX = 0; }
+			if (vX > 128 && vX < Length-128)
+			{
+				if ( nMove > 0 )
+				{
+					nScrollOffs = (nScrollOffs - 1);
+					if ( nScrollOffs < 0 ) { nScrollOffs += 16; }
+					Link->X = 128;
+				}
+				else if ( nMove < 0 )
+				{
+					nScrollOffs = (nScrollOffs + 1)%16;
+					Link->X = 128;
+				}
+			}
+			if ( nOpenStart == 0 && nOpenEnd == 0 )
+			{
+				for (x=0; x<16; x++)
+				{
+					Screen->ComboD[ 160+x ] = nFloor+nScrollOffs;
+	
+					Screen->ComboD[ 0+x ] = nCeiling+nScrollOffs;
+					Screen->ComboD[ 16+x ] = nB0+nScrollOffs;
+					Screen->ComboD[ 32+x ] = nB1+nScrollOffs;
+					Screen->ComboD[ 48+x ] = nB2+nScrollOffs;
+					Screen->ComboD[ 64+x ] = nB3+nScrollOffs;
+					Screen->ComboD[ 80+x ] = nB4+nScrollOffs;
+					Screen->ComboD[ 96+x ] = nB5+nScrollOffs;
+					Screen->ComboD[ 112+x ] = nB6+nScrollOffs;
+					Screen->ComboD[ 128+x ] = nB7+nScrollOffs;
+					Screen->ComboD[ 144+x ] = nB8+nScrollOffs;
+				}
+			}
+			else
+			{
+				for (x=0; x<16; x++)
+				{
+					Screen->ComboD[ 160+x ] = nFloor+nScrollOffs;
+	
+					if ( nOpenStart > 0 ) Screen->ComboD[ 0+x ]  = nCeiling+nScrollOffs;
+					if ( nOpenStart > 1 ) Screen->ComboD[ 16+x ] = nB0+nScrollOffs;
+					if ( nOpenStart > 2 || nOpenEnd < 2 ) Screen->ComboD[ 32+x ] = nB1+nScrollOffs;
+					if ( nOpenStart > 3 || nOpenEnd < 3 ) Screen->ComboD[ 48+x ] = nB2+nScrollOffs;
+					if ( nOpenStart > 4 || nOpenEnd < 4 ) Screen->ComboD[ 64+x ] = nB3+nScrollOffs;
+					if ( nOpenStart > 5 || nOpenEnd < 5 ) Screen->ComboD[ 80+x ] = nB4+nScrollOffs;
+					if ( nOpenStart > 6 || nOpenEnd < 6 ) Screen->ComboD[ 96+x ] = nB5+nScrollOffs;
+					if ( nOpenStart > 7 || nOpenEnd < 7 ) Screen->ComboD[ 112+x ] = nB6+nScrollOffs;
+					if ( nOpenStart > 8 || nOpenEnd < 8 ) Screen->ComboD[ 128+x ] = nB7+nScrollOffs;
+					if ( nOpenStart > 9 || nOpenEnd < 9 ) Screen->ComboD[ 144+x ] = nB8+nScrollOffs;
+				}
+			}
+
+			nLastLinkX = Link->X;
+			nLastLinkY = Link->Y;
+
+			//Calculate the ffc offset based on scroll offset.
+			int nOffs=0;
+			if ( Link->X >= 128 )
+			{
+				if ( vX < Length-128 )
+				{
+					nOffs = vX-128;
+				}
+				else
+				{
+					nOffs = Length-256;
+				}
+			}
+
+			//Move FFC's
+			for (i=1; i<nFFC_Cnt+1; i++)
+			{
+				CurFFC = Screen->LoadFFC(i);
+				CurFFC->X = Min( Max(CurFFC->Ax - nOffs, -32), 272 );
+				CurFFC->Vx = 0;
+
+				if ( CurFFC->X <= -31 )
+				{
+					if ( CurFFC->EffectHeight > 16 )
+					{
+						CurFFC->X = Min( Max(CurFFC->Ax+CurFFC->EffectWidth*16 - nOffs, -32), 272 );
+					}
+				}
+			}
+
+			if ( nNPCCnt < Screen->NumNPCs() )
+			{
+				nNPCCnt = Screen->NumNPCs();
+				for (i=0; i<nNPCCnt; i++)
+				{
+					CurNPC = Screen->LoadNPC(i+1);
+					CurNPC->BossPal = CurNPC->X;//*(Length/256)+i*16;
+					CurNPC->Extend = 0;
+				}
+			}
+			else
+			{
+				nNPCCnt = Screen->NumNPCs();
+			}
+			//Move NPC's
+			float newX;
+			for (i=0; i<nNPCCnt; i++)
+			{
+				CurNPC = Screen->LoadNPC(i+1);
+				newX = CurNPC->BossPal - nOffs;
+
+				if (newX < 0 || newX > 256)
+				{
+					CurNPC->X = -15;
+					CurNPC->Extend = 0;
+
+					if ( CurNPC->Y > max_floor )
+					{
+						CurNPC->Y = max_floor;
+					}
+				}
+				else
+				{
+					CurNPC->X -= (nOffs - CurNPC->Extend);
+					CurNPC->Extend = nOffs;
+				}
+			}
+
+			//Move items
+			if ( Screen->NumItems() > 0 )
+			{
+				item curItem = Screen->LoadItem(1);
+				if ( item_locX == -1 )
+				{
+					item_locX = curItem->X * (Length/256);
+					item_locY = curItem->Y;
+				}
+				curItem->X = Min( Max(item_locX - nOffs, -32), 272 );
+				curItem->Y = item_locY;
+			}
+
+			Waitframe();
+		}
+	}
+	//Return true if there is a collision.
+	int HandleCollisions(int nStartFFC, int nEndFFC, int x, int y)
+	{
+		if ( nStartFFC == 0 && nEndFFC == 0 )
+		{
+			return 0;
+		}
+		int i;
+		int nColMask = 0;
+		for (i=nStartFFC; i<nEndFFC+1; i++)
+		{
+			ffc col = Screen->LoadFFC(i);
+			float tH = col->TileHeight*16;
+			float tW = col->TileWidth*16;
+
+			float cX = col->Ax;
+
+			if (cX+128 < x && col->EffectHeight>16)
+			{
+				cX += col->EffectWidth*16;
+			}
+
+			if ( y+16 >= col->Y && y < col->Y+tH )
+			{
+				if ( x+16 >= cX && x < cX+tW )
+				{
+					if ( x+16 < cX+4 )
+					{
+						nColMask |= 1;
+					}
+					else if ( x > cX+(tW-4) )
+					{
+						nColMask |= 2;
+					}
+
+					if ( y > col->Y+(tH-4) )
+					{
+						nColMask |= 8;
+					}
+					else if ( y+16 < col->Y+4 )
+					{
+						nColMask |= 4;
+					}
+				}
+			}
+			else if ( y+18 >= col->Y && y < col->Y+tH )
+			{
+				if ( x+16 >= cX && x < cX+tW )
+				{
+					nColMask |= 16;
+				}
+			}
+		}
+		return nColMask;
+	}
+	//jump
+	void jump()
+	{
+		float a = 313.6;
+		float half_a = 0.5 * a;
+		float v0 = -167.2;
+		if ( Link->InputB && !bJumping && jump_pause == 0 )
+		{
+			bJumping = true;
+			jTime = 0.016;
+			jump_pause = 20;
+			yStart = Link->Y;
+			
+			Link->Y = yStart + v0*jTime + half_a*jTime*jTime;
+		}
+		else if ( bJumping )
+		{
+			if ( Link->Y >= max_floor )
+			{
+				bJumping = false;
+				Link->Y = max_floor;
+			}
+			else
+			{
+				jTime += 0.016;
+				Link->Y = yStart + v0*jTime + half_a*jTime*jTime;
+			}
+		}
+		else if ( jump_pause > 0 )
+		{
+			jump_pause--;
+		}
+		Link->InputB = false;
+	}
+}

@@ -1,0 +1,50 @@
+//============== * Jump-only obstacles * ==============================
+const int CT_OBSTACLE        = 12; //Combotype to give hole functionality to (default is Left Statue)
+//const int CT_OBSTACLE        = 143; //Uses the script 1 combo type - 143-146 are 2-5
+
+ffc script JumpBlock{
+    void run(){
+        while(true){
+            if(OnBlock() && Link->Dir == DIR_UP){
+                Link->Y = Link->Y + 2;
+                Link->InputUp = false;
+                Link->InputDown = false;
+                Link->InputLeft = false;
+                Link->InputRight = false;
+                Link->InputA = false;
+                Link->InputB = false;
+            }
+            if(OnBlock() && Link->Dir == DIR_RIGHT){
+                Link->X = Link->X - 2;
+                Link->InputUp = false;
+                Link->InputDown = false;
+                Link->InputLeft = false;
+                Link->InputRight = false;
+                Link->InputA = false;
+                Link->InputB = false;
+            }
+            if(OnBlock() && Link->Dir == DIR_DOWN){
+                Link->Y = Link->Y - 2;
+                Link->InputUp = false;
+                Link->InputDown = false;
+                Link->InputLeft = false;
+                Link->InputRight = false;
+                Link->InputA = false;
+                Link->InputB = false;
+            }
+            if(OnBlock() && Link->Dir == DIR_LEFT){
+                Link->X = Link->X + 2;
+                Link->InputUp = false;
+                Link->InputDown = false;
+                Link->InputLeft = false;
+                Link->InputRight = false;
+                Link->InputA = false;
+                Link->InputB = false;
+            }
+            Waitframe();
+        }
+    }
+bool OnBlock(){
+        return (Screen->ComboT[ComboAt(Link->X+8,Link->Y+8)] == CT_OBSTACLE && Link->Z <= 0 && Link->Action != LA_FROZEN);
+    }    
+}

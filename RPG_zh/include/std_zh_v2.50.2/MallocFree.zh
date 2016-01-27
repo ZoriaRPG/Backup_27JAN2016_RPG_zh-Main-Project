@@ -1,0 +1,1360 @@
+const int MALLOC_FREE = 214747.9898;
+const int MALLOC_RESERVED = 214747.8989;
+
+
+//! Array memory management Utilities
+
+//marks array indices in range as being freed. Only affects indices that are Malloc'd.
+void Free(int arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed.
+void ForceFree(int arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Free(int arr, int startindex, int lastinde, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_FREE;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void FreeExcept(int arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_FREE;
+}
+
+//marks a range of array indices as being reserved.
+void ForceMalloc(int arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+
+//marks a range of array indices as reserved. Will ignore any indices in thsi range that aren't free.
+void Malloc(int arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks a range of array indices as reserved. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Malloc(int arr, int startindex, int lastindex, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void MallocExcept(int arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_RESERVED;
+}
+
+//Marks a specific array index as reserved.
+void Malloc(int arr, int index){
+	arr[index] = MALLOC_RESERVED;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindFree(int arr, int numbercont) {
+	bool free;
+	int a;
+	for ( int q = SizeOfArray(arr); q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) {
+			free = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_FREE ) {
+			free = false;
+			a = 0;
+		}
+		if ( a == numbercont && free ) return q;
+	}
+	return -1;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindMalloc(int arr, int numbercont) {
+	bool malloc;
+	int a;
+	for ( int q = SizeOfArray(arr); q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) {
+			malloc = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_RESERVED ) {
+			malloc = false;
+			a = 0;
+		}
+		if ( a == numbercont && malloc ) return q;
+	}
+	return -1;
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int FreeIndex(int arr){ 
+	for ( int q = SizeOfArray(arr); q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int ReservedIndex(int arr){ 
+	for ( int q = SizeOfArray(arr); q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single reserved index in an array. Starts with highest numbered index. 
+int MallocIndex(int arr){ 
+	for ( int q = SizeOfArray(arr); q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int FreeIndexLow(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int ReservedIndexLow(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int MallocIndexLow(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+
+//Checks if a specific index in an array is free. 
+bool FreeIndex(int arr, int index){
+	if ( arr[index] == MALLOC_FREE ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool ReservedIndex(int arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool MallocIndex(int arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Inits , or Mallocs an entire array. 
+void MallocArray(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+//Inits , or Mallocs an entire array. Only Malloc's free values.  
+void MallocFreeArray(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+// Frees an entire array. 
+void FreeArray(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) arr[q] = MALLOC_FREE;
+}
+
+void FreeArrayForce(int arr){
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) arr[q] = MALLOC_FREE;
+}
+
+// Frees an entire array. Only frees Malloc'd values. 
+void FreeMallocArray(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void MallocArray(int arr, int onlyvalue) { 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_RESERVED;
+	}
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void FreeArray(int arr, int onlyvalue) { 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_FREE;
+	}
+}
+
+//Add types for ffc, *weapon, item, itemdata, and npc.
+
+
+/////////////////
+/// OVERLOADS ///
+/////////////////
+
+//! Note that in the present form of ZC, *none* of the following overloads will compile. 
+//! THis is because assigning an int to a variable that expects a pointer (which is also an int) 
+//! is not supported; likely to preclude user-error, or crashes. 
+
+///FFC
+
+//marks array indices in range as being freed. Only affects indices that are Malloc'd.
+void Free(ffc arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed.
+void ForceFree(ffc arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Free(ffc arr, int startindex, int lastinde, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_FREE;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void FreeExcept(ffc arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_FREE;
+}
+
+//marks a range of array indices as being reserved.
+void ForceMalloc(ffc arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+
+//marks a range of array indices as reserved. Will ignore any indices in thsi range that aren't free.
+void Malloc(ffc arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks a range of array indices as reserved. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Malloc(ffc arr, int startindex, int lastindex, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void MallocExcept(ffc arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_RESERVED;
+}
+
+//Marks a specific array index as reserved.
+void Malloc(ffc arr, int index){
+	arr[index] = MALLOC_RESERVED;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindFree(ffc arr, int numbercont, int arrSize) {
+	bool free;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) {
+			free = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_FREE ) {
+			free = false;
+			a = 0;
+		}
+		if ( a == numbercont && free ) return q;
+	}
+	return -1;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindMalloc(ffc arr, int numbercont, int arrSize) {
+	bool malloc;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) {
+			malloc = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_RESERVED ) {
+			malloc = false;
+			a = 0;
+		}
+		if ( a == numbercont && malloc ) return q;
+	}
+	return -1;
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int FreeIndex(ffc arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int ReservedIndex(ffc arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single reserved index in an array. Starts with highest numbered index. 
+int MallocIndex(ffc arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int FreeIndexLow(ffc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int ReservedIndexLow(ffc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int MallocIndexLow(ffc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+
+//Checks if a specific index in an array is free. 
+bool FreeIndex(ffc arr, int index){
+	if ( arr[index] == MALLOC_FREE ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool ReservedIndex(ffc arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool MallocIndex(ffc arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Inits , or Mallocs an entire array. 
+void MallocArray(ffc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+//Inits , or Mallocs an entire array. Only Malloc's free values.  
+void MallocFreeArray(ffc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+// Frees an entire array. 
+void FreeArray(ffc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+void FreeArrayForce(ffc arr, int arrSize){
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+// Frees an entire array. Only frees Malloc'd values. 
+void FreeMallocArray(ffc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void MallocArray(ffc arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_RESERVED;
+	}
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void FreeArray(ffc arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_FREE;
+	}
+}
+
+/// LWeapon
+
+
+//marks array indices in range as being freed. Only affects indices that are Malloc'd.
+void Free(lweapon arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed.
+void ForceFree(lweapon arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Free(lweapon arr, int startindex, int lastinde, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_FREE;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void FreeExcept(lweapon arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_FREE;
+}
+
+//marks a range of array indices as being reserved.
+void ForceMalloc(lweapon arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+
+//marks a range of array indices as reserved. Will ignore any indices in thsi range that aren't free.
+void Malloc(lweapon arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks a range of array indices as reserved. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Malloc(lweapon arr, int startindex, int lastindex, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void MallocExcept(lweapon arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_RESERVED;
+}
+
+//Marks a specific array index as reserved.
+void Malloc(lweapon arr, int index){
+	arr[index] = MALLOC_RESERVED;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindFree(lweapon arr, int numbercont, int arrSize) {
+	bool free;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) {
+			free = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_FREE ) {
+			free = false;
+			a = 0;
+		}
+		if ( a == numbercont && free ) return q;
+	}
+	return -1;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindMalloc(lweapon arr, int numbercont, int arrSize) {
+	bool malloc;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) {
+			malloc = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_RESERVED ) {
+			malloc = false;
+			a = 0;
+		}
+		if ( a == numbercont && malloc ) return q;
+	}
+	return -1;
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int FreeIndex(lweapon arr, imt arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int ReservedIndex(lweapon arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single reserved index in an array. Starts with highest numbered index. 
+int MallocIndex(lweapon arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int FreeIndexLow(lweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int ReservedIndexLow(lweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int MallocIndexLow(lweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+
+//Checks if a specific index in an array is free. 
+bool FreeIndex(lweapon arr, int index){
+	if ( arr[index] == MALLOC_FREE ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool ReservedIndex(lweapon arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool MallocIndex(lweapon arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Inits , or Mallocs an entire array. 
+void MallocArray(lweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+//Inits , or Mallocs an entire array. Only Malloc's free values.  
+void MallocFreeArray(lweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+// Frees an entire array. 
+void FreeArray(lweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+void FreeArrayForce(lweapon arr, int arrSize){
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+// Frees an entire array. Only frees Malloc'd values. 
+void FreeMallocArray(lweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void MallocArray(lweapon arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_RESERVED;
+	}
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void FreeArray(lweapon arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_FREE;
+	}
+}
+
+
+//EWeapon
+
+
+//marks array indices in range as being freed. Only affects indices that are Malloc'd.
+void Free(eweapon arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed.
+void ForceFree(eweapon arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Free(eweapon arr, int startindex, int lastinde, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_FREE;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void FreeExcept(eweapon arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_FREE;
+}
+
+//marks a range of array indices as being reserved.
+void ForceMalloc(eweapon arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+
+//marks a range of array indices as reserved. Will ignore any indices in thsi range that aren't free.
+void Malloc(eweapon arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks a range of array indices as reserved. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Malloc(eweapon arr, int startindex, int lastindex, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void MallocExcept(eweapon arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_RESERVED;
+}
+
+//Marks a specific array index as reserved.
+void Malloc(eweapon arr, int index){
+	arr[index] = MALLOC_RESERVED;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindFree(eweapon arr, int numbercont, int arrSize) {
+	bool free;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) {
+			free = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_FREE ) {
+			free = false;
+			a = 0;
+		}
+		if ( a == numbercont && free ) return q;
+	}
+	return -1;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindMalloc(eweapon arr, int numbercont, int arrSize) {
+	bool malloc;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) {
+			malloc = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_RESERVED ) {
+			malloc = false;
+			a = 0;
+		}
+		if ( a == numbercont && malloc ) return q;
+	}
+	return -1;
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int FreeIndex(eweapon arr, imt arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int ReservedIndex(eweapon arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single reserved index in an array. Starts with highest numbered index. 
+int MallocIndex(eweapon arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int FreeIndexLow(eweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int ReservedIndexLow(eweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int MallocIndexLow(eweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+
+//Checks if a specific index in an array is free. 
+bool FreeIndex(eweapon arr, int index){
+	if ( arr[index] == MALLOC_FREE ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool ReservedIndex(eweapon arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool MallocIndex(eweapon arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Inits , or Mallocs an entire array. 
+void MallocArray(eweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+//Inits , or Mallocs an entire array. Only Malloc's free values.  
+void MallocFreeArray(eweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+// Frees an entire array. 
+void FreeArray(eweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+void FreeArrayForce(eweapon arr, int arrSize){
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+// Frees an entire array. Only frees Malloc'd values. 
+void FreeMallocArray(eweapon arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void MallocArray(eweapon arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_RESERVED;
+	}
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void FreeArray(eweapon arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_FREE;
+	}
+}
+
+
+///NPC
+
+
+//marks array indices in range as being freed. Only affects indices that are Malloc'd.
+void Free(npc arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed.
+void ForceFree(npc arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Free(npc arr, int startindex, int lastinde, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_FREE;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void FreeExcept(npc arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_FREE;
+}
+
+//marks a range of array indices as being reserved.
+void ForceMalloc(npc arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+
+//marks a range of array indices as reserved. Will ignore any indices in thsi range that aren't free.
+void Malloc(npc arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks a range of array indices as reserved. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Malloc(npc arr, int startindex, int lastindex, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void MallocExcept(npc arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_RESERVED;
+}
+
+//Marks a specific array index as reserved.
+void Malloc(npc arr, int index){
+	arr[index] = MALLOC_RESERVED;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindFree(npc arr, int numbercont, int arrSize) {
+	bool free;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) {
+			free = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_FREE ) {
+			free = false;
+			a = 0;
+		}
+		if ( a == numbercont && free ) return q;
+	}
+	return -1;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindMalloc(npc arr, int numbercont, int arrSize) {
+	bool malloc;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) {
+			malloc = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_RESERVED ) {
+			malloc = false;
+			a = 0;
+		}
+		if ( a == numbercont && malloc ) return q;
+	}
+	return -1;
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int FreeIndex(npc arr, imt arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int ReservedIndex(npc arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single reserved index in an array. Starts with highest numbered index. 
+int MallocIndex(npc arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int FreeIndexLow(npc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int ReservedIndexLow(npc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int MallocIndexLow(npc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+
+//Checks if a specific index in an array is free. 
+bool FreeIndex(npc arr, int index){
+	if ( arr[index] == MALLOC_FREE ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool ReservedIndex(npc arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool MallocIndex(npc arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Inits , or Mallocs an entire array. 
+void MallocArray(npc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+//Inits , or Mallocs an entire array. Only Malloc's free values.  
+void MallocFreeArray(npc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+// Frees an entire array. 
+void FreeArray(npc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+void FreeArrayForce(npc arr, int arrSize){
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+// Frees an entire array. Only frees Malloc'd values. 
+void FreeMallocArray(npc arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void MallocArray(npc arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_RESERVED;
+	}
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void FreeArray(npc arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_FREE;
+	}
+}
+
+
+///Item
+
+
+//marks array indices in range as being freed. Only affects indices that are Malloc'd.
+void Free(item arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed.
+void ForceFree(item arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Free(item arr, int startindex, int lastinde, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_FREE;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void FreeExcept(item arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_FREE;
+}
+
+//marks a range of array indices as being reserved.
+void ForceMalloc(item arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+
+//marks a range of array indices as reserved. Will ignore any indices in thsi range that aren't free.
+void Malloc(item arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks a range of array indices as reserved. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Malloc(item arr, int startindex, int lastindex, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void MallocExcept(item arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_RESERVED;
+}
+
+//Marks a specific array index as reserved.
+void Malloc(item arr, int index){
+	arr[index] = MALLOC_RESERVED;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindFree(item arr, int numbercont, int arrSize) {
+	bool free;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) {
+			free = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_FREE ) {
+			free = false;
+			a = 0;
+		}
+		if ( a == numbercont && free ) return q;
+	}
+	return -1;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindMalloc(item arr, int numbercont, int arrSize) {
+	bool malloc;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) {
+			malloc = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_RESERVED ) {
+			malloc = false;
+			a = 0;
+		}
+		if ( a == numbercont && malloc ) return q;
+	}
+	return -1;
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int FreeIndex(item arr, imt arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int ReservedIndex(item arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single reserved index in an array. Starts with highest numbered index. 
+int MallocIndex(item arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int FreeIndexLow(item arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int ReservedIndexLow(item arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int MallocIndexLow(item arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+
+//Checks if a specific index in an array is free. 
+bool FreeIndex(item arr, int index){
+	if ( arr[index] == MALLOC_FREE ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool ReservedIndex(item arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool MallocIndex(item arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Inits , or Mallocs an entire array. 
+void MallocArray(item arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+//Inits , or Mallocs an entire array. Only Malloc's free values.  
+void MallocFreeArray(item arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+// Frees an entire array. 
+void FreeArray(item arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+void FreeArrayForce(item arr, int arrSize){
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+// Frees an entire array. Only frees Malloc'd values. 
+void FreeMallocArray(item arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void MallocArray(item arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_RESERVED;
+	}
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void FreeArray(item arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_FREE;
+	}
+}
+
+///Itemdata
+
+
+//marks array indices in range as being freed. Only affects indices that are Malloc'd.
+void Free(itemdata arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed.
+void ForceFree(itemdata arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//marks array indices in range as being freed. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Free(itemdata arr, int startindex, int lastinde, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_FREE;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void FreeExcept(itemdata arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_FREE;
+}
+
+//marks a range of array indices as being reserved.
+void ForceMalloc(itemdata arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+
+//marks a range of array indices as reserved. Will ignore any indices in thsi range that aren't free.
+void Malloc(itemdata arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks a range of array indices as reserved. Will ignore any indices in this range that are not 'ignoreunlessvalue'
+void Malloc(itemdata arr, int startindex, int lastindex, int ignoreunlessvalue){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] == ignoreunlessvalue ) arr[q] = MALLOC_RESERVED;
+}
+
+//marks an range of array indices as reserved. Will ignore any indices in this range that match 'ignoreindices'
+void MallocExcept(itemdata arr, int startindex, int lastindex, int ignoreindices){
+	for ( int q = startindex; q < lastindex; q++ ) 
+	if ( arr[q] != ignoreindices ) arr[q] = MALLOC_RESERVED;
+}
+
+//Marks a specific array index as reserved.
+void Malloc(itemdata arr, int index){
+	arr[index] = MALLOC_RESERVED;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindFree(itemdata arr, int numbercont, int arrSize) {
+	bool free;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) {
+			free = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_FREE ) {
+			free = false;
+			a = 0;
+		}
+		if ( a == numbercont && free ) return q;
+	}
+	return -1;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindMalloc(itemdata arr, int numbercont, int arrSize) {
+	bool malloc;
+	int a;
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) {
+			malloc = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_RESERVED ) {
+			malloc = false;
+			a = 0;
+		}
+		if ( a == numbercont && malloc ) return q;
+	}
+	return -1;
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int FreeIndex(itemdata arr, imt arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int ReservedIndex(itemdata arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single reserved index in an array. Starts with highest numbered index. 
+int MallocIndex(itemdata arr, int arrSize){ 
+	for ( int q = arrSize; q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int FreeIndexLow(itemdata arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int ReservedIndexLow(itemdata arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int MallocIndexLow(itemdata arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+
+//Checks if a specific index in an array is free. 
+bool FreeIndex(itemdata arr, int index){
+	if ( arr[index] == MALLOC_FREE ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool ReservedIndex(itemdata arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool MallocIndex(itemdata arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Inits , or Mallocs an entire array. 
+void MallocArray(itemdata arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+//Inits , or Mallocs an entire array. Only Malloc's free values.  
+void MallocFreeArray(itemdata arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_FREE ) arr[q] = MALLOC_RESERVED;
+}
+
+// Frees an entire array. 
+void FreeArray(itemdata arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+void FreeArrayForce(itemdata arr, int arrSize){
+	for ( int q = 0; q < arrSize; q++ ) arr[q] = MALLOC_FREE;
+}
+
+// Frees an entire array. Only frees Malloc'd values. 
+void FreeMallocArray(itemdata arr, int arrSize){ 
+	for ( int q = 0; q < arrSize; q++ ) if ( arr[q] == MALLOC_RESERVED ) arr[q] = MALLOC_FREE;
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void MallocArray(itemdata arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_RESERVED;
+	}
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void FreeArray(itemdata arr, int arrSize, int onlyvalue) { 
+	for ( int q = 0; q < arrSize; q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_FREE;
+	}
+}
+

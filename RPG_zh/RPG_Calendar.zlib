@@ -1,0 +1,6 @@
+void adjustWeek(){
+	if ( MyVars[DAY] > 7 ) {
+		MyVars[DAY] = 1;
+		MyVars[WEEK]++;
+	}
+}

@@ -1,0 +1,10 @@
+//General Arrays- Booleans
+
+bottleEmpty[]={true, true, true, true}//Determine whether each of four bottles is empty.
+
+swordsOwned[5]={false, false, false, false, false}; //Five, to make using them easier, so that sword levels start at 1. 
+
+Daleks: { Saucers Appear, Saucers Land, Daleks Emerge, Daleks Kill People, 
+///Daleks Emerge Further, Dalek Saucer Open, Dalek Boss Killed, Dalek Saucer Stolen }
+
+dalekEvents[8] = { false, false, false, false, false, false, false, false };

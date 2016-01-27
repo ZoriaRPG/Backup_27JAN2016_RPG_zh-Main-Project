@@ -1,0 +1,8 @@
+///Alignments
+
+int Alignment[8];
+const int PATHOS_GOOD = 0;
+const int PATHOS_EVIL = 1;
+const int ETHOS_LAWFUL = 2;
+const int ETHOS_CHAOTIC = 3;
+const int ALIGNMENT_MAX = 4;

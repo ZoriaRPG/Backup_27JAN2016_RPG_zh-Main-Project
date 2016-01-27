@@ -1,0 +1,181 @@
+//Drawing v0.2.2
+
+int DrawTimers[4096];
+
+const int TIMER_ID = 20; //Number of columns. 
+
+const int BASE_TIMER = 1;
+const int TIMER_RUNNING = 1;
+const int TIMER_COUNT = 2;
+const int TIMER_X = 3;
+const int TIMER_Y = 4;
+const int TIMER_ENEMY_ID = 5;
+
+int FindEmptyTimer(){
+	for (int q = BASE_TIMER; q <= SizeOfArray(DrawTimers); q += TIMER_ID ) {
+		if ( !DrawTimers[q] ){
+			return q;
+		}
+		return 0;
+	}
+}
+
+//Effect Type Constants
+//Use these to define STYLES.
+const int DAMAGE_ENEM = 0;
+const int DAMAGE_PLAYER = 1;
+const int GAIN_XP = 2;
+const int STAT_NPC = 3;
+const int STAT_PLAYER = 4;
+const int BUFF_NPC = 5;
+const int BUFF_PLAYER = 6;
+
+int DrawTimers[4096];
+
+const int DRIPTIMER = 2400;
+const int MAX_DRIPTIMER = 420; //7 SECONDS
+
+void WetFootprints(){
+	if ( Is(SWIMMING) && Val(DRIPTIMER) != MAX_DRIPTIMER ) {
+		Val(DRIPTIMER,MAX_DRIPTIMER);
+	}
+	if ( !Is(SWIMMING) && Val(DRIPTIMER) > 0 ) {
+		Val(DRIPTIMER,KICK);
+		//Draw wet footprints
+		//if press u/d/l/r
+		//Draaw wet footpring combo atlink xp on layer 1
+	}
+}
+
+//Draws moving background effect, or foreground effect.
+//Accepts args for validation DMap; then source screen, map, and layer.
+
+void DrawMovingEffect(int dmap, int layer, int src_map, int src_screen, int src_layer){
+    int xspeed = 1;
+    int yspeed = 1;
+    //int s_running[]="BG *if* block is running.";
+    
+ 
+    if (Game->GetCurDMap() == dmap){
+        //TraceNL(); TraceS(s_running); TraceNL(); //Will print: 'BG *if* block is running.' to allegro.log if it runs.
+        x_position = (x_position + xspeed) % 255;
+        y_position = (y_position + yspeed) % 175;
+ 
+        Screen->DrawLayer(layer, src_dmap, src_screen, src_layer, Floor(x_position), Floor(y_position), 0, OP_OPAQUE);
+        Screen->DrawLayer(layer, src_dmap, src_screen, src_layer, Floor(x_position), Floor(y_position) - 128, 0, OP_OPAQUE);
+        Screen->DrawLayer(layer, src_dmap, src_screen, src_layer, Floor(x_position) - 176, Floor(y_position), 0, OP_OPAQUE);
+        Screen->DrawLayer(layer, src_dmap, src_screen, src_layer, Floor(x_position) - 176, Floor(y_position) - 128, 0, OP_OPAQUE);
+    }
+}
+
+
+
+
+//Drawing Array Constants
+const int TIMER_ID = 20; //Number of columns. 
+
+const int BASE_TIMER = 1;
+const int TIMER_RUNNING = 1;
+const int TIMER_COUNT = 2;
+const int TIMER_X = 3;
+const int TIMER_Y = 4;
+const int TIMER_X2 = 5; //For points on lines, and such.
+const int TIMER_Y2 = 6;
+const int TIMER_COLOUR = 7;
+const int TIMER_FONT = 8;
+const int TIMER_BG_COLOUR = 9;
+const int TIMER_FILL = 10;
+
+int FindEmptyTimer(){
+	for (int q = BASE_TIMER; q <= SizeOfArray(DrawTimers); q += TIMER_ID ) {
+		if ( !DrawTimers[q] ){
+			return q;
+		}
+		return 0;
+	}
+}
+
+void FlushTimer(int timer){
+	for ( int q = timer; q <= (timer+TIMER_ID); q++ ){
+		DrawTimers[q] = 0;
+	}
+}
+
+//AutoMap: This item generates maps by using sensor technology, that you may use via optic implants to 
+//scope your surroundings. Its accuracy can be hindered by certain materials, thermal extremes, and 
+//energy fields. You may see its accuracy rating by opening the statistics pane of the subscreen.
+
+//It is possible to upgrade this item. Other objects may be used to enhance the accuracy of automatically
+//generated holomaps. 
+
+//Draw Area Map to Layer
+
+//Draws a map to a layer with upper-left tile positioned at posX and PosY. Width/height is number of tiles.
+void DrawMap(int posX, int posY, int firstTile, int width, int height, int layer, bool transparent, int opacity){
+
+}
+
+
+
+// Draw cursor, and other map marker positions
+
+void DrawCursorPosition(int posX, int posY, int tile, int cset, int layer, bool transparent, int opacity, bool flash, int interval){
+	
+}
+
+void DrawCursorPosition(int posX, int posY, int tile, int cset, int layer, bool transparent, int opacity){
+	
+}
+
+void DrawMapObject(int posX, int posY, int tile, int cset, int width, int height, int layer, bool transparent, int opacity, bool flash, int interval){
+	
+}
+
+void DrawMapObject(int posX, int posY, int tile, int cset, int width, int height, int layer, bool transparent, int opacity){
+	
+}
+
+void DrawMapObject(int posX, int posY, int tile, int cset, int width, int height, bool stretch, int scale, int layer, bool transparent, int opacity, bool flash, int interval){
+	
+}
+
+void DrawMapObject(int posX, int posY, int tile, int cset, int width, int height, bool stretch, int scale, int layer, bool transparent, int opacity){
+	
+}
+
+void DrawMapPoint(int posX, int posY, int colour, int sizeInPizels, int layer, bool transparent, int opacity, bool flash, int interval){
+
+}
+
+void DrawMapPoint(int posX, int posY, int colour, int sizeInPizels, int layer, bool transparent, int opacity){
+
+}
+
+void DrawMapCircle(int posX, int posY, int radius, int colour, int layer, bool transparent, int opacity, bool flash, int interval){
+
+}
+
+void DrawMapCircle(int posX, int posY, int radius, int colour, int layer, bool transparent, int opacity){
+
+}
+
+void DrawVisitedRooms(){
+	//Read array for visited rooms. 
+	//Draw translucent objects in colours over them. 
+}
+
+void DrawCompassMarker(int posX, int posY, int tile, int cset, float degrees, int layer, bool transparent, int opacity, bool flash, int interval){
+
+}
+
+void DrawCompassMarker(int posX, int posY, int tile, int cset, float degrees, int layer, bool transparent, int opacity){
+
+}
+
+void DrawLinkMarker(int posX, int posY, int tile, int cset, bool modifiedByRings, bool flash, int interval){
+
+}
+
+void DrawLinkMarker(int posX, int posY, int tile, int cset, bool modifiedByRings){
+
+}

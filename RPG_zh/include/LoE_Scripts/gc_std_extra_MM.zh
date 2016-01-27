@@ -1,0 +1,354 @@
+//Text colors (adjust for your tileset and then uncomment)
+//const int COLOR_WHITE = 1;
+//const int COLOR_BLACK = 15;
+
+//Screen Dimensions
+const int screenWidth  = 256;
+const int screenHeight = 176;
+const int subscreenY = -64; //The top of the subscreen is at Y=-64
+
+//Sprite Flips and rotations
+const int FLIP_NO                = 0;
+const int FLIP_H                  = 1;
+const int FLIP_V                  = 2;
+const int FLIP_B                  = 3;
+const int ROTATE_CW        = 4;
+const int ROTATE_CCW      = 7;
+const int ROTATE_CW_FLIP  = 5;
+const int ROTATE_CCW_FLIP = 6;
+
+//NPC Misc Flags
+const int NPCMF_DAMAGE     = 0x0001;
+const int NPCMF_INVISIBLE       = 0x0002;
+const int NPCMF_NOTRETURN       = 0x0004;
+const int NPCMF_NOTENEMY         = 0x0008;
+const int NPCMF_SPAWNFLICKER = 0x0010;
+const int NPCMF_LENSONLY         = 0x0020;
+const int NPCMF_FLASHING         = 0x0040;
+const int NPCMF_FLICKERING   = 0x0080;
+const int NPCMF_TRANSLUCENT  = 0x0100;
+const int NPCMF_SHIELDFRONT  = 0x0200;
+const int NPCMF_SHIELDLEFT   = 0x0400;
+const int NPCMF_SHIELDRIGHT  = 0x0800;
+const int NPCMF_SHIELDBACK   = 0x1000;
+const int NPCMF_HAMMERBREAK  = 0x2000;
+
+//===============================================================================
+//#Reusable_scripts
+//===============================================================================
+
+//Run an FFC script
+//D0-D6: Arguments for the FFC Script
+//D7: The script number to run
+item script ffcItem{
+        void run(int d0, int d1, int d2, int d3, int d4, int d5, int d6, int ffc_id){
+                int d[7] = {d0,d1,d2,d3,d4,d5,d6};
+                if(FindFFCRunning(ffc_id)<=0){
+                        RunFFCScriptOrQuit(ffc_id, d);
+                }
+        }
+}
+
+//===============================================================================
+//#Position_and_movement
+//===============================================================================
+
+//Prevents moving in any direction
+void NoMovement()
+{
+        Link->InputUp = false; Link->PressUp = false;
+        Link->InputDown = false; Link->PressDown = false;
+        Link->InputLeft = false; Link->PressLeft = false;
+        Link->InputRight = false; Link->PressRight = false;
+}
+
+//Converts velocity into a direction.
+int VelocityToDir(float x, float y)
+{
+        if(x == 0 && y == 0) return -1;
+        else return RadianAngleDir8(RadianAngle(0, x, 0, y));
+}
+
+//Converts the x component of a velocity into a direction.
+int XSpeedToDir(float x)
+{
+        return VelocityToDir(x, 0);
+}
+
+
+//Converts the y component of a velocity into a direction.
+int YSpeedToDir(float y)
+{
+        return VelocityToDir(0, y);
+}
+
+//Takes a direction of movement and gets the xspeed.
+float DirToXSpeed(int dir)
+{
+        if(dir<4)
+                return Cond((dir*2)-5 < -1, 0, (dir*2)-5);
+        else
+                return Cond(dir<6, -1.5, 1.5);
+}
+
+//Takes a direction of movement and gets the yspeed.
+float DirToYSpeed(int dir)
+{
+        if(dir>7) dir = toggleBlock(dir);
+        if(dir < 2) return 0;
+        float ret = 1;
+        if(dir>=4) ret += .5;
+        return Cond(IsEven(dir), -ret, ret);
+}
+
+//Returns the angle in radians of a direction; used for weapon angles
+float dirToRad(int dir)
+{
+        dir = Clamp(dir, 0, 15);
+        if(dir<8) dir = toggleBlock(dir);
+        dir = (dir+2)%8;
+        return PI * dir / 4;
+}
+
+//Returns value from 0 to 360 rather than -180 to 180
+float AnglePos(int x1, int y1, int x2, int y2)
+{
+        float angle = ArcTan(x2-x1, y2-y1)*57.2958;
+        if(angle < 0)
+        angle += 360;
+        return angle;
+}
+
+//Returns the distance between the given Coordinate and Link's Center.
+float DistanceLink(float x, float y)
+{
+        return Distance(CenterLinkX(), CenterLinkY(), x, y);
+}
+
+//Returns the distance between Link's center and an object's center.
+float DistanceLink(ffc f)
+{
+        return Distance(CenterLinkX(), CenterLinkY(), CenterX(f), CenterY(f));
+}
+float DistanceLink(npc n)
+{
+        return Distance(CenterLinkX(), CenterLinkY(), CenterX(n), CenterY(n));
+}
+float DistanceLink(lweapon l)
+{
+        return Distance(CenterLinkX(), CenterLinkY(), CenterX(l), CenterY(l));
+}
+float DistanceLink(eweapon e)
+{
+        return Distance(CenterLinkX(), CenterLinkY(), CenterX(e), CenterY(e));
+}
+
+//Converts 8-way direction to 4-way
+int dir8ToDir4(int dir)
+{
+        if(dir != Clamp(dir, 0, 15)) return -1;
+        dir &= 7;
+        if((dir & 4) == 0)
+        return dir;
+        else
+        return Cond(IsEven(dir), DIR_UP, DIR_DOWN);
+}
+
+//Returns the reverse of the given direction.
+int reverseDir(int dir)
+{
+        if(dir != Clamp(dir, 0, 15)) return -1;
+        return Cond(dir<8, OppositeDir(dir), ((dir+4)%8)+8);
+}
+
+//Move the specified object a set distance in a set direction
+//Walkable: Don't move onto a solid space
+//PreventOffScreen: Don't move off screen
+bool moveLink ( int dir, int dist, bool walkable, bool preventOffScreen ){
+        //Can't move
+        if ( walkable && !CanWalk(Link->X, Link->Y, dir, dist, false) )
+                return false;
+        
+        //Otherwise, check direction
+        if ( dir == DIR_UP && (!preventOffScreen || Link->Y - dist > 0) )
+                Link->Y -= dist;
+        else if ( dir == DIR_DOWN && (!preventOffScreen || Link->Y + dist < screenHeight) )
+                Link->Y += dist;
+        else if ( dir == DIR_LEFT && (!preventOffScreen || Link->X - dist > 0))
+                Link->X -= dist;
+        else if ( dir == DIR_RIGHT && (!preventOffScreen || Link->X + dist < screenWidth) )
+                Link->X += dist;
+                
+        return true;
+}
+bool move ( ffc this, int dir, int dist, bool walkable, bool preventOffScreen ){
+        //Can't move
+        if ( walkable && !CanWalk(this->X, this->Y, dir, dist, false) )
+                return false;
+        
+        //Otherwise, check direction
+        if ( dir == DIR_UP && (!preventOffScreen || this->Y - dist > 0) )
+                this->Y -= dist;
+        else if ( dir == DIR_DOWN && (!preventOffScreen || this->Y + dist < screenHeight) )
+                this->Y += dist;
+        else if ( dir == DIR_LEFT && (!preventOffScreen || this->X - dist > 0))
+                this->X -= dist;
+        else if ( dir == DIR_RIGHT && (!preventOffScreen || this->X + dist < screenWidth) )
+                this->X += dist;
+        
+        return true;
+}
+bool move ( npc enem, int dir, int dist, bool walkable, bool preventOffScreen ){
+        //Can't move
+        if ( walkable && !CanWalk(enem->X, enem->Y, dir, dist, false) )
+                return false;
+        
+        //Otherwise, check direction
+        if ( dir == DIR_UP && (!preventOffScreen || enem->Y - dist > 0) )
+                enem->Y -= dist;
+        else if ( dir == DIR_DOWN && (!preventOffScreen || enem->Y + dist < screenHeight) )
+                enem->Y += dist;
+        else if ( dir == DIR_LEFT && (!preventOffScreen || enem->X - dist > 0))
+                enem->X -= dist;
+        else if ( dir == DIR_RIGHT && (!preventOffScreen || enem->X + dist < screenWidth) )
+                enem->X += dist;
+        
+        return true;
+}
+bool move ( lweapon weap, int dir, int dist, bool walkable, bool preventOffScreen ){
+        //Can't move
+        if ( walkable && !CanWalk(weap->X, weap->Y, dir, dist, false) )
+                return false;
+        
+        //Otherwise, check direction
+        if ( dir == DIR_UP && (!preventOffScreen || weap->Y - dist > 0) )
+                weap->Y -= dist;
+        else if ( dir == DIR_DOWN && (!preventOffScreen || weap->Y + dist < screenHeight) )
+                weap->Y += dist;
+        else if ( dir == DIR_LEFT && (!preventOffScreen || weap->X - dist > 0))
+                weap->X -= dist;
+        else if ( dir == DIR_RIGHT && (!preventOffScreen || weap->X + dist < screenWidth) )
+                weap->X += dist;
+        
+        return true;
+}
+bool move ( eweapon weap, int dir, int dist, bool walkable, bool preventOffScreen ){
+        //Can't move
+        if ( walkable && !CanWalk(weap->X, weap->Y, dir, dist, false) )
+                return false;
+        
+        //Otherwise, check direction
+        if ( dir == DIR_UP && (!preventOffScreen || weap->Y - dist > 0) )
+                weap->Y -= dist;
+        else if ( dir == DIR_DOWN && (!preventOffScreen || weap->Y + dist < screenHeight) )
+                weap->Y += dist;
+        else if ( dir == DIR_LEFT && (!preventOffScreen || weap->X - dist > 0))
+                weap->X -= dist;
+        else if ( dir == DIR_RIGHT && (!preventOffScreen || weap->X + dist < screenWidth) )
+                weap->X += dist;
+                
+        return true;
+}
+
+//#Other
+
+//Toggles weapon blockability by adjusting its direction
+int toggleBlock (int dir)
+{
+        if(dir < 8) dir |= 8;
+        else dir &= ~8;
+        return dir;
+}
+
+void permaSecrets(){
+        Screen->TriggerSecrets();
+        Screen->State[ST_SECRET] = true;
+}
+
+void tempSecrets(){
+        Screen->TriggerSecrets();
+        Screen->State[ST_SECRET] = false;
+}
+
+//Returns the id of the highest level item of the given class that Link has acquired.
+int GetCurrentItem(int itemclass)
+{
+        itemdata id;
+        int ret = -1;
+        int curlevel = -1000;
+        //143 is default max items, increase if you add lots of your own
+        for(int i = 0; i < 143; i++)
+        {
+                if(!Link->Item[i])
+                continue;
+                id = Game->LoadItemData(i);
+                if(id->Family != itemclass)
+                continue;
+                if(id->Level > curlevel)
+                {
+                        curlevel = id->Level;
+                        ret = i;
+                }
+        }
+        return ret;
+}
+
+bool WaitframeCheckScreenChange(){
+        bool changed_screen=false;
+        int old_dmap_screen=Game->GetCurDMapScreen();
+        int old_dmap=Game->GetCurDMap();
+        Waitframe();
+        if(old_dmap!=Game->GetCurDMap() ||old_dmap_screen!=Game->GetCurDMapScreen()) changed_screen=true;
+        return changed_screen;
+
+}
+
+bool WaitframeCheckWarp(){
+        if( WaitframeCheckScreenChange() && !(Link->Action==LA_SCROLLING))
+                return true;
+   
+   return false;
+}
+
+//Inverted Circle Method
+void InvertedCircle(int bitmapID, int layer, int x, int y, int radius, int scale, int fillcolor){
+        //Set the render target to the bitmap.
+        Screen->SetRenderTarget(bitmapID);
+        //Draw a opaque rectangle to cover the entire screen.
+        Screen->Rectangle(layer, 0, 0, 256, 176, fillcolor, 1, 0, 0, 0, true, 128);
+        //Draw a transparent black circle. "Must use color 0 of CSet 0 or it won't work right."
+        Screen->Circle(layer, x, y, radius, 0, scale, 0, 0, 0, true, 128);
+        //Set the render target back to the screen.
+        Screen->SetRenderTarget(RT_SCREEN);
+        //Draw the bitmap we created.
+        Screen->DrawBitmap(layer, bitmapID, 0, 0, 256, 176, 0, 56, 256, 176, 0, true);
+}
+
+//Combination of WaitNoAction and Waitframes
+void WaitframesNoAction(int dur){
+        for ( int i = 0; i < dur; i++ )
+                        WaitNoAction();
+}
+
+//Group: Uses SF_ constants
+//Flag: Flag within that group
+bool checkScreenFlag(int group, int flag){
+        return Screen->Flags[group] & (4<<flag);
+}
+
+//===============================================================================
+//#Debug
+//===============================================================================
+//Shortcut for drawInteger for debug output
+//Each debug item should have a unique place (match between value and label)
+
+
+///////////////////////////////////////
+///  SEEMS BROKEN. Ned Dependecny?  ///
+///////////////////////////////////////
+//void debugValue ( int num, int value, int places ){
+//        Screen->DrawInteger(6, 100, 2+10*num, FONT_S, COLOR_WHITE, COLOR_BLACK, -1, -1, value, places, OP_OPAQUE);
+//}
+//void debugLabel ( int num, int string ){
+//        Screen->DrawString(6, 2, 2+10*num, FONT_S, COLOR_WHITE, COLOR_BLACK, TF_NORMAL, string, OP_OPAQUE);
+//}

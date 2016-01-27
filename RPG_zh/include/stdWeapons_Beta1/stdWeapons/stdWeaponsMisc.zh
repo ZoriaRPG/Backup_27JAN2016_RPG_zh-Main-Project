@@ -1,0 +1,198 @@
+//Returns TRUE, if lweapon is inside screen boundaries.
+bool InsideScreen (lweapon f){
+	int lwx = f->X + f->HitXOffset;
+	int lwy = f->Y + f->HitYOffset;
+	if (lwx<0-f->HitWidth) return false;
+	if (lwy<0-f->HitHeight) return false;
+	if (lwx>256) return false;
+	if (lwy>176) return false;
+	return true;
+}
+// Returns TRUE if FFC is currently within screen boundaries
+bool InsideScreen (ffc f){
+	if (f->X<0-f->EffectWidth) return false;
+	if (f->Y<0-f->EffectHeight) return false;
+	if (f->X>256) return false;
+	if (f->Y>176) return false;
+	return true;
+}
+
+//Returns TRUE, if lweapon is touching screen boundaries.
+bool OnScreenEdge(lweapon lw){
+	int lwx = lw->X + lw->HitXOffset;
+	int lwy = lw->Y + lw->HitYOffset;
+	if ((lwx>=0-lw->HitWidth)&&(lwx<=0)){
+		if (InsideScreen(lw)) return true;
+	}
+	if ((lwy>=0-lw->HitHeight)&&(lwy<=0)){
+		if (InsideScreen(lw)) return true;
+		}
+	if ((lwx>=256-lw->HitWidth)&&(lwx<=256)){
+		if (InsideScreen(lw)) return true;
+		}
+	if ((lwy>=176-lw->HitHeight)&&(lwy<=176)){
+		if (InsideScreen(lw)) return true;
+		}
+	return false;
+}
+
+//Returns TRUE if FFC`s hitbox intersects screen edge.
+bool OnScreenEdge(ffc f){
+	if ((f->X>=0-f->EffectWidth)&&(f->X<=0)){
+		if (InsideScreen(f)) return true;
+	}
+	if ((f->Y>=0-f->EffectHeight)&&(f->Y<=0)){
+		if (InsideScreen(f)) return true;
+		}
+	if ((f->X>=256-f->EffectWidth)&&(f->X<=256)){
+		if (InsideScreen(f)) return true;
+		}
+	if ((f->Y>=176-f->EffectHeight)&&(f->Y<=176)){
+		if (InsideScreen(f)) return true;
+		}
+	return false;
+}
+
+//Turns Lweapon into a bigger one.
+void BigLweapon(lweapon lw, int Xsize, int Ysize){
+	lw->Extend=3;
+	lw->HitWidth=Xsize*16;
+	lw->HitHeight=Ysize*16;
+	lw->TileWidth=Xsize;
+	lw->TileHeight=Ysize;
+}
+
+//Call this every frame for Lweapon to penetrate enemies.
+//Called automatically on LweaponWaitframe, if LWF_PENETRATING lweapon flag is set.
+void PenetratorUpdate(lweapon lw){
+	if (InsideScreen(lw)) lw->DeadState=WDS_ALIVE;
+}
+
+//Returns TRUE, if corners of Lweapon touch a solid portion of any combo.
+bool WallCollision4way(lweapon lw){
+	int lwx = lwx + lw->HitXOffset;
+	int lwy = lwy + lw->HitYOffset;
+	int COLL_POINTSX[4]={lwx, lwx+lw->HitWidth, lwx ,lwx+lw->HitWidth};
+	int COLL_POINTSY[4]={lwy, lwy, lwy+lw->HitHeight, lwy+lw->HitHeight};
+	for (int i=0; i<=3; i++){
+		if (Screen->isSolid(COLL_POINTSX[i], COLL_POINTSY[i])) return true;
+	}
+	return false;
+}
+
+//Returns TRUE if lweapon contacts with solid combos. May fail with BigLweapons
+bool WallCollision8way(lweapon lw){
+	int lwx = lw->X + lw->HitXOffset;
+	int lwy = lw->Y + lw->HitYOffset;
+	int COLL_POINTSX[8]={lwx, lwx+lw->HitWidth/2, lwx+lw->HitWidth, lwx, lwx+lw->HitWidth, lwx, lwx+lw->HitWidth/2, lwx+lw->HitWidth};
+	int COLL_POINTSY[8]={lwy, lwy, lwy, lwy+lw->HitHeight/2, lwy+lw->HitHeight/2, lwy+lw->HitHeight, lwy+lw->HitHeight, lwy+lw->HitHeight};
+	for (int i=0; i<=7; i++){
+		//Screen->PutPixel(0, COLL_POINTSX[i], COLL_POINTSY[i], 1, 0, 0, 0, 128); //Un-comment this line for debugging wall collisions.
+		if (Screen->isSolid(COLL_POINTSX[i], COLL_POINTSY[i])) return true;
+	}
+	return false;
+}
+
+//Returns TRUE, if corners of FFC touch a solid portion of any combo.
+bool WallCollision4way(ffc f){
+	int COLL_POINTSX[4]={f->X, f->X+f->EffectWidth, f->X ,f->X+f->EffectWidth};
+	int COLL_POINTSY[4]={f->Y, f->Y, f->Y+f->EffectHeight, f->Y+f->EffectHeight};
+	for (int i=0; i<=3; i++){
+		if (Screen->isSolid(COLL_POINTSX[i], COLL_POINTSY[i])) return true;
+	}
+	return false;
+}
+
+//Retuns TRUE if FFC hits a solid combo.
+bool WallCollision8way(ffc f){
+	int COLL_POINTSX[8]={f->X, f->X+f->EffectWidth/2, f->X+f->EffectWidth, f->X, f->X+f->EffectWidth, f->X, f->X+f->EffectWidth/2, f->X+f->EffectWidth};
+	int COLL_POINTSY[8]={f->Y, f->Y, f->Y, f->Y+f->EffectHeight/2, f->Y+f->EffectHeight/2, f->Y+f->EffectHeight, f->Y+f->EffectHeight, f->Y+f->EffectHeight};
+	for (int i=0; i<=7; i++){
+		//Screen->PutPixel(0, COLL_POINTSX[i], COLL_POINTSY[i], 1, 0, 0, 0, 128);
+		if (Screen->isSolid(COLL_POINTSX[i], COLL_POINTSY[i])) return true;
+	}
+	return false;
+}
+
+//Causes Lweapon to drag dropped items around or instantly deliver items straight to Link.
+//Called automatically on LweaponWaitframe, if LWF_CAN_PICKUP_ITEMS or 
+//LWF_CAN_INSTADELIVER_ITEMS lweapon flag is set.
+void ItemPickup (lweapon l, bool instant){
+	for (int i=1; i<= Screen->NumItems(); i++){
+		item it = Screen->LoadItem(i);
+		if ((it->Pickup&0x806)==0){
+			if (Collision(l,it)){
+				if (instant){
+					it->X = Link->X;
+					it->Y = Link->Y;
+				}
+				else{
+					int lwx = l->X + l->HitXOffset;
+					int lwy = l->Y + l->HitYOffset;
+					it->X = lwx;
+					it->Y = lwy;
+				}
+			}
+		}
+	}
+}
+
+//Run this function every frame and lweapon will emit sounds continuously.
+//Return value is counter state needed for timing SFX playing.
+int ContiniousSFX(int counter, int delay, int sound){
+	counter++;
+	if (counter>=delay){
+		Game->PlaySound(sound);
+		counter = 0;
+	}
+	return counter;
+}
+
+//Draws Lweapon`s interaction hitbox. Used for debugging.
+void DrawLweaponHitbox(lweapon l){
+	int ax = l->X + l->HitXOffset;
+	int ay = l->Y + l->HitYOffset;
+	int bx = ax + l->HitWidth;
+	int by = ay + l->HitHeight;
+	Screen->Rectangle(3, ax, ay, bx, by, 1, 1, 0, 0, 0, false, OP_OPAQUE);
+}
+
+//Puts FFC in front of Link at given distance.
+void PutFFCInFrontOfLink(ffc f, int offset){
+	if (Link->Dir==DIR_UP){
+		f->X = Link->X;
+		f->Y = Link->Y - offset;
+	}
+	else if (Link->Dir==DIR_DOWN){
+		f->X = Link->X;
+		f->Y = Link->Y + offset;
+	}
+	else if (Link->Dir==DIR_LEFT){
+		f->X = Link->X- offset;
+		f->Y = Link->Y;
+	}
+	else if (Link->Dir==DIR_RIGHT){
+		f->X = Link->X+ offset;
+		f->Y = Link->Y;
+	}
+}
+
+//Sets Lweapon Hitbox offset parameters. Values between 0 and 64.
+void SetLweaponHitboxOffsets(lweapon l, int top, int bottom, int left, int right){
+	top=Clamp(top, 0,64);
+	bottom=Clamp(bottom, 0, 64);
+	left=Clamp(left, 0, 64);
+	right=Clamp(right, 0, 64);
+	l->Misc[LWEAPON_MISC_HIT_OFFSET_X]+=left;
+	l->Misc[LWEAPON_MISC_HIT_OFFSET_Y]+=top;
+	l->HitWidth= (l->TileWidth*16)-(right+left);
+	l->HitHeight= (l->TileHeight*16)-(top+bottom);
+}
+
+//Loads lweapon hitbox offsets into given array. Minimum 4 units.
+void GetLweaponHitboxOffsets(lweapon l, int OFFSETS){
+	OFFSETS[0] = l->Misc[LWEAPON_MISC_HIT_OFFSET_Y];
+	OFFSETS[1] = (l->TileHeight*16)- l->HitHeight- l->Misc[LWEAPON_MISC_HIT_OFFSET_Y];
+	OFFSETS[2] = l->Misc[LWEAPON_MISC_HIT_OFFSET_X];
+	OFFSETS[3] = (l->TileWidth*16)- l->HitWidth- l->Misc[LWEAPON_MISC_HIT_OFFSET_X];
+}

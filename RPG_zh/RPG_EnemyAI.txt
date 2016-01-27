@@ -1,0 +1,222 @@
+[19/11/2015 22:59:22] _|  ZoriaRPG |_: Something you may want to consider contributiong towards is at: /RPG_zh/RPG_EnemyAI.zlib
+[19/11/2015 23:00:08] _|  ZoriaRPG |_: The only thing I;ve really done there, is prepare function names, for what I believe to be the prime, mandatory components.
+[19/11/2015 23:08:52] *** The Blue Tophat has returned from dinner ***
+[19/11/2015 23:17:05] The Blue Tophat: I'm guessing that for EnemyAttack's type argument is for what kind of attack it would do?
+[19/11/2015 23:17:16] _|  ZoriaRPG |_: Right
+[19/11/2015 23:17:27] The Blue Tophat: Eg. slash a sword, shoot a fireball, etc etc
+[19/11/2015 23:17:35] _|  ZoriaRPG |_: Correct
+[19/11/2015 23:17:41] _|  ZoriaRPG |_: from a list of options
+[19/11/2015 23:17:44] The Blue Tophat: And weapon would be whatever eweapon to use.
+[19/11/2015 23:18:13] _|  ZoriaRPG |_: In general, determined by what its circumstances are, and wshat weapons it has; plus its mentality, intellect, and frame of mind (if applicable)
+[19/11/2015 23:18:33] _|  ZoriaRPG |_: A terrified, or angry enemy, may make different decisions.
+[19/11/2015 23:18:37] _|  ZoriaRPG |_: As may an injured enemy
+[19/11/2015 23:18:48] The Blue Tophat: Ah
+[19/11/2015 23:18:57] _|  ZoriaRPG |_: You can see that I'm hoping to make a legitimate Ai out of this.
+[19/11/2015 23:19:07] _|  ZoriaRPG |_: More than just basic movement.
+[19/11/2015 23:20:27] The Blue Tophat: Hmm
+[19/11/2015 23:20:45] The Blue Tophat: Reminds me a bit of the follower I made awhileish back
+[19/11/2015 23:21:02] _|  ZoriaRPG |_: That's why I'm pointing it out.
+[19/11/2015 23:21:27] _|  ZoriaRPG |_: You've managed to make some similar stuff, and may be able to fill in some of the functions, and provide anything that feels like it may have a gap.
+[19/11/2015 23:21:42] _|  ZoriaRPG |_: Assigning attributes, skills, and decision routines is more my forte.
+[19/11/2015 23:22:19] _|  ZoriaRPG |_: Finding logical paths towards other objects requires some work that I have not done in ZC.
+[19/11/2015 23:22:36] The Blue Tophat: Ah
+[19/11/2015 23:23:20] _|  ZoriaRPG |_: So, if there is anything there that you believe that you could complete, that'd be brilliant.
+[19/11/2015 23:23:46] _|  ZoriaRPG |_: Finding a clear path, to any given pointer is problem 1.
+[19/11/2015 23:23:55] _|  ZoriaRPG |_: Determining multiple paths, is problem 2.
+[19/11/2015 23:24:11] _|  ZoriaRPG |_: From there, I can work out routines to choose the 'best' path, based on circumstances, possibly.
+[19/11/2015 23:24:21] _|  ZoriaRPG |_: Which way is safest, fastest, or easiest.
+[19/11/2015 23:30:12] The Blue Tophat: Are there any constants for which types of attack's enemies would do?
+[19/11/2015 23:30:22] _|  ZoriaRPG |_: Not yet
+[19/11/2015 23:30:24] The Blue Tophat: Ah
+[19/11/2015 23:31:10] _|  ZoriaRPG |_: Feel free to make some if you want, unless I did, and forgot.
+[19/11/2015 23:32:05] _|  ZoriaRPG |_: In which case, you can do it anyhow.
+[19/11/2015 23:32:08] The Blue Tophat: In the RPG_EnemyAI file there's ENEMY_STAT, ENEMY_SKILL, and ENEMY_MINDSET constants
+[19/11/2015 23:32:27] _|  ZoriaRPG |_: ENEMY_ATTACK_*
+[19/11/2015 23:32:41] _|  ZoriaRPG |_: Reasonable template
+[19/11/2015 23:32:47] The Blue Tophat: Ah
+[19/11/2015 23:34:05] _|  ZoriaRPG |_: Did you note the functions for enemies picking up health (and other) drops?
+[19/11/2015 23:34:24] The Blue Tophat: Nope
+[19/11/2015 23:34:33] The Blue Tophat: I'll look over the functions again.
+[19/11/2015 23:34:36] _|  ZoriaRPG |_: Those are important, and if this is ever completed, they'll add a new dimension to gameplay
+[19/11/2015 23:35:02] _|  ZoriaRPG |_: pathfinding functions are however, needed for those to work, as are perception functions
+[19/11/2015 23:36:25] The Blue Tophat: I'm guessing that means that the enemy would need to pathfind while only being able to "see" what it would be able to see if someone/something was actually there?
+[19/11/2015 23:36:34] _|  ZoriaRPG |_: Right
+[19/11/2015 23:36:48] _|  ZoriaRPG |_: or sense
+[19/11/2015 23:36:59] _|  ZoriaRPG |_: and have an IQ high enough to know that going there is good for it
+[19/11/2015 23:44:57] _|  ZoriaRPG |_: I also recall that I have two, or three LoS function sets, somewhere, to help with some of this.
+[19/11/2015 23:45:10] _|  ZoriaRPG |_: Plus, i think that rayswandir just posted his to the forums
+[19/11/2015 23:52:14] The Blue Tophat: Hmm.
+[19/11/2015 23:52:54] The Blue Tophat: I'm gonna guess the easiest solution for enemies finding.. stuff, is for there to be a function that seeks out a position
+[19/11/2015 23:53:11] The Blue Tophat: and then just use that in a loop to find specific items and then use their positions
+[19/11/2015 23:53:15] _|  ZoriaRPG |_: Well, there are two ways.
+[19/11/2015 23:53:37] _|  ZoriaRPG |_: 1. Create a predetermined path, store, and attempt to execute.
+[19/11/2015 23:53:58] _|  ZoriaRPG |_: 2. Check, move, recheck, move.
+[19/11/2015 23:54:30] _|  ZoriaRPG |_: Obviously, ignoring impossible pointers, like items inside solid combos.
+[19/11/2015 23:54:55] The Blue Tophat: yeah
+[19/11/2015 23:55:05] The Blue Tophat: I think option 2 would be better
+[19/11/2015 23:55:12 | Edited 23:55:38] The Blue Tophat: As, if you were tracking something that was moving
+[19/11/2015 23:55:14] The Blue Tophat: such as the player
+[19/11/2015 23:55:21] _|  ZoriaRPG |_: I'm not sure which pathfing method would work best, but it'd be ideal to have both.
+[19/11/2015 23:55:39] _|  ZoriaRPG |_: (1) would be more natural, ad (2) more reactive
+[19/11/2015 23:55:51] The Blue Tophat: Hmm
+[19/11/2015 23:56:03] The Blue Tophat: Perhaps some enemies in some situations use either one
+[19/11/2015 23:56:39 | Edited 23:56:59] The Blue Tophat: Like guards that just patrol a part of a building or something that don't know the player's there probably wouldn't be tracking down the player
+[19/11/2015 23:57:30] _|  ZoriaRPG |_: x(1) paths will need to be rechecked every turn anyway
+[19/11/2015 23:58:29] _|  ZoriaRPG |_: A 'turn' being a predetermined amount of time, in which enemies have actions.
+[19/11/2015 23:59:33] _|  ZoriaRPG |_: Turn:
+1. Set, change, or continue action
+2. Recheck paths if needed
+3. Take action (move, attack, skill)
+[19/11/2015 23:59:55] _|  ZoriaRPG |_: and defend as an action
+[20/11/2015 00:00:17] _|  ZoriaRPG |_: That includes block, parry, evade, move
+[20/11/2015 00:00:26] _|  ZoriaRPG |_: and dodge
+[20/11/2015 00:00:42] The Blue Tophat: Sounds kinda like reaction times for enemies
+[20/11/2015 00:00:58] _|  ZoriaRPG |_: This is all pretty standard rpg fare, but translating it into vg terms, is another matter
+[20/11/2015 00:01:08] _|  ZoriaRPG |_: It is, in fact, exactly that.
+[20/11/2015 00:01:12] _|  ZoriaRPG |_: Time to make decisions
+[20/11/2015 00:01:50] _|  ZoriaRPG |_: It can be executedin turn-based combat/play, or action-based comba/play with very little difference
+[20/11/2015 00:07:33] The Blue Tophat: Are you planning for all the enemies to be scripted?
+[20/11/2015 00:07:41] The Blue Tophat: (Assuming so but I'm curious)
+[20/11/2015 00:08:09] _|  ZoriaRPG |_: Any enemy wioth an AI, would need to be scripted, by default, but it's certainly possible to automate some stock enemies.
+[20/11/2015 00:08:21] The Blue Tophat: Ah
+[20/11/2015 00:08:37] The Blue Tophat: Mainly wondering because messing with built in enemies might make this more difficult
+[20/11/2015 00:08:42] The Blue Tophat: eg. them moving on their own
+[20/11/2015 00:08:51] The Blue Tophat: or changing directions when they shouldn't
+[20/11/2015 00:08:56] The Blue Tophat: or other annoying built in things
+[20/11/2015 00:09:22] _|  ZoriaRPG |_: Ghost movement overrides internal movement for most of them, but I agree.
+[20/11/2015 00:10:03] _|  ZoriaRPG |_: I may find a way to hijack it, but it's not that important.
+[20/11/2015 00:36:31] The Blue Tophat: Alrighty, didn't do a whole lot but I added ATTACK constants, and updated EnemyAttack to work with ENEMY_ATTACK_SHOOT and uses an npc pointer as an argument now, to know where to create the weapon at
+[20/11/2015 00:36:38] ***  ***
+[20/11/2015 00:36:53] _|  ZoriaRPG |_: It's a start.
+[20/11/2015 00:37:21] _|  ZoriaRPG |_: I'll see about migrating some LoS stuff, if you want to work on movement paths
+[20/11/2015 00:37:55] _|  ZoriaRPG |_: Adding attacks and such isn't terribly meaningful, until enemies can move, after all'
+[20/11/2015 00:38:14] The Blue Tophat: yeah
+[20/11/2015 00:38:40] The Blue Tophat: It'd be helpful to have whatever I'd need to know to work with the library
+[20/11/2015 00:39:14] The Blue Tophat: eg. enemy attributes (like IQ) and knowing what constants are used and things like that
+[20/11/2015 00:41:53] _|  ZoriaRPG |_: Actually, all of that depends on the prime movement pathfnding, not the other way 'round for the present
+[20/11/2015 00:42:05] _|  ZoriaRPG |_: They may be codependent in the future
+[20/11/2015 00:42:17] ***  ***
+[20/11/2015 00:43:06] The Blue Tophat: I also don't really know how any paths could be executed after being calculated, aside from having nested loops or a bit of a complicated timer/counter/variable to keep track of when to move the enemy
+[20/11/2015 00:43:15] _|  ZoriaRPG |_: I may use tables for enemy stats (as illustrated in the file), or an enemy editor field, or both
+[20/11/2015 00:43:48] _|  ZoriaRPG |_: Easier than that
+[20/11/2015 00:43:56] _|  ZoriaRPG |_: Store the path options in an array.
+[20/11/2015 00:44:12] _|  ZoriaRPG |_: Execute part of them, based on enemy speed, and recalculate on its next turn
+[20/11/2015 00:44:30] _|  ZoriaRPG |_: Oh, you mean how to do the move
+[20/11/2015 00:44:38] The Blue Tophat: I mean like..
+[20/11/2015 00:44:58] _|  ZoriaRPG |_: Yeah, that'll work on a timer, based on the enemy turn, with an initiative modifier offset, so that not all enemy movements are simultaneous
+[20/11/2015 00:45:09] The Blue Tophat: yeah
+[20/11/2015 00:45:13] The Blue Tophat: something like that
+[20/11/2015 00:45:16] _|  ZoriaRPG |_: Init is easy
+[20/11/2015 00:45:29] _|  ZoriaRPG |_: Rand(-10,10)
+[20/11/2015 00:45:43] _|  ZoriaRPG |_: For each enemy on the screen, store the value as a modifier to its turn start time.
+[20/11/2015 00:46:01] _|  ZoriaRPG |_: Checked only once, per screen loading.
+[20/11/2015 00:46:24] _|  ZoriaRPG |_: Modify the rand values as needed to adjuct for the game engine
+[20/11/2015 00:46:37] _|  ZoriaRPG |_: adjust
+[20/11/2015 00:46:49] _|  ZoriaRPG |_: http://www.purezc.net/forums/index.php?showtopic=68727
+[20/11/2015 00:46:52] _|  ZoriaRPG |_: also relates to this
+[20/11/2015 00:48:43] The Blue Tophat: if actions where stored in an array, how would that be done so that each enemy has enough indices to keep track of each action?
+[20/11/2015 00:49:27] _|  ZoriaRPG |_: Well, the first question, is: how many enemies will be AI enemies, at any one time?
+[20/11/2015 00:49:33] _|  ZoriaRPG |_: If ten, that makes it simple.
+[20/11/2015 00:50:05] _|  ZoriaRPG |_: EnemyActions[10*PREDETERMINED_LIST_OF_PATHS]
+[20/11/2015 00:50:25] _|  ZoriaRPG |_: In other words, we need to decide how far into thw future, an enemy should calculate.
+[20/11/2015 00:50:43] _|  ZoriaRPG |_: I would make the calculation in either tiles, or half tiles.
+[20/11/2015 00:50:45] The Blue Tophat: As far as I know you can't do maths or use variables/constants in Array definitions
+[20/11/2015 00:50:51] _|  ZoriaRPG |_: No, you can;t.
+[20/11/2015 00:51:00] _|  ZoriaRPG |_: I do that as a placeholder, until i know the value.
+[20/11/2015 00:51:03] The Blue Tophat: Ah
+[20/11/2015 00:51:17] _|  ZoriaRPG |_: WHich ixs why you saw that all over the place in my files.
+[20/11/2015 00:51:34] _|  ZoriaRPG |_: It will never compile that way, but it;'s a good way to remember what kinds of numerical calcs I need to make.
+[20/11/2015 00:51:38] _|  ZoriaRPG |_: As my memory is shyte
+[20/11/2015 00:52:06] _|  ZoriaRPG |_: I'd say as a safe bet, to store 256 possible changes in movement, based on direction, and distance.
+[20/11/2015 00:52:10] _|  ZoriaRPG |_: In two sets.
+[20/11/2015 00:52:22] _|  ZoriaRPG |_: Say, EnemyMovement[5210]
+[20/11/2015 00:52:39] _|  ZoriaRPG |_: the first 2650 are directions, and the second 2560 are dcistances.
+[20/11/2015 00:52:45] _|  ZoriaRPG |_: That's more than enough.
+[20/11/2015 00:52:51] _|  ZoriaRPG |_: Probably too much, by far.
+[20/11/2015 00:53:07] The Blue Tophat: If you wanted to
+[20/11/2015 00:53:08] _|  ZoriaRPG |_: In fact, the maximum number for any given distance, if in half tiles, is what...
+[20/11/2015 00:53:10] The Blue Tophat: you could use floats
+[20/11/2015 00:53:18] _|  ZoriaRPG |_: 32?
+[20/11/2015 00:53:32] _|  ZoriaRPG |_: Floats don;t do much for us there.
+[20/11/2015 00:53:41] The Blue Tophat: You can save indices that way
+[20/11/2015 00:53:42] _|  ZoriaRPG |_: I make most arrays floats as a general rule in ZC though
+[20/11/2015 00:53:52] _|  ZoriaRPG |_: Well, there's no reason to save indices.
+[20/11/2015 00:53:56 | Edited 00:54:02] The Blue Tophat: by doing maths to the numbers to chop off the numbers before/after the decimal
+[20/11/2015 00:54:08] The Blue Tophat: *decimal, not indice
+[20/11/2015 00:54:12] _|  ZoriaRPG |_: It's no more optimised, and in fact, parsing each index through a function, uses more clock time.
+[20/11/2015 00:54:26] _|  ZoriaRPG |_: than having more indices.
+[20/11/2015 00:54:46] _|  ZoriaRPG |_: the width of the screen is 16 tiles
+[20/11/2015 00:54:50] _|  ZoriaRPG |_: so, 32 half tiles
+[20/11/2015 00:54:55] _|  ZoriaRPG |_: that is the longest possible move.
+[20/11/2015 00:55:14] _|  ZoriaRPG |_: SO, you need EnemyMovement[10*32*2] for ten enemies
+[20/11/2015 00:55:35] The Blue Tophat: I'm guessing the *2 for moving to one end then the other?
+[20/11/2015 00:55:44] _|  ZoriaRPG |_: In other words, let's say you want to move ten tiles right, then four down.
+[20/11/2015 00:56:18] _|  ZoriaRPG |_: EnemyMove[1] = 10
+EnemyMove[320] = DIR_RIGHT
+[20/11/2015 00:56:33] _|  ZoriaRPG |_: EnemyMove[11] = 4
+[20/11/2015 00:57:01] _|  ZoriaRPG |_: EnemyMove[331] = DIR_DOWN
+[20/11/2015 00:57:05] _|  ZoriaRPG |_: Stores that path.
+[20/11/2015 00:57:30] _|  ZoriaRPG |_: If you wanted to move 10.5 tiles down, you;d store that as 10.5
+[20/11/2015 00:58:01] _|  ZoriaRPG |_: The when executing the move, Enemy->Y = += EnemyMove[1] * 16
+[20/11/2015 00:58:30] _|  ZoriaRPG |_: Well, i skipped a step.
+[20/11/2015 00:58:42 | Edited 00:58:46] The Blue Tophat: wouldn't that make same-ey speeds for all enemies, though?
+[20/11/2015 00:58:59] _|  ZoriaRPG |_: You;re right.
+[20/11/2015 00:59:13] _|  ZoriaRPG |_: It'd need to be on a timer, that moves the enemy that distance, based on its walk speed.
+[20/11/2015 00:59:23] _|  ZoriaRPG |_: It may also be better to store all four directions.
+[20/11/2015 00:59:30] _|  ZoriaRPG |_: Works the same either way
+[20/11/2015 00:59:41] _|  ZoriaRPG |_: Store the distance, then compare it to a value in direction.
+[20/11/2015 01:00:12] _|  ZoriaRPG |_: But it may be simpler to have four sets, up, down, left, right.
+[20/11/2015 01:00:26] _|  ZoriaRPG |_: The process each as a movement.
+[20/11/2015 01:00:34] _|  ZoriaRPG |_: But no
+[20/11/2015 01:00:57] _|  ZoriaRPG |_: The reason i was doing it this way, is because it'll parse better, when determining which wayh to move, in what order
+[20/11/2015 01:01:32] _|  ZoriaRPG |_: The order is always a linear progression through the array
+[20/11/2015 01:02:05] _|  ZoriaRPG |_: As it parses each field, it reads the distance, and the direction, then executes as much as possible based on enemy speed.
+[20/11/2015 01:02:11] _|  ZoriaRPG |_: If it reaches the end, it stops.
+[20/11/2015 01:02:19] _|  ZoriaRPG |_: If not, it recalculates next turn.
+[20/11/2015 01:06:47] The Blue Tophat: When it recalculates, would it be starting at the beginning of its section of the array again
+[20/11/2015 01:06:59] The Blue Tophat: Or would it continue from that point?
+[20/11/2015 01:07:27] The Blue Tophat: er, like the next parts of the array would get overwritten with new actions
+[20/11/2015 01:08:55] _|  ZoriaRPG |_: Recalculation would store new values, based on whatever conditions are present at the end of its turn.
+[20/11/2015 01:09:08] _|  ZoriaRPG |_: So, it would replace all the values in the array, and try to execute the new ones.
+[20/11/2015 01:09:26] ***  ***
+[20/11/2015 01:09:33] _|  ZoriaRPG |_: I added the array,a nd functions to use it.
+[20/11/2015 01:09:42] _|  ZoriaRPG |_: with basic constants
+[20/11/2015 01:10:04] _|  ZoriaRPG |_: Did you grab the LoS file>
+[20/11/2015 01:10:05] _|  ZoriaRPG |_: ?
+[20/11/2015 01:10:23] The Blue Tophat: The RPG_EnemyAI file you just sent? Yeah.
+[20/11/2015 01:10:33] ***  ***
+[20/11/2015 01:10:35] _|  ZoriaRPG |_: This
+[20/11/2015 01:10:36] The Blue Tophat: oh
+[20/11/2015 01:10:44] The Blue Tophat: Now I have.
+[20/11/2015 01:10:58] _|  ZoriaRPG |_: The maths are wrong
+[20/11/2015 01:11:01] _|  ZoriaRPG |_: I just noticed
+[20/11/2015 01:14:54] The Blue Tophat: Shouldn't it be *4, for 4 directions
+[20/11/2015 01:15:06] The Blue Tophat: Or?
+[20/11/2015 01:20:09] ***  ***
+[20/11/2015 01:20:16] _|  ZoriaRPG |_: That should do it.
+[20/11/2015 01:20:49] ***  ***
+[20/11/2015 01:20:55] _|  ZoriaRPG |_: With a comment added
+[20/11/2015 01:21:31] _|  ZoriaRPG |_: the moveNumber input is the phase of the for loop this way
+[20/11/2015 01:23:49] ***  ***
+[20/11/2015 01:23:56] _|  ZoriaRPG |_:  Added storing functions to set the values
+[20/11/2015 01:25:02] _|  ZoriaRPG |_: 'OOps
+[20/11/2015 01:25:32] ***  ***
+[20/11/2015 01:25:42] _|  ZoriaRPG |_: Fixed line 45
+[20/11/2015 01:28:18] _|  ZoriaRPG |_: If ZC supported 2D arrays, this would be far simpler.
+[20/11/2015 01:29:10] _|  ZoriaRPG |_: If you don;t know that term, is means that the datum in an array index, and be another entire array
+[20/11/2015 01:29:16] _|  ZoriaRPG |_: 3D arrays, allow three stages
+[20/11/2015 01:29:56] The Blue Tophat: Yeah
+[20/11/2015 01:30:12] _|  ZoriaRPG |_: int things[2] = { rubbish[13], piles[10] }
+int stuff[2]= { things[2], 37 }
+[20/11/2015 01:31:03] The Blue Tophat: Wouldn't ZC actually support that though?
+[20/11/2015 01:31:06] _|  ZoriaRPG |_: No
+[20/11/2015 01:31:09] _|  ZoriaRPG |_: It doesn;t
+[20/11/2015 01:31:09] The Blue Tophat: Huh.
+[20/11/2015 01:31:14] _|  ZoriaRPG |_: and adding it is no cake walk
+[20/11/2015 01:31:39] _|  ZoriaRPG |_: Each index can hold one numeric literal
+[20/11/2015 01:31:41] The Blue Tophat: Wouldn't what you defined, set stuff[1] to be things[2]
+[20/11/2015 01:31:45] _|  ZoriaRPG |_: but not another array
+[20/11/2015 01:32:55] _|  ZoriaRPG |_: In practical terms, 2D arrays would allow storing a temporary array in npc->Mics[]
+[20/11/2015 01:33:08] _|  ZoriaRPG |_: So, npc->Misc[0] could hold an array with movement information
+[20/11/2015 01:33:20] _|  ZoriaRPG |_: But we can't do that, so there's no pint dwelling on it.
+[20/11/2015 01:34:11] _|  ZoriaRPG |_: point

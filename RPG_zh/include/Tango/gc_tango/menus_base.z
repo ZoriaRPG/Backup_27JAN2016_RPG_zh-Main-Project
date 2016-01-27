@@ -1,0 +1,204 @@
+const int WINDOW_SLOT_1 = 0;
+const int WINDOW_SLOT_2 = 1;
+const int WINDOW_SLOT_3 = 2;
+const int WINDOW_SLOT_4 = 3;
+const int WINDOW_SLOT_5 = 4;
+
+// There are certainly other ways to handle these...
+int menuCommand;
+int menuArg;
+
+void SetUpWindow(int slot, int style, int x, int y, int size)
+{
+    SetStyleSize(style, size);
+    Tango_ClearSlot(slot);
+    Tango_SetSlotStyle(slot, style);
+    Tango_SetSlotPosition(slot, x, y);
+}
+
+void ShowString(int string, int slot, int style, int x, int y)
+{
+    SetUpWindow(slot, style, x, y, SIZE_LARGE);
+    Tango_LoadString(slot, string);
+    Tango_ActivateSlot(slot);
+    while(Tango_SlotIsActive(slot))
+        Waitframe();
+}
+
+ffc script UseMagic
+{
+    void run()
+    {
+        Link->Action=LA_CASTING;
+        Screen->Wavy=menuArg*15;
+    }
+}
+
+ffc script Menu
+{
+    void run()
+    {
+        int line1[]="@choice(1)Talk@tab(56)@choice(2)Check@26@26";
+        int line2[]="@choice(3)Items@tab(56)@choice(4)Magic@domenu(1)@suspend()";
+        
+        SetUpWindow(WINDOW_SLOT_1, WINDOW_STYLE_1, 16, 16, SIZE_SMALL);
+        Tango_LoadString(WINDOW_SLOT_1, line1);
+        Tango_AppendString(WINDOW_SLOT_1, line2);
+        Tango_ActivateSlot(WINDOW_SLOT_1);
+        
+        while(!Tango_MenuIsActive())
+            Waitframe();
+        
+        // Save the state of the text slot and menu. The bitmap won't change,
+        // so it doesn't need saved.
+        int slotState[274];
+        int menuState[60];
+        int cursorPos;
+        Tango_SaveSlotState(WINDOW_SLOT_1, slotState);
+        Tango_SaveMenuState(menuState);
+        
+        bool done=false;
+        int choice;
+        while(true)
+        {
+            while(Tango_MenuIsActive())
+            {
+                cursorPos=Tango_GetMenuCursorPosition();
+                Waitframe();
+            }
+            
+            choice=Tango_GetLastMenuChoice();
+            
+            if(choice==1) // Talk
+            {
+                int text[]="There's no one there.";
+                ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+                done=true;
+            }
+            else if(choice==2) // Check
+            {
+                int text[]="Nothing interesting here.";
+                ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+                done=true;
+            }
+            else if(choice==3) // Items
+            {
+                int text[]="You have no items.";
+                ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+                done=true;
+            }
+            else if(choice==4) // Magic
+                done=DoMagic();
+                
+            else if (Link->PressEx1){
+                done = true;
+            }
+            else
+                done=true;
+            
+            // If we need to return to the top-level menu,
+            // restore the state and loop again.
+            if(done)
+                break;
+            else
+            {
+                Tango_RestoreSlotState(WINDOW_SLOT_1, slotState);
+                Tango_RestoreMenuState(menuState);
+                Tango_SetMenuCursorPosition(cursorPos);
+            }
+        }
+        
+        Tango_ClearSlot(WINDOW_SLOT_1);
+    }
+}
+
+bool DoMagic()
+{
+    //SetUpWindow(WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32, SIZE_LARGE);
+    //int spellFormat[]="@choice(%d)Spell %d";
+    int lineBreak[]="@26";
+    int menuEnd[]="@domenu(1)@suspend()";
+    //int spellIce[]="@choice(%d)Water/Ice";
+    //int spellFire[]="@choice(%d)Fire/Heat";
+    
+    //for(int i=1; i<9; i++)
+    //{
+    //    int buffer[40];
+    //    sprintf(buffer, spellFormat, i, i);
+    //    Tango_AppendString(WINDOW_SLOT_2, buffer);
+    //    if(i<7)
+    //        Tango_AppendString(WINDOW_SLOT_2, lineBreak);
+    //}
+    
+    int line1[]="@choice(1)Air/Lit@26";
+    int line2[]="@choice(2)Water/Ice@26";
+    int line3[]="@choice(3)Light@26";
+    int line4[]="@choice(4)Fire/Heat";
+    
+    //@choice(2)Light@domenu(1)@suspend()
+    
+    SetUpWindow(WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32, SIZE_LARGE);
+        Tango_LoadString(WINDOW_SLOT_2, line1);
+        Tango_AppendString(WINDOW_SLOT_2, line2);
+        Tango_AppendString(WINDOW_SLOT_2, line3);
+        Tango_AppendString(WINDOW_SLOT_2, line4);
+        Tango_AppendString(WINDOW_SLOT_2, menuEnd);
+        Tango_ActivateSlot(WINDOW_SLOT_2);
+    
+    
+    //Tango_AppendString(WINDOW_SLOT_2, menuEnd);
+    //Tango_ActivateSlot(WINDOW_SLOT_2);
+    
+    while(!Tango_MenuIsActive())
+        Waitframe();
+    
+    // Save the state again...
+    int slotState[274];
+    int menuState[60];
+    int cursorPos;
+    Tango_SaveSlotState(WINDOW_SLOT_2, slotState);
+    Tango_SaveMenuState(menuState);
+    
+    int done=0;
+    int choice;
+    while(true)
+    {
+        while(Tango_MenuIsActive())
+        {
+            cursorPos=Tango_GetMenuCursorPosition();
+            Waitframe();
+        }
+        
+        choice=Tango_GetLastMenuChoice();
+        if(choice==0) // Canceled
+            done=2;
+        else if(choice%2==0) // Arbitrarily, even-numbered spells don't work
+        {
+            int text[]="You can't use that here.";
+            ShowString(text, WINDOW_SLOT_3, WINDOW_STYLE_3, 48, 48);
+        }
+        else // And odd-numbered spells do
+        {
+            done=1;
+            menuCommand=52; //FFC Slot of spell.
+            menuArg=choice;
+        }
+        
+        if(done>0)
+            break;
+        else
+        {
+            Tango_RestoreSlotState(WINDOW_SLOT_2, slotState);
+            Tango_RestoreMenuState(menuState);
+            Tango_SetMenuCursorPosition(cursorPos);
+        }
+    }
+    
+    Tango_ClearSlot(WINDOW_SLOT_2);
+    
+    if(done==1)
+        return true; // Tell parent menu to close
+    else
+        return false; // Tell parent not to close
+}
+

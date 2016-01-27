@@ -1,0 +1,109 @@
+import "ffcscript.zh"
+import "stdExtra.zh"
+
+const int I_AUTOBOW = 15;
+
+
+item script AutofireBow {
+    void run(int ffcscript, int fireRate, int sprite, int itemID){
+        if(!Link->Item[I_AUTOBOW])
+            Quit();
+        if(CountFFCsRunning(ffcscript)==0) {
+            int args[8] = {fireRate, sprite, this->UseSound, itemID};
+            RunFFCScript(ffcscript, args);
+        }
+    }
+}
+
+ffc script AutofireBowFFC {
+    void run(int fireRate, int sprite, int usesound, int itemID) {
+        int timer;
+        LINK_AUTOFIRE = Link->Dir;
+        while(UsingItem(itemID)) {
+            lweapon arrow = Duplicate(LastArrow());
+            arrow->DeadState = -1;
+            timer = (timer+1)%fireRate;
+            if(timer==0) {
+                Game->PlaySound(usesound);
+                lweapon l = Duplicate(arrow);
+                
+                l->UseSprite(sprite);
+                l->Flip = arrow->Flip;
+                
+                l->X = Link->X+InFrontX(Link->Dir,3);
+                l->Y = Link->Y+InFrontY(Link->Dir,3);
+                
+                if(Link->Dir == DIR_DOWN) {
+                    l->Flip = 2; //Change direction of spriteUsed to down.
+                }
+                if(Link->Dir == DIR_RIGHT) {
+                    l->Tile += 1; //Use next tile as well.
+                }
+                if(Link->Dir == DIR_LEFT) {
+                l->Tile += 1; //If Link is facing left.
+                l->Flip = 1; //Flip spriteUsed tile and use next tile as well.
+                }
+		        
+                if( lWeaponExists(LW_ARROW) ) {
+                    lweapon s = Screen->CreateLWeapon(LW_SPARKLE);
+                    s->UseSprite(29);
+                    for (int k = 1; k < 600; k++) {
+                        int spkX = l->X;
+                        int spkY = l->X;
+                        if(arrow->Dir==DIR_LEFT) {
+                            spkX -= 8;
+                        }
+                        else if (arrow->Dir==DIR_LEFT) {
+                            spkX += 8;
+                        }
+                        else if (arrow->Dir==DIR_UP) {
+                            spkY -= 8;
+                        }
+                        else if (arrow->Dir==DIR_DOWN) {
+                            spkY += 8;
+                        }
+                    }
+                 }
+                
+                
+            }
+            Waitframe();
+        }
+        LINK_AUTOFIRE = -1;
+    }
+    lweapon LastArrow() {
+        lweapon arrow;
+        for(int i = Screen->NumLWeapons(); i > 0; i--) {
+            arrow = Screen->LoadLWeapon(i);
+            if(arrow->DeadState != WDS_ALIVE) continue;
+            if(arrow->ID == LW_ARROW) break;
+        }
+        return arrow;
+    }
+}
+
+bool lWeaponExists(int LType){
+	for (int i = Screen->NumLWeapons(); i > 0; i--){
+		lweapon e = Screen->LoadLWeapon(i);
+		if ( e->ID == LType ){
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+}
+
+int LINK_AUTOFIRE;
+
+global script slot2 {
+    void run() {
+        LINK_AUTOFIRE=-1;
+        while(true) {
+            Waitdraw();
+            if(LINK_AUTOFIRE != -1) Link->Dir = LINK_AUTOFIRE;
+            Waitframe();
+        }
+    }
+}
+

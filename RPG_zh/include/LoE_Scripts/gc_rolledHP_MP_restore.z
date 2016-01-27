@@ -1,0 +1,98 @@
+item script rolledHPMP_Restore {
+    void run(int diceNumber, int dieType, int restoreSound, int restoreMessage, int restoreType){
+        int totalRestored = rollDice(diceNumber, dieType);
+        if ( restoreSound > 0 ) {
+            Game->PlaySound(restoreSound);
+        }
+        if ( restoreMessage > 0 ) {
+            Screen->Message(restoreMessage);
+            //Drawstring would be ideal here, to tell the player how much MP they re-gained.
+        }
+        if ( restoreType == 0 ) { 
+            Link->HP += totalRestored;
+        }
+        else if ( restoreType == 1 ) { 
+            Link->MP += totalRestored;
+        }
+        else if ( restoreType == 2 ) { 
+            Link->HP += totalRestored;
+            Link->MP += totalRestored;
+        }
+        else if ( restoreType == 3 ) { 
+            Link->MP += ( totalRestored * 2 );
+        }
+        else if ( restoreType == 2 ) { 
+            Link->HP += totalRestored;
+            Link->MP += ( totalRestored * 2 );
+        }
+    }
+}
+
+item script rolledElixir {
+    void run (int MPCost, int dieType, int diceNumber, int useSFX, int useMessage, int errorSFX, int errorMessage){
+        int diceToRoll;
+        if ( diceNumber > 0 ) {
+            diceToRoll = diceNumber;
+        }
+        else if ( diceNumber == 0 ) {
+            diceToRoll = Game->Counter[CR_LEVEL];
+        }
+        
+        int totalValue = rollDice(diceToRoll, dieType);
+        
+        if ( Link->MP >= MPCost ) {
+            Link->MP -= MPCost;
+            if ( useSFX > 0 ) {
+                Game->PlaySound(useSFX);
+            }
+            if ( useMessage > 0 ) {
+                Screen->Message(useMessage);
+                //This would be a good spot to use Drawstring, with a variable to tell the player the amount of HP they re-gained.
+            }
+            
+            Link->HP += totalValue;
+        }
+        
+        else {
+            Game->PlaySound(errorSFX);
+            if ( errorMessage > 0 ) {
+                Screen->Message(errorMessage);
+            }
+        }
+    }
+}
+
+item script rolledSernaranOfLight{
+    void run (int itemCost, int dieType, int diceNumber, int useSFX, int useMessage, int errorSFX, int errorMessage){
+        int diceToRoll;
+        if ( diceNumber > 0 ) {
+            diceToRoll = diceNumber;
+        }
+        else if ( diceNumber == 0 ) {
+            diceToRoll = Game->Counter[CR_LEVEL];
+        }
+        
+        int totalValue = rollDice(diceToRoll, dieType);
+        
+        if ( Game->Counter[CR_RUPEES] >= itemCost ) {
+            Game->Counter[CR_RUPEES] -= itemCost;
+            if ( useSFX > 0 ) {
+                Game->PlaySound(useSFX);
+            }
+            if ( useMessage > 0 ) {
+                Screen->Message(useMessage);
+                //This would be a good spot to use Drawstring, with a variable to tell the player the amount of HP they re-gained.
+            }
+            
+            Link->MP += totalValue;
+        }
+        
+        else {
+            Game->PlaySound(errorSFX);
+            if ( errorMessage > 0 ) {
+                Screen->Message(errorMessage);
+            }
+        }
+    }
+}
+

@@ -1,0 +1,41 @@
+item script giveItem{ //Creates an item at Link's position, giving it to him when picking up another item.
+    void run(int makeThis){
+        item giveThis = Screen->CreateItem(makeThis);
+        makeThis->X = Link->X;
+        makeThis->Y = Link->Y;
+        makeThis->Z = Link->Z; //Not needed if not using Z-axis.
+    }
+}
+
+item script createItemAtPosition{ //Crates an item at a specified position, when gaining a different item.
+    void run(int makeThis, int posX, int posY){
+        item giveThis = Screen->CreateItem(makeThis);
+        makeThis->X = posX;
+        makeThis->Y = posY;
+    }
+}
+
+item script createItemAtPositionZ{ //Crates an item at a specified position, when gaining a different item.
+    void run(int makeThis, int posX, int posY, int posZ){
+        item giveThis = Screen->CreateItem(makeThis);
+        makeThis->X = posX;
+        makeThis->Y = posY;
+        makeThis->Z = posZ;
+    }
+}
+    
+    
+//Functions
+
+int makeItem(int itemNumber, int locX, int locY){ //Creates a specific item on a screen, at specified coordinates.
+    item dropThis = Screen->CreateItem(itemNumber);
+    dropThis->X = locX;
+    dropThis->Y = locY;
+}
+
+int makeItem(int itemNumber, int locX, int locY, int locZ){ //Creates a specific item on a screen, at specified coordinates.
+    item dropThis = Screen->CreateItem(itemNumber);
+    dropThis->X = locX;
+    dropThis->Y = locY;
+    dropThis->Z = locY;
+}

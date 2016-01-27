@@ -1,0 +1,11 @@
+item script pickupsernaran{
+
+void run(int m){
+
+item givenitem = Screen->CreateItem(143);
+givenitem->X = Link->X;
+givenitem->Y = Link->Y;
+givenitem->Z = Link->Z;
+
+}
+}

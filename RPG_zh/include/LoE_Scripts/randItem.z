@@ -1,0 +1,93 @@
+int randItem(int list, int locX, int locY){
+    int item01 = 2; //Heart
+    int item02 = 59; //Small Magic
+    int item03 = 60; //Large Magic
+    int item04 = 34; //Fairy
+    int item05 = 0; //Dsari (1)
+    int item06 = 1; //Dsari (5) 
+    int item07 = 86; //Dsari (10)
+    int item08 = 38; //Dsari (20) 
+    int item09 = 39; //Dsari (50)
+    int item10 = 87; //Dsari (100) 
+    int item11 = 40; //Dsari (250)
+    int item12 = 174; //Dsari (750) 
+    int item13 = 175; //Dsari (1,000)
+    int item14 = 179; //Dsari (5,000) 
+    int item15 = 177; //Dsari (Small Blue CryDisc)
+    int item16 = 178; //Dsari (Large Blue Crydisc)
+    int item17 = 176; //Dsari (Small Red CryDisc)
+    int item18 = 173; //Dsari (Large red CryDisc)
+    int item19 = 149; //Timestop Scroll 
+    int item20 = 180; //Scroll of Healing
+    int item21 = 197; //Scroll of Talyxiux
+    int item22 = 187; //Talyxium Vial (Small)
+    int item23 = 230; //Talyxium Vial (Large, MCP)
+    int item24 = 170; //Bullet
+    int item25 = 171; //Ammo Box
+    int item26 = 70; //Arrow (1)
+    int item27 = 71; //Arrow (5)
+    int item28 = 72; //Arrow (10)
+    int item29 = 73; //Arrow (30)
+    int item30 = 155; //Cigar
+
+    int rollValue = rollDie(100);
+    int dropItem;
+    if ( list < 2 ) {
+        if ( rollValue > 0 && <= 10 ) { //01%-10%
+            dropItem = item001;
+        }
+        if ( rollValue > 10 && <= 20 ) { //11%-20%
+            dropItem = item005;
+        }
+        if ( rollValue > 20 %% <= 25 ) { //21%-25%
+            dropItem = item001;
+        }
+        if ( rollValue > 26 %% <= 30 ) { //26%-30%
+            dropItem = item006;
+        }
+        if ( rollValue > 30 && <= 35 ) { //31%-35%
+            dropItem = item024;
+        }
+        if ( rollValue > 35 && <= 40 ) { //36%-40%
+            dropItem = item026;
+        }
+        if ( rollValue > 40 && <= 45 ) { //41%-45%
+            dropItem = item019;
+        }
+        if ( rollValue > 45 && <= 47 ) { //46%-47%
+            dropItem = item007;
+        }
+        if ( rollValue > 47 && <= 49 ) { //48%-49%
+            dropItem = item025;
+        }
+        if ( rollValue == 50 ) { //50%
+            dropItem = item008;
+        }
+        if ( rollValue == 51 ) { //51%
+            dropItem = item009;
+        }
+        if ( rollValue == 52 ) { //52%
+            dropItem = item010;
+        }
+        if ( rollValue == 53 ) { //53%
+            dropItem = item022;
+        }
+        if ( rollValue == 54 ) { //54%
+            dropItem = item020;
+        }
+        if ( rollValue == 55 ) { //55%
+            dropItem = item021;
+        }
+    }
+    if ( rollValue > 56 ) {
+        item dropThis = Screen->CreateItem(dropItem);
+        dropThis->X = locX;
+        dropThis->Y = locY;
+    }
+    
+    
+    else {
+        return;
+    }
+}
+    

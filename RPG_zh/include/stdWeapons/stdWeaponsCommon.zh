@@ -1,0 +1,91 @@
+// Initialize FFC position and creates controlled Lweapon at Link`s position, assigning damage and sprite.
+lweapon LweaponInit (ffc f, int type, int damage, int sprite){
+	f->Vx=0;
+	f->Vy=0;
+	f->Ax=0;
+	f->Ay=0;
+	f->X= Link->X;
+	f->Y= Link->Y;
+	lweapon init = Screen->CreateLWeapon(type);
+	init->Damage=damage;
+	init->X= f->X;
+	init->Y= f->Y;
+	init->UseSprite(sprite);
+	return init;
+}
+
+// Creates another Lweapon at FFC`s position without putting FFC at Link`s position.
+lweapon CreateNewWeapon (ffc f, int type, int damage, int sprite){
+	lweapon init = Screen->CreateLWeapon(type);
+	init->Damage=damage;
+	init->X= f->X;
+	init->Y= f->Y;
+	init->UseSprite(sprite);
+	return init;
+}
+
+//Updates Lweapon`s direction depending on FFC`s velocity. Needed for proper interaction with shielded enemies.
+void LweaponDirUpdate( ffc f, lweapon l){
+	if ((f->Vx==0)&&(f->Vy==0)) return;
+	else l->Dir=RadianAngleDir8(ArcTan(f->Vx, f->Vy));
+}
+
+//Puts Lweapon at FFC`s position
+void LweaponPosUpdate( ffc f, lweapon l){
+	l->X= f->X;
+	l->Y= f->Y;
+}
+
+//Updates Lweapon`s sprite flipping depending on it`s direction. Uses alternate sprite for non-cardinal directions.
+void LweaponSpriteUpdate (lweapon l, int sprite, int altsprite){
+	if (l->Dir<4) l->UseSprite(sprite);
+	else l->UseSprite(altsprite);
+     if (l->Dir==DIR_LEFT) l->Flip=1;
+	else if (l->Dir==DIR_RIGHT) l->Flip=0;
+	else if (l->Dir==DIR_UP) l->Flip=7;
+	else if (l->Dir==DIR_DOWN) l->Flip=4;
+	else if (l->Dir==DIR_LEFT) l->Flip=1;
+	else if (l->Dir==DIR_RIGHT) l->Flip=0;
+	else if (l->Dir==DIR_RIGHTUP)	l->Flip=0;
+	else if (l->Dir==DIR_LEFTUP) l->Flip=1;
+	else if (l->Dir==DIR_LEFTDOWN) l->Flip=3;
+	else if (l->Dir==DIR_RIGHTDOWN) l->Flip=2;
+}
+
+//All-in-one function for updating Lweapon
+void LweaponUpdate(ffc f, lweapon l, int sprite, int altsprite){
+	LweaponPosUpdate( f, l);
+	LweaponDirUpdate( f, l);
+	LweaponSpriteUpdate (l, sprite, altsprite);
+}
+
+//Clears FFC and prepares it for being reused. Works best right before calling Quit()
+void ClearFFC( ffc f){
+	f->X=0;
+	f->Y=0;
+	f->Data=0;
+	f->Ax=0;
+	f->Ay=0;
+	f->TileHeight=1;
+	f->TileWidth=1;
+	f->EffectHeight=16;
+	f->EffectWidth=16;
+	f->Vx=0;
+	f->Vy=0;
+	f->Delay=0;
+	f->CSet=0;
+}
+
+//Returns true if Link has enough ammo (also subtracting cost) or has an item that allows infinite ammo.
+//Call Quit() if this function returns "false" (not enough ammo).
+bool AmmoManager(int counter, int cost, int infiniteitem){
+	int cn;
+	if ((Game->Generic[1]>0)&&(counter==CR_MAGIC)) cn=cost/2; //Pay attention to "/2 magic" upgrade.
+	else cn=cost;
+	if (Link->Item[infiniteitem]) return true;
+	else if (Game->Counter[counter]>=cn){
+		Game->DCounter[counter]-=cn;
+		return true;
+	}
+	else return false;
+}

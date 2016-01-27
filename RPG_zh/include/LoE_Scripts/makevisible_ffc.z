@@ -1,0 +1,8 @@
+ffc script makevisible{
+    void run(){
+        while(true){
+        Link->Invisible = false;
+        Waitframe();
+        }
+}
+    }

@@ -1,0 +1,16 @@
+void unpressButton(int button)
+    	if (button == BUTTON_UP) return Link->InputUp = false;
+        if (button == BUTTON_DOWN) return Link->InputDown = false;
+        if (button == BUTTON_LEFT) return Link->InputLeft = false;
+        if (button == BUTTON_RIGHT) return Link->InputRight = false;
+        if (button == BUTTON_B) return Link->InputB = false;
+        if (button == BUTTON_A) return Link->InputA = false;
+        if (button == BUTTON_L) return Link->InputL = false;
+        if (button == BUTTON_R) return Link->InputR = false;
+        if (button == BUTTON_MAP) return Link->InputMap = false;
+        if (button == BUTTON_START) return Link->Inputtart = false;
+        if (button == BUTTON_EX1) return Link->InputEx1 = false;
+        if (button == BUTTON_EX2) return Link->InputEx2 = false;
+        if (button == BUTTON_EX3) return Link->InputEx3 = false;
+        if (button == BUTTON_EX4) return Link->InputEx4 = false;
+}

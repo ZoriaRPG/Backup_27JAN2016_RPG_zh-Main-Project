@@ -1,0 +1,25 @@
+int NPCBuffer[255];
+
+int S_Character_Gru(int story, int weather, int mood, int phase){
+	int string1[]="My name is Gru";
+	int string2[]="Would you buy me a pint?"
+	int string3[]="Thank You!";
+	int string4[]="Well, good luck asking me for favours.";
+	
+	if ( story == CH1 ) {
+		if ( weather == RAINING ) {
+			if ( mood = MOOD_NEUTRAL && plase == 1 ){
+				strcpy(string1,NPCBuffer, strlen(string1));
+			}
+			if ( mood = MOOD_NEUTRAL && phase == 2 ) {
+				strcpy(string2,NPCBuffer, strlen(string2));
+			}
+			if ( mood = MOOD_GOOD && phase > 2 ) {
+				strcpy(string3,NPCBuffer, strlen(string3));
+			}
+			if ( mood = MOOD_BAD && phase > 2 ) {
+				strcpy(string4,NPCBuffer, strlen(string4));
+			}
+		}
+	}
+}

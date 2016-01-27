@@ -1,0 +1,185 @@
+bool IsDead(npc en)
+{
+    if(!en->isValid())
+        return true;
+    if(en->HP <= 0)
+        return true;
+    return false;
+}
+
+
+// Elsewhere...
+if(IsDead(enemy))
+
+//Saffith
+
+        // This is a very common way of iterating over every enemy on the screen
+        for(int counter = 1; counter <= Screen->NumNPCs(); counter++)
+        {
+            enemy = Screen->LoadNPC(counter);
+            enemy->HP = Rand(1, 20);
+        }
+    }
+}
+
+//Saffith
+
+
+//This script makes the FFC follow Link around, offset by half a tile (it should be 2x2),
+// and removes any enemy weapons that get close to him.
+import "std.zh"
+
+ffc script Barrier
+{
+    void run()
+    {
+        eweapon wpn;
+        
+        while(true)
+        {
+            this->X = Link->X - 8;
+            this->Y = Link->Y - 8;
+            
+            // Cycle through every enemy weapon on the screen
+            for(int counter = 1; counter <= Screen->NumEWeapons(); counter++)
+            {
+                wpn = Screen->LoadEWeapon(counter);
+                
+                if(Distance(Link->X, Link->Y, wpn->X, wpn->Y) < 20)
+                {
+                    wpn->DeadState = WDS_DEAD;
+                }
+            }
+            
+            Waitframe();
+        }
+    }
+}
+
+
+// You could also try modifying it to be invisible if no enemy ever shows up.
+import "std.zh"
+//Saffith
+
+ffc script eBarrier
+{
+    void run()
+    {
+        npc enemy;
+        lweapon wpn;
+        
+        // Rather than waiting four frames, you can wait until enemies appear
+        while(Screen->NumNPCs() == 0)
+        {
+            Waitframe();
+        }
+        
+        enemy = Screen->LoadNPC(1);
+        
+        while(!IsDead(enemy))
+        {
+            this->X = enemy->X - 8;
+            this->Y = enemy->Y - 8;
+            
+            for(int counter = 1; counter <= Screen->NumLWeapons(); counter++)
+            {
+                wpn = Screen->LoadLWeapon(counter);
+                
+                if(Distance(enemy->X, enemy->Y, wpn->X, wpn->Y) < 20)
+                {
+                    wpn->DeadState = WDS_DEAD;
+                }
+            }
+            
+            Waitframe();
+        }
+        
+        this->Data = 0;
+    }
+    
+    bool IsDead(npc en)
+    {
+        if(!en->isValid())
+            return true;
+        if(en->HP <= 0)
+            return true;
+        return false;
+    }
+}
+
+//Saffith
+
+ffc script FireArrow
+{
+    void run()
+    {
+        int x;
+        int y;
+        lweapon arrow;
+        lweapon fire;
+        
+        for(int counter = 1; counter <= Screen->NumLWeapons(); counter++)
+        {
+            arrow = Screen->LoadLWeapon(counter);
+            
+            if(arrow->ID == LW_ARROW)
+            {
+                // Found an arrow...
+                
+                // Track its position until it becomes invalid
+                while(arrow->isValid())
+                {
+                    x = arrow->X;
+                    y = arrow->Y;
+                    Waitframe();
+                }
+                
+                // The arrow isn't valid anymore; put a fire at its last known location
+                fire = Screen->CreateLWeapon(LW_FIRE);
+                if(fire->isValid())
+                {
+                    fire->X = x;
+                    fire->Y = y;
+                    fire->Damage = 4;
+                    fire->Step = 0;
+                    Game->PlaySound(SFX_FIRE);
+                }
+                
+                Quit();
+            }
+        }
+    }
+}
+
+//Saffith
+
+item script RunFireArrow
+{
+    void run()
+    {
+        ffc scriptRunner = Screen->LoadFFC(1);
+        scriptRunner->Data = 1;
+        scriptRunner->Script = 1;
+    }
+}
+
+//Saffith
+
+
+int intArray[5]; // Creates an array of five ints, intArray[0] - intArray[4]
+eweapon ewArray[3]; // An array of three eweapons, ewArray[0] - ewArray[2]
+
+// An array can be huge. The limit is 214747 elements, the largest number
+// ZScript can handle.
+int bigArray[200000]; // This is perfectly fine
+
+// The size must be a simple integer.
+int anArray[x]; // ERROR: Variables can't be used
+int anotherArray[ARRAY_SIZE]; // ERROR: Constants can't be used
+int yetAnotherArray[5+5]; // ERROR: Arithmetic can't be used
+
+Number and bool arrays can be global, but pointer arrays can't.
+CODE
+
+//Saffith
+

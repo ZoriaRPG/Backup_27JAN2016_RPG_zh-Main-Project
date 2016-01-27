@@ -1,0 +1,1144 @@
+//Legacy (Deprecated) Functions
+
+int randItem(int list, int locX, int locY){ //REPLACE THIS with version using array, and with b oolean for timeout / not timeout.
+    
+    int rollValue;
+    int d100 = rollDie(100);
+    rollValue = d100;
+    int dropItem;
+    if ( list < 2 ) {
+        if ( rollValue > 0 && rollValue < 6 ) { //01%-10%
+            dropItem = 2;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue > 10 && rollValue < 16 ) { //11%-20%
+            dropItem = 0;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue > 20 && rollValue < 23 ) { //21%-25%
+            dropItem = 2;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue > 26 && rollValue < 29 ) { //26%-30%
+            dropItem = 1;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue > 40 && rollValue < 42 ) { //31%-35%
+            dropItem = 170;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue > 43 && rollValue < 46 ) { //36%-40%
+            dropItem = 70;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue > 60 && rollValue < 62 ) { //41%-45%
+            dropItem = 149;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue > 65 && rollValue < 67 ) { //46%-47%
+            dropItem = 86;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue > 74 && rollValue < 76 ) { //48%-49%
+            dropItem = 171;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue == 80 ) { //50%
+            dropItem = 38;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue == 85 ) { //51%
+            dropItem = 39;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue == 90 ) { //52%
+            dropItem = 87;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue == 95 ) { //53%
+            dropItem = 187;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue == 99 ) { //54%
+            dropItem = 180;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+        if ( rollValue == 100 ) { //55%
+            dropItem = 197;
+            item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+        }
+    }
+
+    
+    
+    else {
+        
+    }
+}
+
+
+//Check for new enemies and set their max HP
+void setMaxHP(){
+    for ( int i = Screen->NumNPCs(); i > 0; i-- ){
+        npc enem = Screen->LoadNPC(i);
+        if ( enem->Misc[NPC_MISC_MAXHP] == 0 )
+            enem->Misc[NPC_MISC_MAXHP] = enem->HP;
+    }
+}
+
+void checkEnemiesKilled(){
+    for ( int i = Screen->NumNPCs(); i > 0; i-- ){
+        npc enem = Screen->LoadNPC(i);
+        if ( enem->HP <= 0 && enem->HP > HP_DEAD ){
+            enem->HP = HP_DEAD;
+            int worth = enemyEXPWorth(enem);
+            
+            //Leadership: Chance to increase EXP worth
+            if ( Link->Item[I_LEADERSHIP] && Rand(EXP_LEADERSHIPCHANCE) == 0 )
+                worth++;
+                
+            giveEXP(worth);
+        }
+    }
+}
+
+int enemyEXPWorth(npc enem){
+    return Max(1, enem->Misc[NPC_MISC_MAXHP] / EXP_HP_RATIO);
+}
+
+void giveEXP(int amount){
+    //Give EXP
+    Game->Counter[CR_XP] += amount;
+}
+
+void XP() {
+    setMaxHP();
+    checkEnemiesKilled();
+    tenThousandPlace();
+    levelSystem();
+    }
+
+////Counters need to resetat each level.
+//XP caps out at L15, and counter rolls over.If XP_10K == 1 && XP == 5000
+// is the same as if XP == 15000
+//or use 2nd counter to 10K place. Every 10K points, increase XP_10K by 1
+//and work code to operateon both counters.
+
+void tenThousandPlace() {
+   if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 0 ) {
+        Game->Counter[CR_XP] = 1;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 1 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 2 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 3 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }    
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 4 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 5 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 6 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 7 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 8 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 9 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 10 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 11 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 12 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 13 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 14 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 15 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 16 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 17 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 18 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 19 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 20 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] == 21 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] > 21 && Game->Counter[CR_XP_10K] < 99 ) {
+        Game->Counter[CR_XP] = 0;
+        Game->Counter[CR_XP_10K]++;
+       }
+    }
+    
+
+void levelSystem() {
+   if ( Game->Counter[CR_LVL] == 0 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 100 ){
+        Game->Counter[CR_LVL] = 1;
+        Level1();
+       }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 1 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 150 ) {
+        Game->Counter[CR_LVL] = 2;
+        Level2();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 1 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 2;
+        Level2();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 2 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 225 ) {
+        Game->Counter[CR_LVL] = 3;
+        Level3();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 2 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 3;
+        Level3();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 3 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 338 ) {
+        Game->Counter[CR_LVL] = 4;
+        Level4();
+        }
+    }
+
+    if ( Game->Counter[CR_LVL] == 3 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 4;
+        Level4();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 4 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 507 ) {
+        Game->Counter[CR_LVL] = 5;
+        Level5();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 4 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 5;
+        Level5();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 5 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 760 ){
+        Game->Counter[CR_LVL] = 6;
+        Level6();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 5 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 6;
+        Level6();
+        }
+    }
+    
+   if ( Game->Counter[CR_LVL] == 6 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 1140 ){
+        Game->Counter[CR_LVL] = 7;
+        Level7();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 6 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 7;
+        Level7();
+        }
+    }
+    
+  if ( Game->Counter[CR_LVL] == 7 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 1710 ){
+        Game->Counter[CR_LVL] = 8;
+        Level8();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 7 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 8;
+        Level8();
+        }
+    }
+    
+  if ( Game->Counter[CR_LVL] == 8 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 2565 ){
+        Game->Counter[CR_LVL] = 9;
+        Level9();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 8 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 9;
+        Level9();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 9 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 3848 ){
+        Game->Counter[CR_LVL] = 10;
+        Level10();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 9 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 10;
+        Level10();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 10 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 11;
+        Level11();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 10 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 5772 ){
+        Game->Counter[CR_LVL] = 11;
+        Level11();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 10 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 11;
+        Level11();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 11 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 8658 ){
+        Game->Counter[CR_LVL] = 12;
+        Level12();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 11 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 12;
+        Level12();
+        }
+    }
+
+    
+    if ( Game->Counter[CR_LVL] == 12 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP] >= 2987 && Game->Counter[CR_XP_10K] > 0 ) {
+        Game->Counter[CR_LVL] = 13;
+        Level13();
+        }
+    }
+        
+      if ( Game->Counter[CR_LVL] == 12 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 1 ) {
+        Game->Counter[CR_LVL] = 13;
+        Level13();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 13 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 9481 && Game->Counter[CR_XP_10K] > 0) {
+        Game->Counter[CR_LVL] = 14;
+        Level14();
+        }
+    }
+        
+    if ( Game->Counter[CR_LVL] == 13 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 1 ) {
+        Game->Counter[CR_LVL] = 14;
+        Level14();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 14 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 9222 && Game->Counter[CR_XP_10K] > 1 ){
+        Game->Counter[CR_LVL] = 15;
+        Level15();
+        }
+    }
+        
+    if ( Game->Counter[CR_LVL] == 14 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 2 ) {
+        Game->Counter[CR_LVL] = 15;
+        Level15();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 15 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 3833 && Game->Counter[CR_XP_10K] > 3 ){
+        Game->Counter[CR_LVL] = 16;
+        Level16();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 15 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 4 ) {
+        Game->Counter[CR_LVL] = 16;
+        Level16();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 16 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 5750 && Game->Counter[CR_XP_10K] > 5 ){
+        Game->Counter[CR_LVL] = 17;
+        Level17();
+        }
+    }
+        
+    if ( Game->Counter[CR_LVL] == 16 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 6 ) {
+        Game->Counter[CR_LVL] = 17;
+        Level17();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 17 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 8625 && Game->Counter[CR_XP_10K] > 8 ){
+        Game->Counter[CR_LVL] = 18;
+        Level18();
+        }
+    }
+        
+            
+    if ( Game->Counter[CR_LVL] == 17 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 9 ) {
+        Game->Counter[CR_LVL] = 18;
+        Level18();
+        }
+    }            
+            
+    if ( Game->Counter[CR_LVL] == 18 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 7938 && Game->Counter[CR_XP_10K] > 13 ){
+        Game->Counter[CR_LVL] = 19;
+        Level19();
+        }
+    }
+        
+    if ( Game->Counter[CR_LVL] == 18 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 14 ) {
+        Game->Counter[CR_LVL] = 19;
+        Level19();
+        }
+    }
+    
+    if ( Game->Counter[CR_LVL] == 19 && Screen->NumNPCs() == 0 ) {
+        if ( Game->Counter[CR_XP] >= 500 && Game->Counter[CR_XP_10K] > 20 ){
+        Game->Counter[CR_LVL] = 20;
+        Level20();
+        }
+    }
+            
+    if ( Game->Counter[CR_LVL] == 19 && Screen->NumNPCs() == 0 ){
+        if ( Game->Counter[CR_XP_10K] > 21 ) {
+        Game->Counter[CR_LVL] = 20;
+        Level20();
+        }
+    }
+}
+
+
+void Level1() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[1]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP(); //Increases HP by 4d10
+increaseMP(); //Increases MP by 3d10
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level2() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[2]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level3() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[3]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level4() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[4]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+Game->Generic[GEN_CANSLASH] = 1; //This should occur when gaining this level, and be permanent.
+//NWS corrups the given-slash technique: placing it on Level5() doesn;t award it until L6 with NWS, so I'm placng it here to adjust for that.
+//Place sword techniques one level early, to adjust for NWS delays.
+}
+
+void Level5() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[5]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level6() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[6]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level7() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[7]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level8() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[8]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level9() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[9]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level10() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[10]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level11() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[11]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level12() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[12]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level13() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[13]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level14() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[14]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level15() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[15]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level16() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[16]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level17() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[17]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level18() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[18]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level19() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[19]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+void Level20() {
+Game->PlaySound(levelStrings[21]);
+Screen->Message(levelStrings[20]); //This should show on-screen one time, when gaining the level, and not remain forever.
+increaseHP();
+increaseMP();
+increaseStat(); //This should happen one time, when gaining this level, and be permanent.
+}
+
+int _getStatisticValue(int stat){
+    int value = statsArray[stat];
+    return value;
+}
+
+int _getMuscStat(){
+    int stat = statsArray[0];
+    return stat;
+}
+
+int _getBodyStat(){
+    int stat = statsArray[1];
+    return stat;
+}
+
+int _getMindStat(){
+    int stat = statsArray[2];
+    return stat;
+}
+
+int _getMystStat(){
+    int stat = statsArray[3];
+    return stat;
+}
+
+int _getInflStat(){
+    int stat = statsArray[4];
+    return stat;
+}
+
+int _getLuckStat(){
+    int stat = statsArray[5];
+    return stat;
+}
+
+int _rollStat() {
+    int r = Rand(1, 6); //specific value of 1-6 set at random;
+    if ( r == 1 ) {
+    int stat = statsArray[0];
+    return stat;
+    }
+    else if ( r == 2 ) {
+    int stat = statsArray[1];
+    return stat;
+    }
+    else if ( r == 3 ) {
+    int stat = statsArray[2];
+    return stat;
+    }
+    else if ( r == 4 ) {
+    int stat = statsArray[3];
+    return stat;
+    }
+    else if ( r == 5 ) {
+    int stat = statsArray[4];
+    return stat;
+    }
+    else if ( r == 6 ) {
+    int stat = statsArray[5];
+    return stat;
+    }
+    
+}
+
+int rollDiceDW(int rollNumber, int dieType){
+    int A = 0;
+    int L = 0;
+    int rollTimes = ( rollNumber+ 1 ); //+1, because the loop will end as soon as it is !< rollTimes.
+
+    do {
+    A += Rand(1,dieType);
+    L ++;
+    }
+    while(L < rollTimes);
+    
+}
+
+int rollDiceII(int dice, int dietype) {
+int total = 0;
+for(; dice>0; dice--){
+    total+=Rand(1, dietype);
+    }
+    return total;
+}
+    
+int rollDiceIIa(int diceToRoll, int dieType) {
+int total = 0;
+for ( int dice = diceToRoll; dice > 0; dice -- ) {
+    total+=Rand(1, dieType);
+    }
+    return total;
+}
+
+int RollDiceAlucard(int numdice, int dicetype){
+	int dicetotal = 0;
+	for (int dice = 1; dice <= numdice; dice++){
+		int roll = Rand(1, dicetype);
+		dicetotal = dicetotal+roll;
+	}
+	return dicetotal;
+}
+
+
+int rolld4Level(int level) {
+int total;
+    if ( level == 0 ) {
+        total = ( roll1d4() );
+        }
+    else if ( level == 1 ) {
+        total = ( roll1d4());
+        }
+            
+    else if ( level == 2 ) {
+        total = ( roll1d4() + roll1d4() );
+        }
+    else if ( level == 3 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() );
+        }
+        else if ( level == 4 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 5 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 6 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 7 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 8 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 9 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 10 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        );
+        }
+            else if ( level == 11 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() );
+        }
+            else if ( level == 12 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() + roll1d4() );
+        }
+            else if ( level == 13 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 14) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() + roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 15 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 16 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 17 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() +  roll1d4() + roll1d4() );
+        }
+            else if ( level == 18 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() +  roll1d4() + roll1d4() + roll1d4() );
+        }
+            else if ( level == 19 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() +  roll1d4() + roll1d4() + roll1d4() +roll1d4() );
+        }
+            else if ( level == 20 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() +  roll1d4() + roll1d4() + roll1d4() +roll1d4() + roll1d4() );
+        }
+            else if ( level >= 21 ) {
+        total = ( roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() 
+        + roll1d4() + roll1d4() + roll1d4() + roll1d4() + roll1d4() +  roll1d4() + roll1d4() + roll1d4() +roll1d4() + roll1d4() + roll1d4() );
+        }
+    
+    return total;
+}
+
+
+int roll1d4() {
+int n = Rand(1, 4);
+return n;
+}
+
+int roll1d6() {
+int n = Rand(1, 6);
+return n;
+}
+
+int roll4d6(){
+    int a = Rand(1, 6);
+    int b = Rand(1, 6);
+    int c = Rand(1, 6);
+    int d = Rand(1, 6);
+    int t = ( a + b + c + d );
+    return t;
+    }
+
+int roll1d8() {
+int n = Rand(1, 8);
+return n;
+}
+
+int roll1d10() {
+int n = Rand(1, 10);
+return n;
+}
+
+int roll1d12() {
+int n = Rand(1, 12);
+return n;
+}
+
+int roll1d20() {
+int n = Rand(1, 20);
+return n;
+}
+
+int roll1d50() {
+int n = Rand(1, 50);
+return n;
+}
+
+int roll1d100() {
+int n = Rand(1, 100);
+return n;
+}
+
+
+void CheckOldNewNPC_HP(){
+	int string1[]="The present NPC is: ";
+	int string2[]="The HP for that NPC is: ";
+	int string3[]="Checking if MISC_CR == 0 :";
+	int string4[]="HP_MISC **WAS** 0.";
+	int string5[]="HP transfer occurred. The returned value of r->Misc[MISC_HP} is now: ";
+	int string6[]="The present Misc[8] for that NPC is: ";
+	int string7[]="The present actual HP of the creature is :";
+	int string8[]="The value of Misc[MISC_HP] was NOT '0'.";
+	int string0[]="Running function: CheckOldNewNPC_HP().";
+	int stringPass[]="Pass Number: ";
+	TraceNL();
+	TraceS(string0);
+	TraceNL();
+	//if ( !Screen->NumNPCs ) {
+		
+	for ( int q = 1; q < NumberOfNPCs(); q++ ){
+		TraceS(stringPass);
+		Trace(q);
+		TraceNL();
+		
+		npc r = Screen->LoadNPC(q);
+		TraceS(string1);
+		Trace(r->ID);
+		TraceNL();
+		int curHP = r->HP;
+		TraceS(string2);
+		Trace(curHP);
+		TraceNL();
+		TraceS(string3);
+		TraceNL();
+		if ( r->Misc[MISC_HP] == 0 ) {
+			TraceS(string4);
+			TraceNL();
+			r->Misc[MISC_HP] = curHP;
+			TraceS(string5);
+			Trace(r->Misc[MISC_HP]);
+			TraceNL();
+		}
+		if ( r->Misc[MISC_HP_MAX] == 0 ) {
+			r->Misc[MISC_HP_MAX] = curHP;
+		}
+		
+		TraceS(string6);
+		Trace(r->Misc[MISC_HP]);
+		TraceNL();
+		TraceS(string7);
+		Trace(r->HP);
+		TraceNL();
+		TraceS(stringForLoopRepeats);
+		TraceNL();
+	}
+	TraceNL();
+	TraceS(stringEndForLoop);
+	TraceNL();
+	TraceS(stringEndFunction);
+	TraceNL();
+}
+
+
+void CheckOldNewNPC_HP_AndTraceDamage(){
+	int string1[]="The present NPC is: ";
+	int string2[]="The HP for that NPC is: ";
+	int string3[]="Checking if MISC_CR == 0 :";
+	int string5[]="Comparing HP to Misc[MISC_HP]: ";
+	int string6[]="The present Misc[8] for that NPC is: ";
+	int string6b[]="The old HP for the creature was: ";
+	int string7[]="The present actual HP of the creature is :";
+	int string8[]="The value of Misc[MISC_HP] was NOT '0'.";
+	int string9[]="The difference is: ";
+	int string0[]="Running function: CheckOldNewNPC_HP_AndTraceDamage().";
+	int stringPass[]="Pass Number: ";
+	int string10[]="The values are different.";
+	int stringDiff[]="The enemy was damaged by: ";
+	int stringReset[]="Resetting r->Misc[MISC_HP].";
+	TraceNL();
+	TraceS(string0);
+	TraceNL();
+	//if ( !Screen->NumNPCs ) {
+		
+	for ( int q = 1; q < NumberOfNPCs(); q++ ){
+		TraceS(stringPass);
+		Trace(q);
+		TraceNL();
+		
+		npc r = Screen->LoadNPC(q);
+		TraceS(string1);
+		Trace(r->ID);
+		TraceNL();
+		int curHP = r->HP;
+		TraceS(string2);
+		Trace(curHP);
+		TraceNL();
+		TraceS(string3);
+		TraceNL();
+
+		if ( r->Misc[MISC_HP] != 0 ){
+			TraceS(string8);
+			TraceNL();
+			TraceS(string5);
+			int oldHP = r->Misc[MISC_HP];
+			TraceNL();
+			TraceS(string6b);
+			Trace(oldHP);
+			TraceNL();
+			int curHP = r->HP;
+			TraceS(string7);
+			Trace(curHP);
+			TraceNL();
+			int diff = oldHP - curHP;
+			TraceS(string9);
+			Trace(diff);
+			TraceNL();
+			
+			if ( diff > 0 ){
+				TraceS(string10);
+				TraceNL();
+				TraceS(stringDiff);
+				TraceNL();
+				Trace(diff);
+				
+				int diffMod = diff - diff - diff;
+				int npcX; 
+				npcX = r->X;
+				int npcY; 
+				npcY = r->Y;
+				int drawX; 
+				drawX = npcX + DAMAGE_VALUE_X_OFFSET;
+				int drawY; 
+				drawY = npcY + DAMAGE_VALUE_Y_OFFSET;
+				if ( diff < r->Misc[MISC_HP_MAX] ) {
+					for ( int w = 80; w > 0; w-- ) {
+						npcX = r->X;
+						drawX = npcX + DAMAGE_VALUE_X_OFFSET;
+						npcY = r->Y;
+						drawY = npcY + DAMAGE_VALUE_Y_OFFSET;
+						//Try fonts: Z3 Small (2)
+						Screen->DrawInteger(6, drawX+1, drawY+1, 2, 1, -1, 20, 20, diff, 0, 100);
+						Screen->DrawInteger(7, drawX, drawY, 2, 106, -1, 20, 20, diff, 0, 100);
+						Waitframe();
+					}
+				}
+	   
+				
+				TraceNL();
+				TraceS(stringReset);
+				r->Misc[MISC_HP] = r->HP;
+				
+			}
+			TraceNL();
+		}
+		TraceS(string6);
+		Trace(r->Misc[MISC_HP]);
+		TraceNL();
+		TraceS(string7);
+		Trace(r->HP);
+		TraceNL();
+		TraceS(stringForLoopRepeats);
+		TraceNL();
+	}
+	TraceNL();
+	TraceS(stringEndForLoop);
+	TraceNL();
+	TraceS(stringEndFunction);
+	TraceNL();
+}
+		
+ffc script EnhancedBossMusic{
+	void run(int midiNumber, int reg, int dur, int musicType, int musicBoss, int trkBoss, int musicVictory, int trkVictory){
+		int curScreen = Game->GetCurScreen();
+		int curDMAP = Game->GetCurDMap();
+		int curDmap = Game->GetCurDMap();
+		int dat = Game->GetScreenD(curScreen,reg);
+		int stdMIDI = Game->DMapMIDI[curDMAP];
+		
+		int dmapMusicBuffer[512]=" ";
+		Game->GetDMapMusicFilename(curDMAP, dmapMusicBuffer);
+		
+		int dmapTrack = Game->GetDMapMusicTrack(curDMAP);
+		int mp3[]=".mp3";
+		int vgm[]=".vgm";
+		int nsf[]=".nsf";
+		int boss_buffer[7]=" "; //two-digit number, plus four-digit extension, plus NULL.
+		int victory_buffer[7]=" "; //Buffer for Victory Music Filename.
+		int strBoss[2]=" "; //The two digit value of musicBoss arg.
+		int strVictory[2]=" "; //The two digit value of musicVictory is stored here.
+		//int bossMusic[]=" "; //Must read value from enhBoss, append .mp3 to it, and 
+		
+		
+		///Set up Boss Music Filename String
+		itoa(strBoss, musicBoss); //Copy the value of arg musicBoss into string strBoss.	
+		strncpy(boss_buffer, strBoss, 2); //Copy filename (two-digit number) to buffer.
+		if ( musicType == 0 ) strcat(boss_buffer, mp3); //Append datatype to buffer.
+		else if ( musicType == 1 ) strcat(boss_buffer, vgm); //Append datatype to buffer.
+		else if ( musicType == 2 ) strcat(boss_buffer, nsf); //Append datatype to buffer.
+		///Other formats.
+		
+		//Set up Victory Music Filename String
+		itoa(strVictory, musicVictory); //Copy the value of arg musicVictory into string strVictory.
+		strncpy(victory_buffer, musicVictory, 2); //Copy filename (two-digit number) to buffer.
+		if ( musicType == 0 ) strcat(victory_buffer, mp3); //Append datatype to buffer.
+		else if ( musicType == 1 ) strcat(victory_buffer, vgm); //Append datatype to buffer.
+		else if ( musicType == 2 ) strcat(victory_buffer, nsf); //Append datatype to buffer.
+		///Other formats.
+		
+		
+		if ( dat == 0 ) {
+			
+			Game->PlayEnhancedMusic(boss_buffer, trkBoss);
+			if ( ! Game->PlayEnhancedMusic(boss_buffer, trkBoss) ) {
+				Game->PlayMIDI(midiNumber); //Play MIDI if enhanced music is not available. 
+			}
+		}
+		
+		while(true){
+			dat = Game->GetScreenD(curScreen,reg);
+			if ( dat > 0 ) {
+				if ( dur > 0 ) {
+					Game->PlayEnhancedMusic(victory_buffer, trkVictory);
+					if ( ! Game->PlayEnhancedMusic(victory_buffer, trkVictory) )
+							Game->PlayMIDI(MIDI_DEFEATBOSS);
+					
+					for ( int q = 0; q <= dur; q++ ) {
+						Waitframe(); //Pause for duration of victory music. 
+					}
+				}
+				Game->PlayEnhancedMusic(dmapMusicBuffer, dmapTrack);
+				if ( ! Game->PlayEnhancedMusic(dmapMusicBuffer, dmapTrack) ) {
+					Game->PlayMIDI(stdMIDI);
+				}
+			}
+			Waitframe();
+		}
+	}
+}

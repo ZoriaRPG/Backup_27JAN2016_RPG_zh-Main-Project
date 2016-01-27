@@ -1,0 +1,6 @@
+bool darkness;
+
+void overlayEffects(int type, int colour){
+
+    if ( darkness ) {
+        Screen->DrawRectangle

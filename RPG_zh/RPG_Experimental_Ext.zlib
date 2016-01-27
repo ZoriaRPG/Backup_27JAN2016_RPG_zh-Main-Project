@@ -1,0 +1,746 @@
+//Version 0.6.4 for RPG.zh v0.97.6
+
+const int XPCOUNT = 1003; //XP is now its own array (a float) and will need space in this array to store float to int conversions.
+const int XPSUM = 1004; //The CONVERTED values here, should adjust counters or thing sused to display them in game, and need to append leading ciphers.
+const int PLAYERLEVEL = 1005; //The present level of the player.
+const int OLD_LEVEL = 1006; //The prior level of the player. Needed or comparison functions. 
+const int NEXTLEVELAT = 1007;
+const int XPONES = 1008;
+const int XPTHOUSANDS = 1009;
+const int XPMILLIONS = 1010;
+
+//This all belongs in RPG_Experimental_Ext.zlib, or rather, in RPG_XP.zlib when done.
+
+
+//A table to store the vale of an award, for each enemy in the editor./ 
+float XPAwards[512]={		0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, //First 256, ID->0 to ID->255
+	
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+				
+				//Store the XP award for each enemy from the enemy editor. 
+				//You should manually add the XP awards to ghosted enemies!
+				/// We need these values as floats to use large numbers, so a value of '1' is 0.0001 here.
+				/// 100 is 0.0100
+				/// 1000 is 0.1000
+				/// 10000 is 1.0000 and so forth.
+				/// Easiest way is to enter integer values first, then go through and pop in a decimal point for each.
+	
+				
+int MaxLevelForAward[512]={		40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40, //Enemy ID->) to ID->255
+					
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,
+					40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40};
+				
+				//Store the MAXIMUM LEVEL the player may be, 
+				//to earn an award for each enemy in the enemy editor.. 
+				//You should manually add the XP awards to ghosted enemies
+					//This is similar in function to enemy CR, but we'll use Enemy CR to do other things.
+				
+					
+int EnemyChallengeRating[512]={	 	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,  //Enemy ID->) to ID->255
+
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+					1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1	};
+	
+	
+//We use this table to define the challenge rating of any given enemy. 
+// i.e., If the enemy would be:
+//	( easy +0 ) ( normal + 5 ) ( moderate + 10 ) ( hard / difficult + 15 ) ( insane + 20 ) ( impossible + 25 ) 
+// for the player at any given 'Level'. 
+// To calculate this, we need a base CR. We'll call that '0', and that will be an 'easy' enemy at Player Level 1. 
+// Add +5 for each difficulty tier above this as compared to player level vs an easy monster.
+//Thus, a 0 player against a CR0 monster is easy, against a CR5	monster is moderate (challenging, but safe.
+//Against a 10, it would be hard, against a 15 it would be quite difficult, but against a 15, it would be insane.
+//If we value that a normal player in a Zelda game, with the L3 sword, and a red tunic, with 14 hearts, is around Level 15,
+//and still finds Death Knights to be insane, then the CR for a Death Knight *might* be 40. 
+//Thus, a Level 40 player would find them about as easy to handle as a L0 monster was to a L1 player. 
+
+//That is called a CR adjustment, but I'll spare you the RPG technical details. Just figure out how powerful a character
+//would (or should) be for a monster to fall into the easy category ...
+//(as in the player has three hearts, green tunic, basic sword, no other gear, dies in a hit easy)
+// I will populate this with my own expected values in a future release, or as an example .zlib file, but these
+// will vary greatly from quest to quest, based on how you gear the player, and on how quickly they advance.
+//CR should do a few things:
+		//Generate Monster HP on the fly.
+		//Set the base for awards.
+		//Determine special qualities for the monster.
+		//Determine number of attacks.
+		//etc.
+	
+void AwardXP(){ //Call this every frame before Waitdraw();
+	for ( int i = Screen->NumNPCs(); i > 0; i-- ){
+		npc enem = Screen->LoadNPC(i);
+		int enemyID = enem->ID;
+		if ( enem->HP <= 0 && enem->HP > -999 ){
+			enem->HP = -999;
+			int worth = XPAwards[enemyID];
+			int pLevel = Game->Counter[CR_LEVEL];
+			int CRmax = MaxLevelForAward[enemyID];
+			if ( pLevel <= CRmax ) {
+				AwardXP(worth);
+			}
+		}
+	}
+}
+
+//void AwardXP(int amount){
+//	GameDynamics[XPCOUNT] += amount;
+//}
+
+void AwardXP(float amount){
+	float xpAdd = ( amount *.0001 );
+	LevelChart[SUMXP] += amount;
+}
+
+void AddXP(float amount){ //Adds raw value as float (thus, 1XP - 0.0001). 
+	LevelChart[SUMXP] += amount;
+}
+
+void GainXP(int amount){
+	float val = ( amount * .0001 );
+	GameDynamics[XPCOUNT] += val;
+}
+const int INCREASE_STATS_EVERY_X_LEVELS = 2;
+const int INCREASE_SKILLS_EVERY_X_LEVELS = 3;
+
+const int HP_INCREASE_DICE = 4;
+const int HP_INCREASE_DIETYPE = 10;
+const int MP_INCREASE_DICE = 3;
+const int MP_INCREASE_DIETYPE = 10;
+const int SKILL_INCREASE_DIETYPE = 1;
+const int SKILL_INCREASE_DICE = 1;
+const int STAT_INCREASE_DIETYPE = 6;
+const int STAT_INCREASE_DICE = 1;
+
+void UpdateLevel(){
+	int lvl = GameDynamics[PLAYERLEVEL];
+	if ( GameDynamics[PLAYERLEVEL] > GameDynamics[OLD_LEVEL] ){
+		GameDynamics[OLD_LEVEL] = GameDynamics[PLAYERLEVEL];
+	}
+}
+
+void DoLevel(int lvl, int hpIncreaseDice, int hpIncreaseDieType, int mpIncreaseDice, int mpIncreaseDieType, int statIncreaseRatio, int statIncreaseDice, int statIncreaseDieType, int skillIncreaseRatio, int skillIncreaseDice, int skillIncreaseDieType){
+	Game->PlaySound(levelStrings[21]);
+	Screen->Message(levelStrings[lvl]);
+		IncreaseHP(hpIncreaseDice,hpIncreaseDieType);
+		IncreaseMP(3,10);
+	if ( lvl % statIncreaseRatio == 0 ) { //The stat increase should happen every nth levels.
+		IncreaseStat(statIncreaseDice,statIncreaseDieType);
+	}
+	if ( lvl % skillIncreaseRatio == 0 ) {
+		IncreaseSkill(skillIncreaseDice,skillIncreaseDieType); //This is not properly matched to the function.
+	}
+}
+
+void IncreaseSkill(int skill, int amount){ //This function is wrong. We need a version for random increases, and fixed increases, both for random and fixed amounts, and random and specified skills.
+	skillLevels[skill] += amount;
+}
+	
+		
+
+
+//This stores the XP needed for each level as a float. 
+float LevelChart[46]={ //This needs to be a float, and we need to use decimal values for XP, or just smaller values.
+	0,
+	0.0100,0.0150,0.0200,0.0275,0.0375,0.0512,0.0700,0.0956,0.1306,0.1784,
+	0.2437,0.3329,0.4548,0.6213,0.8487,1.1594,1.5888,2.1685,2.9629,4.0472,
+	5.5286,7.5522,10.3165,14.0926,19.2509,26.2972,35.9227,49.0763,67.0377,91.5745,
+	125.0939,170.8812,233.3181,318.7587,435.4178,594.7172,910.4261,1207.7847,1662.9978,2266.8902,
+	0,0,0,0}; //Each next at + 1/2 previous level base.
+	
+//Array index matches level number. First index (0) stores L0 XP; 
+//Index 41-44 store current XP values, and value to next level.
+
+const int SUMXP = 41;
+const int XPCOUNTER = 42;
+const int XP10KCOUNTER = 43;
+const int NEXTLEVELXP = 44;
+const int XP_ONES = 45; //Assign to lowest XP set.
+const int XP_THOUSANDS = 46; //Assign to thousands XP set.
+const int XP_MILLIONS = 47; //Assign to millions XP set.
+	
+	
+const int CR_XP_ONES = 30; //Assign to lowest XP COUNTER.
+const int CR_XP_THOUSANDS = 31; //Assign to thousands XP COUNTER.
+const int CR_XP_MILLIONS = 32; //Assign to millions XP COUNTER.
+	
+	
+float XP[8]={0.0000,000,000,000,
+		0.0000,000,000,000};
+const int ONESPLACE = 3;
+const int THOUSANDSPLACE = 2;
+const int MILLIONSPLACE = 1;
+		
+//const int CR_XP_ONES = 21; //Set to appropriate counters. Useful is displaying XP on passive subscreen.
+//const int CR_XP_THOUSANDS = 22;
+//const int CR_XP_MILLIONS = 23;
+		
+//copies XP into counters, for easy display. Counters should have leading zeros.
+void _FloatXPtoCounters(){
+	Game->Counter[CR_XP_ONES] = XP[ONESPLACE];
+	Game->Counter[CR_XP_THOUSANDS] = XP[THOUSANDSPLACE];
+	Game->Counter[CR_XP_MILLIONS] = XP[MILLIONSPLACE];
+}
+
+void UpdateXPCounters(){
+	Game->Counter[CR_XP_ONES] = LevelChart[XP_ONES];
+	Game->Counter[CR_XP_THOUSANDS] = LevelChart[XP_THOUSANDS];
+	Game->Counter[CR_XP_MILLIONS] = LevelChart[XP_MILLIONS];
+}
+
+	
+void FloatXPtoIntXP(){
+	int ones = GetPartialArg(LevelChart[SUMXP], -2, 3);
+	int thousands = GetPartialArg(LevelChart[SUMXP], 1, 3);
+	int millions = GetPartialArg(LevelChart[SUMXP], 4, 3);
+	LevelChart[XP_ONES] = ones;
+	LevelChart[XP_THOUSANDS] = thousands;
+	LevelChart[XP_MILLIONS] = millions;
+	
+}
+
+
+
+//int CR_Chart[40]={0}; //A CR adjustment fdor each player level. Integrate this into the Levels chart.
+
+//void AwardXP(){
+//
+//}
+
+void LevelUp(){ //Run this every frame.
+	int lvl = Game->Counter[CR_LEVEL];
+	int currXP = LevelChart[SUMXP];
+	int XPforNext = LevelChart[lvl+1];
+	if ( currXP >= XPforNext ) {
+		//Need to check for 0 on-screen enemies here.
+		Game->Counter[CR_LVL]++;
+		DoLevel(lvl, HP_INCREASE_DICE, HP_INCREASE_DIETYPE, MP_INCREASE_DICE, MP_INCREASE_DIETYPE, INCREASE_SKILLS_EVERY_X_LEVELS, SKILL_INCREASE_DIETYPE, SKILL_INCREASE_DICE, INCREASE_STATS_EVERY_X_LEVELS, STAT_INCREASE_DIETYPE, STAT_INCREASE_DICE);
+	}
+}
+
+
+int NextLevelXP(){
+	return LevelChart[NEXTLEVELXP];
+}
+
+int NextLevelAt(){
+	int nxt = Game->Counter[CR_LEVEL] +1;
+	return LevelChart[nxt];
+}
+
+
+void AdjustNextLevelXP(){ //Run this every frame.
+	int currLevel = Game->Counter[CR_LEVEL];
+	int NextUp = Game->Counter[CR_LEVEL] + 1;
+	int presentXP = LevelChart[SUMXP];
+	int nextLevelXP = LevelChart[NextUp];
+	int diff = nextLevelXP - presentXP;
+	LevelChart[NEXTLEVELXP] = diff;
+}	
+
+
+
+
+
+	
+const int LV1 = 1;
+const int LV2 = 2;
+	
+
+
+
+void XPCount(){
+}
+
+//Replaced by UpdateXPCOunters()
+//void XPtoCounters(){ //Move this of array XP[] and merge XP[] into something else, such as stats.
+//	int ones = GetPartialArg(LevelChart[SUMXP], -2, 3);
+//	int thousands = GetPartialArg(LevelChart[SUMXP], 1, 3);
+//	int millions = GetPartialArg(LevelChart[SUMXP], 4, 3);
+//	Game->Counter[CR_XP_ONES] = ones;
+//	Game->Counter[CR_XP_THOUSANDS] = thousands;
+//	Game->Counter[CR_XP_MILLIONS] = millions;
+//}
+
+///Old way of doing this.
+//void UpdateXPFloatCounters(){
+//	int val;
+//	int val10K;
+//	int string1[]="Ones Place";
+//	int string2[]="Tens Place";
+//	int string3[]="Hundreds Place";
+//	int string4[]="Thousands Place";
+//	int string5[]="Ten-Thousands Place";
+//	int string6[]="Hundred-Thousands Place";
+//	int string7[]="Millions Place";
+//	int string8[]="Hundred-Millions Place";
+//	
+//	
+//	val = ( GetDigit(GameDynamics[XPCOUNT], -4) +
+//		( GetDigit(GameDynamics[XPCOUNT], -3) * 10 ) +
+//		( GetDigit(GameDynamics[XPCOUNT], -2) * 100 ) +
+//		( GetDigit(GameDynamics[XPCOUNT], -1) * 1000 ) );
+//	val10K = ( ( GetDigit(GameDynamics[XPCOUNT], 0) * 10000 ) +
+//		( GetDigit(GameDynamics[XPCOUNT], 1) * 100000 ) );
+//	//	( GetDigit(GameDynamics[XPCOUNT], 2) * 1000000 ) +
+//	//	( GetDigit(GameDynamics[XPCOUNT], 3) * 10000000 ) );
+//	int valSum = val10K + val;
+//	Game->Counter[CR_XP] = val;
+//	Game->Counter[CR_XP_10K] = val10K;
+//}
+
+//XP array may need to be a float to cheat this.
+
+
+
+///Old COunters
+//void XPtoCounters(){
+//	int val;
+//	int val10K;
+//	val = ( GetDigit(GameDynamics[XPCOUNT], -4) +
+//		( GetDigit(GameDynamics[XPCOUNT], -3) * 10 ) +
+//		( GetDigit(GameDynamics[XPCOUNT], -2) * 100 ) +
+//		( GetDigit(GameDynamics[XPCOUNT], -1) * 1000 ) );
+//	val10K = ( ( GetDigit(GameDynamics[XPCOUNT], 0) * 10000 ) +
+//		( GetDigit(GameDynamics[XPCOUNT], 1) * 100000 ) );	
+//		( GetDigit(GameDynamics[XPCOUNT], 2) * 1000000 ) ) ;
+//		( GetDigit(GameDynamics[XPCOUNT], 3) * 10000000 ) );
+//	int valSum = val10K + val;
+///	Game->Counter[CR_XP] = val;
+//	Game->Counter[CR_XP_10K] = val10K;
+//}
+
+//void CountersToXP(){ //Do we need this for anything? It doesn;t even use the present dynamic, and we don;t call it anywhere.
+//	int val = Game->Counter[CR_XP];
+//	int val10K = Game->Counter[CR_XP_10K];
+//	int valSum = val10K + val;
+//	GameDynamics[XPSUM] = valSum;
+//}
+
+
+
+const int SOLID_BLACK = 16;
+const int FFCMENU = 51; //Slot of Menu FFC.
+
+
+
+global script OnContinueRestoreFromSave{ //OnContinue scripts run when the game is resumed from a save. 
+	void run(){
+		if ( GameEvents[GAME_SAVED] == false ) {
+			RestoreGame(false);
+			//Link->HP = GameDynamics[CURR_HP];
+			//Link->MP = GameDynamics[CURR_MP];
+		}
+		//else if ( GameEvents[SAME_SAVED] == true ) {
+		//	RestoreGame(true); //Disables 'game has been saved' flag. This could have bad side-effects later down the road... Saving should always set this to true though.
+		//} //Diabled to verify operation of RestoreGame()
+	}
+}
+
+//const int CURR_HP = 1020;
+//const int CURR_MP = 1021;
+
+/// Check GameDynamics Constants Table
+
+//How do we know if a game is saved OnExit, or if a game is continued OnExit?
+//global script OnExit(
+//	void run(){
+//		GameDynamics[CURR_HP] = Link->HP;
+//		GameDynamics[CURR_MP] = Link->MP;
+//	}
+//}
+
+
+
+
+void SolidifySolidDamageCombos(int arraySrc, int arrayDest){
+	//Theory of operation:
+	//If the player steps onto a solid damage combo, this funtion finds its combo number, matching
+	//it to a value in arraySrc, and replaces all combos on the scren with that ID with another
+	//combo, in the same index position, defined in arrayDest.
+	//The second combo would just be a solid combo, so the player can't glitch through.
+	//This function needs to halt Link's inputs as soon as he is damaged and it needs
+	//to set Link->HitDir to -1 to prevent spike tanking.
+}
+
+void SolidifySolidDamageCombos(int type){
+	//As above, but advances one combo with ComboD->ID++ in paired combos, like slash->next.
+	//Requires organised combo pages.
+}
+
+//FFC should probably do this to prevent screen enemies from knocking player into solid damage combos if solidifying them!:
+
+void ForceHitDir(int dir){
+	if ( Link->Action == LA_GOTHURTLAND && Link->HitDir != dir){
+		Link->HitDir = dir;
+	}
+}
+
+const int DIR_NOTHING = -1;
+
+
+
+global script TestXP{
+	void run(){
+		while(true){
+			
+			//Run calculations.
+			AwardXP();
+			//UpdateXPFloatCounters();
+			UpdateLevel();
+			FloatXPtoIntXP();
+			UpdateXPCounters(); 
+			//FloatXPtoCounters(); //Deprecated. Uses XP[] array. now we store XP in LevelChart[]
+			AdjustNextLevelXP();
+			//Update counters.
+			Waitdraw();
+			LevelUp();
+			Waitframe();
+		}
+	}
+}
+
+//int chargeUpAttack = 15 * SECONDS
+
+const int CHARGEATTACK = 1030;
+
+void DecrementChargeCounter(int amount){ //Run before waitframe, after waitdraw. The standarde value is 1. 
+	GameDynamics[CHARGEATTACK] -= amount; //Tie to Timers[] at some later point.
+}
+
+const int CHARGED_ITEM = 1;
+
+//This function causes a weapon to be more powerful if the player has not used it for Nth seconds. 
+//The item action script temlate 'chargedWeapon' is used to set the delay time. This is similar to 'Golden Axe'. 
+void ChargeAttack(int delay, int pow, int resetVal, int itm){
+	itemdata id = Game->LoadItemData(itm);
+	if ( GameEvents[CHARGEATTACK] == 0 ){
+		ModItemPower(itm,pow); //Item 1 set to Power 20;
+	}
+	else if ( GameDynamics[CHARGEATTACK] != 0 && id->Power != resetVal ){
+		ModItemPower(itm,resetVal);
+	}
+}
+		
+	//Timers[CHARGEATTACK] = delay
+		
+//THis is an item script template for tying a timer to a 'charged up' weapon. This is a very simplified version of the 
+//'Golden Axe' system, where a player's weapon is more powerful the less they use it. A more complex system that
+//accounts for the exact time between uses is also possible, and planned.
+item script chargedWeapon {
+	void run (int delay){
+		GameDynamics[CHARGEATTACK] = Seconds(delay); //This should operate with the global Timers[], not GameDynamics[]!
+		//Timers[CHARGEATTACK = delay; 
+	}
+}
+
+
+
+bool ButtonPresses[] = {true,true,true,true,true,true,true,true,true,true,true,true,true,true};
+	
+int ButtonsAvailable[]={1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+
+const int ButUp = 0;
+const int ButDown = 1;
+const int ButLeft = 2;
+const int ButRight = 3;
+const int ButA = 4;
+const int ButB = 5;
+const int ButL = 6;
+const int ButR = 7;
+const int ButStart = 8;
+const int ButMap = 9;
+const int ButEx1 = 10;
+const int ButEx2 = 11;
+const int ButEx3 = 12;
+const int ButEx4 = 13;
+
+bool CanPress(int btn){
+	return ButtonPresses[btn];
+}
+
+bool MayPress(int btn){
+	if ( ButtonsAvailable[btn] ){
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+	
+		
+void SetButton(int btn, bool set){
+	ButtonPresses[btn] = set;
+}
+
+const int BAR_LAYER = 7;
+const int NUM_OF_BARS = 4;
+const int BAR_HEALTH = 0;
+const int BAR_STAMINA = 1;
+const int BAR_MAGIC = 2;
+const int BAR_XP_NEEDED = 3;
+
+const int BAR_MAX = 4; //Largest value that can be stored for each bar. 
+const int BAR_PRESENT_LENGTH = 8;
+const int BAR_MAX_LENGTH = 12; //Allows a variable amount of bar max length.
+const int BAR_COLOUR = 16;
+const int BAR_SCALE = 20;
+const int BAR_START_X = 24;
+const int BAR_END_X = 28;
+const int BAR_START_Y = 32;
+const int BAR_END_Y = 36;
+const int BAR_OPACITY = 40;
+
+
+const int BAR_ROWS = 11;
+
+int StatusBars[44]={60,50,10,125, //Amount of the counters.
+		60,50,10,125, //Max size of each (value cap).
+		100,100,100,100, //Present size of the bars in pixels; strict percentage of max.
+		100,100,100,100, //Max length of each bar in pixels. Use if you want to write functions to reduce below 100px, or for other custom sizes.
+		5,6,7,8, //Bar colours
+		0,0,0,0, //Bar height in pixels (scale)
+		6,6,6,6, //Starting X
+		106,106,106,106, //Ending X
+		-48,-36,-24,-12, //Starting Y
+		-48,-36,-24,-12, //Ending Y
+		50,50,50,50}; //Bar Opacity
+
+//If Boolean 'all' is set true, this will update all status bars controlled by a given array, and uses the variable 'bar' for the array name.
+		//Otherwise, it affects only the bar specified by arg 'bar', if 'all' is set false.
+		
+void UpdateStatusBar(int bar, bool all){  
+	int maxLength = StatusBars[BAR_MAX_LENGTH];
+	int presentLength;
+	if ( all ) {
+		for ( int q = 0; q < ( SizeOfArray(bar) / BAR_ROWS ) ; q++ ){
+			presentLength = ( ( bar[q+BAR_MAX] / 100 ) * StatusBars[q] );
+			bar[q + BAR_PRESENT_LENGTH] = presentLength;
+			bar[q + BAR_END_X] = bar[q + BAR_START_X] + presentLength;
+		}
+	}
+	else {
+		presentLength = ( ( StatusBars[bar+BAR_MAX] / 100 ) * StatusBars[bar] );
+		StatusBars[bar + BAR_PRESENT_LENGTH] = presentLength;
+		StatusBars[bar + BAR_END_X] = StatusBars[bar + BAR_START_X] + presentLength;
+	}
+}
+
+int StatusBarValue(int bar){
+	return StatusBars[bar];
+}
+
+void DrawStatusBar(int bar, bool all){
+	int bX;
+	int bY;
+	int bX2;
+	int bColour;
+	int bScale;
+	int bOpacity;
+	if ( all ) {
+		for ( int q = 0; q < ( SizeOfArray(bar) / BAR_ROWS ); q++ ){ 
+			bX = bar[q + BAR_START_X];
+			bY = bar[q + BAR_START_Y];
+			bX2 = bX + bar[q + BAR_PRESENT_LENGTH];
+			bColour = bar[q + BAR_COLOUR];
+			bScale = bar[q + BAR_SCALE];
+			bOpacity = bar[q + BAR_OPACITY];
+			Screen->Line(BAR_LAYER, bX, bY, bX2, bY, bColour, bScale, 0, 0, 0, bOpacity);
+		}
+	}
+	else {
+		int bX = StatusBars[bar + BAR_START_X];
+		int bY = StatusBars[bar + BAR_START_Y];
+		int bX2 = bX + StatusBars[bar + BAR_PRESENT_LENGTH];
+		int bColour = StatusBars[bar + BAR_COLOUR];
+		int bScale = StatusBars[bar + BAR_SCALE];
+		int bOpacity = StatusBars[bar + BAR_OPACITY];
+		Screen->Line(BAR_LAYER, bX, bY, bX2, bY, bColour, bScale, 0, 0, 0, bOpacity);
+	}
+}
+
+void DrawStatusBars(int bar, bool horizontal){
+	int bX;
+	int bY;
+	int bX2;
+	int bY2;
+	int bColour;
+	int bScale;
+	int bOpacity;
+	if ( horizontal ) {
+		for ( int q = 0; q < ( SizeOfArray(bar) / BAR_ROWS ); q++ ){
+			bX = bar[q + BAR_START_X];
+			bY = bar[q + BAR_START_Y];
+			bX2 = bX + bar[q + BAR_PRESENT_LENGTH];
+			bColour = bar[q + BAR_COLOUR];
+			bScale = bar[q + BAR_SCALE];
+			//Change colour based on %
+			bOpacity = bar[q + BAR_OPACITY];
+			Screen->Line(BAR_LAYER, bX, bY, bX2, bY, bColour, bScale, 0, 0, 0, bOpacity);
+		}
+	}
+	else if ( !horizontal ) {
+		for ( int q = 0; q < ( SizeOfArray(bar) / BAR_ROWS ); q++ ){
+			bX = bar[q + BAR_START_X];
+			bY = bar[q + BAR_START_Y];
+			bY2 = bY + bar[q + BAR_PRESENT_LENGTH];
+			bColour = bar[q + BAR_COLOUR];
+			bScale = bar[q + BAR_SCALE];
+			bOpacity = bar[q + BAR_OPACITY];
+			//Change colour based on %
+			Screen->Line(BAR_LAYER, bX, bY, bX, bY2, bColour, bScale, 0, 0, 0, bOpacity);
+		}
+	}
+}
+
+//Template function to move the status bar with any game pointer, such as Link, or an NPC. 
+//Set up to take an array as an input, for NPCs.
+void UpdateStatusBarPosition(int arr, int bar, int startX, int startY){
+	arr[bar+BAR_START_X] = startX;
+	arr[bar+BAR_START_Y] = startY;
+}
+
+
+
+
+void ContinueOnDeath(int x, int y, int map,int dmap, int screen){
+		if ( Link->HP <=0 ) {
+		}
+}
+
+void DisplayNewXP(int value, int showFor, int thisLayer, int xOffset, int yOffset, int useFont, int colour, int bgColour, int widthPX, int heightPX, int floatingPlaces, int opacity, bool outline, int outlineLayer, int outlineColour){ //Place after Waitdraw() ?
+	//Pass value from AwardXP() to this, and display next to link.
+	//DrawChar + -12 y, same x.
+	//Repeat for life, mp, and stat bumps, temp ups, etc.
+}
+
+//Custom collision detection.
+//Disable Link->Collision.
+//Run an ffcover Link at all times.
+//Use ffc collision to transfer damage.
+//if ( Collision, ( this, q ) ) Link->Collision = true;
+
+void HoldUpKeys(int holdType, int keySFX){
+	for ( int q = 1; q < Screen->NumItems(); q++){
+		item it = Screen->LoadItem(q);
+		if ( it->ID == I_KEY || it->ID == I_LEVELKEY || it->ID == I_bosskey ) {
+			if LinkCollision(it) {
+				Game->PlaySound(keySFX);
+				Link->Action = holdType;
+				HeldItem = it;
+			}
+		}
+	}
+}
+	
+
+const int CMB_BLANK_ROW = 65000; //Row of 16 blank combos.
+
+void InvisEnemies(){
+	for ( int 1 = 1; q < Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(q);
+		if ( n->DrawStytle == DS_CLOAKED && !Link->Item[I_AMULET1] ) {
+			n->OriginalTile = CMB_BLANK_ROW;
+		}
+	}
+}
+
+int IgnoreEnemyTypes[]={NPCT_GUY, NPCT_FAIRY, NPCT_ROCK, NPCT_PROJECTILE, NPCT_NONE};
+
+//Accepts an array list of enemy types to ignore, and compares them to an enemy input as e argument 'enem'. 
+//Returns true if enem matches any NPCT on array 'list'.
+bool IgnoreEnemiesByType(int list, npc enem){
+	bool match;
+	for ( int q = 0; q < SizeOfArray(list); q++ ) {
+		if ( enem->ID == list[q] ) match = true;
+	}
+	return match;
+}
+
+//Shorthand version of IgnoreEnemiesByType().
+bool IgnoreNPC(int list, npc enem){
+	IgnoreEnemiesByType(list,enem);
+}
+
+//Draw XP additions next to the player.
+void DrawXP(int amount){
+	int S_val[16];
+	int S_plusXP[]="+";
+	int S_xpEnd[]=" XP";
+	int buffer[20];
+	itoa(amount,S_Val);
+	strcat(S_plusXP,buffer);
+	strcat(S_val,buffer);
+	strcat(S_xpEnd,buffer);
+	//DrawString(nexttolink);
+}

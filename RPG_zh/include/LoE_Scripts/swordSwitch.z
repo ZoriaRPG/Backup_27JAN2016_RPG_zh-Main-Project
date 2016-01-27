@@ -1,0 +1,90 @@
+//Set first sword to level 1, and the double power to identical settings with 2x power at L2.
+//Set second sword to L3, and identical item with double power to L4.
+//Set third sword to L5 and identical item with double power to L6.
+//Set fourth sword to L7 and identical item withdoubl power to L8.
+//If allowing theplayer to select multiple swords, place duplicate items on the subscreen in identical places.
+
+//Global Item Constants
+
+const int DOUBLE_POWER = 18; //Set to item that doubles power.
+const int FIRST_SWORD_DOUBLED = 143; //Set to double power item that looks like third sword.
+const int SECOND_SWORD_DOUBLED = 144; //Set to double power item that looks like second sword.
+const int THIRD_SWORD_DOUBLED = 145; //Set to double power item that looks like third sword.
+const int FOURTH_SWORD_DOUBLED = 146; //Set to double power item that looks like fourth sword.
+
+
+//Global Arrays and Array Constants
+const int FISRT_SWORD = 1;
+const int SECOND_SWORD = 2;
+const int THIRD_SWORD = 3;
+const int FOURTH_SWORD = 4;
+bool swordsOwned[5]={false, false, false, false, false}; //Five, to make using them easier, so that sword levels start at 1.
+
+void doubleSwords{
+    if ( Link->Item[DOUBLE_POWER] == true ) {
+        if ( swordsOwned[1] == true && Link->Item[FIRST_SWORD_DOUBLED] == false){
+            Link->Item[I_SWORD1] = false;
+            Link->Item[FIRST_SWORD_DOUBLED] = true;
+        }
+        if ( swordsOwned[2] == true && Link->Item[SECOND_SWORD_DOUBLED] == false
+        Link->Item[I_SWORD2] = false;
+        Link->Item[SECOND_SWORD_DOUBLED] = true;
+        }
+        if ( swordsOwned[3] = true && Link->Item[THIRD_SWORD_DOUBLED] == false ){
+            Link->Item[I_SWORD3] = false;
+            Link->Item[THIRD_SWORD_DOUBLED] = true;
+        }
+        if ( swordsOwned[4] = true && Link->Item[FOURTH_SWORD_DOUBLED] == false ){
+            Link->Item[I_SWORD4] = false;
+            Link->Item[FOURTH_SWORD_DOUBLED] = true;
+        }
+    }
+    else if ( Link->Item[DOUBLE_POWER] == false ) {
+        if ( Link->Item[FIRST_SWORD_DOUBLED] == true ) {
+            Link->Item[FIRST_SWORD_DOUBLED] == false;
+        }
+        if ( Link->Item[SECOND_SWORD_DOUBLED] == true ) {
+            Link->Item[SECOND_SWORD_DOUBLED] == false;
+        }
+        if ( Link->Item[THIRD_SWORD_DOUBLED] == true ) {
+            Link->Item[THIRD_SWORD_DOUBLED] == false;
+        }
+        if ( Link->Item[FOURTH_SWORD_DOUBLED] == true ) {
+            Link->Item[FOURTH_SWORD_DOUBLED] == false;
+        }
+        if ( swordsOwned[1] == true && Link->Item[I_SWORD1] == false ) {  
+            Link->Item[I_SWORD1] = true;
+        }
+        if ( swordsOwned[2] == true && Link->Item[I_SWORD2] == false ) {  
+            Link->Item[I_SWORD2] = true;
+        }
+        if ( swordsOwned[3] == true && Link->Item[I_SWORD3] == false ) {  
+            Link->Item[I_SWORD3] = true;
+        }
+        if ( swordsOwned[4] == true && Link->Item[I_SWORD4] == false ) {  
+            Link->Item[I_SWORD4] = true;
+        }
+    }
+}
+
+// Set as pick-up script on swords. Speciy the nornal sword level, 1, 2, 3, or 4 as D0.
+// The nornal magical sword is the third sword, and thus, D0 for that item would be set to '3'.
+// This sets the array values so that doubled swords are only enabled if the player has the doubling item.
+
+item script swordPickUp{
+    void run(int level){
+        swordsOwned[level]= true;
+    }
+}
+        
+        
+global script activeSample{
+    void run(){
+        while(true){
+            doubleSwords();
+            Waitdraw();
+            Waitframe();
+        }
+    }
+}
+ 

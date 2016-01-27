@@ -1,0 +1,551 @@
+global script Init
+{
+    void run()
+    {
+        SetCommonStyleData(WINDOW_STYLE_1);
+        SetCommonStyleData(WINDOW_STYLE_2);
+        SetCommonStyleData(WINDOW_STYLE_3);
+        //SetCommonStyleData(WINDOW_STYLE_4);
+        //SetCommonStyleData(WINDOW_STYLE_5);
+        //With slots 4 and 5 do I want to include styles 4, and 5, to match?
+	GameDynamics[STAT_MOD_MULTIPLIER] = 0.5;
+	GameEvents[FIRST_PLAY] = true;
+	    
+	Version();
+	    
+    }
+}
+
+// Set this to true or false to suspend and resume scripts.
+// Be sure to set it to false at the start of the global script.
+
+//bool ffcsSuspended;
+
+global script hpmpcounters{
+	void run(){
+		lweapon Player;
+		
+		//import "RPG_zh/RPG_Player_Sprites.zlib" //Cannot import here. The functions need to be local to this...
+		//Oh corks. 
+		
+		StoreHP();
+    Is(FFCS_SUSPENDED,false);
+    unfreezeAction();
+    Tango_Start();
+    menuCommand=0;
+	InitializeGhostZHData();
+	int whipCooldownTimer = 0;
+	int LinkX = Link->X;
+    int LinkY = Link->Y;
+	int fastWalkTimer;
+        int lastScreen = Game->GetCurDMapScreen();
+        int lastDMap = Game->GetCurDMap();
+		
+		
+		while(true)
+		{
+			Game->Counter[CR_SCRIPT2] = Link->HP;
+			Game->Counter[CR_SCRIPT3] = Link->MP;
+			Game->Counter[CR_SCRIPT4] = Link->MaxHP;
+			Game->Counter[CR_SCRIPT5] = Link->MaxMP;
+            
+            //if ( menuOpen == true ) {
+            //    freezeAction();
+            //}
+            //else if ( menuOpen == false ) {
+            //    unfreezeAction();
+            //}
+            
+            //bool false; //Figure out what this is however you want
+            //if(Link->Item[id] != value)
+            //Link->Item[id] = value;
+            
+		//while ( RestoringEquipment() ) {
+		//		DoEquipmentRestore();
+		//}
+		
+		//while ( SavingEquipment() ) {
+		//		DoEquipmentBackup();
+		//}
+	
+		
+	///Staff of Jhkarr needs to change as Backup functions break it. !Z!
+            if ( Is(OWNSTAFF) && Link->Item[88] == true && Link->MP <= 0 ) {
+            Link->Item[88] = false;
+		    
+		    int itmANow = GetEquipmentA();
+		    
+		    int itmBNow = GetEquipmentB();
+		    
+		    if ( itmANow == 172 ) {
+			    Link->InputA = true;
+			    Waitframe();
+		    }
+		    else if ( itmBNow == 172 ) {
+			    Link->InputB = true;
+			    Waitframe();
+		    }
+		    else {
+		    
+		   UseItemOnA(172);
+		    }
+		    
+            }
+	    
+	    if ( Is(OWNSTAFF) && Link->Item[88] == true && Link->MP == 0 ) {
+            Link->Item[88] = false;
+            }
+            
+            if ( Is(OWNSTAFF) && Link->Item[88] == false && Link->MP > 0 ) {
+            Link->Item[88] = true;
+            }
+	    
+	    if ( !Is(OWNSTAFF) && !Link->Item[88] ) {
+		    if ( Link->Item[172] ) {
+			    Link->Item[172] = false;
+		    }
+	    }
+            
+            
+            if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] > 98 ) {
+            Game->MCounter[CR_XP] = 9999;
+            }
+        
+            if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] > 98 && Game->Counter[CR_XP] > 9999 ) {
+            Game->Counter[CR_XP] = 9999 ;
+            }
+            
+            //////////////////////
+            /// Menu Functions ///
+            //////////////////////
+            
+            Tango_Update1();
+            
+            if ( !Is(NOMENU) ) {
+                if(Link->PressEx1 && !Tango_SlotIsActive(WINDOW_SLOT_1))
+                    RunFFCScript(51, NULL); // Menu script
+		    //FreezeAllExceptFFXs();
+		    //SuspendGhost();
+            }
+            
+            
+            
+            if(menuCommand>0) // Did something in the menu
+            {
+                RunFFCScript(menuCommand, NULL);
+                menuCommand=0;
+            }
+            
+            
+            
+            baseWalletSpace = ( walletSize * walletsOwned );
+            totalWalletSpace = ( baseWalletSpace + CR_CUSTOM_WALLET_SIZE );
+            totalPocketSpace = ( pockets * pocketCapacity );
+            totalPocketAndWalletSpace = ( totalWalletSpace + totalPocketSpace );
+            
+            
+            
+            freePocketSpace = ( totalPocketSpace - pocketSpaceUsed );
+            freeWalletSpace = ( totalWalletSpace - walletSpaceUsed );
+            freeSpace = ( freePocketSpace + freeWalletSpace );
+            
+            int freespaceInt = Floor ( freeSpace );
+            //Doesn't seem to work with fractional values in floats for space variables??
+            //need to set max for this counter, so that it can't over-write its graphics. 
+            //These values should become an array.
+            
+            Game->Counter[CR_FREE_SPACE] = freespaceInt;
+            
+            //if (Game->Counter[CR_RUPEES] > 0 && Game->MCounter[CR_RUPEES] < 9999 ) {
+            //    Game->MCounter[CR_RUPEES] = 9999;
+            //}
+            
+        
+        if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] > 98 ) {
+        Game->MCounter[CR_XP] = 9999;
+        }
+        
+        if ( Game->Counter[CR_XP] > 9999 && Game->Counter[CR_XP_10K] > 98 && Game->Counter[CR_XP] > 9999 ) {
+        Game->Counter[CR_XP] = 9999 ;
+        }
+            
+			UpdateEWeapons();
+            CleanUpGhostFFCs(); // Only needed if __GH_USE_DRAWCOMBO is 0
+
+			UpdateLWeapons();
+			UpdateLastItem();
+			//if (Link->PressB) {LastItemUsed = GetEquipmentB();}
+			//if (Link->PressA) {LastItemUsed = GetEquipmentA();}
+			
+
+		
+//		if ( itemActivate ){
+//			UseItemOnB(65);
+//			itemActivate = false;
+//			}
+//		else if ( !itemActivate ){
+//			}
+		
+		//Whip Cooldown Timer
+            if ( whipCooldownTimer > 0 )
+                whipCooldownTimer--;
+			
+            if ( Is(GOGGLESON) && Link->MP ){                
+                //Decrement magic
+                Val(GOGGLESTIMER, ( (Val(GOGGLESTIMER)+1) % TIME_PER_MP ) );
+                if ( !Val(GOGGLESTIMER) ) Link->MP--;
+				Screen->Rectangle(6, 0, 0, 256, 172, 4, 1, 0, 0, 0, true, 64);
+                
+                if ( Link->MP <= 0 //If magic ran out
+				&& Link->Item[I_AMULET1] )
+                { //Take off goggles.
+                    Is(GOGGLESON,false);
+                    Link->Item[I_AMULET1] = false;
+				//	Waitframes(1);
+                }
+
+            }
+            else if ( !Is(GOGGLESON) && Link->Item[I_AMULET1] ){ //Disable Goggles
+                Link->Item[I_AMULET1] = false;
+				//Waitframes(1);
+            }
+			paddle();
+            swordOfLightSwitcher();
+            timedItem();
+            cigarActive();
+            
+            
+            
+            
+           
+            //Trace(currentDamage);
+            
+            
+            CheckScreen();
+	    ScreenHasChanged();
+            //ClearEnemyHP();
+            UpdateAnimations();
+	    //RollEnemyHP(8);
+	    StoreEnemyHP();
+	    //CheckOldNewNPC_HP_AndTraceDamage();
+	    DrawDamage(DAMAGE_VALUE_DURATION, DAMAGE_VALUE_LAYER, DAMAGE_VALUE_X_OFFSET, DAMAGE_VALUE_Y_OFFSET, DAMAGE_VALUE_FONT, DAMAGE_VALUE_COLOUR, DAMAGE_VALUE_COLOUR_HEAL, DAMAGE_VALUE_BG_COLOUR, DAMAGE_VALUE_SIZE, DAMAGE_VALUE_SIZE, DAMAGE_VALUE_FLOATING_POINT_PLACES, DAMAGE_VALUE_OPACITY, true, DAMAGE_VALUE_OUTLINE_LAYER, DAMAGE_VALUE_COLOUR_OUTLINE);  
+	    //BrangKey(false, false);
+	    ItemRetrieval(ItemsToPickup, PickupWeapons, false, false, false, false);
+	    
+	    UpdateHP();
+	    LinkDamaged();
+	    HurtSound();
+	    Waitdraw();
+	
+		if ( Is(OWNSTAFF) && Link->Item[88] == true && Link->MP == 0 ) {
+            Link->Item[88] = false;
+            }
+	    
+            afterTeleport();
+            Set_Weapon_Damage(1);
+            //This function includes the argument (int index). What value should be passed here? I'm using (1) as a placeholder.
+            doenemyhit(1);
+            
+            //digiVolveEnemies();
+            XP();
+            AutoGhost();
+            DrawGhostFFCs();
+            Tango_Update2();
+            
+			{
+			if (Link->Item[231] == true) //If Link has the fake item designated in D0
+			{
+				Link->Item[230] = false; //Removes the fake item user selects in D0
+				Link->Item[231] = false; //Removes the item the user selects in in D1   
+				Link->MP += 256; //Increases MP by value of D3
+				Link->MaxMP += 256; //Increases Max MP by value of D2
+			}
+			else (Link->Item[230] == true); //Gives Link the specified item in D4.{
+           
+			}
+			{
+     
+      if(SecretTimer > -1) {
+        SecretTimer--;
+        if (SecretTimer == -1) {
+          Screen->TriggerSecrets();
+		  Game->PlaySound(27);}}
+			}
+
+
+
+			float angle;
+			{
+				if (Val(USEBOMBODO) == 1)
+				{            
+					GameDynamics[DET_SLOWER] ++;
+					if (Val(DET_SLOWER) == 5)
+					{  
+						GameDynamics[DET_RAD]++;
+						Val(DET_SLOWER,0);
+					}  
+					angle = (angle + ORBIT_SPEED) % 360;          
+					
+					Var(DET_F1, ( 100 + Val(DET_RAD) * Cos(angle) ) );
+					Var(DET_F2, ( 100 + Val(DET_RAD) * Sin(angle) ) );
+					
+	//				Screen->FastCombo(6, f1, f2, 95, 2, 128);
+					
+					Val(DET_R1, ( 40+Rand(150) ) );
+					Val(DET_R2, ( 40+Rand(100) ) );
+					
+					GameDynamics[DET_SLOWERA]++;
+					if (Val(DET_SLOWERA) == 20)
+					{
+						Val(DET_SLOWERA,0);
+						if (Val(DET_BOMBS) < 30)
+						{
+							GameDynamics[DET_BOMBS]++;  
+							lweapon bomb = CreateLWeaponAt(LW_BOMBBLAST, Val(DET_R1), Val(DET_R2));
+							Game->PlaySound(SFX_BOMB);
+							if (Val(DET_BOMBS) == 30) Val(USEBOMBODO,0);
+						}
+					}
+				}
+				
+				///////////////////////
+				/// BEHIN XP SCRIPT ///
+				///////////////////////
+				
+				//Exp gain and level up
+            //XP();
+            
+            //Fast walk
+            if ( Link->Item[I_FASTWALK] ){
+                fastWalkTimer++;
+                fastWalkTimer %= EXP_FASTWALKRATE;
+                if ( fastWalkTimer == 0 )
+                    fastWalk(1);
+            }
+            
+            //Treasure Hunter
+            if ( Link->Item[I_TREASUREHUNTER] //If skill learned
+                && (lastScreen != Game->GetCurDMapScreen() || lastDMap != Game->GetCurDMap()) //If new screen
+                && checkScreenFlag(SF_TREASURE) //And flag active
+                && !Screen->State[ST_ITEM] //And item not taken
+                && !Screen->State[ST_CHEST]
+                && !Screen->State[ST_LOCKEDCHEST]
+                && !Screen->State[ST_BOSSCHEST]
+            ){
+                Game->PlaySound(SFX_TREASURESCREEN); //Play SFX
+            }
+            lastScreen = Game->GetCurDMapScreen(); //Update last screen/DMap
+            lastDMap = Game->GetCurDMap();
+			
+			/////////////////////
+			/// END XP SCRIPT ///
+			/////////////////////	
+				
+                
+                
+				Waitframe();
+				
+				
+			}
+			if ( Is(RINGON) && Link->MP ){                
+                //Decrement magic
+                Val(RINGTIMER, ( (Val(RINGTIMER)+1) % ringTimePerMP) );
+                if ( !Val(RINGTIMER) ) Link->MP--;
+				
+				//Draw shadow under Link
+                //Screen->FastTile( 2, Link->X, Link->Y, ringShadowTile, ringShadowCset, OP_TRANS );
+                
+                if ( Link->MP <= 0 //If magic ran out
+               
+                ){ //Take off ring
+                    Is(RINGON,false);
+                    Link->CollDetection = true;
+                    Link->Invisible = false;
+                }
+
+            }
+            else if ( !Is(RINGON) ){ //Disable ring
+                Link->CollDetection = true;
+                Link->Invisible = false;
+				
+            }
+			
+			//////////////
+			///END RING///
+			//////////////
+			
+			/////////////////////////
+			///BEGIN CANE OF BYRNA///
+			/////////////////////////
+			
+			 if ( Is(BYRNAON) && Link->MP > 0 ){                
+                //Decrement magic
+                Val(BYRNATIMER, ( (Val(BYRNATIMER)+1) % byrnaTimePerMP ) );
+                if ( !Val(BYRNATIMER) ) Link->MP--;
+                
+                if ( Link->MP <= 0 //If magic ran out
+                || Link->Action == LA_SCROLLING //Or left screen
+                
+                ){ //Take off ring
+                    Is(BYRNAON,false);
+ 
+
+                }
+
+            }
+            else if ( !Is(BYRNAON) ){ //Disable ring
+
+
+			
+            }
+			
+			///////////////////////
+			///END CANE OF BYRNA///
+			///////////////////////
+			
+			/////////////////
+			///BEGIN BOOTS///
+			/////////////////
+			
+			 if ( Is(BOOTSON) && Link->MP ){                
+                //Decrement magic
+                Val(BOOTSTIMER, ( (Val(BOOTSTIMER)+1) % bootsTimePerMP  ) );
+                if ( !Val(BOOTSTIMER) ) Link->MP--;
+                
+                if ( Link->MP <= 0 //If magic ran out
+                || Link->Action == LA_SCROLLING //Or left screen
+                ){ //Take off ring
+                    Is(BOOTSON,false);
+
+                }
+
+            }
+            else if ( !Is(BOOTSON) ){ //Disable ring
+		// !Z! Never completed.
+            }
+			
+			///////////////
+			///END BOOTS///
+			///////////////
+		}
+	}
+}
+
+//////////////////////
+/// BEGIN LEVELING ///
+//////////////////////
+
+//Now in stdZoria.zh
+
+
+
+
+//void expMeter(){
+//    int length = EXP_METER_LENGTH * Game->Counter[CR_SCRIPT6] / EXP_PER_LEVEL;
+//    Screen->Rectangle(7, EXP_METER_X, EXP_METER_Y, EXP_METER_X + length, EXP_METER_Y + EXP_METER_WIDTH, EXP_METER_COLOR, 1, 0, 0, 0, true, OP_OPAQUE);
+//}
+
+
+
+
+
+
+
+////////////////////
+/// END LEVELING ///
+////////////////////
+
+
+	
+
+
+
+
+
+//This functions needs to be updated to use OwnsItems, and needs to be checked against backup routines. 
+void swordOfLightSwitcher(){
+    if ( Is(OWNSWORDOFLIGHT) && Link->Item[152] == false && Link->MP > 20 ) {
+    Link->Item[152] = true;
+    }
+    else if ( Is(OWNSWORDOFLIGHT) == true && Link->Item[152] == true && Link->MP < 20 ) {
+    Link->Item[152] = false;
+    }
+}
+
+void cigarActive(){
+    if ( Val(TIMERITEM) > 0 ){
+        if ( Link->Item[Val(TIMERITEM)] == false && Is(CIGARPICKUP) ) {
+        Link->Item[Val(TIMERITEM)] = false;
+        Is(CIGARPICKUP,false);
+	
+        Link->MaxHP -= 64;
+        }
+        else if ( Link->Item[Val(TIMERITEM)] == true && !Is(CIGARPICKUP) ) {
+        Link->MaxHP += 64;
+        Link->HP += 64;
+        }
+    }
+}
+
+
+
+//int diePerLevel(int die, int cap) {
+//    int total;
+//    int level = Game->Counter[CR_LEVEL];
+//    int rollLevels;
+//    if ( cap > 0 ) {
+//    rollLevels = cap;
+//    }
+//    else { 
+//    rollLevels = level;
+//   }
+//   
+//   int dieValue = Rand(1, die);
+//    return dieValue;
+//     
+//    for(int i = 1; i <= rollLevels; i++){
+//        total += dieValue;
+//    }
+//    return total;
+//}
+
+
+  
+ // int rollDice(int dice, int dietype) {
+ //   int total = 0;
+ //   
+ //   int dieValue = Rand(1, dietype);
+ //    
+ //   for(int i = 1; i <= dice; i++){
+ //       total += Rand(1, dietype);
+ //   }
+ //   return total;
+//}
+
+
+
+
+//import "TeleportMatrix_0.7.z"
+
+void afterTeleport(){
+	if (arriving && !teleporting) {
+		freezeAction();
+		for (int w = 100; w >0; w--){
+			Screen->Circle ( 6, Link->X+8, Link->Y+8, 20*w/10, 14, 1, 0, 0, 0, false, 100 );
+			Screen->Circle ( 5, Link->X+8, Link->Y+8, 20*w/16, 3, 1, 0, 0, 0, false, 100 );
+			//Add second smaller circle in blue?
+			Waitframe();
+		}
+		Game->PlaySound(133);
+		arriving = false;
+		Tango_ClearSlot(WINDOW_SLOT_1);
+		Tango_ClearSlot(WINDOW_SLOT_2);
+		Tango_ClearSlot(WINDOW_SLOT_3);
+		Tango_ClearSlot(WINDOW_SLOT_4);
+		Tango_ClearSlot(WINDOW_SLOT_3);
+		Tango_ClearSlot(WINDOW_SLOT_2);
+		Tango_ClearSlot(WINDOW_SLOT_1);
+		unfreezeAction();
+	}
+}
+	

@@ -1,0 +1,24 @@
+//Array to store Viwstas
+bool Vistas[255]={};
+const int vistaDMAP = 0;
+const int vistaSCREEN = 0;
+//Make 2D array.
+
+bool isViewingVista = false;
+
+//Vista global function.
+
+void viewVista(){
+    if (isViewingVista){
+        int vistaDMAP = Game->GetCurrDMAP();
+        int vistaScreen = Game->GetCurrScreen();
+        int vista = vistaDMAP + vistaScreen;
+        DrawScreen(vista);
+        //DrawBitmap may work better, to draw the vista into a menu box.
+        if (Game->PressB) {
+            isViewingVista = false; //Exit vista box.
+        }
+    }
+}
+        
+

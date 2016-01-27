@@ -1,0 +1,469 @@
+import "std.zh"
+import "itemHandling.zh"
+
+
+bool darkScreen = false;
+bool deeperDarkScreen = false;
+bool pitchDarkScreen = false;
+
+const int DARK_SCREEN = 0;
+const int DEEPER_DARK_SCREEN = 1;
+const int PITCH_DARK_SCREEN = 2;
+const int TWO_LEVEL_MID_NORMAL_DARKNESS = 3;
+const int TWO_LEVEL_FULL_MID_DARKNESS = 4;
+const int TWO_LEVEL_FULL_MINOR_DARKNESS = 5;
+const int THREE_LEVEL_FULL_DARKNESS = 6;
+
+
+int DARK_SCREEN_COLOUR = 8; //Sets colour of darkness effect (set by FFC args) per FFC that enables darkness.
+int DEEPER_DARK_SCREEN_COLOUR = 8; //Sets colour for 'deeper darkness' effects.
+int PITCH_DARK_SCREEN_COLOUR = 8; //Sets colour for 'pitch darkness'.
+
+
+
+//D0: Colour (using decomal values!) of rectangle, based on your palette.
+//D1: transparency level. 64 is transparent, and 128 is opaque; and values between these two *may* work.
+//D2: Layer on which to draw. 6 is the default; if you want this on layers 1 to 5, specify that here. if you need this on layer 0, set this to 7.
+//D3: Trigger to end FFC:
+//  To use an item class, use the nmber from std_constants,.zh for the item class here.
+//D4 Alternate trigger to end FFC.
+//  To use a *specific item*, enter a valkue here.
+//D5: Set to a value greater than 0 if you want to draw a rectangular FRAME, rather than a solid rectangle. 
+
+
+//new Srttings
+
+//D0: Colour for darkness, and deeper darkness effects.
+
+//D1: Type of effect:
+    // 0 = Normal darkscreen, night shading.
+    // 1 = Deeper Dark screen, darker tha '0', but not pitch black.
+    // 2 = Pitch black screen.
+    // Two-Tiered Datrkness: First item use removed first level, second item use clears darkness.
+    // 3 = First tier, deeper darkness; second tier normal darkness; third item use clears.
+    // 4 - First tier, pitch darkness, second tier, mid darkness, third use clears.
+    // 5 = First tier, pitch darkness; second tier, normal darkness; third use clears.
+    // Three-tiers of darkness: Four item uses required to clear it. 
+    // 6 = Three-tirs of darkness. First pitch; second mid; third norma; fourth use clears.
+    
+//D2: Layer for effect.
+
+//D3: Primary item class to clear darkness (stage).
+
+//D4: Primary item number to clear darkness (stage).
+
+//D5: Secondary item class to clear darkness (stage).
+
+//D6: Secondary item number to clear darkness (stage).
+
+//D7: Colour for 'pitch; darkness effects. 
+
+ffc script ffc_tintScreen{
+    void run(int colour, int type, int layer, int trigger, int itemNumber, int secondTrigger, int secondItemNumber, int pitchColour){
+        //int waitTime = waitDuration;
+        bool active = true;
+        bool tieredDakeness;
+        int itemUses = 0;
+        DARK_SCREEN_COLOUR = colour; //Sets colour of darkness effect (set by FFC args) per FFC that enables darkness.
+        DEEPER_DARK_SCREEN_COLOUR = colour; //Sets colour for 'deeprr darkness' effects.
+        PITCH_DARK_SCREEN_COLOUR = pitchColour; //Sets colour for pitch darkness.
+        
+        
+        if ( type == DARK_SCREEN ){
+            darkScreen = true;
+
+            while(active){
+               
+                for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                    lweapon lw = Screen->LoadLWeapon(i);
+                    
+                    if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                        darkScreen = false;
+                        active = false;
+                    }
+                    
+                    
+                    if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                        darkScreen = false;
+                        active = false;
+                        
+                    }
+                }
+                        
+                    
+                    Waitframe();
+                
+                
+                
+            }
+            return;
+        }
+        
+        
+        else if ( type == DEEPER_DARK_SCREEN ){
+            deeperDarkScreen = true;
+
+            while(active){
+               
+                for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                    lweapon lw = Screen->LoadLWeapon(i);
+                    
+                    if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                        deeperDarkScreen = false;
+                        active = false;
+                    }
+                    
+                    
+                    if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                        deeperDarkScreen = false;
+                        active = false;
+                        
+                    }
+                }
+                        
+                    
+                    Waitframe();
+                
+                
+                
+            }
+            return;
+        }
+        
+        else if ( type == PITCH_DARK_SCREEN ){
+            pitchDarkScreen = true;
+            while(active){
+               
+                for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                    lweapon lw = Screen->LoadLWeapon(i);
+                    
+                    if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                        pitchDarkScreen = false;
+                        active = false;
+                    }
+                    
+                    
+                    if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                        pitchDarkScreen = false;
+                        active = false;
+                        
+                    }
+                }
+                        
+                    
+                    Waitframe();
+                
+                
+                
+            }
+            return;
+        }
+        
+        else if ( type == TWO_LEVEL_MID_NORMAL_DARKNESS ){
+            darkScreen = true;
+            deeperDarkScreen = true;
+            while(active){
+                if ( itemUses == 0 ){
+                
+                    for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                        lweapon lw = Screen->LoadLWeapon(i);
+                        
+                        if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                            deeperDarkScreen = false;
+                            itemUses = 1;
+                        }
+                        
+                        
+                        if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                            deeperDarkScreen = false;
+                            itemUses = 1;
+                            
+                        }
+                    }
+                        
+                    
+                    Waitframe();
+                }
+                
+                else if ( itemUses == 1 ){
+                
+                    for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                        lweapon lw = Screen->LoadLWeapon(i);
+                        
+                        if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                            darkScreen = false;
+                            active = false;
+                        }
+                        
+                        
+                        if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                            darkScreen = false;
+                            active = false;
+                            
+                        }
+                    }
+                        
+                    
+                    Waitframe();
+                }
+                
+                
+            }
+            return;
+        }
+
+        else if ( type == TWO_LEVEL_FULL_MID_DARKNESS ){
+
+            pitchDarkScreen = true;
+            deeperDarkScreen = true;
+
+            while(active){
+                if ( itemUses == 0 ){
+                
+                    for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                        lweapon lw = Screen->LoadLWeapon(i);
+                        
+                        if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                            pitchDarkScreen = false;
+                            itemUses = 1;
+                        }
+                        
+                        
+                        if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                            pitchDarkScreen = false;
+                            itemUses = 1;
+                            
+                        }
+                    }
+                        
+                    
+                    Waitframe();
+                }
+                
+                else if ( itemUses == 1 ){
+                
+                    for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                        lweapon lw = Screen->LoadLWeapon(i);
+                        
+                        if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                            deeperDarkScreen = false;
+                            active = false;
+                        }
+                        
+                        
+                        if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                            deeperDarkScreen = false;
+                            active = false;
+                            
+                        }
+                    }
+                        
+                    
+                    Waitframe();
+                }
+                
+                
+            }
+            return;
+        }
+        
+        else if ( type == TWO_LEVEL_FULL_MINOR_DARKNESS ){
+
+            pitchDarkScreen = true;
+            darkScreen = true;
+
+            while(active){
+                if ( itemUses == 0 ){
+                
+                    for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                        lweapon lw = Screen->LoadLWeapon(i);
+                        
+                        if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                            pitchDarkScreen = false;
+                            itemUses = 1;
+                        }
+                        
+                        
+                        if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                            pitchDarkScreen = false;
+                            itemUses = 1;
+                            
+                        }
+                    }
+                        
+                    
+                    Waitframe();
+                }
+                
+                else if ( itemUses == 1 ){
+                
+                    for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                        lweapon lw = Screen->LoadLWeapon(i);
+                        
+                        if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                            darkScreen = false;
+                            active = false;
+                        }
+                        
+                        
+                        if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                            darkScreen = false;
+                            active = false;
+                            
+                        }
+                    }
+                        
+                    
+                    Waitframe();
+                }
+                
+                
+            }
+            return;
+        }
+        
+        else if ( type == THREE_LEVEL_FULL_DARKNESS ){
+
+            pitchDarkScreen = true;
+            deeperDarkScreen = true;
+            darkScreen = true;
+
+            while(active){
+                if ( itemUses == 0 ){
+                
+                    for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                        lweapon lw = Screen->LoadLWeapon(i);
+                        
+                        if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                            pitchDarkScreen = false;
+                            itemUses = 1;
+                        }
+                        
+                        
+                        if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                            pitchDarkScreen = false;
+                            itemUses = 1;
+                            
+                        }
+                    }
+                        
+                    
+                    Waitframe();
+                }
+                
+                if ( itemUses == 1 ){
+                
+                    for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                        lweapon lw = Screen->LoadLWeapon(i);
+                        
+                        if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                            deeperDarkScreen = false;
+                            itemUses = 2;
+                        }
+                        
+                        
+                        if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                            deeperDarkScreen = false;
+                            itemUses = 2;
+                            
+                        }
+                    }
+                        
+                    
+                    Waitframe();
+                }
+                
+                else if ( itemUses == 2 ){
+                
+                    for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+                        lweapon lw = Screen->LoadLWeapon(i);
+                        
+                        if ( IsFromItemClass(lw, trigger) || IsFromItemClass(lw, secondTrigger) ) {
+                            darkScreen = false;
+                            active = false;
+                        }
+                        
+                        
+                        if ( IsFromItem(lw, itemNumber) || IsFromItem(lw, secondItemNumber) ) {
+                            darkScreen = false;
+                            active = false;
+                            
+                        }
+                    }
+                        
+                    
+                    Waitframe();
+                }
+                
+                
+            }
+            return;
+        }
+        
+        
+        else {
+            Waitframe();
+        }
+    }
+}
+
+global script active{
+    void run(){
+        while (true) {
+            UpdateLWeapons();
+            UpdateLastItem();
+            if (Link->PressB){
+                LastItemUsed = GetEquipmentB();
+            }
+            if (Link->PressA){
+                LastItemUsed = GetEquipmentA();
+            }
+            drawDarkScreen();
+            drawDeeperDarkScreen();
+            drawPitchDarkScreen();
+                //drawDarkScreen(DARK_SCREEN_COLOUR);
+                //drawDeeperDarkScreen(DEEPER_DARK_SCREEN_COLOUR);
+                //drawPitchDarkScreen(PITCH_DARK_SCREEN_COLOUR);
+            Waitdraw();
+            Waitframe();
+        }
+    }
+}
+
+void drawDarkScreen(){
+    if (darkScreen == true){
+        Screen->Rectangle(6, 0, 0, 256, 172, DARK_SCREEN_COLOUR, 1, 0, 0, 0, true, 64);
+    }
+}
+
+void drawDarkScreen(int colour){
+    if (darkScreen == true){
+        Screen->Rectangle(6, 0, 0, 256, 172, colour, 1, 0, 0, 0, true, 64);
+    }
+}
+
+void drawDeeperDarkScreen(){
+    if (deeperDarkScreen == true){
+        Screen->Rectangle(6, 0, 0, 256, 172, DEEPER_DARK_SCREEN_COLOUR, 1, 0, 0, 0, true, 64);
+    }
+}
+
+void drawDeeperDarkScreen(int colour){
+    if (deeperDarkScreen == true){
+        Screen->Rectangle(6, 0, 0, 256, 172, colour, 1, 0, 0, 0, true, 64);
+    }
+}
+
+void drawPitchDarkScreen(){
+    if (pitchDarkScreen == true){
+        Screen->Rectangle(6, 0, 0, 256, 172, PITCH_DARK_SCREEN_COLOUR, 1, 0, 0, 0, true, 128);
+    }
+}
+
+void drawPitchDarkScreen(int colour){
+    if (pitchDarkScreen == true){
+        Screen->Rectangle(6, 0, 0, 256, 172, colour, 1, 0, 0, 0, true, 128);
+    }
+}
+    
+    

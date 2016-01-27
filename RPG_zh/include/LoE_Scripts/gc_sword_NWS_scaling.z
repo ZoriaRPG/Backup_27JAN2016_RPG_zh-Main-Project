@@ -1,0 +1,42 @@
+item script rollDiceIISword_Scaling {
+    void run (int diceToRoll, int dieType, int byLevel, int useHalfLevel, int levelDie, int dieCap, int pierce) {
+        
+    
+        int currLevel = Game->Counter[CR_LEVEL];
+        
+        int baseDamage;
+        int scaleDamage;
+        int itemdamage;
+        int modifier = 0;
+        int scaleDice = 0;
+        
+        modifier = ( Game->Counter[CR_STAT_MUSC] * 0.5 );
+        
+        if ( dieCap > 0 && currLevel > dieCap ) {
+            currLevel = dieCap;
+        }
+        int halfLevel = ( currLevel * 0.5 );
+        
+        if ( diceToRoll == 0 && byLevel > 0 && useHalfLevel == 0 ) {
+            scaleDice = currLevel;
+        }
+        if ( diceToRoll == 0 && byLevel > 0 && useHalfLevel > 0 ) {
+            scaleDice = halfLevel;
+        }
+        
+        
+        baseDamage = ( rollDiceII(diceToRoll,dieType) );
+        scaleDamage = ( rollDiceII(levelDie,scaleDice) );
+        itemdamage = ( baseDamage + scaleDamage + modifier );
+        
+        
+        //int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage + levelDamage;
+        //itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+    }
+}
+
+

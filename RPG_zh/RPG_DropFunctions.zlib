@@ -1,0 +1,143 @@
+//RPG_DropFunctions.zlib v0.4 for RPG.zh v0.95
+
+bool NeedsHealth(){
+	if ( Link->HP < Link->MaxHP ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool NeedsMagic(){
+	if ( Link->HP < Link->MaxMP && Game->MCounter[CR_MAGIC] > 0 ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool NeedsBombs(){
+	if ( Game->Counter[CR_BOMBS] < Game->MCounter[CR_BOMBS] && Game->MCounter[CR_BOMBS] > 0 ) return true;
+}
+
+bool NeedsSuperBombs(){
+	if ( Game->Counter[CR_SBOMBS] < Game->MCounter[CR_SBOMBS] && Game->MCounter[CR_SBOMBS] > 0 ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool NeedsRupees(){
+	if ( Game->Counter[CR_RUPEES] < Game->Counter[CR_RUPEES] && Game->MCounter[CR_RUPEES] > 0 ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool NeedsArrows(){
+	if ( Game->Counter[CR_ARROWS] < Game->Counter[CR_ARROWS] && Game->MCounter[CR_ARROWS] > 0 ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool NeedsDrop(){
+	if ( NeedsHealth() || NeedsArrows() || NeedsMagic() || NeedsBombs() || NeedsRupees() ) {
+		return true;
+	}
+	else {
+		return false;
+	}	
+}
+
+bool MayDrop(bool arr, int arr2){
+	for ( int i = 0; i < SizeOfArray(arr2); i++) {
+		if ( arr[i] == true ) {
+			return true;
+		}
+		else if ( i == SizeOfArray(arr2) ) return false;
+	}
+}
+
+void DropEnforcer(int chanceOfGoodDrop){ //Original function by Orithan
+	for(int i = 1; i <= Screen->NumItems(); i ++){ //Load all items on the screen
+		item itm = Screen->LoadItem(i); //Load item i
+		int itmx = itm->X;
+		int itmy = itm->Y;
+		itemdata itmd = GetItemData(itm); //Get the itemdata for item i
+		if(((itmd->Family == IC_ARROWAMMO && !NeedsArrows() || itmd->Family == IC_ARROWAMMO && !NeedsArrows() ) && (itm->Pickup | IP_TIMEOUT) ) //Check for wherever Link can hold Arrows and wherever he is full
+		|| ((itmd->Family == IC_BOMBAMMO && !NeedsBombs() || itmd->Family == IC_BOMBAMMO && !NeedsBombs() ) && (itm->Pickup | IP_TIMEOUT) ) //Ditto for Bombs
+		|| ((itmd->Family == IC_RUPEE && !NeedsRupees() || itmd->Family == IC_RUPEE && !NeedsRupees() ) && (itm->Pickup | IP_TIMEOUT) ) //Ditto for Rupees
+		|| ((itmd->Family == IC_SBOMB && !NeedsSuperBombs() || itmd->Family == IC_SBOMB && !NeedsSuperBombs() ) && (itm->Pickup | IP_TIMEOUT) ) //Ditto for Super Bombs
+		|| ((itmd->Family == IC_MAGIC && !NeedsMagic() || itmd->Family == IC_MAGIC && !NeedsMagic() ) && (itm->Pickup | IP_TIMEOUT) ) //Check for wherever Link has Magic containers and wherever he is at full magic
+		|| ((itmd->Family == IC_HEART && !NeedsHealth() ) && (itm->Pickup | IP_TIMEOUT) )){ //Check for Link being at full health
+			Remove(itm); //Remove the item from the screen.
+			if ( NeedsDrop() ){
+				ReplaceDropWithNeeded(chanceOfGoodDrop, itmx, itmy);
+			}
+		}
+	}
+}
+
+void ReplaceDropWithNeeded(int chance, int x, int y){
+	int value;
+	bool isGoodDrop = false;
+	int goodDropChance = Rand(1,100);
+	int drops[5]={I_RUPEE1, I_ARROWAMMO1, I_MAGICJAR1, I_HEART, I_BOMBAMMO1};
+	int goodDrops[5]={I_RUPEE5, I_ARROWAMMO5, I_MAGICJAR2, I_FAIRY,  I_SBOMB};
+	if ( goodDropChance <= chance ) {
+		isGoodDrop = true;
+	}
+	bool MayDropThese[6] = {false,false,false,false,false,false};
+	int CanDropThese[6] = {0,0,0,0,0,0};
+	bool dropping = true;
+	if ( NeedsRupees() ) {
+		MayDropThese[0] = true;
+		CanDropThese[0] = 1;
+	}
+	if ( NeedsArrows() ) {
+		MayDropThese[1] = true;
+		CanDropThese[1] = 1;
+	}
+	if ( NeedsMagic() ) {
+		MayDropThese[2] = true;
+		CanDropThese[2] = 1;
+	}
+	if ( NeedsHealth() ) {
+		MayDropThese[3] = true;
+		CanDropThese[3] = 1;
+	}
+	if ( NeedsBombs() ) {
+		MayDropThese[4] = true;
+		CanDropThese[4] = 1;
+	}
+	
+	if ( MayDrop(MayDropThese,CanDropThese) ) {
+		if ( !isGoodDrop ) {
+			for ( int i = 0; i < 5; i++) {
+				do {
+					value = Rand(4);
+				}
+				while(MayDropThese[i] != true);
+			}
+			CreateTimeoutItem(drops[value], x, y);
+		}
+		if ( isGoodDrop ) {
+			for ( int i = 0; i < 5; i++) {
+				do {
+					value = Rand(4);
+				}
+				while(MayDropThese[i] != false);
+			}
+			CreateTimeoutItem(goodDrops[value], x, y);
+		}
+	}
+}

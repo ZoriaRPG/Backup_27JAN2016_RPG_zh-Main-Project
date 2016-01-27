@@ -1,0 +1,14 @@
+ bool BossPhaseTwo(){
+	if (Abs(Floor(Link->X) - 120) < 4 && Abs(Floor(Link->Y) - 120) < 4)
+	{
+		Link->Z = 0;
+		Link->X = 120;
+		Link->Y = 120;
+		return false;
+	}
+	else if ( Link->DCounter[CR_LIFE] > 0 ) 
+	{ 
+		return false;
+	}
+	else return true;
+}

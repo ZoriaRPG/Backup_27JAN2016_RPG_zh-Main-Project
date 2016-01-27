@@ -1,0 +1,150 @@
+//Game Constants Array
+
+int gameConstants[] = { } //Initialise with elements for each constant
+
+value = gameConstants[0] //Specify element.
+
+globalIntsArray[] = { } //Initialise with values for each int variable.
+
+
+//Set value:
+globalIntsArray[0] = 1; //0 = array position, 1 = new value.
+
+value = globalIntsArray[0]; //0 = element position.  
+
+int levelStrings[21] = { 59, 59, 59, 59, 60, 59, 59, 59, 59, 61, 59, 59, 59, 59, 59, 62, 59, 59, 59, 63. 85 };
+
+
+//Using arrays.
+
+int skillCheckArray[32] = { 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0 }
+
+//Setting array elements:
+
+int itemLoreRow = 0; //Move array pointer to desired row, by advancing it by 8 positions.
+
+//Establish values for each item that can use a lore check, so that a function can adjust the array positions.
+void setItemCheckValue {
+    int itemToCheck = return GetEquipment(A);
+    }
+    
+int itemToCheck {
+return GetEquipment(A);
+    }
+
+Using these values:
+
+void LoreCheck(int itemToCheck) {
+    if (itemToCheck == 0);
+    //Set up table of items, to establish the first pointer for each on the array table.
+    }
+
+//Set a value:
+int loreValue;
+skillCheckArray[loreValue] = 0;
+
+// Establish rows.
+int loreRow = 0;
+setLoreArrayRow = ( 8 * loreRow );
+// +8 * 0 for row 0, +8 * 1 for row 1, + 8 * 2 for row 2, etc.
+
+//Establish Columns
+int loreColumn;
+int LoreColumn0 = 0;
+int LoreColumn1 = 1;
+int LoreColumn2 = 2;
+int LoreColumn3 = 3;
+int LoreColumn4 = 4;
+int LoreColumn5 = 5;
+int LoreColumn6 = 6;
+int LoreColumn7 = 7;
+
+//Function to select a column.
+void setCurrentLoreColumn(int columnValue){
+    loreColumn = columnValue'
+}
+
+//Function to select a row:
+void setLoreRow(int rowValue) {
+    loreRow = ( 8 * rowValue );
+}
+
+
+//Create a single pointer, that may not be needed.
+
+int loreValue = ( loreRow + loreColumn );
+
+Use Columns & Rows to Specify an Element:
+
+skillCheckArray[loreValue] = 0;
+//Uses loreRow, a global value, to determine the row, + loreColumn, a global variable
+//to determine the column, then changes the value of the specified element.
+
+//*** Example
+//*** rowValue = 1;
+//*** columnValue = 4;
+//*** skillCheckArray[loreValue] = 6; //This would set the value of item002_messageFailure, in the table below, to a value of 6.
+//***
+
+//Function to read a value, using the above:
+
+int loreSkill = 1;
+
+void loreResult(int result) {
+//Produce an effect, such as setting itms true, or false, by a series of if/else statements, working from the value passed into
+//this function by 'result'.
+}
+
+void loreCheck(){
+
+    int thisItem; //Need a way to point to the item being checked.
+    int itemNumber = 0;
+    int levelUnlocked = 1
+    int lastChecked = 2;
+    int nextCheck = 3;
+    int messageFailure = 4;
+    int messageSuccess = 5;
+    int upgradeItem = 6;
+    int result = 7;
+    int thisItemRow;
+    int currentLevel = Game->Counter[CR_LEVEL];
+    int currentSkillLevel = ( loreSkill * 10 ) + getMindStat();
+    bool success;
+    int itemSlot = skillCheckArray[thisItemRow + itemNumber];
+    
+    //Needs a way to determine the item in question, to select a row.
+    
+    if ( skillCheckArray[thisItemRow + nextCheck] <= currentLevel &&
+        skillCheckArray[thisItemRow + lastChecked] < currentLevel ) {
+        checkDie = rollDie(100);
+        if ( checkDie < currentSkillLevel ) {
+            sucess = true;
+        }
+        else {
+            success = false;
+        }
+        
+        if ( success == true ) {
+            skillCheckArray[thisItemRow + levelUnlocked] += 1;
+            UnlockItem(thisItem, skillCheckArray[thisItemRow + levelUnlocked]);
+            skillResult(skillCheckArray[thisItemRow + result]);
+            Screen->Message(skillCheckArray[thisItemRow + messageSuccess]);
+        }
+        
+        else if ( success == false ) {
+            skillCheckArray[thisItemRow + lastChecked] = currentLevel;
+            skillCheckArray[thisItemRow + nextCheck] = ( currentLevel + 1 );
+            Screen->Message(skillCheckArray[thisItemRow + messageFailure]);
+        }
+    }
+            
+
+//TABLE
+//        item001, item001_levelUnlocked, item001_lastChecked, item001_nextCheck, item001_messageFailure, item001_messageSuccess, item001_upgrade, item 001_result,
+//        item002, item002_levelUnlocked, item002_lastChecked, item002_nextCheck, item002_messageFailure, item002_messageSuccess, item002_upgrade, item_002_result,
+//        item003, item003_levelUnlocked, item003_lastChecked, item003_nextCheck, item003_messageFailure, item003_messageSuccess, item003_upgrade, item_002_result,
+//        item004, item004_levelUnlocked, item004_lastChecked, item004_nextCheck, item004_messageFailure, item004_messageSuccess, item004_upgrade, item_004_result
+//        };

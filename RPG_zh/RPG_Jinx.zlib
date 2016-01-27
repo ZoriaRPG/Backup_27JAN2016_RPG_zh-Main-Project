@@ -1,0 +1,41 @@
+//Item and Sword Jinxes
+
+const int JINX_PERM = -1;
+const int JINX_NONE = 0;
+
+void JinxItem(int val){
+	Link->ItemJinx = val;
+}
+
+void JinxSword(int val){
+	Link->SwordJinx = val;
+}
+
+const int JINX_SWORD = 0;
+const int JINX_ITEM = 1;
+const int JINX_BOTH = 2;
+
+void Jinx(int type, int amount){
+	if ( type == JINX_SWORD ) Link->SwordJinx = amount;
+	if ( type == JINX_ITEM ) Link->ItemJinx = amount;
+	if ( type == JINX_BOTH ) {
+		Link->ItemJinx = amount;
+		Link->SwordJinx = amount;
+	}
+}
+
+void UnJinx(int type) {
+	if ( type == JINX_SWORD ) Link->SwordJinx = 0;
+	if ( type == JINX_ITEM ) Link->ItemJinx = 0;
+	if ( type == JINX_BOTH ) {
+		Link->ItemJinx = 0;
+		Link->SwordJinx = 0;
+	}
+}
+
+//Blarneystone
+item script UnJinx{
+	void run(int type){
+		UnJinx(type);
+	}
+}

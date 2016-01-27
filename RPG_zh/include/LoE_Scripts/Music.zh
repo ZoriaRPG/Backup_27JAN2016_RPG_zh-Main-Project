@@ -1,0 +1,35 @@
+const int SFX = 0;
+const int MIDI = 1;
+const int WAV = 2;
+const int NSF = 3;
+const int MP3 = 4;
+const int GBS = 5;
+
+
+void playSound(int soundType, int soundFile){
+    if ( type ==  SFX ){
+        Game->PlaySound(soundFile);
+    }
+    else if ( type == MIDI ) {
+        Game->PlayMIDI(soundFile);
+    }
+    else if ( type == WAV ) {
+        Game->PlaySound(soundFile);
+    }
+    else if ( type == NSF ) {
+        Game->PlayEnhancedMusic(soundFile, 1);
+    }
+    else if ( type == MP3 ) {
+        Game->PlayEnhancedMusic(soundFile, 1);
+    }
+    else if ( type == GBS ) {
+        Game->PlayEnhancedMusic(soundFile, 1);
+    }
+}
+    
+    
+void playMusic(int filename){
+    int name = filename;
+    int music[] = "name";
+    Game->PlayEnhancedMusic(name);
+}

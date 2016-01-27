@@ -1,0 +1,170 @@
+//Enemy savestates
+
+void BackupScreenEnemies(){
+	//if ( q == ENEM_BAK_COLLISION ) {
+	// int col;
+	// if ( enem->CollDetection ) {
+	//	col = 1;
+	// }
+	// else { 
+	//	col = 0;
+	// }
+	// ScreenEnemies[pass+q] = col;
+	// if ( ScreenEnemies[pass+ENEM_BAK_ID] == 0 ) { //if we reach a blank field for enemy ID, the rest should all be empty.
+	//	break; //Stop copying.
+	// }
+	
+	//BackupScreenEnemyMisc(pass);
+	//BackupScreenEnemyDefs(pass);
+	
+}
+
+void RestoreScreenEnemies(){
+	// We need to find the first instance of ID 0, to determine how many NPCs to create.
+	int n;
+	// n = ScreenEnemies[pass+ENEM_BAK_ID];
+	// Screen->CreateNPC(n);
+	// Create Nth npcs first. They should be constructed in a way that allows us to later reference thhem in the order created?
+	// Then set their attribs and vars in the same order with a second set of for loops.
+	//if ( q == ENEM_BAK_COLLISION ) {
+	// boll col;
+	// if ( ScreenEnemies[pass+q] == 1 ) {
+	//	col = true
+	// }
+	// else { 
+	//	col = false
+	// }
+	// enem->CollDetection = col;
+	//
+	// if ( ScreenEnemies[pass+ENEM_BAK_ID] == 0 ) { //if we reach a blank field for enemy ID, the rest should all be empty.
+	//	break; //Stop copying.
+	// }
+	//
+	//
+	
+}
+
+void CleanupEnemyBackups(){
+	for (int w = 0; w < SizeOfArray(ScreenEnemies); w++){
+		ScreenEnemies[q] = 0;
+	}
+}
+
+
+//Note, summoners will break a ten-slot array. We need 1,000 slots, to be certain.
+float ScreenEnemies[630]={
+	
+	
+	0,	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	
+	
+	const int ENEM_BAK_PRIORITY 	= 0;
+	const int ENEM_BAK_ID 		= 1;
+	const int ENEM_BAK_X 		= 2;
+	const int ENEM_BAK_Y		= 3;
+	const int ENEM_BAK_Z		= 4;
+	const int ENEM_BAK_JUMP		= 5;
+	const int ENEM_BAK_DIR		= 6;
+	const int ENEM_BAK_COLLISION	= 7;
+	const int ENEM_BAK_HP		= 8;
+	const int ENEM_BAK_DAMAGE	= 9;
+	const int ENEM_BAK_WEAPDAMAGE	= 10;
+	const int ENEM_BAK_STUN		= 11;
+	const int ENEM_BAK_ORIGTILE	= 12;
+	const int ENEM_BAK_WEAP		= 13;
+	const int ENEM_BAK_ITEMSET	= 14;
+	const int ENEM_BAK_CSET		= 15;
+	const int ENEM_BAK_BOSSPAL	= 16;
+	const int ENEM_BAK_SFX		= 17;
+	const int ENEM_BAK_EXTEND	= 18;
+	const int ENEM_BAK_TILEWIDTH	= 19;
+	const int ENEM_BAK_TILEHEIGHT	= 20;
+	const int ENEM_BAK_HITWIDTH	= 21;
+	const int ENEM_BAK_HITHEIGHT	= 22;
+	const int ENEM_BAK_HITXOFFSET	= 23;
+	const int ENEM_BAK_HITYOFFSET	= 24;
+	const int ENEM_BAK_HITZHEIGHT	= 25;
+	const int ENEM_BAK_DRAWX	= 26;
+	const int ENEM_BAK_DRAWY	= 27;
+	const int ENEM_BAK_DRAWZ	= 28;
+	
+	const int ENEM_BAK_DEF0		= 29;
+	const int ENEM_BAK_DEF1		= 30;
+	const int ENEM_BAK_DEF2		= 31;
+	const int ENEM_BAK_DEF3		= 32;
+	const int ENEM_BAK_DEF4		= 33;
+	const int ENEM_BAK_DEF5		= 34;
+	const int ENEM_BAK_DEF6		= 35;
+	const int ENEM_BAK_DEF7		= 36;
+	const int ENEM_BAK_DEF8		= 37;
+	const int ENEM_BAK_DEF9		= 38;
+	const int ENEM_BAK_DEF10	= 39;
+	const int ENEM_BAK_DEF11	= 40;
+	const int ENEM_BAK_DEF12	= 41;
+	const int ENEM_BAK_DEF13	= 42;
+	const int ENEM_BAK_DEF14	= 43;
+	const int ENEM_BAK_DEF15	= 44;
+	const int ENEM_BAK_DEF16	= 45;
+	const int ENEM_BAK_DEF17	= 46;
+	
+	const int ENEM_BAK_MISC0	= 47;
+	const int ENEM_BAK_MISC1	= 48;
+	const int ENEM_BAK_MISC2	= 49;
+	const int ENEM_BAK_MISC3	= 50;
+	const int ENEM_BAK_MISC4	= 51;
+	const int ENEM_BAK_MISC5	= 52;
+	const int ENEM_BAK_MISC6	= 53;
+	const int ENEM_BAK_MISC7	= 54;
+	const int ENEM_BAK_MISC8	= 55;
+	const int ENEM_BAK_MISC9	= 56;
+	const int ENEM_BAK_MISC10	= 57;
+	const int ENEM_BAK_MISC11	= 58;
+	const int ENEM_BAK_MISC12	= 59;
+	const int ENEM_BAK_MISC13	= 60;
+	const int ENEM_BAK_MISC14	= 61;
+	const int ENEM_BAK_MISC15	= 62;
+	
+	const int ENEMY_BAK_ENEMY 	= 63;
+	const int ENEM_BAK_MISC_VALUES	= 47;
+	const int ENEM_BAK_DEF_VALUES	= 29;
+	
+	void BackupScreenEnemyMisc(){
+		//for loop copies enem->Misc[q] to ScreenEnemies[ENEMy_BAK_ENEMY * pass + ENEM_BAK_MISC_VALUES + q];
+	}
+	
+	void BackupScreenEnemyDefs(){
+		//for loop copies enem->Misc[q] to ScreenEnemies[ENEMY_BAK_ENEMY * pass + ENEM_BAK_DEF_VALUES + q];
+	}
+	
+	void BackupScreenEnemyCollision(){
+	}
+	
+	
+	
+	//Number on List, ID, X, Y, Z, Jump, Dir, CollDetection (BOOLEAN), HP, Damage, WeaponDamage, Stun, 
+	//OriginalTile, Weapon, ItemSet, CSet, BossPal (SHOULD WE SAVE THIS?),  SFX, Extend, TileWidth, 
+	//TileHeight, HitWidth, HitHeight, HitZHeight, HitXOffset, HitYOffset, DrawXOffset, DrawYOffset, 
+	//DrawZOffset
+	
+	
+	//12+ 8 + 9 = 29 main values, + 18 for Defense [18] = 47 + 16 for Misc[16] == 63 total values. 
+	//Defense [ 18 ] 
+	// Misc [ 16 ]
+	
+	//Read, copy, backup, and restore BossPal only if CSet is 14.
+	//Store CollDetection as 0.1, and write back as a boolean. 
+	
+	//How do we know if its shield is broken? we need to read its flags, and then do BreakShield() if it's broken?
+	// MiscFlags
+	// The npc's Misc. Flags as 14 bits ORed together, starting with 'Damaged by Power 0 Weapons', * and working down the flags in the order they are shown in the Enemy Editor.
+	//* npc->MiscFlags is read-only; while setting it is not syntactically incorrect, it does nothing.
+	//* If you are not comfortable with binary operations, you can use 'GetNPCMiscFlag' from std.zh

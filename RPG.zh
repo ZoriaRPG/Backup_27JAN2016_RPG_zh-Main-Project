@@ -1,0 +1,211 @@
+//import "std.zh"
+//import "string.zh"
+//import "Ghost.zh"
+//import "ffcscript.zh"
+//import "stdCombos.zh" //The library RPG_Experimental.zh imports this.
+
+//////////////////////////////////////////
+///     ZORIA RPG SYSTEM FRAMEWORK     ///
+///   Alpha v.0.97.7 - 22 Nov., 2015   ///
+//////////////////////////////////////////
+
+
+/////////////////
+/// CONSTANTS ///
+/////////////////
+
+const int ERROR_SFX = 61; 
+
+//Counters
+
+
+
+
+//Variables
+
+
+///////////////////
+///  Libraries  ///
+///////////////////
+
+import "RPG_zh/RPG_Functions.zlib"
+import "RPG_zh/RPG_Engine.zlib"
+import "RPG_zh/RPG_Dice.zlib"
+import "RPG_zh/RPG_Levels.zlib"
+import "RPG_zh/RPG_Stats.zlib"
+import "RPG_zh/RPG_Money.zlib"
+import "RPG_zh/RPG_Weapons.zlib"
+import "RPG_zh/RPG_Menus.zlib"
+import "RPG_zh/RPG_Skills.zlib"
+import "RPG_zh/RPG_Dialogue.zlib"
+import "RPG_zh/RPG_Spells.zlib"
+import "RPG_zh/RPG_Overworld.zlib"
+import "RPG_zh/RPG_Items.zlib"
+import "RPG_zh/RPG_Status.zlib"
+import "RPG_zh/RPG_NPCs.zlib"
+import "RPG_zh/RPG_FFCs.zlib"
+import "RPG_zh/RPG_Timers.zlib"
+import "RPG_zh/RPG_Equipment.zlib"  //Added in v0.97.8
+
+import "RPG_zh/RPG_Debug.zlib"
+
+//Experimental General
+import "RPG_zh/RPG_Experimental.zlib"
+
+//Experimental Extended
+import "RPG_zh/RPG_Experimental_Ext.zlib"
+
+//Experimental NPCDTs
+import "RPG_zh/RPG_NPCDs.zlib"
+import "RPG_zh/RPG_NPCDs_Table.zlib"
+
+//Experimental Backup and Restore
+import "RPG_zh/RPG_Backup.zlib"
+
+import "RPG_zh/RPG_Definitions.zlib"
+import "RPG_zh/RPG_Utility.zlib"
+
+//Templates
+
+import "RPG_zh/RPG_Dialogue_Strings.zlib"
+
+// 0.96.3
+
+import "RPG_zh/RPG_Enemies.zlib" //v0.96.8 -> Moved functions from RPG_Experimental_Ext.zlib
+import "RPG_zh/RPG_Bosses.zlib"
+import "RPG_zh/RPG_Prototypes.zlib"
+import "RPG_zh/RPG_Legacy.zlib"
+
+//0.96.4
+
+import "RPG_zh/RPG_Animation.zlib" //Screen pan, and related functions by Moosh.
+
+//0.96.5
+import "RPG_zh/RPG_Player.zlib"
+import "RPG_zh/RPG_DropFunctions.zlib"
+import "RPG_zh/RPG_MathRNG.zlib"
+
+//0.96.7
+
+//Added additional functions to RPG_Experimental_Ext.zlib
+
+//0.96.8
+
+//Merged functions out of RPG_Experimental_Ext.zlib
+//Added RPG_Equipment.zlib
+import "RPG_zh/RPG_Drawing.zlib"
+import "RPG_zh/RPG_Teleport.zlib"
+
+//0.96.9.1
+
+import "RPG_zh/RPG_Screens.zlib"
+
+//0.97.1
+import "RPG_zh/RPG_Constants.zlib"
+
+//0.97.2
+import "RPG_zh/RPG_Version.zlib"
+//import "RPG_zh/RPG_Player_Sprites.zlib" //Call this line from *inside* the global active script, so that the functions are local to it, and the lweapon pointer is valid.
+
+///////////////////////////
+/// General Use Scripts ///
+///////////////////////////
+
+
+
+/////////////////////
+/// WEAPON SYSTEM ///
+////////////////////
+
+//Uses NWS v1 protocols for an item.
+
+item script active{
+    void run(int weapon){
+        WeaponCreated[weapon] = true;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+/// ! Disable the next two functions if using stdArguments.zh ! ///
+
+//int GetDigit(int n, int place){
+//	place = Clamp(place, -4, 4);
+//	if( place < 0 ){
+//		n = GetRemainderAsInt(n);
+//		place += 4;
+//	}
+//
+//	int r = ((n / Pow(10, place)) % 10) << 0;
+//	return r;
+//}
+//
+//int GetRemainderAsInt(int v) {
+//    int r = (v - (v << 0)) * 10000;
+//    return r;
+//}
+
+/// ! Disable the above two functions if using stdArguments.zh ! ///
+
+
+
+
+
+
+//////////////////////////////
+/// CREDITS (ALPHABETICAL) ///
+//////////////////////////////
+
+///////////////////////////
+/// Development Credits ///
+/////////////////////////////////////////////////////////////////////////
+/// Aevin (Misc RPG-related ideas.)                                   ///
+/// Alucard648 (Various functions, NWSv2, and stdCombos/stdWeapons.)  ///
+/// blackbishop89 (Forum discussions, and assistance.)                ///
+/// BlueKnight (Scrolling models.)                                    ///
+/// Binx (Forum discussions, gen contributions.)                      ///
+/// coolgamer012345 (Code discussions.)                               ///
+/// Gleeok (Assorted functions, that led to this. 'Baking' ZC great.  ///
+/// grayswandir (FFC triggers, functions, and discussions thereof.)   ///        
+/// jsm116 (FFCs and FFC functions.)                                  ///
+/// Lejes (Code models, and discussions thereof.)                     ///
+/// MasterManiac (NWS v1.)                                            ///
+/// Moosh (Code models, functions, and general awesomeness.)          ///
+/// MoscowModder (Too much to list.)                                  ///
+/// Saffith (Tango, Ghost, FFCs, and JRPG Menu basic framework.)      ///
+/// SUCCESSOR (Assorted functions, and discussion thereof.)           ///
+/// TeamUDF (Listening to me discuss this at length, and feedback.)   ///
+/// ywkls (Documentation, and discussion group contributions.         ///
+/// Zim (Scrolling models.)                                           ///
+/// Zecora (Forum discussions, and assistance.)                       ///
+/// ZoriaRPG (Project leader, and general concept; gen. development.) ///
+////////////////////////////////////////////////////////////////////////
+
+/////////////////////////
+/// Testing and Ideas ///
+/////////////////////////////////////////////////////////////////////////
+/// coolgamer012345 (Idea bouncing.)                                  ///
+/// Fitz (Discussions.)                                               ///
+/// judasrising (Discussions.)                                        ///
+/// MabusTheDark (Discussion, and script testing)                     ///
+/// ShadowTiger (Regular discussions, and being an amasing person.)   ///
+/// TeamUDF (Inspirational, and conversational discussion of ideas.)  ///
+////////////////////////////////////////////////////////////////////////
+
+// If you feel that you belong on this list, please PM ZoriaRPG. 
+
+//P.S. If anyone is curious about using the extension, '.zlib', here's an anecdote for you. 
+//The file extension used by ZQuest for scripts, '.z', is also the filetype used for some *nix archives (.z files).
+//That creates a predicament, as opening .z files, when you have a datatype handler, will be problematic, 
+//as the datatype handler associates '.z' with archived files.
+//The '.z' archive files operate on the *nix libary 'zlib', which is *not* a filetype.
+//Thus, as a sort of self-amusing joke, I started naming ZScript files with a '.zlib' extension.
+//I also pondered using '.squid', but I''ll save that for another day.

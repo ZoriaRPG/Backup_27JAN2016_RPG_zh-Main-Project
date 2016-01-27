@@ -1,0 +1,37 @@
+//General-Use Arrays with Getter/Setter functions
+//28th December, 2015
+
+//A generic array, pre-included with all quests. 
+float stdArray[1024];
+
+//Data Handling Functions
+
+//Get the value of any 'index' in the generic array.
+float GetV(int index){
+	return stdArray[index];
+}
+
+//Set the value of any 'index', to a specific amount 'value'.
+void SetV(int index, int value){
+	stdArray[index] = value;
+}
+
+//Increase the value of any 'index' by +1.
+void IncV(int index) {
+	stdArray[index]++;
+}
+
+//Increase the value of any 'index' by 'amount'.
+void IncV(int index, int amount){
+	stdArray[index] += amount;
+}
+
+//Decrease the value of any 'index' by -1.
+void DecV(int index){
+	stdArray[index]--;
+}
+
+//Decrease the value of any 'index' by 'amount'.
+void DecV(int index, int amount){
+	stdArray[index] -= amount;
+}

@@ -1,0 +1,26 @@
+//Drawing Functions
+
+void DrawScreenToLayer(int sourceMap, int sourceScreen, int layer, int drawOpacity){
+	Screen->DrawLayer(layer, sourceMap, sourceScreen, 0, 0, 0, 0, drawOpacity);
+	Screen->DrawLayer(layer, sourceMap, sourceScreen, 1, 0, 0, 0, drawOpacity);
+	Screen->DrawLayer(layer, sourceMap, sourceScreen, 2, 0, 0, 0, drawOpacity);
+	Screen->DrawLayer(layer, sourceMap, sourceScreen, 3, 0, 0, 0, drawOpacity);
+	Screen->DrawLayer(layer, sourceMap, sourceScreen, 4, 0, 0, 0, drawOpacity);
+	Screen->DrawLayer(layer, sourceMap, sourceScreen, 5, 0, 0, 0, drawOpacity);
+}
+
+void DrawScreenToLayer(int sourceMap, int sourceScreen, int layerMin, int layerMax, int drawOpacity){
+	for (int i = layerMin; i < layerMax; i++){
+		Screen->DrawLayer(0, sourceMap, sourceScreen, i, 0, 0, 0, drawOpacity);
+	}
+}
+
+void DrawScreenToLayer(int sourceMap, int sourceScreen, int layerMin, int layerMax, int drawOpacity, int destLayer){
+	for (int i = layerMin; i < layerMax; i++){
+		Screen->DrawLayer(destLayer, sourceMap, sourceScreen, i, 0, 0, 0, drawOpacity);
+	}
+}
+
+
+
+//import "RPG_Drawing_Ext.zlib"

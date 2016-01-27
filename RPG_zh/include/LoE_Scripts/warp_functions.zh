@@ -1,0 +1,355 @@
+import "std.zh"
+import "ffcscript.zh"
+
+///////////////
+/// Globals ///
+///////////////
+
+const int DMAP_ONE_PAST = 20;
+const int DMAP_ONE_FUTURE = 8;
+const int DMAP_TWO_PAST = 32;
+const int DMAP_TWO_FUTURE = 33;
+const int DMAP_THREE_PAST = 52;
+const int DMAP_THREE_FUTURE = 5;
+
+bool isWarping;
+bool afterWarp;
+bool warpSparkle;
+
+const int warpError = 0;
+const int warpSFX = 16;
+const int warpWave = 100;
+
+const int warpDuration = 60;
+const int warpCircleColour = 5;
+const int postWarpDelay = 15;
+
+const int warpFFC = 1; //Slot of 'ffc script mirrorWarp'
+const int warpSpotFFC = 0; // Slot of 'ffc script warpReturn'
+
+const int SONG_ONE = 0;
+const int SONG_TWO = 0;
+const int SONG_THREE = 21;
+
+bool warpAllowed = true;
+int warpArray[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+
+
+const int warpOriginDMAP = 0;
+const int warpDestDMAP = 1;
+const int warpCurrentScreen = 2;
+const int warpLinkX = 3;
+const int warpLinkY = 4;
+const int warpLinkZ = 5;
+const int warpSpotX = 6;
+const int warpSpotY = 7;
+const int warpSpotScreen = 8;
+const int warpSpotDMAP = 9;
+const int warpSwapA = 10;
+const int warpSwapB = 11;
+
+const int SOLIDITY_CHECK_DISTANCE = 7;
+
+const int warpReturnSparkleFFC = Screen->LoadFFC(29);
+const int CMB_WARP_SPARKLE = 0; // COmbo of sparkle or other warp return effect.
+
+////////////////////////
+/// GLOBAL FUNCTIONS ///
+////////////////////////
+
+bool touchingSolid(int x, int y) {
+    if ( Screen->isSolid(x,y) || 
+    Screen->isSolid(x + SOLIDITY_CHECK_DISTANCE, y) || 
+    Screen->isSolid(x + SOLIDITY_CHECK_DISTANCE, y+SOLIDITY_CHECK_DISTANCE) || 
+    Screen->isSolid(x + SOLIDITY_CHECK_DISTANCE, y-SOLIDITY_CHECK_DISTANCE) || 
+    Screen->isSolid(x - SOLIDITY_CHECK_DISTANCE, y) || 
+    Screen->isSolid(x - SOLIDITY_CHECK_DISTANCE, y+SOLIDITY_CHECK_DISTANCE) || 
+    Screen->isSolid(x - SOLIDITY_CHECK_DISTANCE, y-SOLIDITY_CHECK_DISTANCE) ) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+void warpReturn() {
+
+    int returnPointScreen = warpArray[warpSpotScreen];
+    int returnPointDMAP = warpArray[warpSpotDMAP];
+    int thisScreen = Game->GetCurDMapScreen();
+    int thisDMAP = Game->GetCurDMap();
+    int warpReturnX = warpArray[warpSpotX];
+    int warpReturnY = warpArray[warpSpotY];
+    if ( warpSparkle && thisScreen == returnPointScreen && thisDMAP == returnPointDMAP ) {
+        int args[4] = {thisScreen, thisDMAP, warpReturnX, warpReturnY};
+        RunFFCScript(warpSpotFFC, args);
+    }
+}
+    
+void swapWarpPoints(){
+    warpArray[warpOriginDMAP] = warpArray[warpSwapA];
+    warpArray[warpDestDMAP] = warpArray[warpSwapB];
+    warpArray[warpSwapA] = warpArray[warpDestDMAP];
+    warpArray[warpSwapB] = warpArray[warpOriginDMAP];
+}
+    
+
+void warpFinish {
+    int originMap = warpArray[warpOriginDMAP];
+    int currScreen = warpArray[warpCurrentScreen];
+    int LinkX = warpArray[warpLinkX];
+    int LinkY = warpArray[warpLinkY];
+    int LinkZ = warpArray[warpLinkZ];
+    int startHP = Link->HP;
+    int warpSpotScreen = warpArray[warpCurrentScreen];   
+    int warpReturnDMAP = warpArray[warpDestDMAP];
+    int warpReturnX = warpArray[warpLinkX];
+    int warpReturnY = warpArray[warpLinkY];
+    int warpReturnScreen = warpArray[warpCurrentScreen];
+    int warpReturnDMAP = warpArray[warpDestDMAP];
+    
+    int args[4] = {warpReturnScreen, warpReturnDMAP, warpReturnX, warpReturnY};
+        
+    if (afterWarp){
+        if ( touchingSolid(LinkX, LinkY) ) {
+            Game->PlaySound(warpSFX);
+            Screen->Wavy = warpWave;
+            for(int i = warpWave+postWarpDelay; i > 0; i--){
+                NoAction();
+                Waitframe();
+            }
+            Link->X = LinkX;
+            Link->Y = LinkY;
+            Link->PitWarp(originMap, currScreen);
+            afterWarp = false;
+        }
+        if ( Link->HP < startHP ) {
+            Link->HP = startHP;
+            Game->PlaySound(warpSFX);
+            Screen->Wavy = warpWave;
+            for(int i = warpWave+postWarpDelay; i > 0; i--){
+                NoAction();
+                Waitframe();
+            }
+            Link->X = LinkX;
+            Link->Y = LinkY;
+            Link->PitWarp(originMap, currScreen);
+            Link->X = LinkX;
+            Link->Y = LinkY;
+            Link->HP = startHP;
+            afterWarp = false;
+        }
+        else { 
+        
+        
+            warpArray[warpSpotX] = warpArray[warpLinkX];
+            warpArray[warpSpotY] = warpArray[warpLinkY];
+            warpArray[warpSpotScreen] = warpSpotScreen;
+            warpArray[warpSpotDMAP] = warpArray[warpDestDMAP];
+            warpSparkle = true;
+            afterWarp = false;
+            RunFFCScript(warpSpotFFC, args);
+        }
+    }
+}
+
+void warpLink() {
+    int originMap = warpArray[warpOriginDMAP];
+    int currScreen = warpArray[warpCurrentScreen];
+    int destMap = warpArray[warpDestDMAP];
+    
+    if (isWarping){
+        warpArray[warpLinkX] = Link->X;
+        warpArray[warpLinkY] = Link->Y;
+        warpArray[warpLinkZ] = Link->Z;
+        NoAction();
+        Game->PlaySound(warpSFX);
+        Screen->Wavy = warpWave;
+        for(int i = warpWave+postWarpDelay; i > 0; i--){
+            NoAction();
+            Waitframe();
+        }
+        Link->PitWarp(destMap, currScreen);
+        afterWarp = true;
+    }
+}
+
+////////////////////
+/// Item Scripts ///
+////////////////////
+
+//D0: SFX of Warp Sound, not song.
+//D1: Duration of song for time warp in frames (60 frames/second)
+//Set song to play in the constant SONG_THREE.
+//D2: Cost (MP, or otherwise)
+//D3: Counter to use.
+//D4: Colour for FFC Visual effect.
+
+
+item script timeWarp {
+    void run(int warpSound, int warpTime, int warpCost, int warpCounter, int warpColour){
+        int originMap;
+        int destMap;
+        int locX;
+        int locY;
+        int currScreen;
+        
+        int LinkX = Link->X;
+        int LinkY = Link->Y;
+        int LinkZ = Link->Z;
+        originMap = Game->GetCurDMap();
+        currScreen = Game->GetCurDMapScreen();
+        
+        int args[3] = {warpSound, warpTime, warpColour};
+        
+        if ( originMap == DMAP_ONE_PAST ) {
+            destMap = DMAP_ONE_FUTURE;
+        }
+        else if ( originMap == DMAP_TWO_PAST ) {
+            destMap = DMAP_TWO_FUTURE;
+        }
+        else if ( originMap == DMAP_THREE_PAST ) {
+            destMap = DMAP_THREE_FUTURE;
+        }
+        
+        else if ( originMap == DMAP_ONE_FUTURE ) {
+            destMap = DMAP_ONE_PAST;
+        }
+        else if ( originMap == DMAP_TWO_FUTURE ) {
+            destMap = DMAP_TWO_PAST;
+        }
+        else if ( originMap == DMAP_THREE_FUTURE ) {
+            destMap = DMAP_THREE_PAST;
+        }
+            
+                
+                
+        warpArray[warpOriginDMAP] = originMap;
+        warpArray[warpDestDMAP] = destMap;
+        warpArray[warpCurrentScreen] = currScreen;
+        warpArray[warpLinkX] = LinkX;
+        warpArray[warpLinkY] = LinkY;
+        warpArray[warpLinkZ] = LinkZ;
+        
+        if ( warpCost == 0 && warpAllowed ) {
+            RunFFCScript(warpFFC, args);
+        }
+        
+        else if ( warpCost > 0 && warpAllowed ) {
+            if ( warpCounter >= warpCost ) {
+                warpCounter -= warpCost;
+                RunFFCScript(warpFFC, args);
+            }
+            else {
+                Game->PlaySound(warpError);
+            }    
+        }            
+        
+        else {
+            Game->PlaySound(warpError);
+        }        
+    }
+}
+
+///////////////////
+/// FFC Scripts ///
+///////////////////
+
+//Warpingmusic, and animation.
+
+ffc script mirrorWarp {
+    void run(int warpSound, int warpTime, int warpColour) {
+        bool warping = true;
+        int originMap = warpArray[warpOriginDMAP];
+        int destMap = warpArray[warpDestDMAP];
+        int locX;
+        int locY;
+        int LinkX = warpArray[warpLinkX];
+        int LinkY = warpArray[warpLinkY];
+        int LinkZ = warpArray[warpLinkZ];
+        int currScreen = warpArray[warpCurrentScreen];
+        int startHP = Link->HP;
+        
+        
+        
+        if (Link->Action == LA_NONE && warpAllowed ) {
+            //if (Link->Action == LA_NONE || Link->Action == LA_WALKING && warpAllowed ) 
+            //Warp only if not moving.
+        
+            for(int i = warpDuration; i > 0; i--){ //Duration of song.
+                NoAction(); //Freeze Link
+                Game->PlaySound(SONG_THREE);
+                //Create animation.
+                Screen->Circle ( 7, Link->X+8, Link->Y+8, 20*i/warpDuration, warpCircleColour, 1, 0, 0, 0, false, 64 );
+                
+                if ( Link->HP < startHP ) {
+                    return; //If Link is hurt, quit
+                }
+                Waitframe();
+            }
+            
+            isWarping = true;
+            return;
+        }
+            
+        else {
+            Game->PlaySound(warpError);
+            warping = false;
+            return;
+        }
+    }
+}
+
+
+
+//An ffc for a warp return sparkle.
+ffc script warpReturn {
+    void run( int warpReturnScreen, int warpReturnDMAP, int warpReturnX, int warpReturnY) {
+    ffc warpReturnSparkle = Screen->LoadFFC(warpReturnSparkleFFC);
+    warpReturnSparkle->X = warpReturnX; 
+    warpReturnSparkle->Y = warpReturnY;
+    warpReturnSparkle->Data = CMB_WARP_SPARKLE;
+    int LinkHitBoxX = (Link->X)+(Link->HitWidth);
+	int LinkHitBoxY = (Link->Y)+(Link->HitHeight);
+    int originMap = warpArray[warpOriginDMAP];
+    int currScreen = warpArray[warpCurrentScreen];
+    
+    while(true){    
+        if ( Collision(Link, warpReturnSparkle) {
+            Link->X = warpArray[warpLinkX];
+            Link->Y = warpArray[warpLinkY];
+            warpSparkle = false;
+            Link->PitWarp(originMap, currScreen);
+        }
+        Waitframe();
+        }
+    }
+}
+
+ffc script allowWarps {
+    void run() {
+        while(true){
+            if ( warpAllowed == false ) {
+                warpAllowed = true;
+            }
+        Waitframe();
+        }
+    }
+}
+
+ffc script forbidWarps {
+    void run() {
+    bool notScrolling = true;
+        while(true) {
+        
+            if ( warpAllowed == true && Link->Action != LA_SCROLLING ) {
+                warpAllowed = false;
+            }
+            if ( warpAllowed == false && Link->Action == LA_SCROLLING ) {
+                warpAllowed = true;
+            }
+            Waitframe();
+        }
+    }
+}
+

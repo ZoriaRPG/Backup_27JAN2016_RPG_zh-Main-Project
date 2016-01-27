@@ -1,0 +1,18 @@
+global script OnExit{
+	void run(){
+		DeathCount();
+	}
+}
+
+void DeathCount(){
+	Game->NumDeaths++;
+}
+
+void BumpDeathCount(){
+	if ( Link->HP <= 0 ) DeathCount();
+}
+
+void BumpDeathCount(int itm){
+	if ( Link->HP <= 0 && !Link->Item[itm] ) DeathCount();
+}
+

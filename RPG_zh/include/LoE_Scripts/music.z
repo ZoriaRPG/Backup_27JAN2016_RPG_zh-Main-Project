@@ -1,0 +1,42 @@
+/**
+	* Changes the current screen MIDI to MIDIid.
+	* Will revert to the DMap (or screen) MIDI upon leaving the screen.
+	*/
+	void PlayMIDI(int MIDIid);
+
+	/**
+	* Returns the current screen MIDI that is playing.
+	* Positive numbers are for custom MIDIs, and negative values are used
+	* for the built-in game MIDIs.
+	*/
+	int GetMIDI();
+
+	/**
+	* Play the specified enhanced music if it's available. If the music
+	* cannot be played, the current music will continue. The music will
+	* revert to normal upon leaving the screen.
+	* Returns true if the music file was loaded successfully.
+	* The filename cannot be more than 255 characters. If the music format
+	* does not support multiple tracks, the track argument will be ignored.
+	*/
+	bool PlayEnhancedMusic(int[] filename, int track);
+
+	/**
+	* Load the filename of the given DMap's enhanced music into buf.
+	* buf should be at least 256 elements in size.
+	*/
+	void GetDMapMusicFilename(int dmap, int[] buf);
+
+	/**
+	* Returns the given DMap's enhanced music track. This is valid but
+	* meaningless if the music format doesn't support multiple tracks.
+	*/
+	int GetDMapMusicTrack(int dmap);
+
+	/**
+	* Sets the specified DMap's enhanced music to the given filename and
+	* track number. If the music format does not support multiple tracks,
+	* the track argument will be ignored. The filename must not be more
+	* than 255 characters.
+	*/
+	void SetDMapEnhancedMusic(int dmap, int[] filename, int track);

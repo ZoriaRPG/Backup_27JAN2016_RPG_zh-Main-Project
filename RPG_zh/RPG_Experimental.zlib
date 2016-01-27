@@ -1,0 +1,964 @@
+/// Experimental
+///v0.4.1 for RPG.zh 0.9.6.4
+
+
+int GameClock[10] = {0,0,0,0,0,0,0,0,0,0};
+// Second	Segment	Minute ( Round )	Turn		Span 	( Hour ) 
+// 15 seconds per segment. Four Segments per Round. Ten rounds per turn. Three turns per Span Two Spans per Hour. 28 hours per day. 7 days per week. Five weeks per month. Ten months per annus.
+
+
+//Constant for GameDynamics
+
+// Item Constants from 0 to 499.
+//This allows for expansion of items, by granting another 234 items (total 500).
+//New items can be added by setting them true with GameEvents, and with numeric values set in GameDynamics. 
+//This is mostly useful for buff items, boost items, spell effects, and counter items.
+
+//Moved constants to RPG_Constants.zlib
+
+
+
+
+
+		
+// Vars
+	
+//int presentCharacter = 1; //This needs to be integrated into gameDynamics. 
+//We also need functions that enable/dsable things by reading the present character, and manipulating array table elements based on this.
+
+
+// Functions
+
+
+//Weather, Time, Environment
+
+void GameClock(){
+	GameClock[CLOCKFRAMES] +=1;
+	if ( GameClock[CLOCKFRAMES] == 60 ) {
+		GameClock[CLOCKFRAMES] = 0;
+		GameClock[SECOND] +=1;
+	}
+	if ( GameClock[SECOND] == 15 ) {
+		GameClock[SECOND] = 0;
+		GameClock[SEGMENT] +=1;
+	}
+	if ( GameClock[SEGMENT] == 4 ) {
+		GameClock[SEGMENT] = 0;
+		GameClock[ROUND] +=1;
+	}
+	if ( GameClock[ROUND] == 30 ) {
+		GameClock[ROUND] = 0;
+		GameClock[SPAN] +=1;
+	}
+	if ( GameClock[SPAN] == 2 ) { //Remove hours, and use 56 spans as in P&P game?
+		GameClock[SPAN] = 0;
+		GameClock[HOUR] +=1;
+	}
+	if ( GameClock[HOUR] == 28 ) {
+		GameClock[HOUR] = 0;
+		GameClock[DAY] +=1;
+	}
+	if ( GameClock[DAY] == 7 ) {
+		GameClock[DAY] = 0;
+		GameClock[WEEK] +=1;
+	}
+	if ( GameClock[WEEK] == 5 ) {
+		GameClock[WEEK] = 0;
+		GameClock[MONTH] +=1;
+	}
+	if ( GameClock[MONTH] == 10 ) {
+		GameClock[MONTH] = 0;
+		GameClock[ANNUA] +=1;
+	}
+}
+
+bool isUnderground() {
+	if ( GameEvents[UNDERGROUND] == true ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool isIndoors() {
+	if ( GameEvents[INDOORS] == true ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+
+
+void Indoors() {
+	GameEvents[INDOORS] = true;
+}
+
+void Indoors(bool setting) {
+	if ( setting == true ) {
+		GameEvents[INDOORS] = true;
+	}
+	else if ( setting == false ) {
+		GameEvents[INDOORS] = false;
+	}
+}
+
+void Underground() {
+	GameEvents[UNDERGROUND] = true;
+}
+
+void Underground(bool setting) {
+	if ( setting == true ) {
+		GameEvents[UNDERGROUND] = true;
+	}
+	else if ( setting == false ) {
+		GameEvents[UNDERGROUND] = false;
+	}
+}
+
+void Outdoors() {
+	GameEvents[INDOORS] = false;
+	GameEvents[UNDERGROUND] = false;
+}
+
+void TimeCycle(){
+	if ( GameClock[SPAN] == 0 ) { //Should be shorter duration?
+		GameDynamics[DAYCYCLE] = DAWN;
+	}
+	else if ( GameClock[SPAN] > 0 && GameClock[SPAN] < 14 ) {
+		GameDynamics[DAYCYCLE] = DAYTIME;
+	}
+	else if ( GameClock[SPAN] == 14 ) {
+		GameDynamics[DAYCYCLE] = SUNSET;
+	}
+	else if ( GameClock[SPAN] == 15 ) {
+		GameDynamics[DAYCYCLE] = DUSK;
+	}
+	else if ( GameClock[SPAN] > 15 && GameClock[SPAN] < 27 ) {
+		GameDynamics[DAYCYCLE] = NIGHTTIME;
+	}
+	else if ( GameClock[SPAN] == 27 ) {
+		GameDynamics[DAYCYCLE] = TWILIGHT;
+	}
+		
+}
+
+int getTimeCycle() {
+	return GameDynamics[DAYCYCLE];
+}
+
+
+bool Daytime(){
+	if ( getTimeCycle() == DAYTIME ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool Dawn() {
+	if ( getTimeCycle() == DAWN ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool Dusk() {
+	if ( getTimeCycle() == DUSK ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool Night() {
+	if ( getTimeCycle() == NIGHTTIME ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool Sunset() {
+	if ( getTimeCycle() == SUNSET ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool Twilight() {
+	if ( getTimeCycle() == TWILIGHT ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void LightCycle() {
+	if ( !isUnderground() && !isIndoors() ) {
+		if ( Daytime() ) {
+		}
+		else if ( Dawn() ) {
+			Screen->Rectangle(D_LAYER, D_POSX, D_POSY, D_POSX2, D_POSY2, ORANGE, D_SCALE, D_ROTX, D_ROTY, D_ROTDEG, true, D_TRANS ); //Check these arguments.
+		}
+		else if ( Dusk() ) {
+			Screen->Rectangle(D_LAYER, D_POSX, D_POSY, D_POSX2, D_POSY2, SLATEBLUE, D_SCALE, D_ROTX, D_ROTY, D_ROTDEG, true, D_TRANS ); //Check these arguments.
+		}
+		else if ( Night() ) {
+		Screen->Rectangle(D_LAYER, D_POSX, D_POSY, D_POSX2, D_POSY2, NIGHTBLUE, D_SCALE, D_ROTX, D_ROTY, D_ROTDEG, true, D_TRANS ); //Check these arguments.
+		}
+	}
+}
+
+
+///--------------------------///
+
+////////////////////////////////////////////////
+/// MANIPULATE SCREEN D REGS AS PARTIAL ARGS ///
+///       USE DIGITS AS INDIVIDUAL FLAGS     ///
+////////////////////////////////////////////////
+
+//SetScreenDBit
+//GetScreenDBit
+//Check Screen->d
+//SetScreenD //Sets Screen->D for a screen on any dmap.
+
+
+
+
+int returnScreedD(int d){
+	int cScreen = Game->GetCurScreen();
+	int cDmap = Game->GetCurMap();
+	int dat = Game->GetScreenD(cScreen, d);
+	return dat;
+}
+
+int returnScreenD(int d, int place){
+	int cScreen = Game->GetCurScreen();
+	int cDmap = Game->GetCurMap();
+	int dat = Game->GetDMapScreenD(cScreen, cDmap, d);
+	int y = GetDigit(dat, place);
+	return y;
+}
+
+int returnScreenD(int d, int place, int screen){
+	int cDmap = Game->GetCurMap();
+	int dat = Game->GetDMapScreenD(screen, cDmap, d);
+	int y = GetDigit(dat, place);
+	return y;
+}
+
+int returnScreenD(int d, int place, int screen, int dmap){
+	int cDmap = Game->GetCurMap();
+	int dat = Game->GetDMapScreenD(screen, dmap, d);
+	int y = GetDigit(dat, place);
+	return y;
+}
+
+///////
+
+void setScreedD(int d, int val, int place){
+	int cScreen = Game->GetCurScreen();
+	int cDmap = Game->GetCurMap();
+	
+
+	/// Needs to read current value, and change a single digit of it. 
+
+	//Because the value in Screen->D is a float, we need to return that value as part of a float, and not an integer. 
+
+	/// Read whole value and store it.
+	
+	float dat = Game->GetDMapScreenD(cScreen, cDmap, d);
+
+	//Now, we need to determine the place to exchange.
+		
+	//use powers to extract digit. 
+
+	float storeVal = ( GetDigit(dat, place) * ( 10 ^ place ) );
+
+	//reduce dat by the amount of storeVal
+
+	dat -= storeVal;
+
+	//The digit for the place we're using should now be '0'.
+
+	//next we convert the value of val into the correct place. 
+	
+	float placeVal = ( val * ( 10 ^ place) );
+
+	dat += placeVal; //Add this digit back into the whole value.
+
+	Game->SetDMapScreenD(cDmap, cScreen, d, dat);
+
+}
+
+void setRegister(int d, int val, int place){
+	setScreedD(d, val, place);
+}
+
+int getRegister(int d){
+	returnScreedD(d);
+}
+
+int getRegister(int d, int place){
+	returnScreenD(d,place);
+}
+
+const int DPLACE_ = 0; //Places of digits to remember more easily.
+const int DPLACE_CHEST = -4;
+
+//Constants for Screen->D Registers
+
+const int SCDR_ENEM = 3;
+const int SCDR_SECRETS = 4;
+const int SCDR_TRIGGERS = 4;
+const int SCDR_EVENT = 0;
+
+
+// Scripts
+
+/// Custom Treasure Chests
+/// Able to look, search, put items back (take yes/no), examine, trap, etc.
+
+ffc script smallChest {
+	void run(int type, int trap, int contents, int src, int dest, int lock, int keyType){
+	}
+}
+
+
+/// Skill Checks
+
+int returnSkill(int skill){
+	//Add later.
+	int skillTotal = CritModifiers[skill];
+	return skillTotal;
+}
+
+int CritModifiers[5]={0,0,0,0,0};
+const int WS_BLADES = 0;
+const int WS_PROJECTILES = 1;
+const int WS_SPELLS = 2;
+const int WS_ENERGY = 3;
+const int WS_BLUDGEON = 4;
+
+int criticalHitChance(int weapon){
+	int skill = (returnSkill(weapon) * 10);
+	int roll = rollDie(100);
+	int buff;
+	if (roll < skill ) {
+			buff = (skill - roll);
+	}
+	int buffMod;
+	int totalBuff;
+	totalBuff = buff + buffMod;
+	return totalBuff;
+}
+	
+		
+
+
+
+
+///Spells
+
+///Light
+int illumination; //If this is false, screens with dark room FFC flags will be dark. Unsetting this disables that.
+
+void Illuminate(){
+	int priorIllumination = illumination;
+	illumination = 5;
+	for (int i = CR_LEVEL; i > 0; i--){
+		Waitframe();
+	}
+	illumination = priorIllumination;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////// !!! EXPERIMENTAL FUNCTIONS FOR NPCs, ENEMIES, LINK, and SCREEN ! ////////////////////////
+////////////////////////                      Beginning 29th April, 2015                  ////////////////////////
+////////////////////////                             Alpha Version 1.1                    ////////////////////////
+////////////////////////                         ! Requires: stdCombos.zh !               ////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//Enemy tables
+//**MANUALLY* fill these tables!
+
+//import "stdCombos.zh"
+
+int FireEnemies[]={0,0};
+int IceEnemies[]={0,0};
+int WaterEnemies[]={0,0};
+int AirEnemies[]={0,0};
+int LitEnemies[]={0,0};
+int EarthEnemies[]={0,0};
+int AcidEnemies[]={0,0};
+int DarkEnemies[]={0,0};
+int LightEnemies[]={0,0};
+int LivingEnemies[]={0,0};
+int UndeadEnemies[]={0,0};
+int AlienEnemies[]={0,0};
+int MachineEnemies[]={0,0};
+int CyborgEnemies[]={0,0};
+int EtherealEnemies[]={0,0};
+int ArmourPierceEnemies[]={0,0};
+int ArmourBludgeonEnemies[]={0,0};
+int ArmourEnergyEnemies[]={0,0};
+int NCPEnemies[]={0,0};
+int MelkorEnemies[]={0,0};
+int SernaranOnlyEnemies[]={0,0};
+int MageEnemies[]={0,0};
+
+//Enemy Type Constants
+
+const int EN_FIRE = 0;
+
+
+
+void setDefs(int list, int en, int defs){
+	//Use bool isEnemyType(int list) and setEnemyDefs(int list)
+	//combined with int en to affect an enemy before waitdraw
+	//Need array for all def types for each enem category.
+	//Script will be different per table line.
+	//To automate this...
+	//int en above should be internal, as we won't probably pass this datum...
+	///unless an external for loop does need to pass that, in which case, we need to overload here.
+	
+}
+
+//RPG.zh NPC Expansion
+
+bool screenUpdated = false;
+bool scheenchanged = false;
+
+int currentLastScreen[6]={0,0,0,0,0,0,0,0,0,0};
+
+const int V_DMAP = 0;
+const int V_SCREEN = 1;
+const int V_MAP = 2;
+const int V_CURRENT_STATE = 0;
+const int V_LAST_STATE = 3;
+
+void CheckScreen(){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	
+	if ( curScreen != currentLastScreen[V_CURRENT_STATE + V_SCREEN] ) {
+		currentLastScreen[V_LAST_STATE + V_SCREEN] = currentLastScreen[V_CURRENT_STATE + V_SCREEN];
+		currentLastScreen[V_CURRENT_STATE + V_SCREEN] = curScreen;
+		
+	}
+	if ( curDMAP != currentLastScreen[V_CURRENT_STATE + V_DMAP] ) {
+		currentLastScreen[V_LAST_STATE + V_SCREEN] = currentLastScreen[V_CURRENT_STATE + V_SCREEN];
+		currentLastScreen[V_CURRENT_STATE + V_SCREEN] = curDMAP;
+	}
+	if ( curMap != currentLastScreen[V_CURRENT_STATE + V_MAP] ) {
+		currentLastScreen[V_LAST_STATE + V_SCREEN] = currentLastScreen[V_CURRENT_STATE + V_SCREEN];
+		currentLastScreen[V_CURRENT_STATE + V_SCREEN] = curMap;
+	}
+}
+
+void ScreenHasChanged(){
+	
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	
+	if ( curScreen != currentLastScreen[V_CURRENT_STATE + V_SCREEN] || curDMAP != currentLastScreen[V_CURRENT_STATE + V_DMAP] ||
+		curMap != currentLastScreen[V_CURRENT_STATE + V_MAP] ){
+	
+		GameEvents[SCREENCHANGED] = true;
+	}
+	else {
+		GameEvents[SCREENCHANGED] = false;
+	}
+}
+
+bool ScreenChanged() {
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curMap = Game->GetCurMap();
+	
+	if ( curScreen != currentLastScreen[V_CURRENT_STATE + V_SCREEN] || curDMAP != currentLastScreen[V_CURRENT_STATE + V_DMAP] ||
+		curMap != currentLastScreen[V_CURRENT_STATE + V_MAP] ){
+	
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+const int EV_NPCS = 0;
+const int EV_DIGIVOLVE = 1;
+const int EV_ELEMENTAL = 2;
+
+void DoEnemyUpdates(int list){
+	if ( ScreenChanged() ){
+		changeEnemies(list);
+		//Do other enemy changes by type here.
+		//Set enemy flags and def mods.
+		//Do other things.
+	}
+}
+
+void updateScreen(){
+	if (Link->Action == LA_SCROLLING ) {
+		GameEvents[UPDATESCREEN] = false;
+		GameDynamics[UPDATESCREEN] = 0;
+	}
+	//Also needs to reset boolean if warping.
+	//Perhaps ignore scrolling and warping and instead, and store screen number and DMAP number in arraay do not match the other. 
+	//This will guarantee that the boolean updates if thye player leaveds a screen, nomatter how they leave it.
+
+}
+		
+void changeEnemies(int list){
+	if ( ScreenChanged() ) { //Does this onlky when entering new screens, or DMAPS.
+		//for loop reads enemies on screen.
+		 for(int i = 1; i < Screen->NumNPCs(); i++){ 
+			npc enem = Screen->LoadNPC(i);
+				//for loop reads array passed as list.
+			for ( int j = SizeOfArray(list); i > 0; i--){
+				if ( enem->ID == list[j] ) {
+					//
+					//Change enemies;
+					//Update sprites, or other vars here.
+					//
+				}
+			}
+		}
+	}
+}
+
+
+void strafe(){
+	Link->Action = LA_NONE;
+}
+
+ffc script noHurt{
+	void run(){
+		while(true){
+			if ( LinkCollision(this) ){
+				strafe();
+			}
+			Waitframe();
+		}
+	}
+}
+
+//int playerHP;
+
+void updatePlayerHP(){
+	Val(PLAYER_HP, (Link->HP) );
+} //run before Waitdraw();
+
+void noHurtEffects(){
+	if ( Val(PLAYER_HP) > Link->HP ) {
+			Link->Action = LA_NONE;
+			Link->HitDir = -1;
+	}
+}
+
+void noHitMove(){
+	if ( Link->Action == LA_GOTHURTLAND && Link->HitDir != -1 ){
+		Link->HitDir = -1;
+	}
+}
+
+void NoHurtOnCollision(int types){ //Run before Waitdraw?
+	for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+		for (int j =  SizeOfArray(types); j > 0; j--){ //for loop needed to cycle through types as list; //int enemyList[256]={};
+			//for loop reads each entry in array and compares it to value of i.
+			if ( enem->ID == types[j] ){
+				if ( LinkCollision(enem) ){
+					Link->Action = LA_NONE;
+					Link->HitDir = -1;
+				}
+			}
+		}
+	}
+}
+
+
+
+
+bool isEnemyType(int arrayType){
+	for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+			//for loop reads array passed as list.
+		for ( int j = SizeOfArray(arrayType); i > 0; i--){
+			if ( enem->ID == arrayType[j] ) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+	}
+}
+
+bool ScreenUpdated(){
+	if ( GameEvents[SCREENUPDATED] == true ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+
+
+
+
+
+//Uses value assigned as HP in enemy editor to give all enemies on screen xD8 HP.
+//Should do this once, before setting values of screenUpdated to true.
+void SetEnemyHP(){
+	int tempHP;
+	int dice;
+	if ( !ScreenUpdated() ){
+		for(int i = 1; i < Screen->NumNPCs(); i++){ 
+			npc enem = Screen->LoadNPC(i);
+			tempHP = enem->HP;
+			dice = tempHP;
+			enem->HP = rollDice(dice,8);
+		}
+	}
+}
+
+void SetEnemies(){ //Run once in global loop, before waitdraw.
+	//Change Sprites
+	//Update HP
+	//Set defs
+	//set screenUpdated true;
+}
+		
+void SetEnemyHP (int enemyTable, int hpTable){ //Uses arrays to set HP. One array holds enemy IDS, the other can be used to set HP
+	for(int i = 1; i < NumberOfNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+			//for loop reads array passed as list.
+		for ( int j = SizeOfArray(enemyTable); i > 0; i--){
+			if ( enem->ID == enemyTable[j] ) {
+				enem->HP = hpTable[j];
+			}
+		}
+	}
+}
+
+void SetExactEnemyHP(int enemyToModify, int val){
+	for(int i = 1; i < NumberOfNPCs(); i++){ 
+	npc enem = Screen->LoadNPC(i);
+		if ( enem->ID == enemyToModify ) {
+			enem->HP = val;
+		}
+	}
+}
+
+
+
+
+//Enemy damaged player when hit, by amount of damage received 9cursed).
+
+void NoCollision(){
+	//Works as FFC version, but with an array list.
+}
+
+ffc script NoCollision{
+	void run (int enemNoCollide){
+		while(true){
+			for(int i = 1; i < NumberOfNPCs(); i++){ 
+				npc enem = Screen->LoadNPC(i);
+				if ( LinkCollision(enem) ) {
+					Game->PlaySound(0);
+					Link->Action = LA_NONE;
+					Link->HitDir = -1;
+				}
+			}
+			Waitframe();
+		}
+	}
+}
+
+void InstantKill(bool combo, bool combotype, int src, ffc f){
+	if ( combo ) {
+		if ( LinkComboCollision(src, 1) ){
+			Link->HP = 0;
+		}
+	}	
+	else if ( combotype ) {
+		if ( LinkComboTypeCollision(src,1) ){
+			Link->HP = 0;
+		}
+	}
+	else if ( LinkCollision(f) ){
+		Link->HP = 0;
+	}
+}
+
+ffc script NoSpillBlood{
+	//int hp = Link->HP;
+	//int hpLast;
+	void run (int cmbType, int sens, int size){
+		while(true){
+		//hpLast = hp;
+		//hp = Link->HP;
+			for(int i = 1; i < Screen->NumNPCs(); i++){ 
+				npc enem = Screen->LoadNPC(i);
+				if ( LinkCollision(enem) ) {
+					Link->Action = LA_NONE;
+					Link->HitDir = -1;
+				}
+			}
+			if ( LinkComboTypeCollision(cmbType, sens) ) {
+				Game->PlaySound(0);
+				//Link->Action = LA_NONE;
+				//Link->HitDir = -1;
+				
+				
+				
+				if ( Link->Dir == DIR_DOWN) {
+					Link->Action = LA_GOTHURTLAND;
+					Link->HitDir = DIR_UP;
+					//if ( Link->InputDown ) {
+					//	Link->InputDown = false;
+					//}
+					//if ( Link->PressDown ) {
+						Link->PressDown = false;
+					//}
+				}
+				if ( Link->Dir == DIR_RIGHT) {
+					Link->Action = LA_GOTHURTLAND;
+					Link->HitDir = DIR_LEFT;
+					//if ( Link->InputRight ) {
+					//	Link->InputRight = false;
+					//};
+					//if ( Link->PressRight ) {
+					//	Link->PressRight = false;
+					//}
+				}
+				if ( Link->Dir == DIR_LEFT) {
+					Link->Action = LA_GOTHURTLAND;
+					Link->HitDir = DIR_RIGHT;
+					//if ( Link->InputRight ) {
+					//	Link->InputRight = false;
+					//}
+					//if ( Link->PressLeft ) {
+					//	Link->PressLeft = false;
+					//}
+				}
+				if ( Link->Dir == DIR_UP) {
+					Link->Action = LA_GOTHURTLAND;
+					Link->HitDir = DIR_LEFT;
+					//if ( Link->InputUp ) {
+					//	Link->InputUp = false;
+					//}
+					//if ( Link->PressUp ) {
+					//	Link->PressUp = false;
+					//}
+				}
+			}
+			Waitframe();
+		}
+	}
+}
+
+const int DIR_RANDOM = 8;
+const int DIR_INVERT = 9;
+
+void ShoveLink(int dir) {
+	if ( dir == DIR_RANDOM) {
+		dir = Rand(0,7);
+	}
+	else{
+		if ( dir == DIR_DOWN) {
+			Link->Action = LA_GOTHURTLAND;
+			Link->HitDir = DIR_DOWN;
+		}
+		if ( dir == DIR_RIGHT) {
+			Link->Action = LA_GOTHURTLAND;
+			Link->HitDir = DIR_RIGHT;
+		}
+		if ( dir == DIR_LEFT) {
+			Link->Action = LA_GOTHURTLAND;
+			Link->HitDir = DIR_LEFT;
+		}
+		if ( dir == DIR_UP) {
+			Link->Action = LA_GOTHURTLAND;
+			Link->HitDir = DIR_UP;
+		}
+	}
+}
+
+void ShoveLink(int dir, bool changeFacingDir) {
+
+	if ( dir == DIR_DOWN) {
+		if ( changeFacingDir ) {
+			Link->Dir = dir;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_DOWN;
+	}
+	if ( dir == DIR_RIGHT) {
+		if ( changeFacingDir ) {
+			Link->Dir = dir;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_RIGHT;
+	}
+	if ( dir == DIR_LEFT) {
+		if ( changeFacingDir ) {
+			Link->Dir = dir;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_LEFT;
+	}
+	if ( dir == DIR_UP) {
+		if ( changeFacingDir ) {
+			Link->Dir = dir;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_UP;
+	}
+}
+
+void ShoveLink(int dir, bool changeFacingDir, bool invert) {
+
+	if ( dir == DIR_DOWN) {
+		if ( changeFacingDir ) {
+			Link->Dir = DIR_UP;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_DOWN;
+	}
+	if ( dir == DIR_RIGHT) {
+		if ( changeFacingDir ) {
+			Link->Dir = DIR_LEFT;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_RIGHT;
+	}
+	if ( dir == DIR_LEFT) {
+		if ( changeFacingDir ) {
+			Link->Dir = DIR_RIGHT;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_LEFT;
+	}
+	if ( dir == DIR_UP) {
+		if ( changeFacingDir ) {
+			Link->Dir = DIR_UP;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_UP;
+	}
+}
+
+
+
+
+void SetEnemyHP(int enemyToModify, int val, bool hpLink){
+	for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+		int lhp = Game->Counter[CR_LIFE];
+		if ( enem->ID == enemyToModify ) {
+			if ( hpLink == true ) {
+				enem->HP = lhp;
+			}
+			else {
+				enem->HP = val;
+			}
+		}
+	}
+}
+
+const int LIST_ITEM = 0;
+const int DROP_CHANCE_1 = 256;
+const int DROP_CHANCE_2 = 512;
+const int DROP_CHANCE_3 = 768;
+const int DROP_CHANCE_4 = 1024;
+const int DROP_LIST = 100; //0*100, 1*100
+
+int DropListOne[10000]={0}; //Populate with item IDs per 1% in sets of 100. 
+
+int DropSetChance[4096]={0}; //Populate with drops and dropset chances.
+void RandomItem(int itemList, int dropChance){
+	int itm = Rand(0,9);
+	//FadeOutIte(itm);
+	//for (int i = SizeofArray[itemList + LIST_ITEM]; i > 0
+}
+
+void CreateItemFromList(int list, int posX, int posY){
+	int max = SizeOfArray(list);
+	int val = Rand(0,max);
+	Screen->CreateItem(val); //Should be Screen->CreateItemAt(val, posX, posY);
+}
+
+void TalkNPC(int list){
+	int max = SizeOfArray(list);
+	int thisString = Rand(0,max);
+	Screen->Message(thisString);
+}
+
+void LinkIsFrozenFor(int time){
+	for (; time >0; time--){
+		Link->Action = LA_FROZEN;
+		Waitframe();
+	}
+}
+
+
+
+
+int ComboPairs[]={0,1}; //Holds combo pairs for triggered changes.
+
+void AdvanceCombo(int index, int comboSet){
+	for (int i=0; i<176; i++){
+		//for (int j = SizeOfArray(index); j >
+		if (Screen->ComboD[i] == index[comboSet]){
+			Screen->ComboD[i] = index[comboSet+1];
+		}
+	}
+}
+
+
+void TriggerLW(int index, int comboSet, int lw){
+	//for loop reads all lweapons on screen
+	//for loop reads combos on screen
+	//if ( ComboCollision(lw, cmb) ) {
+	//	if ( cmb == index[comboSet] ) {
+	//		ComboD[cmb] = index[comboSet+1];
+	//	}
+	//}
+}
+
+void TriggerEW(int index, int comboSet, int ew){
+	//for loop reads all eweapons on screen
+	//for loop reads combos on screen
+	//if ( ComboCollision(ew, cmb) ) {
+	//	if ( cmb == index[comboSet] ) {
+	//		ComboD[cmb] = index[comboSet+1];
+	//	}
+	//}
+}
+
+void TriggerPlayer(int index, int comboSet){
+	//for loop reads all eweapons on screen
+	//for loop reads combos on screen
+	//if ( ComboCollision(Link, cmb) ) {
+	//	if ( cmb == index[comboSet] ) {
+	//		ComboD[cmb] = index[comboSet+1];
+	//	}
+	//}
+}

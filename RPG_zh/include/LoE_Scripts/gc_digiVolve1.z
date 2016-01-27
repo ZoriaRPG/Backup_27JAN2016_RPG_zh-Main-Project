@@ -1,0 +1,40 @@
+/////////////////////////
+/// GLobal Components ///
+/////////////////////////
+
+const int NPC_MISC_DIGIVOLVED = 0; //Valid values 0-7
+const int DIGIVOLVE = 0; //Set this to the item required to DigiVolve enemies.
+const int DIGIVOLVE_TF = 8; //Set this to the TF piece required to DigiVolve enemies. 
+//Best to use DIGIVOLVE above and attach that item to a TF piece.
+
+void digiVolveEnemies() {
+
+//When changing - From MM
+//if(enemy1->Misc[NPC_MISC_EVOLVED == 0)
+//    enemy2->Misc[NPC_MISC_EVOLVED] = 1;
+
+    for(int i = 1; i < Screen->NumNPCs(); i++){ //Check every enemy on the screen.
+        npc enemy1 = Screen->LoadNPC(i); //Set variable to all enemies.
+            
+            //Need to real all enemy editor numbers, and store them.
+            //Need to change all enemies on a screen to +1 enemy editor number.
+            
+        int enemy1number = ( enemy->ID );
+        int enemy2number = ( enemynumber + 1 );
+            
+        if ( Link->Item[DIGIVOLVE] == true && enemy1->Misc[NPC_MISC_DIGIVOLVED == 0 ){
+        npc enemy2 = CreateNPCAt(enemy2number, enem->X, enem->Y); //Create enemyReplace at their position.
+        enemy2->Misc[NPC_MISC_DIGIVOLVED] = 1;
+            Remove(enemy1); //Remove enemyOriginal
+        }
+            
+            
+        else if ( Game->LItem[DIGIVOLVE_TF]&LI_TRIFORCE == LI_TRIFORCE && enemy1->Misc[NPC_MISC_DIGIVOLVED == 0 ){
+        npc enemy2 = CreateNPCAt(enemy2number, enem->X, enem->Y); //Create enemyReplace at their position.
+        enemy2->Misc[NPC_MISC_DIGIVOLVED] = 1;
+            Remove(enemy1); //Remove enemyOriginal
+        }
+            
+            
+    }
+}

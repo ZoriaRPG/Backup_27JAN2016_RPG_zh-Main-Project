@@ -1,0 +1,78 @@
+int kills;
+int cKillks;
+int linkHP;
+int linkOldHP;
+bool linkHurt;
+
+void KillRoutines(){
+	StoreLinkHurt();
+	CountEnemyKills();
+	GivePowerUps();
+}
+
+void CountEnemyKills(){
+	for (int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(q);
+		if ( n->Type != NPCT_FAIRY && n->HP <= 0 && n->HP > -9999 && n->isValid() ) {
+			if ( !linkHurt ) {
+				cKills++;
+				kills++;
+			}
+			if ( linkHurt ) {
+				linkHurt = false;
+				InitLinkHP();
+				kills++;
+				cKills = 0;
+			}
+		}
+	}
+}
+
+
+
+void ResetLinkHurt(){
+	if ( linkHurt ) {
+		linkHurt = false;
+	}
+}
+
+void InitLinkHP(){
+	linkHP = Link->HP;
+	linkOldHP = Link->HP;
+}
+
+void GivePowerUps(){
+	if ( cKills >= REQUIRE_CONSECUTIVE_KILLS ) {
+		item itm = Screen->CreateItem(I_ACORN); //Create an item, ID I_ACORN
+		itm->X = Link->X; //Place it at Link's coordinates...
+		itm->Y = Link->Y;
+		itm->Z = Link->Z;
+		Link->Action = LA_HOLD1LAND; //Cause Link to hold it up.
+		Link->HeldItem = I_ACORN; //Set the item Link holds manually.
+		cKills = 0;
+	}
+	if ( kills >= Z4_ItemsAndTimers[POWERUP_PIECE_OF_POWER_NEEDED_KILLS]) {
+		item itm = Screen->CreateItem(I_PIECE_POWER); //Create an item with the ID I_PIECE_POWER
+		itm->X = Link->X; //Place it at Link's coordinates.
+		itm->Y = Link->Y;
+		itm->Z = Link->Z;
+		Link->Action = LA_HOLD1LAND; //Cause Link to hold it up.
+		Link->HeldItem = I_PIECE_POWER; //Set the item Link holds, manually. 
+		kills = 0; 
+	}
+}
+		
+		
+
+//Store Link HP to check if he was hurt.
+int StoreLinkHurt(){
+	linkHP = Link->HP; //Store the present HP for Link this frame.
+	if ( linkOldHP > linkHP ){ 
+		//If this is lower than it was last frame (or at the atart of the game if this is the first frame of the game)
+		//Link was hit.
+		linkHurt = true; //Set the flag that tells us that Link was hurt.
+		linkOldHP = Link->HP; //Store his new HP into the OLD_HP reference, so that
+								     //we may use it next frame to repeat the check.
+		//This value is set back to 0 by UpdateKilledEnemies(). 
+	}
+}

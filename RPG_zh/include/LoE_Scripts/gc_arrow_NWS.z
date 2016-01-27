@@ -1,0 +1,54 @@
+/////////////////////////
+/// Arrow Projectile ////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/// D0: MP cost per use.                                          ///
+/// D1: Speed that Subweapon Travels across screen; suggest 240.  ///
+/// D2: Amount of Damage that Subweapon Deals to Enemies.         ///
+/// D3: Sprite used by Subweapon; select from:                    ///
+///            Quest->Graphics->Sprites->WeaponsMisc.             ///   
+/// D4: Maximum number of projectiles allowed at once.            ///
+/// D5: Error Sound Effects.                                      ///
+/// D6: Item Sound Effects.  Select sounds from:                  ///
+///            Quest->Audio->SFX Data                             ///   
+/// D7: Delay before Link can use item again.                     ///     
+/////////////////////////////////////////////////////////////////////
+
+
+item script arrowProjectile
+{
+    void run(int magicCost, int speed, int power, int spriteUsed, int maxProjectiles, int SXF_ERROR, int SFX_ITEM, int multiply)
+    {
+    if (Game->Counter[CR_ARROWS] >= magicCost && NumLWeaponsOf(LW_MAGIC) < maxProjectiles) //Fill in the numbers for magic consumption and number of projectiles allowed on screen
+        {
+        Game->Counter[CR_ARROWS] -= magicCost; //fill in the magic consumption here as well
+        lweapon magic = Screen->CreateLWeapon(LW_ARROW);
+        magic->UseSprite(spriteUsed); // the number of the sprite used for the projectile. Use two tiles, the first for up/down, the second for left/right
+        magic->X = Link->X; //Find Link's Position X
+        magic->Y = Link->Y; //Find Link's Position Y
+        magic->Dir = Link->Dir; //Find the Direction that Link is facing.
+        magic->Step = speed; // the speed the projectile travels
+        currentDamage = ( rollDie(power) * multiply );
+        magic->Damage = currentDamage; //the damage the projectile will do
+        Game->PlaySound(SFX_ITEM); // the sound effect for the weapon
+		//Link->ItemJinx = (nouse * 1); //Set delay between firing. Change multiplier if desired, but set base in argument D7.
+        if(Link->Dir == DIR_DOWN) //If Link is facing down...
+            {
+            magic->Flip = 2; //Change direction of spriteUsed to down.
+            }
+        if(Link->Dir == DIR_RIGHT) //If Link is facing right.
+            {
+            magic->Tile += 1; //Use next tile as well.
+            }
+        if(Link->Dir == DIR_LEFT)
+            {
+            magic->Tile += 1; //If Link is facing left.
+            magic->Flip = 1; //Flip spriteUsed tile and use next tile as well.
+            }
+		
+        }
+        
+		else{
+    Game->PlaySound(SFX_ERROR); //If out of MP, play ERROR SOund Effects.
+    }
+    }
+}

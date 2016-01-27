@@ -1,0 +1,321 @@
+//#Include CustomTango.zh
+
+//GameVars indices
+const int CHEST_EXISTS = 0;
+const int CHEST_POSITION = 0;
+const int CHEST_ITEM = 0;
+const int CHEST_STATE = 0;
+const int CHEST_PROPERTY = 0;
+const int CHEST_SCREEN = 0;
+const int CHEST_DMAP = 0;
+const int CHEST_X;
+const int CHEST_Y;
+const int CHEST_Z;
+const int CHEST_COMBO = 0;
+const int CHEST_FLAG = 0; 
+
+
+//Combo Types or IDs for Chest Flags.
+const int CHEST_FLAG_UNLOCKED = 0;
+const int CHEST_FLAG_LOCKED = 1;
+const int CHEST_FLAG_BOSSLOCKED = 2;
+const int CHEST_FLAG_TRAP_DIFFICULTY = 6; //How do we set difficulty? IFLAG  + CT?
+const int CHEST_FLAG_TRAPPED = 4;
+const int CHEST_FLAG_ENEMY_IN_BOX = 8; //Spawns an enemy if chest is opened; no menu?
+					//Dow do we DETERMINE enemy? IFLAG  + CT?
+const int CHEST_MIMIC = 16; //With this flag, make a mimic npc if player unlocks, or opens chest
+
+
+
+//Settings
+const int CHEST_PROXIMIMITY_MIN = 6;
+const int CHEST_PROXIMITY_MAX = 16;
+
+const int CHEST_PROXIMITY_DIR_LEFT = 1;
+const int CHEST_PROXIMITY_DIR_UP = 2;
+const int CHEST_PROXIMITY_DIR_RIGHT = 3;
+const int CHEST_PROXIMITY_DIR_DOWN = 4;
+
+
+const int SCREEN_D_CHEST_ITEM_TAKEN = 7;
+
+void ClearChest(){
+	//Clear the chest into in tje array if we chance screens
+}
+
+void UpdateChestCombos(){ //If the chest was o9pened, chance its combo.
+		//Run before Waitdraw'90 if the proper ScreenD[] nreg is set
+}
+
+//Chest combos should use a script flag on layer 3 or 4. Then, their CT is ysed to sett their ;flag;
+
+void Chests(int chestComboFlag, int chestLayer){
+	bool chestExists;
+	int chestCombo;
+	bool proximity;
+	int proximityToChest;
+	bool facing;
+	int chestItem;
+	bool tookItem; //Used to store the Screen State for ST_ITEM.
+			//This should be saved in Screen->D!
+	
+	int buffer[255]; //A bugger to store the item namel
+	
+	
+	
+	//Check for a chest combo on this screen, on a given layer.
+	for ( int q = 0; q < 176; q++ ) {
+		int cmb = GetLayerComboF(chestlayer,q);
+		if ( cmb == chestComboFlag ) {
+			chestEsists = true;
+			chestCombo = q;
+	}
+	
+	//if ( !chestCombo ) chestExists = false; //I
+	//if ( chestExists ) {
+	//	chestCombo--;
+	
+	if ( chestExists && !Screen->D[SCREEN_D_CHEST_ITEM_TAKEN] ) {
+		chestItem = Screen->RoomType;
+		itemdata itm = Game->LoadItemData(chestItem);
+		itm->Getname(buffer); //Store item name from Item Editor in buffer.
+		
+		//If it exists, set the index of the global array to the item it contains, its type
+		//and any special paramaters (traps, and such).
+		
+		Is(CHEST_EXISTS,1); 
+		//Get chest properties via combo types and flags combined.
+		int chestFlagDat = GetLayerComboD(chestLayer,chestCombo);
+		int chestFlagInherent = GetLayerComboI(chestLayer,chestCombo);
+		
+		//Store the current screen in the array, so that we can avoid checks against it more than once.
+		Is( CHEST_SCREEN, Game->GetCurScreen() );
+		Is( CHEST_DMAP, Game->GetCurDMap() );
+		
+		//Store its X/Y coordinates in the array.
+		Is ( CHEST_X, CenterX(chestCombo) );
+		Is ( CHEST_Y, CenterY(chestCombo) );
+		
+		//If Link's coordinates are in proximity, check his direction.
+		//if ( 
+		//	( Link->X <= Is(CHEST_X) + CHEST_PROXIMIMITY_MIN && Link->X >= Is(CHEST_X) + CHEST_PROXIMIMITY_MAX ) //Above Chest
+		//	||
+		//	( Link->X >= Is(CHEST_X) + CHEST_PROXIMIMITY_MIN && Link->X <= Is(CHEST_X) + CHEST_PROXIMIMITY_MAX ) //Below Chest
+		//	||
+		//	( Link->Y >= Is(CHEST_Y) + CHEST_PROXIMIMITY_MIN && Link->Y <= Is(CHEST_Y) + CHEST_PROXIMIMITY_MAX ) //Right of Chest
+		//	||
+		//	( Link->Y <= Is(CHEST_Y) + CHEST_PROXIMIMITY_MIN && Link->Y >= Is(CHEST_Y) + CHEST_PROXIMIMITY_MAX ) //Left of Chest
+		//)	//These checks are incorrect, and incomplete.
+		//{
+		//	proximity = true;
+		//}
+		//!We want to set proximity based on an int, and the direction instead.
+		if 	( 
+				( Link->X <= Is(CHEST_X) + 8  || Link->X >= Is(CHEST_X) - 8 ) 
+				&& ( Link->Y <= Is(CHEST_Y) + 8 || Link->Y >= Is(CHEST_Y) - 8 )
+			) 
+			{	
+				chestProximity = CHEST_PROXIMITY_DIR_LEFT;
+			}
+		) //Above Chest
+			||
+			( Link->X >= Is(CHEST_X) + CHEST_PROXIMIMITY_MIN && Link->X <= Is(CHEST_X) + CHEST_PROXIMIMITY_MAX ) //Below Chest
+			||
+			( Link->Y >= Is(CHEST_Y) + CHEST_PROXIMIMITY_MIN && Link->Y <= Is(CHEST_Y) + CHEST_PROXIMIMITY_MAX ) //Right of Chest
+			||
+			( Link->Y <= Is(CHEST_Y) + CHEST_PROXIMIMITY_MIN && Link->Y >= Is(CHEST_Y) + CHEST_PROXIMIMITY_MAX ) //Left of Chest
+		)	//These checks are incorrect, and incomplete.
+		{
+			proximity = true;
+		}
+		
+		//Check for proximity to link.
+		if ( Link->Dir == DIR_UP && chestProximity == CHEST_PROXIMITY_DIR_DOWN ) {
+			if ( Link->PressA ) { //If Link presses an appropriate button, bring up the chest menu.
+				//ChestMenu();
+			}
+		}
+		
+		if ( Link->Dir == DIR_DOWN&& chestProximity == CHEST_PROXIMITY_DIR_UP ) {
+			if ( Link->PressA ) { //If Link presses an appropriate button, bring up the chest menu.
+				//ChestMenu();
+			}
+		}
+		
+		if ( Link->Dir == DIR_LEFT && chestProximity == CHEST_PROXIMITY_DIR_RIGHT ) {
+			if ( Link->PressA ) { //If Link presses an appropriate button, bring up the chest menu.
+				//ChestMenu();
+			}
+		}
+		
+		if ( Link->Dir == DIR_RIGHT && chestProximity == CHEST_PROXIMITY_DIR_LEFT ) {
+			if ( Link->PressA ) { //If Link presses an appropriate button, bring up the chest menu.
+				//ChestMenu(); 
+			}
+		}
+		
+		
+		//! Compare CenterX/Y combo to+ 16 to CenterX/Y Link
+		//! Possible use GridX/Y
+		//SetChestDatum(); Set the GameEvents indices with the flags appropriate to this screen.
+		//RunFFCScript(ChestMenu,[...]); //Run the FFC, and provide the args.
+	}
+}
+
+void SetChestDatum(){
+	//Loads the datum for this screen, into the GameEvents/GameVars array.
+
+void ChestMenu(int chestTypem int chestitem, int chestFlag, int chestState, int itemnameBuffer){
+	//chest type flag, item id, base flag, state, Item Editor name for menu display
+	//We should read these from GameVars, and the main chest function should set them per screen.
+	
+}
+
+const int CHEST_UNLOCK = 3;
+const int CHEST_DISARM = 2;
+const int CHEST_SEARCH = 1;
+const int CHEST_OPEN_FULLY = 4;
+
+ffc script ChestAction(int type){
+	
+	SetUpWindow(WINDOW_SLOT_1, WINDOW_STYLE_1, 16, 16, SIZE_LARGE);
+	
+	int line1="There is a chest here. What would you like to do?"; //Temporary placeholder.
+	int line2[]="@26@choice(1)Cancel";
+	int line3[]="@26@choice(1)Search";
+	int line4[]="@26@choice(2)Disarm";
+	int line5[]="@26@choice(3)Unlock@domenu(1)@suspend()";
+	
+	Tango_LoadString(WINDOW_SLOT_1, line1);
+	Tango_AppendString(WINDOW_SLOT_1, line2);
+	Tango_AppendString(WINDOW_SLOT_1, line3);
+	//Tango_AppendString(WINDOW_SLOT_1, line4);
+	/// Some equipment object in this game fixes Link's position, and does strange things if enabled. That must be excluded, and traced. 
+	Tango_AppendString(WINDOW_SLOT_1, line5);
+	Tango_ActivateSlot(WINDOW_SLOT_1);
+	
+	
+	while(!Tango_MenuIsActive()){
+	    
+	    Waitframe();
+	}
+	
+	// Save the state of the text slot and menu. The bitmap won't change,
+	// so it doesn't need saved.
+	int slotState[278];
+	int menuState[960];
+	int cursorPos;
+	Tango_SaveSlotState(WINDOW_SLOT_1, slotState);
+	Tango_SaveMenuState(menuState);
+	
+	bool done=false;
+	int choice;
+		
+	if ( type == CHEST_UNLOCK && !GameEvents[CHEST_FLAG_UNLOCKED] ) {
+		ChestUnlockingMenu();
+	}
+	if ( type == CHEST_SEARCH ) ChestSearchMenu();
+	if ( type == CHEST_DISARM ) {
+		ChestDisableTrapsMenu();
+	}
+while(true) {
+			if ( Link->PressEx4 ){
+				done = true;
+			}
+			
+
+			while(Tango_MenuIsActive()){
+				cursorPos=Tango_GetMenuCursorPosition();
+				Waitframe();
+			}
+			    
+			    
+			choice=Tango_GetLastMenuChoice();
+			
+			if ( choice == CHEST_SEARCH ) { // Look
+				done=true;
+				Debug();
+				int text[]="Searching...examining...pondering...";
+				Tango_ClearSlot(3);
+				ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 48, 48);
+				ChestSearchMenu(); //! Run the sedond menu.
+				menuArg=choice;
+			}
+			
+			else if ( choice == CHEST_DISARM ) {
+				//Silently make skill check.
+				//int skillcheck = ( Insert routine ) ;
+				done = 1;
+				ChestDisarmTraps(skillcheck);
+				menuArg = choice;
+			}
+
+			else if( choice == CHEST_UNLOCK ) {
+				bool hasKey;
+				bool canPick;
+				//int lockType = ( Insert Routine ) ;
+				//Determine the lock type, by the combo ID or flags.
+				//Check for required keys, so that if the player has no keys, he can only 
+				//attempt to pick the lock.
+				//if ( Link has the needed key ) hasKey = true;
+				//int picklock = ( Insert routine ) ;
+				//Silently make a preemptive skill check and store the result.
+				//if ( skill check passes ) canPick = true;
+				done = true;
+				ChestUnlockingMenu(lockType,hasKey,canPick);
+				
+			}
+				
+			else if (Link->PressEx4){
+				Quit();
+			}
+			
+			else{
+				done=true;
+			}
+			    
+			    // If we need to return to the top-level menu,
+			    // restore the state and loop again.
+			if(done){
+				break;
+			}
+			else {
+				Tango_RestoreSlotState(WINDOW_SLOT_1, slotState);
+				Tango_RestoreMenuState(menuState);
+				Tango_SetMenuCursorPosition(cursorPos);
+			}
+		}
+		Tango_ClearSlot(WINDOW_SLOT_1);
+	}
+}
+
+
+bool ChestUnlockingMenu(int lockType, bool hasKey, int bool passedSilentPicklockSkillCheck ){
+	
+	
+	
+	int ChestIsLocked[]="The chest is locked. Would you wile to try to open it?";
+	int ChoiceNo[]="@choice(1)No@26";
+	int ChoiceUseKey[]="@choice(2)Use a Key@26";
+	int ChestPickLock[]="@choice(3)Pick the Lock@domenu(1)";
+	if ( lockType == CHEST_BOSS_LOCK && !GameEvents[CHEST_FLAG_UNLOCKED] ) {
+		if ( BossKey(GetCurDMAP() ) {
+		//	
+		}
+	}
+}
+
+bool ChestSearchMenu(){
+	//!	
+}
+
+int ChestUseKey(){
+	int keys = Game->Counter[CR_KEYS];
+	if ( keys < 1 ) return 0;
+	else Game->Counter[CR_KEYS]--;
+	UnlockChest();
+}
+	
+bool ChestDisarmTraps(int skillCheck){
+		//!
+}

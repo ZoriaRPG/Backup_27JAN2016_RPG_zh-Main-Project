@@ -1,0 +1,150 @@
+//Array of slashable combo types by type:
+int SlashCombosT[] = {	24, // CT_SLASH
+			132, // CT_SLASHC
+			25, // CT_SLASHITEM
+			133, // CT_SLASHITEMC
+			29, // CT_SLASHNEXT
+			137, // CT_SLASHNEXTC
+			130, // CT_SLASHNEXTITEM
+			138, // CT_SLASHNEXTITEMC
+			57, // CT_TALLGRASS
+			136, // CT_TALLGRASSC
+			141, // CT_TALLGRASSNEXT
+			55, // CT_BUSH
+			134, // CT_BUSHC
+			131, // CT_BUSHNEXT
+			139, // CT_BUSHNEXTC
+			56, // CT_FLOWERS
+			135}; // CT_FLOWERSC
+			
+bool SlashNextT[] = {false,false,false,false,true,true,true,true,false,false,true,false,false,true,true,false,false};
+//Assign a value of false if combo matching index position of SlashCombosT (by type) is not a slash next; and true if it is a slash next
+
+bool DropShashT[] = {false,false,true,true,false,false,true,true,true,true,true,true,true,true,true,true,true};
+//Assign is a combo slashed, from the array SlashCombosT (by type) should produce a drop.
+			
+int SlashCombosD[] = { 1121, //Tall Grass
+			2196, //Pot
+			};
+			
+bool SlashNextD[] = {false,false,false,false,true,true,true,true,false,false,true,false,false,true,true,false,false};
+//Assign a value of false if combo matching index position of SlashCombosD (by ID) is not a slash next; and true if it is a slash next
+
+bool DropShashD[] = {false,false,true,true,false,false,true,true,true,true,true,true,true,true,true,true,true};
+//Assign is a combo slashed, from the array SlashCombosD (by ID) should produce a drop.
+	
+
+			
+const int CMB_HOLE = 1050; //Set to combo for hole, to place on Layer 1.
+const int FFC_SHOVEL = 0; //Assign to script ID for shovel FFC>
+const int LW_SHOVEL = 21; //Assign to LType of Shovel, if used as a weapon.
+
+int DigCombos[] = {	12, 13, 14, 15, 16, 17, 18, 19, //Base Ground in Classic Tileset
+			1122, //LoE Ground, and ground after cutting grass.
+			};
+
+bool DigNext[] = {false,false,false,false,true,true,true,true,false,false,true,false,false,true,true,false,false};
+//Assign a value of false if combo matching index position of DigCombos should not advance as if a slash->next. A value of true will advance the combo by +1 when activated.
+
+bool DropShashT[] = {false,false,true,true,false,false,true,true,true,true,true,true,true,true,true,true,true};
+//Assign whether each combo that the player can dig should drop an item.
+	
+void ItemComboInteract(bool useWeapon, weapon wpn, bool useFFC, ffc itm, int list, bool comboType, bool drawToLayer, int layer){
+	
+	bool slashnext[] = {false,false,false,false,true,true,true,true,false,false,true,false,false,true,true,false,false};
+
+
+	bool dropitem[] = {false,false,true,true,false,false,true,true,true,true,true,true,true,true,true,true,true};
+
+	int sprites[] = {0,0,0,0,0,0,0,0,1,1,1,2,2,2,2,3,3}; //Slashed stuff sprite assignment array.
+
+	for ( int cmb = 0; cmb < 176; cmb++){
+		int type = Screen->ComboT[cmb];
+		int data = Screen->ComboD[cmb]
+		if ( ComboCollision (cmb, itm) ){
+		int arrm = ArrayMatch(slashable, type);
+			if ( arrm >= 0 ){
+				int cx = ComboX(cmb);
+				int cy = ComboY(cmb);
+				if (slashnext[arrm]) Screen->ComboD[cmb]++;
+			else { //We instead need to draw a combo to layer 1 or 2 in that spot. 
+				//If these layers are not set, we will need to evaluate an alternative.
+				Screen->ComboD[cmb] = Screen->UnderCombo;
+				Screen->ComboC[cmb] = Screen->UnderCSet;
+			}
+			if (arrm > 7) Game->PlaySound(SFX_GRASSCUT);
+			Drop(); //Insert args.
+
+			}
+   if (sprites[arrm] == 1){
+    int angle = -135;
+    for (int i = 1; i<=3; i++){
+    lweapon clippings = CreateAnimation (cx, cy, SPR_GRASS_CLIPPINGS, 0, 0, 0, 0, 15, false);
+    SetAngularMovement(clippings, angle, 0.5);
+    angle = angle+45;
+    }
+   }
+   if (sprites[arrm] == 2){
+    int angle = -135;
+    for (int i = 1; i<=4; i++){
+    lweapon clippings = CreateAnimation (cx, cy, SPR_BUSH_CLIPPINGS, 0, 0, 0, 0, 30, false);
+    SetAngularMovement(clippings, angle, 0.5);
+    angle = angle+90;
+    }
+   }
+   if (sprites[arrm] == 3){
+    int angle = -135;
+    for (int i = 1; i<=4; i++){
+    lweapon clippings = CreateAnimation (cx, cy, SPR_FLOWER_CLIPPINGS, 0, 0, 0, 0, 30, false);
+    SetAngularMovement(clippings, angle, 0.5);
+    angle = angle+90;
+    }
+   }
+   }
+  }
+}
+}
+
+void CancelCollision(int weapon, int array){
+	//Runs befoore Waitdraw().
+	Conerts LW_SCRIPT to LW_NONE for all weapons in array.
+		if ( wep = CheckList[q] ) ?
+}
+
+const int SFX_SHOVEL = 0; //Set to shovel sound.
+void LinkShovel(int time){
+	Game->PlaySound(SFX_SHOVEL);
+	for ( int q = time; q > 0; q--){
+		Link->Action = LA_ATTACKING;
+		Link->InputDown = false;
+		Link->InputUp = false;
+		Link->InputLeft = false;
+		Link->InputRight = false;
+		Link->InputA = false;
+		Link->InputB = false;
+		Link->InputL = false;
+		Link->InputR = false;
+		Link->InputEx1 = false;
+		Link->InputEx2 = false;
+		Link->InputEx3 = false;
+		Link->InputEx4 = false;
+		Link->InputStart = false;
+		Waitframe();
+	}
+}
+
+const int SFX_SHOVEL = 0; //Set to shovel sound.
+void LinkShovel_Simplified(int time){
+	Game->PlaySound(SFX_SHOVEL);
+	WaitNoAction(time)
+}
+
+
+//This checks an array to determine if a given value is stored in any of its indices.
+//Returns Number of first position of element in the given array that matches given variable, or -1, if no match.
+int CheckList(int array, int in){
+	for ( int i = 0; i < SizeOfArray(array); i++ ){
+		if (in == array[i]) return i;
+	}
+	return -1;
+}

@@ -1,0 +1,12 @@
+ffc script timeMusic {
+    void run() {
+        for(int i = warpDuration; i > 0; i--){ //Duration of song.
+                    Game->PlaySound(SONG_THREE);
+                    //Create animation.
+                    Screen->Circle ( 7, Link->X+8, Link->Y+8, 20*i/warpDuration, warpCircleColour, 1, 0, 0, 0, false, 64 );
+                    
+                    if ( Link->HP < startHP ) {
+                        return; //If Link is hurt, quit
+                    }
+                    Waitframe();
+        }

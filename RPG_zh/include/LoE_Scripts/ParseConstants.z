@@ -1,0 +1,28 @@
+import "std.zh"
+import "string.zh"
+
+global script active{
+	void run(){
+		while(true){
+			ParseConstants();
+		}
+	}
+}
+
+const int TRUE = 1;
+const int FALSE = 0;
+
+void ParseConstants(){
+	int True[]="CONSTANT TRUE evaluated as true";
+	int False[]="ONSTANT FALSE evaluated as false";
+	
+	if ( TRUE ) { 
+		TraceNL();
+		TraceS(True);
+	}
+	
+	if ( !FALSE ) {
+		TraceNL();
+		TraceS(False);
+	}
+}

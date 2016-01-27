@@ -1,0 +1,42 @@
+item script heal6heart{
+  void run(int m, int h){
+    if(Link->MP >= m && Link->HP < Link->MaxHP){
+        Link->HP += 96;
+        Link->MP -= 64;
+        Game->PlaySound(39);
+    }
+    else{
+    Game->PlaySound(errorsfx);
+    }
+    
+  }
+}
+
+
+item script heal12heart{
+  void run(int m, int h){
+    if(Link->MP >= m && Link->HP < Link->MaxHP){
+        Link->HP += 196;
+        Link->MP -= 200;
+        Game->PlaySound(39);
+    }
+    else{
+    Game->PlaySound(errorsfx);
+    }
+    
+  }
+}
+
+item script magicHealing{
+	void run(int m, int h){
+		if(Link->MP >= m && Link->HP < Link->MaxHP){
+			Link->HP += m;
+			Link->MP -= h;
+			Game->PlaySound(healsfx);
+		}
+		else{
+			Game->PlaySound(errorsfx);
+		}
+		
+	}
+}

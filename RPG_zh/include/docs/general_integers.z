@@ -1,0 +1,68 @@
+//General Integers
+
+GetPlayerSpriteFrames(int dmap)//Returns sprite used on this Dmap.
+
+GetPlayerSpriteAnimDelay(int dmap)//Returns animation delay for a dmap.
+
+GetPlayerSpriteAnimDelayDuration(int dmap)//Returns duration of animation delay for a dmap.
+
+GetPlayerSpriteNumberOfFrames(int dmap)//Returns how many frames a sprite animates on a dmap.
+
+PlayerTilesCopied()//Returns value stored in array where player tiles have been copied to.
+
+PlayerTilesRestored()//Returns value stored in array where player tiles are restored.
+
+LinkComboD()//Combo ID where Link is.
+
+LinkComboI()//inherent Combo flag where Link is.
+
+LinkComboF()//Placed combo flag where Link is.
+
+LinkComboF()//Combo solidity where Link is.
+
+LinkComboC()//Combo Cset where Link is.
+
+LinkComboT()//Combo Type where Link is.
+
+FreeFFC()//Number of free ffc
+		//Also search for free ffc up to max.
+		//Also, between minimum and max.
+
+AngleToDir(float angle)//Changes angle to direction.
+
+Dir4ToDeg(int dir)//Converts direction to degrees.
+
+//Returns difference between Link`s and FFC`s X coordinates.
+DistanceXfromFFC(ffc f)
+
+//Returns difference between Link`s and FFC`s Y coordinates.
+DistanceYfromFFC(ffc f)
+
+rollDie(int type)//Returns a random number between one and type.
+
+diePerLevel(int dieType, int dieCap)//Returns total of capped number of dice.
+
+rollDice(int rollNumber, int dieType)//Makes dice roll a certain number of times.
+
+returnMonster(int level)//Use level to determine what monster was summoned.
+
+savingThrow(int type, bool useTaint)//Type of saving throw. Whether something is tainted.
+
+//Type of throw
+//Minimum damage
+//Maximum damage
+//Whether a stat is affected
+//Which stat to affect
+//Whether to use taint.
+//Whether to damage HP.
+//Whether to damage MP.
+//If this has a special effect
+makeSavingThrow(int type, int minDamage, int MaxDamage, bool damageStat, int statToDamage, bool useTaint, bool damageHP. damageMaxHP, bool damageMP, bool damageMaxMP, bool specialEffect) 
+
+rollSpentCoins(int numberSpent)//Returns random number between number spent and 4.
+
+getSpell(int item)//Returns spell set for item.
+
+chaosCost()//Returns random number between 10 and 500.
+
+modify_d20_Stat(int stat)//Which stat to modify. May be flawed.

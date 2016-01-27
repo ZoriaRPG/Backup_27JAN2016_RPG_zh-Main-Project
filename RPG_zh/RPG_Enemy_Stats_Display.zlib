@@ -1,0 +1,133 @@
+//Screen Enemy UIDs for Stats and Timers
+
+const int SCR_ENEMY_DAMAGE = 0;
+//const int SCR_ENEMY_TOTALHP = 256;
+const int SCR_ENEMY_STATDAMAGE = 256;
+const int SCR_ENEMY_HEAL_HP = 512;
+const int SCR_ENEMY_HEAL_STAT = 768;
+
+int EnemyDisplayTimers[1026];
+
+const int ENEM_UIDS_INIT_SET_DMAP = 1024;
+const int ENEM_UIDS_INIT_SET_SCREEN = 1025;
+
+//The maximum number of enemies on a screen is 256, so instead of a for loop with a 
+//timed waitframe, we can usse a global timer to determine how long to draw damage and
+//other DrawInteger indicators, per enemy.
+
+//We may need to assign an ID to each enemy on the screen, in its Misc[] array.
+//If that enemy has no ID, because it is newly spawned, we need to assign it one; if other
+//enemies already have them.
+
+void AssignEnemyUIDs(){
+}
+
+void ClearEnemDisplayTimer(int index){
+	EnemyDisplayTimers[index] = 0;
+}
+
+void ClearEnemyDisplayTimers(){
+	
+}
+
+void RunEnemDisplayTimers(int timers){
+	for ( int q = 0; q < SizeOfArray(timers){
+		if ( timers[q] > 0 ) timers[q]--;
+		if ( timers[q] < 0 ) timers[q] = 0;
+	}
+}
+
+const int ENEM_UID = 8; //enem->Misc[] index.
+
+//Set initial enemy UIDs.
+void SetEnemyUIDs(int list, int screenindex, int dmapindex){
+	if ( list[screenindex] != Game->GetCurScreen() && list[dmapindex] != Game->GetCurDMap() ) {
+		ClearenemyDisplayTimers();
+		for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+			npc n = Screen->LoadNPC(n);
+			n->Misc[ENEMY_UID] = q;
+		}
+		list[screenindex] = Game->GetCurScreen();
+		list[dmapindex] = Game->GetCurDMap();
+}
+
+int FindUnusedEnemyUID_ThenSetUIDsAgain(){
+	int uid;
+	int enemUIDs[256];
+	//Populate array with the UIDs of the enemies on the screen.
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(n);
+		enemUIDs[q] = n->Misc[ENEMY_UID];
+	}
+	uid = enemUIDs[0]; 	//Set this var to the first index, so that we can compare it to all the 
+				//other indices, and find the highest assigned number. 
+	
+	for ( int e = 1; e <= Screen->NumNPCs(); e++ ) { //Repeat this block for every enemy on the screen.
+		npc n = Screen->LoadNPC(e); //Load each enemy...
+		if ( e->Misc[ENEM_UID] == 0 ) { //If that enemy has no UID...
+			for ( int w = 0; w < 256; w++ ) { //Find the highest assigned value.
+				if ( enemUIDs[q] < uid ) uid = enemUIDs[q];
+			}
+			uid++; //Increase that value by one, and...
+			n->Misc[ENEM_UID] = uid; //Assign it to the enemy with no UID.
+		 //! This repeats for every screen enemy, and runs every frame, assigning UIDs to newly spawned enemies. 
+		}
+	}
+}
+
+//Possibly better idea, as the UID will never be greater than 256 this way. 
+int FindUnusedEnemyUID_ThenSetUIDsAgain(){
+	int uid;
+	int enemUIDs[256];
+	int pass; 
+	int tempID;
+	int availableID;
+	//Populate array with the UIDs of the enemies on the screen.
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(n);
+		enemUIDs[q] = n->Misc[ENEMY_UID];
+	}
+	uid = enemUIDs[0]; 	//Set this var to the first index, so that we can compare it to all the 
+				//other indices, and find the highest assigned number. 
+	
+	for ( int e = 1; e <= Screen->NumNPCs(); e++ ) { //Repeat this block for every enemy on the screen.
+		npc n = Screen->LoadNPC(e); //Load each enemy...
+		if ( e->Misc[ENEM_UID] == 0 ) { //If that enemy has no UID...
+			
+			//Determine which enemy is dead.
+			//for ( int z = 1; z <= Screen->NumNPCs(); z++ ) {
+			//	npc en = Screen->LoadNPC(z);
+				
+			
+			//Find an UNUSED value between 1 and 256.
+			for ( int a = 0; a < 256; a++ ) {
+				//bool match;
+				pass = a;
+				tempID = enemUIDs[a];
+				
+				for ( int b = 1; b <= Screen->NumNPCs(); b++ {
+					enemy en = Screen->LoadNPC(b);
+					if ( b->Misc[ENEM_UID] == tempID ) {
+						pass++; 
+						continue;
+					}
+					if ( b->Misc[ENEM_UID] != tempID && pass = 256 ) {
+						availableID = tempID;
+						pass = 0;
+						break;
+					}
+				}
+					
+			}
+			
+			n->Misc[ENEM_UID] = availableID; //Assign it to the enemy with no UID.
+		 //! This repeats for every screen enemy, and runs every frame, assigning UIDs to newly spawned enemies. 
+		}
+	}
+}
+
+
+
+//void Clea
+	
+		

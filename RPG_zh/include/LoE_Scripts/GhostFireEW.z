@@ -1,0 +1,55 @@
+
+ffc script WalkerCustomWeapon{
+	void run(int enemyID){
+	
+		//Should work with enem type 'None', by setting walk type with ghost. 
+		int weapDamage = ghost->Attributes[1]; //Weapon Power
+		int weapSprite = ghost->Attributes[2]; //Weapon Sprite
+		int weapLtype = ghost->Attributes[3]; //Weapon Type
+		int weapSpeed = ghost->Attributes[4]; //Wepon Step
+		int weapSFX = ghost->Attributes[5]; //Weapon Sound Effect
+		int weapMin = ghost->Attributes[6]; //Minumum number of seconds between shots * 60
+		int weapMax = ghost->Attributes[7]; //Maximum number of seconds between shots * 60
+		int weapAimed = ghost->Attributes[8]; //Set to 0 for straight shot, 1 for aimed. Expand script for other shot types. 
+		int weapFlags = ghost->Attributes[9]; //Weapon flags. See ghost.zh docs for more information. Normally '0'.
+		
+		if ( Floor(weapMin) == 0 ) weapMin = 120; //If not set, make it three seconds.
+		if ( Floor(weapMax) == 0 ) weapMax = 210; //If not set, make it five seconds.
+		
+		int timer = Rand(weapMin,weapMax);
+		//int turnTimer = ghost->Rate * 10;
+		
+		npc ghost = Ghost_InitAutoGhost(this,enemyID); //Start the ghost enemy
+		Ghost_SpawnAnimationPuff(this,ghost); //Make the poof appear for enemy spawning
+		Ghost_SetFlag(GHF_NORMAL);
+		Ghost_SetFlag(GHF_4WAY);
+		
+		int random = ghost->Rate;
+		//int halt = 
+		Ghost_Dir = Rand(0,3);
+		
+		while(true){
+			timer--;
+			if ( timer <= 0 ) {
+				timer = Rand(weapMin,weapMax);
+				//if ( weapSFX ) Game->PlaySound(weapSFX); //Play the sound, if it is set. 
+				
+				if ( weapAimed ) FireAimedEWeapon(weapLtype, Ghost_X, Ghost_Y, 0, weapSpeed, weapDamage, weapSprite, weapSFX, weapFlags);
+				
+				if ( !weapAimed ) FireEWeapon(weapLtype, Ghost_X, Ghost_Y, 0, weapSpeed, weapDamage, weapSprite, weapSFX, weapFlags);
+			}
+			//turnTimer = Ghost_ConstantWalk4(turnTimer, ghost->Step, ghost->Rate*10, ghost->Homing, ghost->Hunger);
+			if ( Ghost_CanMove(Ghost_Dir, ghost->Step,0) ) Ghost_Move(Ghost_Dir, ghost->Step/100, ghost->Rate);
+			if ( !Ghost_CanMove(Ghost_Dir, ghost->Step, 0) ) {
+				int badDir = Ghost_Dir;
+				int newDir;
+				do { 
+					newDir = Rand(0,3);
+				} while(newDir == Ghost_Dir);
+				Ghost_Dir = newDir;
+				Ghost_Move(Ghost_Dir, ghost->Step/100, ghost->Rate);
+			}
+			Ghost_Waitframe(this,ghost,true,true);
+		}
+	}
+}

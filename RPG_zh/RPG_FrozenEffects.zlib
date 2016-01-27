@@ -1,0 +1,18 @@
+void FrozenLink(int ffc_id,dur){
+	if (Is(LINKFROZEN) ) {
+		RunFFCScript(ffc_id,dur);
+	}
+}
+
+ffc script FreezeLink{
+	void run(int dur){
+		int running = dur;
+		while ( running > 0 ) {
+			running--;
+			NoAction();
+			//Give Lik a way to become unfrozen by using Dpad here
+			This->Data = CMD_FROZEN_OVERLAY;
+			Waitframe();
+		}
+	}
+}

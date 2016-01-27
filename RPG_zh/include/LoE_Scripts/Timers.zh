@@ -1,0 +1,48 @@
+int Timers[10]={0,0,0,0,0,0,0,0,0,0};
+
+const int TI_REPEAT = 0;
+const int TI_
+
+void setTimer(int timer, int value){
+    if ( Timers[timer] <= 0 ) {
+        Timers[timer] = value;
+    }
+}
+
+void changeTimer(int timer, int value){
+    Timers[timer] = value;
+}
+
+int returnTimer(int timer){
+    int value = Timers[timer];
+    return value;
+}
+
+bool checkTimer(int timer){
+    if ( Timers[timer] == 0 ) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+void reduceTimer(int timer){
+    if ( Timers[timer] > 0 ) {
+        Timers[timer] -= 1;
+    }
+}
+//Use after Waitdraw();
+
+void reduceTimer(int timer, int value){
+    if ( Timers[timer] > 0 ) {
+        Timers[timer] -= value;
+    }
+}
+//Use after Waitdraw();
+
+
+global script activeSample{
+    void run(){
+        while(true){
+            setTimer[

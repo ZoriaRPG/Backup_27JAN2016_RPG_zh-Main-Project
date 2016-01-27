@@ -1,0 +1,109 @@
+//Section 1. General Functions
+
+_Bomb_HoldUpItem(int itm, int holdType)//Item number, way to hold item
+
+_Bow_HoldUpItem(int itm, int holdType)//Item number, way to hold item.
+
+BrangBushDrops(int chance, int x, int y)//Percentage chance for drop, x and y location to drop.
+
+QuickInteger(int x, int y, int val)//At X and Y location,k draw a value. Can add arguments for font, color and background color.
+
+//Sets the starting frame. Dmap to apply to and how many frames to draw for. (Or animation frames?)
+SetPlayerSpriteFrames(int dmap, int frames)
+
+IncreasePSF(int dmap)//Increase number of frames in sprite animation?
+
+SetPlayerSpriteAnimDelay(int dmap, int delay)//On a Dmap, set delay of sprite animation.
+
+SetPlayerSpriteAnimDelayDuration(int dmap, int dur)//On a dmap, set duration of sprite animation delay.
+
+SetPlayerSpriteNumberOfFrames(int dmap, int frames)//On a dmap, set number of frames to animate sprite?
+
+IncreasePSAD(int dmap)//On a dmap, increase sprite animation delay.
+
+SetPlayerSprite(int dmap, int sprite)//On a dmap, set sprite to be used.
+
+SetRingDivisor(int val)//Changes power of ring armor. 
+						//Can also choose a value from two random arguments. I think this function has two undefined arguments.
+						//Or can from array an element.
+						//Or get precise value of a counter. Or reference counter and get 1/16th of that.
+						//Or percentage of a counter. Or fixed amount if Link holds a certain item.			
+
+_SetRingDivisor(int amount)//Sets ring armor to amount.
+
+_VaryRingDivisor(int valA, int valB, bool array)//These seem to be the same as some of the versions of SetRingDivisor.
+
+XtalSwitchTrig(int cmb, bool limitLW)//Combo Location to hit. Bool is True If only certain Lweapons can trigger it.
+									//Also, get Lweapons from a list.
+									//Also, same; but can eweapons trigger switch.
+									//Also, list of lweapons and eweapons.
+
+SetXtalSwitch(int dmap)//Set switchs on a dmap.
+
+//Sets switch positions for each DMAP, based on a list.
+XtalSwitches_SetDMAPs()		
+
+//Add another DMAP to the switches affected by triggering them from a single DMAP.
+//Row is the base DMAP. Column is the DMAP to share its state.
+SetXtalSwitches(int row, int column, int shared)	
+
+SwordUpdate (lweapon sword, int dir, int sprite, int offset)//Updates sword, direction, sprite and offset.
+
+SetUpWindow(int slot, int style, int x, int y, int size)//Set up Tango Slot in style at X and Y and make a cettain size.
+
+ShowString(int string, int slot, int style, int x, int y)//Show string in Tango Slot in style at X and Y.
+
+comboChange(int comboTF, int LType, bool flagCheck)//Combo type or flag, lweapon and whether it is type or flag.
+
+MagmaChangeItem(int itemNumber)//Item number required to trigger change.
+
+changeConjurationValues(int timerValue, int minMP, int bondedItem, int conjuredItem)//Timer's value, Minimum MP to use. Item it is tied to. Item to be conjured.
+
+TapJump() // Makes Link Jump
+
+//From x and y coordinates, at speed, doing damaage, to target x and y, in color, using which ffc and which npc.
+fireLaserLine( int origX, int origY, int speed, int damage, int targX, int targY, int color, ffc this, npc ghost )
+
+//Launches sword beam used as FFC weapon.
+//Lweapon to use. 
+//Sound to make. 
+//Difference in damage between beam and sword. 
+//Current damage done by sword? 
+//Heart Level? 
+//amage done by deam? 
+//Scale between beam damage and something else.
+//Whether this penetrates enemies.
+//Flag this triggers. 
+//Beam shard sprite. 
+//Max number of beams on screen.
+LaunchSwordBeam(lweapon sword, int beamsfx, bool beamdamageprecentile, int curdamage, bool hlevelbeams, int bdamage, int bdamagescale, int beamsprite, bool pen, int btrigger, int shardsprite, int maxbeams){
+	
+//Updates sword sprite and hitbox offsets depending on it`s direction. Also determines sprite flipping.
+//Lweapon to use. Direction to go. Sprite to use. Offset from something.
+SwordUpdate (lweapon sword, int dir, int sprite, int offset)
+
+SlashSlashableCombos(lweapon sword)//Based on lweapon, can slash a list of combos.
+
+summonMonster(int level)//Summon a monster based on level. Can add arguments for x and y coordinates.
+
+setMonsterPosition()//Can work with no arguments.
+					//Also, argument for whether to center in position.
+					//Also, third argument for whether it can appear over solid combos.
+
+spellCasting(int item)//Determine how spell is cast based on item.
+
+useSpellItem(int item, int cost)//Item to use. Cost of using.
+
+setSpell(int item, int spell, int spellList)//Item to use. Spell to use. Place in array.
+
+buffStat(int stat, int value)//Stat to buff. How much to buff.
+
+CloseWounds(int dieType, int restoreType)//Type of dice. Type of restoration.
+
+clockUpdate()//Calls two functions below.
+	gameTimeUpdate()//Handles seconds, minutes, hours, days, weeks and years.
+	inGameTimeUpdate()//Calls two functions below.
+		inGameTime()//Adjusts array InGameTime.
+		inGameTimeDayCycle()//Handles switching day and night.
+		
+viewVista()//Lets you create a function that displays a selected Vista on a screen.

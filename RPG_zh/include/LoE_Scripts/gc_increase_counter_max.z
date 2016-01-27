@@ -1,0 +1,10 @@
+item script increaseMaximumDCounterCount
+{
+void run(int increaseitem1, int increaseItemAmount1, int valueid, int increaseItemAmount2)
+{
+if (Link->Item[(increaseitem1)] == 1)
+{
+  Game->MCounter[valueid] = increaseItemAmount1;
+}
+}
+}

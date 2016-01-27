@@ -1,0 +1,140 @@
+/////////////////////////
+/// Custom Boomerang ////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/// D0: Speed that Boomerang travels across screen; suggest 240+  ///
+/// D1: Amount of Damage that Subweapon Deals to Enemies.         ///
+/// D2: Sprite used by Subweapon; select from:                    ///
+///            Quest->Graphics->Sprites->Weapons/Misc.            ///   
+/// D3: Maximum number of projectiles allowed at once.            ///
+/// D4: Item Sound Effects.  Select sounds from:                  ///
+/// D5: Custom Deadstate   .                                      ///
+///            0: Boomerang (Bounce)                              ///    
+///            1: Pierce (Alive)                                  ///
+///            2: Single Use (Dead)                               ///
+/// D6: Custom Counter for this item (as ammo).                   ///
+/// D7: Ammo cost for custom counter.                             ///
+/////////////////////////////////////////////////////////////////////
+
+const int BRANG_ERROR_SOUND = 61; // Set to error SFX for boomerang.
+
+item script customBoomerang{
+    void run(int speed, int power, int spriteUsed, int maxProjectiles, int itemSound, int customDeadstate, int brangCounter, int brangCost) {
+        int errorSFX = BRANG_ERROR_SOUND;
+        if ( brangCost == 0 ) {
+            if ( NumLWeaponsOf(LW_SCRIPT1) <= maxProjectiles ) {
+                lweapon customBrang;
+                Link->Action = LA_ATTACKING; //Make attacking movement for Link sprite.
+                customBrang = NextToLink(LW_SCRIPT1, 8); //Create in front of Link in the direction he is facing.
+                customBrang->UseSprite(spriteUsed); // The sprite for this Boomerang. Select from Quest->GFX->Sprites/Misc.
+                customBrang->Step = speed; // The speed the boomerang travels; suggest 240 or greater.
+                customBrang->Damage = power; // The damage the projectile will do. 
+                                            // If set to 0, the item level will set its damage for enemies hurt by 0-power items,
+                                            // and it will stun other enemies.
+                if ( itemSound == 0 ) { 
+                    itemSound = SFX_BRANG; // Sets default BRANG sound, if not set to a specific sound.
+                }
+                Game->PlaySound(itemSound); // the sound effect for the weapon
+                if ( customDeadstate == 0 ) {
+                    customBrang->DeadState = WDS_ALIVE; // Sets deadstate to act as a boomerang. 
+                }
+                //else if ( customDeadstate == 1 ) {
+                //    customBrang->DeadState = WDS_ALIVE; // Sets deadstate to act as a piercing item.
+                //}
+                //else if ( customDeadstate == 1 ) {
+                //    customBrang->DeadState = WDS_DEAD; // Sets deadstate to act as a single use item.
+                //}
+            }
+        }
+        else if ( brangCost > 0 ) {
+            if ( NumLWeaponsOf(LW_BRANG) <= maxProjectiles && brangCost <= Game->Counter[brangCounter] ) {
+                Game->Counter[brangCounter] -= brangCost;
+                lweapon customBrang;
+                Link->Action = LA_ATTACKING; //Make attacking movement for Link sprite.
+                customBrang = NextToLink(LW_BRANG, 8); //Create in front of Link in the direction he is facing.
+                customBrang->UseSprite(spriteUsed); // The sprite for this Boomerang. Select from Quest->GFX->Sprites/Misc.
+                //customBrang->Distance = 200;
+                customBrang->Step = speed; // The speed the boomerang travels; suggest 240 or greater.
+                customBrang->Damage = power; // The damage the projectile will do. 
+                                            // If set to 0, the item level will set its damage for enemies hurt by 0-power items,
+                                            // and it will stun other enemies.
+                if ( itemSound == 0 ) { 
+                    itemSound = SFX_BRANG; // Plays default BRANG sound if not set to a specific sound.
+                }
+                Game->PlaySound(itemSound); // the sound effect for the weapon
+                //if ( customDeadstate == 0 ) {
+                //    customBrang->DeadState = WDS_BOUNCE; // Sets deadstate to act as a boomerang. 
+                //}
+                //else if ( customDeadstate == 1 ) {
+                //    customBrang->DeadState = WDS_ALIVE; // Sets deadstate to act as a piercing item.
+                //}
+                //else if ( customDeadstate == 2 ) {
+                //    customBrang->DeadState = WDS_DEAD; // Sets deadstate to act as a single use item.
+                //}
+            }
+        }
+
+        else {
+            Game->PlaySound(errorSFX); //If too many projectiles, or not enough ammo, play error sound.
+        }
+    }
+}
+
+global script active{
+    void run(){
+        while(true){
+            doBrang();
+            
+            Waitdraw();
+            bouncing();
+            
+            Waitframe();
+        }
+    }
+}
+
+void doBrang(){
+
+	for ( int i = Screen->NumNPCs(); i > 0; i-- ){
+		npc e = Screen->LoadNPC(i);
+            
+        for ( int j = Screen->NumLWeapons(); j > 0; j-- ){
+            lweapon l = Screen->LoadLWeapon(j);
+            TraceB(Collision(l, e));
+                
+            for (int k = Screen->NumItems(); k > 0 ; k--) {
+                item it = Screen->LoadItem(k);
+                
+                
+                if( Collision(l, e) ){
+                    
+                    if(l->ID == LW_SCRIPT1){
+                        l->DeadState = WDS_BOUNCE;
+                    }
+                }
+                if( Collision(l, it) ){
+                    
+                    if(l->ID == LW_SCRIPT1){
+                        l->DeadState = WDS_BOUNCE;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void bouncing(){
+   
+        lweapon l = LoadLWeaponOf(LW_SCRIPT1);
+        
+        for ( int i = Screen->NumNPCs(); i > 0; i-- ){
+		npc e = Screen->LoadNPC(i);
+        
+            if (Collision(l,e)){
+                if(l->ID == LW_SCRIPT1){
+                   
+                    l->DeadState = WDS_BOUNCE;
+                }
+            }   
+        }
+    
+}

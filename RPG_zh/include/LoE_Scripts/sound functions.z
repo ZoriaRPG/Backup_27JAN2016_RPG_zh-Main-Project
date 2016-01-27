@@ -1,0 +1,46 @@
+This may work for you:
+
+Change this line:
+
+[code]
+
+const int SFX_SWORD = 30;
+
+[/code]
+
+to
+
+[code]
+
+int SFX_SWORD = 30;
+
+[/code]
+
+That will allow you to use the internal constant, as a variable, and assign the sound that it plays, by setting that value.
+
+The action script fo a sword, could be this simple:
+
+[code]
+
+item script sword {
+    void run(int min, int range) {
+        if ( min == 0 ){
+            min = 30;
+            }
+        if ( range == 0 ) {
+            range = 2;
+        }
+        int soundChange = RandomSound(min, range);
+        SFX_SWORD = soundChange;
+    }
+}
+
+[/code]
+
+Then, put a function in your global loop, to select the random sound, as function RamdomSoud().
+
+int RandomSound(int minValue, int rangeValues) {
+    int result = minValue + rand(rangeValue);
+    return result;
+}
+    

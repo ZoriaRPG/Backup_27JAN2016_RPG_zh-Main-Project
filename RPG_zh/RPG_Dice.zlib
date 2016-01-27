@@ -1,0 +1,95 @@
+/// Dice v0.3.2 for RPG.zh v0.9.6.5
+
+// Constants
+
+// Arrays
+
+// Vars
+
+// Functions
+
+////////////////////////
+//// Roll Functions ////
+////////////////////////
+
+//Rolls one die of a given type. Usage: Roll(8) rolls 1d8.
+int Roll(int die){
+	return rollDie(die);
+}
+
+//Rolls x dice of given type. Usage: Roll(4,6) rolls 4d6.
+int Roll(int die, int dice){
+	return rollDice(die, dice);
+}
+
+//Rolls x dice of given type, where x is player level. Usage: Roll(6,true) ... If player level is 10, rolls 10d6.
+int Roll(int dieType, bool PerLevel){ 
+	if ( PerLevel) {
+	return diePerLevel(dieType,0);
+	}
+}
+
+const int NO_CAP = 0;
+
+//Rolls x dice of given type, where x is player level. Usage: Roll(6,true,12) ... If player level is 10, rolls 10d6.
+//Allows a cap, so if the player was level 15, and you specify a cap of 12, it would roll 12d6.
+//A cap of '0 is full level.
+int Roll(int dieType, bool PerLevel, int cap){
+	return diePerLevel(dieType,cap);
+}
+
+
+//Rolls x dice of given type, where x is player level. Usage: Roll(6,true,12) ... If player level is 10, rolls 10d6.
+//Allows a cap, so if the player was level 15, and you specify a cap of 12, it would roll 12d6.
+//A cap of '0' is full level.
+//The nmber of dice rolled is Level / divisor. Handy for +1d6 / 2 levels, and such. 
+int Roll(int dieType, bool PerLevel, int cap, int divisor){
+	return diePerLevel(dieType, ( cap / divisor ) );
+}
+
+
+
+//Complex functions
+
+int rollDie(int type){
+    int n = Rand(1, type);
+    return n;
+}
+
+int rollDice(int rollNumber, int dieType){
+	int diceTotal = 0;
+	for (int dice = 1; dice <= rollNumber; dice++){
+		int roll = Rand(1, dieType);
+		diceTotal = diceTotal+roll;
+	}
+	return diceTotal;
+}
+
+
+int diePerLevel(int dieType, int dieCap){
+	int diceTotal = 0;
+    int level = Game->Counter[CR_LEVEL];
+    int rollLevels = 0;
+    if ( dieCap > 0 ) {
+        rollLevels = dieCap;
+    }
+    else { 
+        rollLevels = level;
+    }
+    
+	for (int dice = 1; dice <= rollLevels; dice++){
+		int roll = Rand(1, dieType);
+		diceTotal = diceTotal+roll;
+	}
+	return diceTotal;
+}
+
+
+
+
+
+
+
+
+
+//Scripts

@@ -1,0 +1,70 @@
+const int WAND_SPRITE = 0;
+const int WAND_SFX = 0;
+const int WAND_COUNTER = CR_MAGIC;
+const int WAND_COST = 10;
+int currentItem;
+const int CURRENT_WAND = 1;
+const int WAND_POWER = 4;
+const int SFX_ERROR = 0;
+const int SFX_WAND = 0;
+const int WAND_SPEED = 200;
+const int WAND_LTYPE = LW_MAGIC;
+bool exWand = false;
+
+global script active{
+    void run(){
+        while(true){
+            if (Link->PressEx1){
+                if ( currentItem == CURRENT_WAND && exWand == true ){
+                    wandItem(WAND_COST, WAND_SPEED, WAND_POWER, WAND_SPRITE, WAND_COUNTER, SFX_ERROR, WAND_SFX, WAND_LTYPE);
+                }
+                else {
+                    ///...other item types
+                }
+            }
+            
+            
+                    Waitdraw();
+                    Waitframe();
+        }
+    }
+}
+
+item script wandPickup{
+    void run(){
+        exWand = true;
+    }
+}
+
+void wandItem(int Cost, int speed, int power, int spriteUsed, int CountertoUse, int SXF_ERROR, int SFX_ITEM, int lType){
+if ( Game->Counter[CountertoUse] > Cost ) //If the player has enough MP based on amount set in D0 MP cost.
+        {
+        Game->Counter[CountertoUse] -= Cost; //Select a counter from std_constants.zh and set the value for the counter in D, and the cost in D0.
+        lweapon lw = Screen->CreateLWeapon(lType); //Set (numerical) type of LWeapon to generate as argument D7 (from std_constants.zh)
+        lw->UseSprite(spriteUsed); // the number of the sprite used for the projectile. Use two tiles, the first for up/down, the second for left/right
+        lw->X = Link->X; //Find Link's Position X
+        lw->Y = Link->Y; //Find Link's Position Y
+        lw->Dir = Link->Dir; //Find the Direction that Link is facing.
+        lw->Step = speed; // the speed the projectile travels
+        lw->Damage = power; //the damage the projectile will do
+        Game->PlaySound(SFX_ITEM); // the sound effect for the weapon
+        if(Link->Dir == DIR_DOWN) //If Link is facing down...
+            {
+            lw->Flip = 2; //Change direction of spriteUsed to down.
+            }
+        if(Link->Dir == DIR_RIGHT) //If Link is facing right.
+            {
+            lw->Tile += 1; //Use next tile as well.
+            }
+        if(Link->Dir == DIR_LEFT)
+            {
+            lw->Tile += 1; //If Link is facing left.
+            lw->Flip = 1; //Flip spriteUsed tile and use next tile as well.
+            }
+		
+        }
+        
+		else{
+            Game->PlaySound(SFX_ERROR); //If out of MP, play ERROR SOund Effects.
+        }
+}

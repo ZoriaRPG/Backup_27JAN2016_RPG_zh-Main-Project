@@ -1,0 +1,244 @@
+//Screen Functions, and Combo Functions
+//v0.2
+
+void CarryOverSecret(int screen, int register, int val){
+	Game->SetScreenD(screen,register,val);
+}
+
+int CheckCombos(bool comboD, int reqComboD, bool comboF, int reqComboF, bool comboT, int requireComboT, bool exact){
+	int cmb = CheckCombos(comboD,reqComboD,comboF,reqComboF,comboT,requireComboT);
+	if ( exact ) {
+		return cmb-1;
+	}
+	else {
+		return cmb;
+	}
+}
+
+//Returns true if combo is of selected type, data, or flag, and returns cmb+1 as int.
+//Funtions needing only a boolean response can use this, whereas funtions needing the combo number can adjust by -1.
+int CheckCombos(bool comboD, int reqComboD, bool comboF, int reqComboF, bool comboT, int reqComboT){
+	int cmb;
+	int cmbT;
+	int cmbD;
+	int cmbF;
+	bool meetsComboF = false;
+	bool meetsComboD = false;
+	bool meetsComboT = false;
+	
+	bool validated = false;
+	
+	for ( int q = 0; q < 176; q++ ){
+		cmbD = Screen->ComboD[q];
+		cmbT = Screen->ComboT[q];
+		cmbF = Screen->ComboF[q];
+		if ( comboD && reqComboD == cmbD || !comboD ) {
+			meetsComboD = true;
+		}
+		if ( comboT && reqComboT == cmbT || !comboT ){
+			meetsComboT = true;
+		}
+		if ( comboF && reqComboF == cmbF || !comboF ) {
+			meetsComboF = true;
+		}
+		if ( meetsComboD && meetsComboT && meetsComboF ) {
+			cmb = Screen->ComboD[q];
+			validated = true;
+		}
+	}
+	if ( validated ) {
+		return cmb+1;
+	}
+	else {
+		return 0;
+	}
+}
+
+//Returns true if combo is of selected type, data, or flag.
+//We could also use a funtion that returns the combo number as int.
+bool IsCombo(bool comboD, int reqComboD, bool comboF, int reqComboF, bool comboT, int reqComboT){
+	int cmb;
+	int cmbT;
+	int cmbD;
+	int cmbF;
+	bool meetsComboF = false;
+	bool meetsComboD = false;
+	bool meetsComboT = false;
+	
+	bool validated = false;
+	
+	for ( int q = 0; q < 176; q++ ){
+		cmbD = Screen->ComboD[q];
+		cmbT = Screen->ComboT[q];
+		cmbF = Screen->ComboF[q];
+		if ( comboD && reqComboD == cmbD || !comboD ) {
+			meetsComboD = true;
+		}
+		if ( comboT && reqComboT == cmbT || !comboT ){
+			meetsComboT = true;
+		}
+		if ( comboF && reqComboF == cmbF || !comboF ) {
+			meetsComboF = true;
+		}
+		if ( meetsComboD && meetsComboT && meetsComboF ) {
+			cmb = Screen->ComboD[q];
+			validated = true;
+		}
+	}
+	if ( validated ) {
+		return true; //This would break if more than one combo setting (DTF) is set true.
+	}
+	else {
+		return false;
+	}
+}
+
+//Returns true if combo is of selected type, data, or flag, and returns cmb+1 as int.
+//Funtions needing only a boolean response can use this, whereas funtions needing the combo number can adjust by -1.
+int _CheckCombos(bool comboD, int reqComboD, bool comboF, int reqComboF, bool comboT, int reqComboT){
+	int cmb;
+	int ret;
+	bool meetsComboF = false;
+	bool meetsComboD = false;
+	bool meetsComboT = false;
+	
+	bool validated = false;
+	
+	for ( int q = 0; q < 176; q++ ){
+		cmb = Screen->ComboD[q];
+		if ( comboD && reqComboD == cmb || !comboD ) {
+			meetsComboD = true;
+		}
+	}
+	for ( int w = 0; w < 176; w ++ ){
+		cmb = Screen->ComboT[w];
+		if ( comboT && reqComboT == cmb || !comboT ){
+			meetsComboT = true;
+		}
+	}
+	for ( int e = 0; e < 176; e++ ) {
+		cmb = Screen->ComboF[e];
+		if ( comboF && reqComboF == cmb || !comboF ) {
+			meetsComboF = true;
+		}
+	}
+	
+	if ( meetsComboD && meetsComboT && meetsComboF ) {
+		validated = true;
+	}
+	
+	if ( validated ) {
+		return cmb+1; //This would break if more than one combo setting (DTF) is set true.
+	}
+	else {
+		return 0;
+	}
+}
+
+//Returns true if combo is of selected type, data, or flag.
+//We could also use a funtion that returns the combo number as int.
+bool __CheckCombos(bool comboD, int reqComboD, bool comboF, int reqComboF, bool comboT, int reqComboT){
+	int cmb;
+	bool meetsComboF = false;
+	bool meetsComboD = false;
+	bool meetsComboT = false;
+	
+	bool validated = false;
+	
+	for ( int q = 0; q < 176; q++ ){
+		cmb = Screen->ComboD[q];
+		if ( comboD && reqComboD == cmb || !comboD ) {
+			meetsComboD = true;
+		}
+	}
+	for ( int w = 0; w < 176; w ++ ){
+		cmb = Screen->ComboT[w];
+		if ( comboT && reqComboT == cmb || !comboT ){
+			meetsComboT = true;
+		}
+	}
+	for ( int e = 0; e < 176; e++ ) {
+		cmb = Screen->ComboF[e];
+		if ( comboF && reqComboF == cmb || !comboF ) {
+			meetsComboF = true;
+		}
+	}
+	
+	if ( meetsComboD && meetsComboT && meetsComboF ) {
+		validated = true;
+	}
+	
+	if ( validated ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+int _IsCombo(bool comboD, int reqComboD, bool comboF, int reqComboF, bool comboT, int reqComboT){
+	int cmb;
+	bool meetsComboF = false;
+	bool meetsComboD = false;
+	bool meetsComboT = false;
+	
+	bool validated = false;
+	
+	for ( int q = 0; q < 176; q++ ){
+		cmb = Screen->ComboD[q];
+		if ( comboD && reqComboD == cmb || !comboD ) {
+			meetsComboD = true;
+		}
+	}
+	for ( int w = 0; w < 176; w ++ ){
+		cmb = Screen->ComboT[w];
+		if ( comboT && reqComboT == cmb || !comboT ){
+			meetsComboT = true;
+		}
+	}
+	for ( int e = 0; e < 176; e++ ) {
+		cmb = Screen->ComboF[e];
+		if ( comboF && reqComboF == cmb || !comboF ) {
+			meetsComboF = true;
+		}
+	}
+	
+	if ( meetsComboD && meetsComboT && meetsComboF ) {
+		validated = true;
+	}
+	
+	if ( validated ) {
+		return cmb;
+	}
+	else {
+		return 0; //Should this return '0', or '-1'?
+	}
+}
+
+//SecretState(int secret){
+//	int thisScreen = Game->
+//	if secret == true
+//		
+//	return true;
+//}
+
+void StormDamage(int damageEveryXSeconds, int sfx, int damage){
+	for ( int q = Seconds(damageEveryXSeconds); q > 0; q-- ){
+		if ( q == 0 ){
+			Game->PlaySound(sfx);
+			Link->HP -= damage; //Wait...will this damage the player every frame? (Fixed)
+		}
+		Waitframe();
+	}
+}
+
+ffc script Sandstorm{
+	void run (int dur, int sound, int damage, int map, int screen){
+		while(true){
+			//DrawScreenToLayer(); //Fill with args
+			StormDamage(dur,sound,damage);
+			Waitframe();
+		}
+	}
+}
+	

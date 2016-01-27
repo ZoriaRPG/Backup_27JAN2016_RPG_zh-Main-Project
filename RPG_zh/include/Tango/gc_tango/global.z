@@ -1,0 +1,37 @@
+global script Init
+{
+    void run()
+    {
+        SetCommonStyleData(WINDOW_STYLE_1);
+        SetCommonStyleData(WINDOW_STYLE_2);
+        SetCommonStyleData(WINDOW_STYLE_3);
+    }
+}
+
+global script ActiveGlobal
+{
+    void run()
+    {
+        Tango_Start();
+        menuCommand=0;
+        
+        while(true)
+        {
+            if(Link->PressA && !Tango_SlotIsActive(WINDOW_SLOT_1))
+                RunFFCScript(1, NULL); // Menu script
+            
+            Tango_Update1();
+            
+            if(menuCommand>0) // Did something in the menu
+            {
+                RunFFCScript(menuCommand, NULL);
+                menuCommand=0;
+            }
+            
+            Waitdraw();
+            Tango_Update2();
+            Waitframe();
+        }
+    }
+}
+

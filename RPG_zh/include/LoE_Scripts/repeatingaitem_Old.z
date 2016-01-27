@@ -1,0 +1,116 @@
+//ZoriaRPG 19th Sept, 2014
+
+float repeatingCrossbow[10]={0,0,0,0,0,0,0,0,0,0};
+
+const int repeatingNow = 0;
+const int repeatRate = 1;
+const int repeatSpeed = 2;
+const int repeatSound = 3;
+const int repeatCost = 4;
+const int repeatSprite = 5;
+const int repeatCounter = 6;
+const int repeatMax = 7;
+const int repeatDamage = 8;
+const int repeatTimer = 9;
+
+const int SFX_XBOW_ERROR = 63;
+const int REPEAT MAX = 10;
+
+item script repeatingXBow {
+    void run(int speed, int rate, int power, int sprite, int sound, int cost, int counter, int max) {
+        repeatingCrossbow[repeatSpeed] = speed;
+        repeatingCrossbow[repeatRate] = rate;
+        repeatingCrossbow[repeatDamage] = power;
+        repeatingCrossbow[repeatSprite] = sprite;
+        repeatingCrossbow[repeatSound] = sound;
+        repeatingCrossbow[repeatCost] = cost;
+        repeatingCrossbow[repeatCounter] = counter;
+        repeatingCrossbow[repeatMax] = max;
+
+        
+        if ( repeatingCrossbow[repeatingNow] == 0 ) {
+            repeatingCrossbow[repeatingNow] = 1;
+        }
+        else if ( repeatingCrossbow[repeatingNow] == 1 ) {
+            repeatingCrossbow[repeatingNow] = 0;
+        }
+    }
+}
+        
+
+void repeatingCrossbowWeapon(int LType) {
+    if ( repeatingCrossbow[repeatingNow] > 0 ) { //Enables shooting mode.
+        if (  repeatingCrossbow[repeatingTimer] < 1 ) { //Runs the following commands when the Xbow timer is reset.
+            repeatingCrossbow[repeatingTimer] = repeatingCrossbow[repeatingRate]; //Sets the delay.
+            
+            if ( repeatingCrossbow[repeatMax] == 0 ) {
+                repeatingCrossbow[repeatMax] = REPEAT_MAX;
+            }
+            
+            else if ( repeatingCrossbow[repeatMax] > 0 ) {
+                if ( NumLWeaponsOf(LType) <= repeatingCrossbow[repeatMax] ) {
+                    repeatingCrossbowCheckCost(LType);
+                }
+            }
+            repeatingCrossbow[repeatingTimer] -= 1;
+        }
+     
+            
+        else {
+            if ( repeatingCrossbow[repeatingTimer] > 0 ) {
+                repeatingCrossbow[repeatingTimer] -= 1;
+            }
+            else if ( repeatingCrossbow[repeatingTimer] < 1 ) {
+                repeatingCrossbow[repeatingTimer] = 0;
+                repeatingCrossbow[repeatingNow] = 0;
+                Game->PlaySound(SFX_XBOW_ERROR);
+            }
+        }
+    }
+}
+
+void repeatingCrossbowCheckCost(int LType){
+    if ( repeatingCrossbow[repeatCost] > 0 && Game->Counter[repeatingCrossbow[repeatCounter]] >= repeatingCrossbow[repeatCost] ) {
+        repeatingCrossbowFire(LType);
+    }
+    else if ( repeatingCrossbow[repeatCost] > 0 ) {
+        repeatingCrossbowFire(LType);
+    }
+    else {
+        Game->PlaySound(SFX_XBOW_ERROR);
+    }
+}
+
+void repeatingCrossbowFire(int LType){
+    Game->Counter[repeatingCrossbow[repeatCounter]] -= repeatingCrossbow[repeatCost];
+    lweapon xbow = Screen->CreateLWeapon(LType);
+    xbow->UseSprite(repeatingCrossbow[repeatSprite]); 
+    xbow->X = Link->X; 
+    xbow->Y = Link->Y;
+    xbow->Dir = Link->Dir; 
+    xbow->Step = repeatingCrossbow[repeatSpeed]; 
+    xbow->Damage = repeatingCrossbow[repeatDamage];
+    Game->PlaySound(repeatingCrossbow[repeatSound); 
+                    
+    if( Link->Dir == DIR_DOWN ) {
+        xbow->Flip = 2; 
+    }
+    if( Link->Dir == DIR_RIGHT ) {
+        xbow->Tile += 1;
+    }
+    if( Link->Dir == DIR_LEFT ) {
+        xbow->Tile += 1;
+        xbow->Flip = 1; 
+    }
+}
+
+global script activeExample{
+    void run(){
+        while(true){
+            repeatingCrossbowWeapon(LW_ARROW);
+            Waitdraw();
+            Waitframe();
+        }
+    }
+}
+}

@@ -1,0 +1,64 @@
+void CheatBackCorrupt(){
+	if ( Game->Cheat ) {
+		Game->Cheat = 0;
+		for ( int q = 0; q < 256; q++ ) {
+			SetGlobalRAM(q, Rand(255));
+			SetScriptRAM(q, Rand(255));
+		}
+		for ( int w = 0; w < 255; w++ ) {
+			Link->Item[w] = ChooseB();
+		}
+		Link->MaxHP = Rand(1,32);
+		Link->MaxMP = Rand(2,64);
+		Game->Generic[GEN_MAGICDRAINRATE] = Rand (2,8);
+		Game->Generic[GEN_HEARTPIECES] = Rand (0,2);
+		Game->Generic[GEN_HCPPERHC] = Rand (4,16);
+		Game->Generic[GEN_CONTINUEHEARTS] = Rand (1,3);
+		Game->Generic[GEN_CONTINUEISPERCENT] = Rand(10,100);
+	}
+	Game->Save();
+	Game->End();
+}
+		
+
+void DisableCheat(){
+	if ( Game->Cheat > 0 ) {
+		Game->Cheat = 0;
+		Game->Save();
+		Game->End();
+	}
+}
+
+
+
+void MuckWithPlayer(){
+	int PlayerSaveName="TargetFilename"; //Change to desired name. 
+	int buffer[10]=" ";
+	GetSaveName(buffer);
+	if (strcmp(PlayerSaveName,0,buffer,0) == 0 ) Game->End()
+}
+	
+	
+void CheatBackFreeze(){
+	if ( Game->Cheat ) {
+		while(true){}
+	}
+}
+	
+
+bool ChooseB(){
+	if ( Rand(0,1) == 0 ) return false;
+	else return true;
+}
+
+global script ExampleActive{
+	void run(){
+		while(true){
+			CheatBackCorrupt();
+			Waitdraw();
+			Waitframe();
+		}
+	}
+}
+
+//Happy birthday, Shoelace. use at your own peril. Muahahahaha.

@@ -1,0 +1,33 @@
+// Set this to true or false to suspend and resume scripts.
+// Be sure to set it to false at the start of the global script.
+
+bool ffcsSuspended;
+
+// Use this instead of Waitframe() in any FFCs you want to be able to suspend.
+
+void FFCWaitframe(){    
+do    {        
+Waitframe();    } 
+while(ffcsSuspended);
+}
+
+const int FFC_FREEZE_1 = 31;
+const int FFC_FREEZE_2 = 32;
+const int SCREEN_FREEZE_COMBO_1 = 14898;
+const int SCREEN_FREEZE_COMBO_2 = 14899;
+
+void __Tango_FreezeScreen(){    
+ffc freezer=Screen->LoadFFC(FFC_FREEZE_1);    
+freezer->Data=SCREEN_FREEZE_COMBO_1;    
+freezer=Screen->LoadFFC(FFC_FREEZE_2);    
+freezer->Data=SCREEN_FREEZE_COMBO_2;    
+SuspendGhostZHScripts();
+}
+
+void __Tango_UnfreezeScreen(){    
+ffc freezer=Screen->LoadFFC(FFC_FREEZE_1);    
+freezer->Data=0;    
+freezer=Screen->LoadFFC(FFC_FREEZE_2);    
+freezer->Data=0;    
+ResumeGhostZHScripts();
+}

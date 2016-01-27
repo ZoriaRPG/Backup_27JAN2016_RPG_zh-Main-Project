@@ -1,0 +1,55 @@
+//Swords Args
+
+//D0: dieType, the base Die Type for weapon.
+//D1: diceToRoll, number of dice to roll for base damage.
+//D2: byLevel, add scaling damage per level.
+//D3: useHalfLevel, use 1/2 level, instead of full level, for scaling damage.
+//D4: levelDie, die type to roll per level for scaling damage.
+//D5: dieCap, if rolling by level, the maximum number of additional dice to roll.
+//D6: pierce, 0 not piercing, 1 piercing.
+//D7: 
+
+item script NWS_SWORD_II {
+    void run (int dieType, int diceToRoll, int byLevel, int useHalfLevel, int levelDie, int dieCap, int pierce) {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        int scaleDice;
+        
+        if ( dieCap > 0 && currLevel > dieCap ) {
+        currLevel = dieCap;
+        
+        if ( diceToRoll == 0 && byLevel > 0 && useHalfLevel == 0 ) {
+        scaleDice = currLevel;
+        }
+        if ( diceToRoll == 0 && byLevel > 0 && useHalfLevel > 0 ) {
+        scaleDice = halfLevel;
+        }
+        
+        int stat = getMuscStat();
+        int modifier;
+        
+        if ( stat > 0 ) {
+        modifier = ( getMuscStat() / 2 );
+        }
+        else if ( stat == 0 ) {
+        modifier = 1;
+        }
+    
+        int baseItemDamage = ( rollDice(diceToRoll, dieType) );
+        int levelDamage = diePerLevel(levelDie,scaleDice);
+        int totalItemDamage = baseItemDamage + levelDamage;
+        itemdamage = totalItemDamage + modifier;
+        currentDamage = itemdamage;
+        
+        if ( pierce == 0 ) {
+        WSpierce = false;
+        }
+        else if ( pierce > 0 ) {
+        WSpierce = true;
+        }
+        
+        }
+    }
+}

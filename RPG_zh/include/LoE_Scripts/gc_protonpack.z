@@ -1,0 +1,73 @@
+//import "std.zh"
+//import "ffcscript.zh"
+//import "string.zh"
+//import "std_extra.zh"
+//import "arguments.zh"
+
+////////////////
+/// Whip XII ////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+/// D0 (#.x)    : Number of Hearts to Use when Activating Subweapon.      ///
+/// D0 (x.0###) : HP to Use when Activating Subweapon.                    ///
+/// D1 (#.x)    : Damage to Enemies.                                      ///
+/// D1 (x.0###) : Duration to Stun Enemies (in frames).                   ///
+/// D2 (#.x)    : Base Tile for whip item.                                ///
+/// D2 (x.0###) : CSet for Whip Tile.                                     ///
+/// D3 (#.x)    : FFC Slot for WhipPartI FFC Effects.                     ///
+/// D3 (x.0###) : FFC Slot for WhipSecondTile FFC.                        ///
+/// D4 (#.x)    : Type of lweapon to generate (see std_constsnts.zh).     ///
+/// D4 (x.0###) : Time bfore Link can use Subweapon Again.                ///
+/// D5 (#.x)    : Sound Effects for using this Subweapon.                 ///
+/// D5 (x.0###) : Error Sound Effects for this Subweapon.                 ///
+///                     Select Sounds from Quest->Audio->SFX Data         ///
+/// D6 (#.x)    : Item number (in item editor) for this Subweapon.        ///
+/// D6 (x.0###) : Slot of eFlash FFC.                                     ///
+///        select from: Quest->Graphics->Sprites->WeaponsMisc.            ///
+/// D7 (#.x)    : SWITCHES                                                ///      
+/////////////////////////////////////////////////////////////////////////////
+// Whip Item Originally By: jsm116 //////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+
+item script WhipXII
+{
+    void run(int hearts_pain, int hurt_stun, int tile_cset, int FFCSlot1_FFCSlot2, int lType_nouse, int sfx_errorFX, int itemnumber_eFlashFFC, int switches)
+    {
+		int hearts = GetHighArgument(hearts_pain);
+		int pain = GetLowArgument(hearts_pain);
+		int hurt = GetHighArgument(hurt_stun);
+		int stunduration = GetLowArgument(hurt_stun);
+		int tilenum = GetHighArgument(tile_cset);
+		int whipcset = GetLowArgument(tile_cset);
+		int sfx = GetHighArgument(sfx_errorFX);
+		int error_FX = GetLowArgument(sfx_errorFX);
+		int FFCSlot1 = GetHighArgument(FFCSlot1_FFCSlot2);
+		int FFCSlot2 = GetLowArgument(FFCSlot1_FFCSlot2);
+		int lType = GetHighArgument(lType_nouse);
+		int nouse = GetLowArgument(lType_nouse);
+		int itemnumber = GetHighArgument(itemnumber_eFlashFFC);
+		int eFlashFFC = GetLowArgument(itemnumber_eFlashFFC);
+		
+		int switch0 = GetDigit(switches, 0);
+		int switch1 = GetDigit(switches, 1);
+		int switch2 = GetDigit(switches, 2);
+		int switch3 = GetDigit(switches, 3);
+		int switch4 = GetDigit(switches, 4);
+		int switch5 = GetDigit(switches, -1);
+		int switch6 = GetDigit(switches, -2);
+		int switch7 = GetDigit(switches, -3);
+		int switch8 = GetDigit(switches, -4);
+		
+		// On the A button.
+    if (GetEquipmentA() == itemnumber) {
+      Cooldown_ATimer = nouse;}
+    // On the B button.
+    else if (GetEquipmentB() == itemnumber) {
+      Cooldown_BTimer = nouse;}
+	
+        //int args[5] = {hurt, stunduration, tilenum, whipcset, sfx};
+		int args[8] = {hearts_pain, hurt_stun, tile_cset, FFCSlot1_FFCSlot2, lType_nouse, sfx_errorFX, itemnumber_eFlashFFC, switches};
+        RunFFCScript(FFCSlot1, args);
+		Game->Counter[CR_LIFE] -= pain;
+    }
+}

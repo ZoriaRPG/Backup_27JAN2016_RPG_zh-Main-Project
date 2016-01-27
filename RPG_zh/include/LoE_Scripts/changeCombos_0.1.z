@@ -1,0 +1,28 @@
+void comboChange(int comboTF, int LType, bool flagCheck){
+    for ( int i = 0; i < 176; i++ ){
+        if ( flagCheck == true && Screen->ComboF[i] == comboTF ) {
+            if ( ComboCollision(i, LType){
+                Screen->ComboD[i]++;
+            }
+        }
+        if ( flagCheck == false && Screen->ComboT[i] == comboTF ) {
+            if ( ComboCollision(i, LType){
+                Screen->ComboD[i]++;
+            }
+        }
+    }
+}
+
+//ComboChange(CF_MELT, LW_ICE, true);
+
+
+
+MagmaChange(int LType){
+    for ( i = 0; i < 176; i++ ){
+        if Screen->ComboD[i] == CMB_TYPE ||
+        Screen->ComboD[i] == CMB_TYPE ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CMB_REPLACE;
+            }
+        }
+        

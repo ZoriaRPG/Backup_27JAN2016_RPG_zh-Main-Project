@@ -1,0 +1,34 @@
+/// Debugging Functions
+
+/// Debugging Commands
+
+/// Menu -> Debug
+
+const int TY_SCREEN = 0;
+const int TY_DMAP = 1;
+const int TY_LINKX = 2;
+const int TY_LINKY = 3;
+void Debug(int type){
+	if ( type == TY_SCREEN ) {
+		//Print screen and DMAP to allegro log with pre-recorded ERROR FLAG MESSAGE.
+	}
+}
+
+void Debug(){
+	int thisScreen = Game->GetCurScreen();
+	int thisDMAP = Game->GetCurDMap();
+	int thisX = Link->X;
+	int thisY = Link->Y;
+	int stringScreen[]="Bug Found on Screen:";
+	int stringDMAP[]="on DMAP:";
+	int stringX[]="at X Coordinate:";
+	int stringY[]="at Y Coordinate:";
+	TraceS(stringScreen);
+	Trace(thisScreen);
+	TraceS(stringDMAP);
+	Trace(thisDMAP);
+	TraceS(stringX);
+	Trace(thisX);
+	TraceS(stringY);
+	Trace(thisY);
+}

@@ -1,0 +1,19 @@
+// Dialogue
+
+// Constants
+
+// Arrays
+
+// Vars
+
+////////////////
+/// Messages ///
+////////////////
+
+//bool playingMessage = false; // Used for polite message, to allow multiple scripts to display messages concurrently. 
+//Now GameEVents[PLAYINGMESSAGE]
+
+// Functions
+
+// Scripts
+

@@ -1,0 +1,137 @@
+//import std.zh
+//import string.zh
+//import ghost.zh
+
+ffc script mothulaEnemy{
+     void run(float radius, float angle, float speed, int wDamage, wVarA, wVarB){
+        bool orbitsAlive = true;
+        bool bossAlive = true;
+        bool goleft = true;
+        bool Attack = false;
+        int x;
+        int y;
+        int ORBIT_ID = 254; // ID of oriting enemy.
+        
+        
+        int BASE_ENEMY_ID = 0;
+        int ENEM_WALK_COMBO = 0;
+        int ENEM_ATTACK_COMBO = 0;
+        int ENEM_ATTACK_SPRITE = 0;
+        
+        //Create ghost enemy, and apply attributes.
+        
+        //Create orbiting enemies.
+        
+        npc ghost; //core
+        
+        int timer; //Movement and attack timer.
+        int weaponSprite;
+        int weaponDamage;
+        eweapon wpn;
+        
+        //Inmitialise ghost:
+        
+        ghost = Ghost_InitCreate( this, BASE_ENEMY_ID );
+        Ghost_SetFlag( GHF_IGNORE_ALL_TERRAIN );
+        
+        Ghost_SpawnAnimationPuff( this, ghost );
+        Ghost_SetHitOffsets( ghost, 16, 0, 0, 0 );
+        
+        weaponSprite=GetDefaultEWeaponSprite(ghost->Weapon);
+        weaponDamage = wDamage;
+        timer = Rand(wVarA, wVarB);
+        
+        Ghost_Vx=0.2;
+        Ghost_Vy=0.3;
+        
+        while(Ghost_HP > 0) {
+        
+        for ( int i = Screen->NumNPCs(); i > 0; i-- ){
+		    npc e = Screen->LoadNPC(i);
+        
+            if( e == ORBIT_ID ) {
+                orbitsAlive = true;
+            }
+            else {
+                orbitsAlive == false;
+            }
+        }
+        
+            timer--;
+                if( timer <= 0 )
+                {
+                    timer = Rand( wVarA, wVarB );
+                    
+                    // Fire three fireballs aimed at Link, each moving in a sine wave
+                    for(int j=0; j<3; j++)
+                    {
+                        wpn=FireAimedEWeapon( EW_FIREBALL, Ghost_X+32, Ghost_Y+32, Sign(j-1)*PI/8, 200, weaponDamage, weaponSprite, SFX_FIREBALL, 0 );
+                        SetEWeaponMovement( wpn, EWM_SINE_WAVE, 8, 15 );
+                    }
+                }
+            
+            if ( boss->x > 232 ){ // this changes the boss's direction to go left
+                    goleft = true; 
+            }
+            
+            if ( boss->x < 24 ) { // this changes the boss's direction to go right
+                    goleft = false;
+            }
+            
+            if (Attack = false){
+                if (goleft = true){ // this checks to see if the boss should be going left.
+                    boss->x -= 1;
+                }
+                if (goleft = false){ // this checks to see if the boss should be going right
+                    boss->x += 1;
+                }
+                
+            }
+            
+            if( orbitsAlive ) {
+                // Movement routines for orbiting enemies.
+                //This is where the sine and cosine movement happens.
+            
+            }
+ 
+            if( !orbitsAlive ) {
+              
+                //Replace core, and run new routines here.
+                //Either silently kill npc boss, an make new npc:
+                npc bossReplacement; 
+                //Or make boss invisible, and turn off collision detection.
+                //If the boss nees to count as a beatable enemy, to open a door, etc; this woul be unwise.
+                
+            
+            }
+            Ghost_Waitframe(this, ghost, true, true);
+            //mothWaitframe(this, ghost);
+        }
+
+        
+        
+        //If we reach here, then 
+       //Instructions to follow boss death.
+       this->Data = 0;       
+       //Other indutructions go here, such as triggering a screen secret, opening a door
+       //creating an item, awarding XP, etc.
+       return; //This exits the script.
+    }
+}
+       
+void mothWaitframe(ffc this,  npc ghost) {
+        // Move with Vx and Vy; reverse if at edge of movement area
+        /Movement routines can be contained in a special Waitframe() instruction.
+        if(Ghost_X<=32)
+            Ghost_Vx=0.2;
+        else if(Ghost_X>=63)
+            Ghost_Vx=-0.2;
+        
+        if(Ghost_Y<=32)
+            Ghost_Vy=0.3;
+        else if(Ghost_Y>=95)
+            Ghost_Vy=-0.3;
+        
+        Ghost_Waitframe(this, ghost, true, true);
+    }
+}

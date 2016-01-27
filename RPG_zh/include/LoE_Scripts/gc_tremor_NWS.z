@@ -1,0 +1,19 @@
+item script tremor
+{        
+   void run(int dieType, int levelCap)
+   {
+ Screen->Quake = 20;
+ //Weapon->HitWidth = 255;
+ //Weapon->HitHeight = 255;
+ //Weapon->Damage = 20;
+ npc enemys;
+   for(int i = 1; i<=Screen->NumNPCs(); i++)
+         {
+         enemys = Screen->LoadNPC(i);
+         currentDamage = diePerLevel(dieType, levelCap);
+         enemys->HP-= currentDamage;
+		 Waitframes(4);
+         }
+   }
+   
+}

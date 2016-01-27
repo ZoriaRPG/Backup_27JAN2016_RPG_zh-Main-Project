@@ -1,0 +1,218 @@
+//Main Functions
+//v0.4.4 for RPG.zh v0.97.6
+//Call any of these, using a constant, to read from one of the main arrays.
+
+//const int BUMP = -32000; //Set a value to pass to allow ++ easily.
+//const int KICK = -32001; //Set a value to pass to allow -- easily.
+//const int ADD = -32002; //A boolean switch to add a specific value.
+//const int SUB = -32003; //A boolean switch to subtract a specific value. 
+
+//! these constants moved to RPG_Constants.zlib under 'Function Constants'.
+
+//Returns a value from GameEvents[]
+bool Is(int event){
+	return GameEvents[event];
+}
+
+//Sets a value in GameEvents[]
+void Is(int event, bool setting){
+	GameEvents[event] = setting;
+}
+
+
+//Returns from GameDynamics[]
+float Val(int var){
+	return GameDynamics[var];
+}
+
+//Sets a value in GameDynamics[]
+void Val(int var, float value){
+	if ( value == BUMP ) {
+		GameDynamics[var]++;
+	}
+	else if ( value == KICK ) {
+		GameDynamics[var]--;
+	}
+	else {
+		GameDynamics[var] = value;
+	}
+}
+
+////Int only. Increase or decrease by passing positive or negative value. Passing 0 clears it. 
+//Would not work. 
+//void Val(int var, int val){
+//	if ( val > 0 && val < 0 ) {
+//		GameDynamics[var] += val;
+//	}
+//	else if ( val == 0 ) {
+//		GameDynamics[var] = 0;
+//	}
+//}
+
+//void Val(int pos, float val, int action){
+//	if ( action == BUMP ) {
+//		GameDynamics[pos] += val;
+//	}
+//	else if ( action == KICK ) {
+//		GameDynamics[pos] -= val;
+//	}
+//	else { 
+//		GameDynamics[pos] = val;
+//	}
+//}
+
+
+//void Val(int pos, float val, int action){
+//	if ( action == BUMP ) {
+//		GameDynamics[pos] += val;
+//	}
+//	else if ( action == KICK ) {
+//		GameDynamics[pos] -= val;
+//	}
+//	else { 
+//		GameDynamics[pos] = val;
+//	}
+//}
+
+
+
+//Sets a value in GameDynamics[]
+void Val(int var, int increase, float value){
+	if ( increase == BUMP ) {
+		GameDynamics[var] += value;
+	}
+	else if ( increase == KICK ) {
+		GameDynamics[var] -= value;
+	}
+	else {
+		GameDynamics[var] = value;
+	}
+}
+
+//Sets a value in GameDynamics[]
+void Val(int var, bool increase, float value){
+	if ( !increase ) {
+		GameDynamics[var] -= value;
+	}
+	
+	else {
+		GameDynamics[var] += value;
+	}
+}
+
+
+//Returns from GameDynamics[]
+float Var(int var){
+	return GameDynamics[var];
+}
+
+//Sets a value in GameDynamics[]
+void Var(int var, float value){
+	if ( value == BUMP ) {
+		GameDynamics[var]++;
+	}
+	else if ( value == KICK ) {
+		GameDynamics[var]--;
+	}
+	else {
+		GameDynamics[var] = value;
+	}
+}
+
+//Owns() should be here, and is in another .zlib
+//bool Owns(int itm){
+//	return OwnsItems[itm];
+//}
+
+
+//Sets a value in OwnsItems[]
+bool Owns(int itm, int val){
+	OwnsItems[itm] = val;
+}
+
+//Returns a value from GameEvents[]
+bool Event(int event){
+	return GameEvents[event];
+}
+
+//Sets a value in GameEvents[]
+void Event(int event, bool setting){
+	GameEvents[event] = setting;
+}
+
+
+
+
+//Analogue to Val/Var to Set value in GameDynamics[]
+void Set(int var, float value){
+	if ( value == BUMP ) {
+		GameDynamics[var] += value;
+	}
+	else if ( value == KICK ) {
+		GameDynamics[var] -= value;
+	}
+	else {
+		GameDynamics[var] = value;
+	}
+}
+
+//Analogue to Is/Event to set Value in GameEvents[]
+void SetB(int var, bool value){
+	GameEvents[var] = value;
+}
+
+
+void ReportFunctionEnd(){
+	int stringEndFunction[]="End of function.";
+	TraceNL();
+	TraceS(stringEndFunction);
+	TraceNL();
+}
+
+void DrawCounter(int x, int y, int colour, int size, int font, int useCounter){
+	int val = Game->Counter[useCounter];
+	if ( size == 0 ) {
+		size = 16;
+	}
+	if ( font == 0 ) {
+		font = 16;
+	}
+	Screen->DrawInteger(7, x, y, font, colour, -1, size, size, val, 0, 100);
+	//Screen->DrawInteger(7, x, y, size, colour, -1, size, size, val, 0, 100);
+}
+
+void DrawCounter(int x, int y, int colour, int size, int font, int arr, int index){
+	int val = arr[index];
+	if ( size == 0 ) {
+		size = 16;
+	}
+	if ( font == 0 ) {
+		font = 16;
+	}
+	Screen->DrawInteger(7, x, y, font, colour, -1, size, size, val, 0, 100);
+	//Screen->DrawInteger(7, x, y, size, colour, -1, size, size, val, 0, 100);
+}
+
+
+
+bool PressedAnyActionButton(){
+    if ( Link->PressA || Link->PressB || Link->PressR || Link->PressL || Link->PressEx1 || Link->PressEx2 || Link->PressEx3 || Link->PressEx4 ){
+        return true;
+    }
+}
+
+//Functions to call numbers of maps, or DMaps, in for loops, using the same style as NumOfNPCs, et. al..
+int NumOfDMaps(){
+	return NUM_OF_DMAPS;
+}
+
+int NumOfMaps(){
+	return NUM_OF_MAPS;
+}
+
+//Returns a colour swatch ID by passing a CSet and a column. 
+//You may pass the column in Hex as 0x00 to 0x0F.
+//Constants for the CSets are in RPG_Constants.zlib
+int Colour(int cset, int column){
+	return cset+column;
+}

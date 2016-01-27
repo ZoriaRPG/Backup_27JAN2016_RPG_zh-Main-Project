@@ -1,0 +1,98 @@
+//Item power: Same scale as any other item's damage stat
+//D0: Time (in frames) to charge the arrow (Recommended: 25)
+//D1: Weap/Misc sprite to use (34 is golden arrow sprite)
+//D2: Magic required (expended as you start charging) (8)
+//D3: Speed of the arrow (same scale as enemy step speed) (500 for normal; 2500 for super)
+//D4: # of the FFC script (check as you assign it to a slot)
+item script lightArrow{
+    void run(int chargeTime, int arrowSprite, int magicCost, int speed, int ffcScriptNum){
+        if ( Game->Counter[CR_MAGIC] < magicCost || !Game->Counter[CR_ARROWS] ){
+            Game->PlaySound(SFX_ERROR);     //Comment out to remove error SFX
+            return;
+        }
+        if(CountFFCsRunning(ffcScriptNum) == 0){
+            int args[4] = {this->Power*2, chargeTime, arrowSprite, speed};
+            Game->Counter[CR_MAGIC] -= magicCost;
+            RunFFCScript(ffcScriptNum, args);
+        }
+    }
+}
+
+ffc script lightArrowFFC{
+    void run(int power, int chargeTime, int arrowSprite, int speed){
+        int startHP = Link->HP;
+        lweapon lArrow;
+        Game->PlaySound(SFX_MAGICCHARGE);
+        for(int i = chargeTime; i > 0; i--){ //Charge duration
+            NoAction(); //Freeze Link
+            //Display charging animation: gold circle (non-filled) appears and shrinks (radius)
+            Screen->Circle ( 7, Link->X+8, Link->Y+8, 20*i/chargeTime, lightColor, 1, 0, 0, 0, false, 64 );
+            if ( Link->HP < startHP )
+                return; //If Link is hurt, quit
+            Waitframe();
+        }
+        
+        //Charging done! Shoot that arrow!
+        Link->Action = LA_ATTACKING;
+        Game->Counter[CR_ARROWS]--;
+        Game->PlaySound(SFX_LIGHTARROW);
+        lArrow = NextToLink(LW_ARROW, 8);                        //Create in front of Link
+        lArrow->UseSprite(arrowSprite);                            //Graphics
+        currentDamage = rollDice(2, power); 
+        lArrow->Damage =  currentDamage;                                  //Damage
+        lArrow->Step = speed;                                    //Speed
+        if ( Link->Dir == DIR_DOWN ){                            //Sprite selection/rotation
+            lArrow->Flip = 3;
+        }
+        else if ( Link->Dir == DIR_LEFT ){
+            lArrow->Tile++;
+            lArrow->Flip = 1;
+        }
+        else if ( Link->Dir == DIR_RIGHT ){
+            lArrow->Tile++;
+        }
+    }
+}
+
+ffc script superLightArrowFFC{
+    void run(int power, int chargeTime, int arrowSprite, int speed){
+        int startX;
+        int startY;
+        int startHP = Link->HP;
+        lweapon lArrow;
+        Game->PlaySound(SFX_MAGICCHARGE);
+		Screen->Wavy = 10;
+        for(int i = chargeTime; i > 0; i--){ //Charge duration
+            NoAction(); //Freeze Link
+            //Display charging animation: random lines from Link of random length
+            for ( int j = 0; j < 5; j++ ){
+                int angle = Rand(360);
+                Screen->Arc(7, Link->X+8, Link->Y+8, Rand(50)+1, angle, angle+1, lightColor, 1, 0, 0, 0, true, false, 128);
+            }
+            if ( Link->HP < startHP )
+                return; //If Link is hurt, quit
+            Waitframe();
+        }
+        
+        //Charging done! Shoot that arrow!
+        startX = Link->X+8;
+        startY = Link->Y+8;
+        Link->Action = LA_ATTACKING;
+        Game->Counter[CR_ARROWS]--;
+        Game->PlaySound(SFX_LIGHTARROW);
+        lArrow = NextToLink(LW_ARROW, 8);                        //Create in front of Link
+        lArrow->UseSprite(WPS_NONE);                            //Graphics (invisible)
+        currentDamage = rollDice(2, power);
+        lArrow->Damage = currentDamage;                                    //Damage
+        lArrow->Step = speed;                                    //Speed
+        
+        for ( int i = 0; i < 30; i++ ){ //For 30 frames
+            Screen->Line(4, startX, startY, lArrow->X+8, lArrow->Y+8, lightColor, 1, 0, 0, 0, 128); //Draw a line from Link to the arrow
+            lArrow->DeadState = WDS_ALIVE; //Keep it alive at all times
+            Waitframe();
+			
+			///Maybe set WDS to Bounce when on edge of screen or on IsSolid?
+        }
+        lArrow->DeadState = WDS_DEAD;
+    }
+}

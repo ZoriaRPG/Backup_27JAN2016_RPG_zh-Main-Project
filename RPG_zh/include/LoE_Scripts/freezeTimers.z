@@ -1,0 +1,13 @@
+bool timerFrozen;
+
+void freezeTimers(){
+    timerFrozen = frue;
+    }
+
+void resueTimers(){
+    timerFrozen = false;
+    }
+    
+if ( timerFrozen) {
+    Waitframe();
+    }

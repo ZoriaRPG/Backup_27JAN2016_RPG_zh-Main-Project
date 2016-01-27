@@ -1,0 +1,84 @@
+//Beamos Script
+//fires a laser at Link when he comes within a certain range.
+//Only the burning tip will hurt link.
+//D0: the radius, in pixels, of the beamos's range
+//D1: the time, in frames, it takes for the beamos to activate its laser before it fires
+//D2: how far, in pixels, the beam tip can travel in a frame
+//D3: the color of the beam
+//D4: the weapon used for the beam's tip
+//D5: the amount of damage the tip does
+//D6: sound to be played when it detects Link
+//D7: beam sound effect. looped every 4 frames.
+
+ffc script Beamos{
+    void run(int range, int delay, float beamspeed, int beamcolor, int beamwpn, int damage, int alert_sfx, int beam_sfx) {
+        float sx; float sy;
+        int counter;
+        eweapon wpn;
+        while(true) {
+            if(Distance(this->X, this->Y, Link->X, Link->Y) <= range) {
+                sx = Link->X;
+                sy = Link->Y;
+                if(alert_sfx)
+                    Game->PlaySound(alert_sfx);
+                Waitframes(delay);
+                wpn = Screen->CreateEWeapon(EW_SCRIPT1);
+                wpn->X = sx;
+                wpn->Y = sy;
+                wpn->UseSprite(beamwpn);
+                wpn->Damage = damage;
+                while(Distance(this->X, this->Y, Link->X, Link->Y) <= range && wpn->isValid()) {
+                    float angle = ArcTan(Link->X - wpn->X, Link->Y - wpn->Y);
+                    wpn->Dir = AngleToDir(ArcTan(wpn->X - this->X, this->Y - wpn->Y));
+                    sx += beamspeed * RadianCos(angle);
+                    sy += beamspeed * RadianSin(angle);
+                    wpn->X = sx;
+                    wpn->Y = sy;
+                    Screen->Line(3, wpn->X+7, wpn->Y+7, this->X+7, this->Y+7,
+                                 beamcolor, 1, 0, 0, 0, 128);
+                    //if(beam_sfx && counter == 0)
+                        Game->PlaySound(beam_sfx);
+                    //counter = (counter + 1) % 4;
+                    Waitframe();
+                }
+                wpn->DeadState = WDS_DEAD;
+            }
+            
+            Waitframe();
+        }
+    }
+}
+
+int AngleToDir(float angle) {
+    float deg = angle * 180 / PI;
+    if(deg >= 0) {
+        if(deg < 90) {
+            if(deg < 45)
+                return DIR_RIGHT;
+            else
+                return DIR_RIGHTUP;
+        }
+        else {
+            if(deg < 135)
+                return DIR_UP;
+            else
+                return DIR_LEFTUP;
+        }
+    }
+    else {
+        if(deg >= -90) {
+            if(deg >= -45)
+                return DIR_RIGHTDOWN;
+            else
+                return DIR_DOWN;
+        }
+        else {
+            if(deg >= -135)
+                return DIR_LEFTDOWN;
+            else if(deg < -180)
+                return DIR_LEFT;
+            else
+                return DIR_LEFTUP;
+        }
+    }
+}

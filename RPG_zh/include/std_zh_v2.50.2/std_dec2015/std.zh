@@ -1,0 +1,22 @@
+// std.zh - 28th December, 2015
+// Standard header for ZScript.
+// Please don't edit this file. Instead, create a new header file for your
+// quests' scripts,  add constants and procedures to that file,
+// and import it separately.
+
+//Proposed expansion for ZC 2.50.2
+//27-DEC-2015
+
+//Main Files
+import "std_constants_2.50.2.zh"
+import "std_functions_2.50.2.zh"
+import "string.zh"
+import "std_vars.zh"
+
+//Shortcuts and Macros
+import "std_shortcuts.zh" //Shortcutsa for ZScript functions
+import "std_constants_shortcuts.zh" //Shorter constants, requested by users. 
+
+//Locale
+import "locale/std_EnglishIntl.zh" //International English Localisation
+

@@ -1,0 +1,117 @@
+int globalSolidFFCs[32];
+int gSolidFFCCount;
+
+void MakeFFCSolidThisFrame(int ffcID)
+{
+  globalSolidFFCs[gSolidFFCCount]=ffcID;
+  gSolidFFCCount++;
+}
+
+void DoSolidFFCs()
+{
+  ffc f;
+  for(int i=0;i<gSolidFFCCount;++i) {
+    f = Screen->LoadFFC(globalSolidFFCs[i]);
+    SolidFFC(f);
+  }
+  gSolidFFCCount = 0; //reset
+}
+
+
+//Simply call "MakeFFCSolidThisFrame()" from the ffc script, and "DoSolidFFCs()" 
+//from the global script. "SolidFFC" is simply the function that Saffith posted as a 
+//global function that takes the ffc as an argument instead of an ffc script.
+
+//With this setup all FFCs can be mad solid at will with a single function from any other script.
+
+//Improvement: I can't remember if you can make an ffc array global or not. 
+//If so just make the array hold ffc pointers instead of ids.
+
+// Set this to 1 if you're using the big Link hitbox, 0 if not.
+const int SOLIDFFC_BIG_LINK = 0;
+
+
+void SolidFFC(int this){
+    int hitboxAdjustment=0;
+    float xOverlap;
+    float yOverlap;
+    if(SOLIDFFC_BIG_LINK==0)
+    hitboxAdjustment=8;
+        
+
+    if(Link->X+16>this->X && Link->X<this->X+16*this->TileWidth &&
+        Link->Y+16>this->Y && Link->Y+hitboxAdjustment<this->Y+16*this->TileHeight)
+            {
+        if(Link->X<this->X)
+            xOverlap=Link->X+16-this->X;
+            else
+                xOverlap=this->X+16*this->TileWidth-Link->X;
+                
+            if(Link->Y<this->Y)
+                yOverlap=Link->Y+16-this->Y;
+            else
+                yOverlap=this->Y+16*this->TileHeight-(Link->Y+hitboxAdjustment);
+                
+            if(xOverlap<yOverlap)
+                {
+                if(Link->X<this->X)
+                    Link->X=this->X-16;
+                else
+                    Link->X=this->X+16*this->TileWidth;
+                }
+            else
+                {
+                if(Link->Y<this->Y)
+                    Link->Y=this->Y-16;
+                else
+                    Link->Y=this->Y+16*this->TileHeight-hitboxAdjustment;
+                }
+            }
+        }
+    
+
+
+ffc script SolidFFC
+{
+    void run()
+    {
+        int hitboxAdjustment=0;
+        float xOverlap;
+        float yOverlap;
+        if(SOLIDFFC_BIG_LINK==0)
+            hitboxAdjustment=8;
+        
+        while(true)
+        {
+            if(Link->X+16>this->X && Link->X<this->X+16*this->TileWidth &&
+               Link->Y+16>this->Y && Link->Y+hitboxAdjustment<this->Y+16*this->TileHeight)
+            {
+                if(Link->X<this->X)
+                    xOverlap=Link->X+16-this->X;
+                else
+                    xOverlap=this->X+16*this->TileWidth-Link->X;
+                
+                if(Link->Y<this->Y)
+                    yOverlap=Link->Y+16-this->Y;
+                else
+                    yOverlap=this->Y+16*this->TileHeight-(Link->Y+hitboxAdjustment);
+                
+                if(xOverlap<yOverlap)
+                {
+                    if(Link->X<this->X)
+                        Link->X=this->X-16;
+                    else
+                        Link->X=this->X+16*this->TileWidth;
+                }
+                else
+                {
+                    if(Link->Y<this->Y)
+                        Link->Y=this->Y-16;
+                    else
+                        Link->Y=this->Y+16*this->TileHeight-hitboxAdjustment;
+                }
+            }
+            Waitframe();
+        }
+    }
+}

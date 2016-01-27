@@ -1,0 +1,1878 @@
+//Master For Loops
+//We need to set up the nest, to run at all times, and pass datum into functions. 
+
+const int LOOP_TYPE_ENEM = 0;
+const int LOOP_TYPE_LWEAP = 1;
+const int LOOP_TYPE_EWEAP = 2;
+const int LOOP_TYPE_COMBO = 3;
+
+//We can;t based the loop off any one variable, except combos, as only combos are absolutely going to be on the screen...
+void MainLoop(){
+	for ( int n = 
+
+
+//Optimise all the for loops, into one main loop, and call checks via functions that accept inputs. 
+
+//! Forgot about item pointer loops here, so we need five types. 
+	
+	//! What about loops that will have a duration of 0? if there is no pointer of the type on the screen. 
+	//! We need to check if the looop will have the ability to run (not 0 ) and put a container function
+	//! in EACH loop, that runs if the next loop would not. 
+	//! Then put that container function in the last loop too, if that loop will run. 
+	
+	//! Should combos always be LAST? 
+	//Should we put the combo loop in its own function, called by the container function?
+	
+	//!***** This may be a good place for do loops, instead of for loops, using a variable set to run them. 
+	
+	//Loop container function. 
+	int Loops(int n, int e, int l, int c, int i){
+		//Put all functions that use for loops for collision checking, or similar, here.
+	}
+	
+	int ComboLoops(int q){
+		//Put combo loops, here.
+	}
+	
+	///!********** I believe we need to run the loops, largest, to smallest, not the other way around, to ensure that they will run.
+	
+float MainLoop(){
+	int Qn = Screen->NumNPCs();
+	int Ql = Screen->NumLWeapons();
+	int Qe = Screen->NumEWeapons();
+	int Qc = 176; //Combos
+	int Qq = 0;
+	int max; //Highest number of pointers.
+	int loops[6]; 
+	
+	lweapon l;
+	eweapon e;
+	npc n;
+	item i;
+	itemdata id;
+	
+	//Put these in the corresponding loops. 
+	if ( Screen->NumNPCs() ) n = Screen->LoadNPC(Qn);
+	if ( Screen->NumLWeapons() ) l = Screen->LoadLWeapon(Ql);
+	if ( Screen->NumItems() ) {
+		i = Screen->LoadItem(Qi);
+		id = Screen->LoaditemData(Qi);	
+	}
+	if ( Screen->NumEWeapons() ) e = Screen->LoadEweapon(Qe);
+	
+	//Determine which is the highest. 
+	if ( Qn > max ) max = Qn;
+	if ( Ql > max ) max = Ql;
+	if ( Qe > max ) max = Qe;
+	
+	//Decide on the main loop type, based on the lowest count, then make each 
+	//loop thereafter mased on the next highest count.
+	
+	//!*** If we reach a loop with a value of 0, break?!
+	
+	//Determine the looptype for the first loop, then run it based on conditions. 
+	if ( looptype1 == LOOP_TYPE_ENEM ) {
+		//Loop 0
+		for ( ; n < Screen->NumNPCs(); n++ ) {
+			//Determine the next loop type
+			if ( looptype2 == LOOP_TYPE_ENEM ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == LOOP_TYPE_ENEM ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 1 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 2 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 3 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if ( looptype1 == 1 ) {
+		//Loop 0
+		for ( int a = 0; a < LOOPMAX; a++ ) {
+			//Determine the next loop type
+			if ( looptype2 == 0 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 1 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 2 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 3 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if ( looptype1 == 2 ) {
+		//Loop 0
+		for ( int a = 0; a < LOOPMAX; a++ ) {
+			//Determine the next loop type
+			if ( looptype2 == 0 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 1 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 2 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 3 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if ( looptype1 == 3 ) {
+		//Loop 0
+		for ( int a = 0; a < LOOPMAX; a++ ) {
+			//Determine the next loop type
+			if ( looptype2 == 0 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 1 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 2 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+			if ( looptype2 == 3 ) {
+				for ( int b = 0; b < LOOPMAX; b++ ) { //Loop 1
+				//Determine the third loop type
+					if ( looptype3  == 0 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 1 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 2 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+					if ( looptype3  == 3 ) {
+						for ( int c = 0; c < LOOPMAX; c++ ) {//Loop 2
+						//Determine the fourth loop tyoe
+							//Loop four is always the LAST type remaining
+							if ( looptype4 == 0 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 1 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 2 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+							if ( looptype4 == 3 ) {
+								for ( int d = 0; d < LOOPMAX; d++ ) {
+									//Run functions
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+	
+	
+	for ( int n = 1; n < Screen->NumNPCs(); n++ ) {
+		//Run other loops
+		//Call functions in the loops with the loop pointers.
+	}
+}
+
+float Collision_Loop_Enemy_LWeapon(){
+	
+}
+
+
+float Collision_Loop_Enemy_EWeapon(){
+	
+}
+
+float Collision_Loop_Combo_LWeapon(){
+	
+}
+
+float Collision_Loop_Combo_EWeapon(){
+	
+}
+
+float Collision_Loop_Combo_Enemy(){
+	
+}
+
+float Collision_Loop_Combo_Link(){
+	
+}
+
+float Collision_Loop_EWeapon_LWeapon(){
+	
+}

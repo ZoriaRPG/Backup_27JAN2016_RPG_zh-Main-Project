@@ -1,0 +1,743 @@
+//Enemies
+//v0.3.2
+//RPG 0.97.7 Enemy Functions:
+//Move contents of RPG_NPCs to this? 
+//Or make NPCs_Friendly.zlib
+
+//Enemy Misc Attributes
+
+
+const int MISC_HP_READ = 5; //NPC Misc Attribute;
+
+const int MISC_HP = 8; //n->Misc[] for DrawEnemyDamage()
+const int MISC_HP_MAX = 9; //n->Nisc[]
+
+const int DIETYPE_ENEMY_HP = 8;
+
+//Settings for Enemy Invincibility Frames
+
+const int ENEMY_INVINCIBILITY_FRAMES_DURATION = 180;
+const int INVINCIBLE_ENEMIES_PHANTOM = 1; //Setting to enable or disable phantoming injured enemies.
+const int STORE_ORIGINAL_ENEMY_PALETTE = 1; //Setting to enable storing original enemy palette or cset. 
+const int ENEMY_STATUS_DRAW_DURATION = 2; //This value is in seconds, NOT frames. 
+
+//You may enable *ONE* of these two rules, to match your quest rule settings. 
+//! If one is enabled, the other MUST be disabled. 
+const int ENEMIES_FLICKER_WHEN_HIT = 0; //Use the OriginalSprite, and store it instead of CSet or BPal
+const int ENEMIES_FLASH_WHEN_HIT = 0; //Use the CSet or BPal to make an enemy flash, when hit. 
+
+//Values For Enemy Invincibility Frames
+
+//n->Misc Indices
+const int ENEM_HP_LAST = 1; //n->Mics[] holds last enemy HP. Adjusted when damaged. 
+const int ENEM_INV_FRAMES = 2; //n->Misc[] holds the present nth frame of invincibility as a countdown timer. 
+const int ENEM_ORIG_PAL = 3; //original CSet or Palette, or OriginalSprite
+const int ENEM_DRAWTIMERS = 4; //Draw durations for enemy damage, healing, and status effects. 
+	//We need to use each digit of this via the Seconds() function and GetDigit() function. 
+
+const int ENEM_BLANK_TILE = 65260; //Set to a tile at the head of a FULL PAGE of BLANK tiles. 
+//const int ENEM_FLASH_TIMER = 4;
+
+//Framecount for each enemy flash or flicker.
+const int ENEM_FLASH_1 = 180; //Will change on frame 180
+const int ENEM_FLASH_2 = 150; //...frame 150
+const int ENEM_FLASH_3 = 120;
+const int ENEM_FLASH_4 = 90; 
+const int ENEM_FLASH_5 = 60; 
+const int ENEM_FLASH_6 = 30; //...frame 30
+
+//Cset or BPal to use when flashing
+const int ENEM_BPAL_FLASH = 6;
+const int ENEM_CSET_FLASH = 6;
+
+
+
+int EnemyHP[4096]; //Intentionally large size, as we're storing in-game pointers. 
+
+const int DAMAGE_VALUE_DURATION = 70;
+const int DAMAGE_VALUE_OPACITY = 100;
+const int DAMAGE_VALUE_COLOUR = 120; //155, Ruby (13), gARNET (150), 191 (PINK), 190 (MAUVE PINK), 188 (GREY) //155 is decent for green.
+const int DAMAGE_VALUE_COLOUR_HEAL = 157; //88 Med Blue, tURQUOISE (181) 155/157 LT GREEN; 150,151,152 REDS; 56/58 mauve, 57 salmon; 59 yellow
+const int DAMAGE_VALUE_COLOUR_OUTLINE = 10;
+const int DAMAGE_VALUE_LAYER = 7;
+const int DAMAGE_VALUE_OUTLINE_LAYER = 6;
+const int DAMAGE_VALUE_X_OFFSET = 12;
+const int DAMAGE_VALUE_Y_OFFSET = 12;
+const int DAMAGE_VALUE_FONT = 2; //Small Z3 font (2), LA (16).
+const int DAMAGE_VALUE_SIZE = 16;
+const int DAMAGE_VALUE_BG_COLOUR = -1; //Transparent.
+const int DAMAGE_VALUE_FLOATING_POINT_PLACES = 0;
+
+void RollEnemyHP(int dietype){
+	int curHP;
+	int newHP;
+	npc enem;
+	for ( int q = 0; q < NumberOfNPCs(); q++ ){
+		enem = Screen->LoadNPC(q); 
+		curHP = enem->HP;
+		newHP = Roll(curHP,dietype);
+		if ( enem->Misc[MISC_HP_READ] == 0 ){
+			enem->Misc[MISC_HP_READ] = 1;
+			enem->HP = newHP;
+		}
+	}
+}
+
+
+
+void EnemySetup(){
+	RollEnemyHP(DIETYPE_ENEMY_HP);
+	//DrawEnemyDamage();
+	//Other enem setup functions.
+}
+
+
+
+void StoreEnemyHP(){		
+	for ( int q = 1; q < NumberOfNPCs(); q++ ){
+		npc r = Screen->LoadNPC(q);
+		int curHP = r->HP;
+		if ( r->Misc[MISC_HP] == 0 ) {
+			r->Misc[MISC_HP] = curHP;
+		}
+		if ( r->Misc[MISC_HP_MAX] == 0 ) {
+			r->Misc[MISC_HP_MAX] = curHP;
+		}
+	}
+}
+
+//This function is designed to draw numeric values representing the damage an enemy took per hit. It should run immediately prior to Waitdraw(), after StoreEnemyHP(). 
+//X and Y offset are how far from the enemy to draw the numbers. 
+//The function will NOT draw damage if an enemiy DIES! It will draw only if the enemy remains alive after being damaged!
+//A message string on-screen will cause a glitch, displaying the last diff value at pos x0/y0, if it appears immediately after an enemy dies. 
+//We need to give messages one pre-frame, with a Waitframes(1) on the message functions, to allow this to clear.
+void DrawDamage(int showFor, int thisLayer, int xOffset, int yOffset, int useFont, int damageColour, int healColour, int bgColour, int widthPX, int heightPX, int floatingPlaces, int opacity, bool outline, int outlineLayer, int outlineColour){ //Place after Waitdraw() ?
+	for ( int q = 1; q < NumberOfNPCs(); q++ ){
+		npc r = Screen->LoadNPC(q);
+		int curHP = r->HP;
+		int npcX;
+		int npcY;
+		int drawX; 
+		int drawY; 
+		if ( r->Misc[MISC_HP] != 0 ){
+
+			int oldHP = r->Misc[MISC_HP];
+			curHP = r->HP;
+			int diff = oldHP - curHP;
+			
+			if ( diff > 0 ){				
+				npcX = r->X;
+				npcY = r->Y;
+				drawX = npcX + xOffset;
+				drawY = npcY + yOffset;
+				int newDif = oldHP - r->HP;
+				if ( diff < r->Misc[MISC_HP_MAX] && diff >=0 ) {
+					if ( r->Misc[ENEM_DRAWTIMERS] >= 0 ) {
+						r->Misc[ENEM_DRAWTIMERS] -= 1/60;
+						npcX = r->X;
+						drawX = npcX + xOffset;
+						npcY = r->Y;
+						drawY = npcY + yOffset;
+						newDif = curHP - r->HP;
+						//Try fonts: Z3 Small (2)
+						if ( outline ){
+							Screen->DrawInteger(outlineLayer, drawX+1, drawY+1, useFont, outlineColour, -1, widthPX, heightPX, diff, floatingPlaces, opacity);
+							//Screen->DrawInteger(outlineLayer, drawX-1, drawY-1, useFont, outlineColour, -1, widthPX, heightPX, diff, floatingPlaces, opacity);
+						}
+						Screen->DrawInteger(thisLayer, drawX, drawY, useFont, damageColour, -1, widthPX, heightPX, diff, floatingPlaces, opacity);
+						if ( newDif != 0 && diff != newDif ) {
+								diff = newDif;
+								//break;
+						}
+						if ( diff < 0 ) {
+							break;
+						}
+						curHP = r->HP;
+						
+						//Waitframe();
+					}
+				}
+
+				r->Misc[MISC_HP] = r->HP;
+				
+			}
+			else if ( diff < 0 ){				
+				npcX = r->X;
+				npcY = r->Y;
+				drawX = npcX + xOffset;
+				drawY = npcY + yOffset;
+				if ( diff < r->Misc[MISC_HP_MAX] ) {
+					
+					if ( r->Misc[ENEM_DRAWTIMERS] >= 0 ) {
+						r->Misc[ENEM_DRAWTIMERS] -= 1/60;
+						npcX = r->X;
+						drawX = npcX + xOffset;
+						npcY = r->Y;
+						drawY = npcY + yOffset;
+						//Try fonts: Z3 Small (2)
+						if ( outline ){
+							Screen->DrawInteger(outlineLayer, drawX+1, drawY+1, useFont, outlineColour, -1, widthPX, heightPX, diff, floatingPlaces, opacity);
+						}
+						Screen->DrawInteger(thisLayer, drawX, drawY, useFont, healColour, -1, widthPX, heightPX, diff, floatingPlaces, opacity);
+						//Waitframe();
+					}
+				}
+
+				r->Misc[MISC_HP] = r->HP;
+				
+			}
+		}
+	}
+}
+
+		
+//Do segmented enemy heads/main body segments have different npc->IDs than their daughter components?
+//If so, assign the x/y coords to the main part, after locating it with list arrays.
+
+//List constants for enemy types for segmented enemies, and constants for their tiles:
+
+const int ENEM_LANMOLA_ID = 0; //We need this to be its own list...?
+const int ENEM_LANMOLA_CORE_TILE = 0;
+const int ENEM_LANMOLA_SEGMENT_TILE = 0;
+
+const int ENEM_GLEEOK_ID = 0; //We need this to be its own list...?
+const int ENEM_GLEEOK_CORE_TILE = 0;
+const int ENEM_GLEEOK_SEGMENT_TILE = 0;
+const int ENEM_GLEEOK_HEAD_TILE = 0;
+
+const int ENEM_MOLDORM_ID = 0;
+const int ENEM_MOLDORM_SEGMENT_TILE = 0;
+const int ENEM_MOLDORM_CORE_TILE = 0;
+//Store tiles for segmented enemies in an array:
+
+int SegmentedEnemyIDs[]={0};
+	
+int SegmentedEnemyTiles[]={0};
+
+//Track the core of these enemies by determining first if an enemy is a segmented type, using SegmentedEnemyIDs[]
+//then if so, determine which ID it truly has, and use this to point to the SegmentedEnemyTiles[] array at the correct
+//index, and find the core. Then, display effects only on the core. 
+
+//Store the core tile in the enemy->Misc[MISC_CORE] attribute, and use that in the DrawDamage[] function to 
+//generate X/Y coordinates. 
+//if ( e->Misc[MISC_CORE] != 0 ) {
+// npcX = ( enem->Tile ??? How do we read only a specific tile for that enemy, in this instance and prevent conflicts?
+
+
+
+void EnemyHomesWhenHit(npc n, lweapon l, int miscIndex, int amount, bool multiply){
+	if ( EnemyHitByWeapon(n,l) && !n->Misc[miscIndex] ) {
+		n->Misc[miscIndex] = 1;
+		if ( multiply ) n->Homing = n->Homing * amount;
+		else n->Homing += amount;
+	}
+}
+
+
+void EnemyHomesWhenHit(npc n, lweapon l, int miscIndex, int amount, bool multiply){
+	if ( EnemyHitByWeapon(n,l) && !n->Misc[miscIndex] ) {
+		n->Misc[miscIndex] = 1;
+		if ( multiply ) n->Homing = n->Homing * amount;
+		else n->Homing += amount;
+	}
+}
+
+//Sets hunger of an enemy to the amount of money the player has. For money thieves. 
+//Sets a static value.
+//The 'percentae' arg is the percent of the counter to use as a value. 
+void EnemyHungerEqualsRupeeCount(npc n, int percentage){
+	n->Hunger = Floor( Game->Counter[CR_RUPEES] *  (0.01*percentage) );
+}
+
+//Sets homing of an enemy to the amount of money the player has. For money thieves.
+//Sets a static value.
+//The 'percentae' arg is the percent of the counter to use as a value. 
+void EnemyHomingEqualsRupeeCount(npc n, int percentage){
+	n->Homing = Floor( Game->Counter[CR_RUPEES] *  (0.01*percentage) );
+}
+
+//Sets hunger of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Sets a static value.
+//The 'percentae' arg is the percent of the counter to use as a value. 
+void EnemyHungerEqualsLinkCounter(npc n, int counter, int percentage){
+	n->Hunger = Floor( Game->Counter[counter] *  (0.01*percentage) );
+}
+
+//Sets homing of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Sets a static value.
+//The 'percentae' arg is the percent of the counter to use as a value. 
+void EnemyHomingEqualsLinkCounter(npc n, int counter, int percentage){
+	n->Homing = Floor( Game->Counter[counter] *  (0.01*percentage) );
+}
+
+//Sets hunger of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Allows increasing, in place of setting a static value.
+//The 'percentae' arg is the percent of the counter to use as a value. 
+void EnemyHungerEqualsLinkCounter(npc n, int counter, bool increase, int percentage){
+	if ( increase ) n->Hunger += Game->Counter[counter];
+	else  n->Hunger = Floor( Game->Counter[counter] *  (0.01*percentage) );
+}
+
+//Sets homing of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Allows increasing, in place of setting a static value.
+//The 'percentae' arg is the percent of the counter to use as a value. 
+void EnemyHomingEqualsLinkCounter(npc n, int counter, bool increase, int percentage){
+	if ( increase ) n->Homing += Game->Counter[counter];
+	else  n->Homing = Floor( Game->Counter[counter] *  (0.01*percentage) );
+}
+
+//Sets hunger of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Sets a static value.
+//Accepts an array list of enemies to affect, by type, or ID.
+//Set 'list_by_type' true if using n->Type, otherwise set false to use n->ID.
+//The 'percentae' arg is the percent of the counter to use as a value. 
+void EnemyHomingEqualsLinkCounter(npc n, int counter, int list, bool list_by_type, int percentage){
+	bool match;
+	if ( list_by_type ) { //If using n->Type
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->Type ) match = true;
+		}
+	}
+	else { //Using enemy IDs
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->ID ) match = true;
+		}
+	}
+	
+	if ( match ) n->Hunger = Floor( Game->Counter[counter] *  (0.01*percentage) );
+}
+
+//Sets hunger of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Allows increasing, in addition to setting a static value.
+//Accepts an array list of enemies to affect, by type, or ID.
+//Set 'list_by_type' true if using n->Type, otherwise set false to use n->ID.
+//The 'percentae' arg is the percent of the counter to use as a value. 
+void EnemyHomingEqualsLinkCounter(npc n, int counter, bool increase, int list, bool list_by_type, int percentage){
+	bool match;
+	if ( list_by_type ) { //If using n->Type
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->Type ) match = true;
+		}
+	}
+	else { //Using enemy IDs
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->ID ) match = true;
+		}
+	}
+	
+	if ( match && increase ) n->Hunger += Floor( Game->Counter[counter] *  (0.01*percentage) );
+	if ( match && !increase ) n->Hunger = Floor( Game->Counter[counter] *  (0.01*percentage) );
+}
+
+//Sets homing of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Sets a static value.
+//Accepts an array list of enemies to affect, by type, or ID.
+//Set 'list_by_type' true if using n->Type, otherwise set false to use n->ID.
+//The 'percentae' arg is the percent of the counter to use as a value. 
+void EnemyHomingEqualsLinkCounter(npc n, int counter, int list, bool list_by_type, int percentage){
+	bool match;
+	if ( list_by_type ) { //If using n->Type
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->Type ) match = true;
+		}
+	}
+	else { //Using enemy IDs
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->ID ) match = true;
+		}
+	}
+	
+	if ( match ) n->Homing = Floor( Game->Counter[counter] *  (0.01*percentage) );
+}
+
+//Sets homing of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Allows increasing, in addition to setting a static value.
+//Accepts an array list of enemies to affect, by type, or ID.
+//Set 'list_by_type' true if using n->Type, otherwise set false to use n->ID.
+//The 'percentae' arg is the percent of the counter to use as a value. 
+void EnemyHomingEqualsLinkCounter(npc n, int counter, bool increase, int list, bool list_by_type, int percentage){
+	bool match;
+	if ( list_by_type ) { //If using n->Type
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->Type ) match = true;
+		}
+	}
+	else { //Using enemy IDs
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->ID ) match = true;
+		}
+	}
+	
+	if ( match && increase ) n->Homing += Floor( Game->Counter[counter] *  (0.01*percentage) );
+	if ( match && !increase ) n->Homing = Floor( Game->Counter[counter] *  (0.01*percentage) );
+}
+
+//Sets hunger of an enemy to the amount of money the player has. For money thieves. 
+//Sets a static value.
+void EnemyHungerEqualsRupeeCount(npc n){
+	n->Hunger = Game->Counter[CR_RUPEES];
+}
+
+//Sets homing of an enemy to the amount of money the player has. For money thieves.
+//Sets a static value.
+void EnemyHomingEqualsRupeeCount(npc n){
+	n->Homing = Game->Counter[CR_RUPEES];
+}
+
+//Sets hunger of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Sets a static value.
+void EnemyHungerEqualsLinkCounter(npc n, int counter){
+	n->Hunger = Game->Counter[counter];
+}
+
+//Sets homing of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Sets a static value.
+void EnemyHomingEqualsLinkCounter(npc n, int counter){
+	n->Homing = Game->Counter[counter];
+}
+
+//Sets hunger of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Allows increasing, in addition to setting a static value.
+void EnemyHungerEqualsLinkCounter(npc n, int counter, bool increase){
+	if ( increase ) n->Hunger += Game->Counter[counter];
+	else  n->Hunger = Game->Counter[counter];
+}
+
+//Sets homing of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Allows increasing, in addition to setting a static value.
+void EnemyHomingEqualsLinkCounter(npc n, int counter, bool increase){
+	if ( increase ) n->Homing += Game->Counter[counter];
+	else  n->Homing = Game->Counter[counter];
+}
+
+//Sets hunger of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Sets a static value.
+//Accepts an array list of enemies to affect, by type, or ID.
+//Set 'list_by_type' true if using n->Type, otherwise set false to use n->ID.
+void EnemyHomingEqualsLinkCounter(npc n, int counter, int list, bool list_by_type){
+	bool match;
+	if ( list_by_type ) { //If using n->Type
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->Type ) match = true;
+		}
+	}
+	else { //Using enemy IDs
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->ID ) match = true;
+		}
+	}
+	
+	if ( match ) n->Hunger = Game->Counter[counter];
+}
+
+//Sets hunger of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Allows increasing, in addition to setting a static value.
+//Accepts an array list of enemies to affect, by type, or ID.
+//Set 'list_by_type' true if using n->Type, otherwise set false to use n->ID.
+void EnemyHomingEqualsLinkCounter(npc n, int counter, bool increase, int list, bool list_by_type){
+	bool match;
+	if ( list_by_type ) { //If using n->Type
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->Type ) match = true;
+		}
+	}
+	else { //Using enemy IDs
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->ID ) match = true;
+		}
+	}
+	
+	if ( match && increase ) n->Hunger += Game->Counter[counter];
+	if ( match && !increase ) n->Hunger = Game->Counter[counter];
+}
+
+//Sets homing of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Sets a static value.
+//Accepts an array list of enemies to affect, by type, or ID.
+//Set 'list_by_type' true if using n->Type, otherwise set false to use n->ID.
+void EnemyHomingEqualsLinkCounter(npc n, int counter, int list, bool list_by_type){
+	bool match;
+	if ( list_by_type ) { //If using n->Type
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->Type ) match = true;
+		}
+	}
+	else { //Using enemy IDs
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->ID ) match = true;
+		}
+	}
+	
+	if ( match ) n->Homing = Game->Counter[counter];
+}
+
+//Sets homing of an enemy to the amount of [counter] the player has. For thieves, or eaters.
+//Allows increasing, in addition to setting a static value.
+//Accepts an array list of enemies to affect, by type, or ID.
+//Set 'list_by_type' true if using n->Type, otherwise set false to use n->ID.
+void EnemyHomingEqualsLinkCounter(npc n, int counter, bool increase, int list, bool list_by_type){
+	bool match;
+	if ( list_by_type ) { //If using n->Type
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->Type ) match = true;
+		}
+	}
+	else { //Using enemy IDs
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->ID ) match = true;
+		}
+	}
+	
+	if ( match && increase ) n->Homing += Game->Counter[counter];
+	if ( match && !increase ) n->Homing = Game->Counter[counter];
+}
+
+//Sets, or increases homing for LikeLikes, or other enemies, if Link has a specific item. 
+void LikeLikeHoming(npc n, int itm, int value, bool increase){
+	if ( Link->Item[itm] ) {
+		if ( increase ) n->Homing += value;
+		else n->Homing = value;
+	}
+}
+
+//Sets, or increases homing for LikeLikes, or other enemies, if Link has a specific item. 
+void ItemHoming(npc n, int itm, int value, bool increase){
+	if ( Link->Item[itm] ) {
+		if ( increase ) n->Homing += value;
+		else n->Homing = value;
+	}
+}
+
+//Sets, or decreases homing for LikeLikes, or other enemies, if Link has a specific item.
+//Wards enemies away.
+void EnemyWarding(npc n, int itm, int value, bool reduce){
+	if ( Link->Item[itm] ) {
+		if ( reduce ) n->Homing -= value;
+		else n->Homing = value;
+	}
+}
+
+//Sets, or decreases homing for LikeLikes, or other enemies, if Link has a specific item.
+//Wards enemies away.
+//Accepts array list of enemies by ID, or type. 
+void EnemyWarding(npc n, int itm, int value, bool reduce, int list, bool list_by_type){
+	bool match;
+	if ( list_by_type ) { //If using n->Type
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->Type ) match = true;
+		}
+	}
+	else { //Using enemy IDs
+		for ( int q = 0; q <= SizeOfArray(list); q++ ) {
+			if ( list[q] == n->ID ) match = true;
+		}
+	}
+				
+	if ( Link->Item[itm] && match ) {
+		if ( reduce ) n->Homing -= value;
+		else n->Homing = value;
+	}
+}
+
+//////////////////////////////////
+/// Enemy Invincibility Frames ///
+//////////////////////////////////
+
+//Run before Waitdraw, and before EnemyInvincibilityFrames()
+void InitEnemyLastHP(){
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(q);
+		if (!n->Misc[ENEM_HP_LAST] && n->HP > 0) {
+			n->Misc[ENEM_HP_LAST] = n->HP;
+			if ( STORE_ORIGINAL_ENEMY_PALETTE && !n->Misc[ENEM_ORIG_PAL] ) {
+				if ( n->CSet == 14 ) n->Misc[ENEM_ORIG_PAL] = n->BossPal;
+				else n->Misc[ENEM_ORIG_PAL] = n->CSet;
+			}
+			if ( ENEMIES_FLICKER_WHEN_HIT && !n->Misc[ENEM_ORIG_PAL] ) {
+				n->Misc[ENEM_ORIG_PAL] = n->OriginalTile;
+			}
+		}
+	}
+}
+
+void _InitEnemyLastHP(){
+    for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+        npc n = Screen->LoadNPC(q);
+        if (!n->Misc[ENEM_HP_LAST] && n->HP > 0) n->Misc[ENEM_HP_LAST] = n->HP;
+    }
+}
+
+//Run before Waitdraw and before any collision/damage functions that need to read these values. 
+void _EnemyInvincibilityFrames(){
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(q);
+		if ( n->Misc[ENEM_HP_LAST] > n->HP ) {
+			n->Misc[ENEM_HP_LAST] = n->HP;
+			n->Misc[ENEM_INV_FRAMES] = ENEMY_INVINCIBILITY_FRAMES_DURATION;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] > 0 ) n->Misc[ENEM_INV_FRAMES]--;
+		if ( n->Misc[ENEM_INV_FRAMES] < 0 ) n->Misc[ENEM_INV_FRAMES] = 0;
+	}
+}
+
+//Run after InitEnemyLastHP, before Waitdraw and before any collision/damage functions that need to read these values. 
+void EnemyInvincibilityFrames(){
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(q);
+		if ( n->Misc[ENEM_HP_LAST] > n->HP ) {
+			n->Misc[ENEM_HP_LAST] = n->HP;
+			n->Misc[ENEM_INV_FRAMES] = ENEMY_INVINCIBILITY_FRAMES_DURATION;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] > 0 ) n->Misc[ENEM_INV_FRAMES]--;
+		if ( n->Misc[ENEM_INV_FRAMES] < 0 ) n->Misc[ENEM_INV_FRAMES] = 0;
+		
+		if ( INVINCIBLE_ENEMIES_PHANTOM ) {
+			if ( EnemyInvincible(n) && n->DrawStyle != DS_PHANTOM ) n->DrawStyle = DS_PHANTOM;
+			if ( !EnemyInvincible(n) && n->DrawStyle == DS_PHANTOM 
+				&& !GetNPCMiscFlag(n,NPCM_TRANSLUCENT) && !GetNPCMiscFlag(n,NPCM_FLICKERING) 
+				&& !GetNPCMiscFlag(n,NPCM_FLASHING) ) n->DrawStyle = DS_NORMAL;
+
+		}
+	}
+}
+
+
+
+//Run IMMEDIATELY AFTER EnemyInvincibilityFrames() if you have flashing, or flickering settings enabled. 
+void FlashEnemyWhenHit(npc n) {
+	if ( ENEMIES_FLASH_WHEN_HIT && n->Misc[ENEM_INV_FRAMES] > 0 ) {
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_1 ) {
+			if ( n->CSet == 14 ) n->BossPal = ENEM_BPAL_FLASH;
+			else n->CSet = ENEM_CSET_FLASH;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_2 ) {
+			if ( n->CSet == 14 ) n->BossPal = n->Misc[ENEM_ORIG_PAL];
+			else n->CSet = n->Misc[ENEM_ORIG_PAL];
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_3 ) {
+			if ( n->CSet == 14 ) n->BossPal = ENEM_BPAL_FLASH;
+			else n->CSet = ENEM_CSET_FLASH;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_4 ) {
+			if ( n->CSet == 14 ) n->BossPal = n->Misc[ENEM_ORIG_PAL];
+			else n->CSet = n->Misc[ENEM_ORIG_PAL];
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_5 ) {
+			if ( n->CSet == 14 ) n->BossPal = ENEM_BPAL_FLASH;
+			else n->CSet = ENEM_CSET_FLASH;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_6 ) {
+			if ( n->CSet == 14 ) n->BossPal = n->Misc[ENEM_ORIG_PAL];
+			else n->CSet = n->Misc[ENEM_ORIG_PAL];
+		}
+	}
+	if ( ENEMIES_FLICKER_WHEN_HIT && n->Misc[ENEM_INV_FRAMES] > 0 ) {
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_1 ) {
+			n->OriginalTile = ENEM_BLANK_TILE;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_2 ) {
+			n->OriginalTIle = n->Misc[ENEM_ORIG_PAL];
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_3 ) {
+			n->OriginalTile = ENEM_BLANK_TILE;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_4 ) {
+			n->OriginalTIle = n->Misc[ENEM_ORIG_PAL];
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_5 ) {
+			n->OriginalTile = ENEM_BLANK_TILE;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_6 ) {
+			n->OriginalTIle = n->Misc[ENEM_ORIG_PAL];
+		}
+	}
+}
+
+//Returns if an enemy is invincible.
+int EnemyInvincible(npc n){
+	return n->Misc[ENEM_INV_FRAMES];
+}
+
+//Immediately sets, or resets enemy invincibility to on.
+void SetEnemyInvincible(npc n) {
+	n->Misc[ENEM_INV_FRAMES] = ENEMY_INVINCIBILITY_FRAMES_DURATION;
+}
+
+//Immediately disables mock enemy invincibility. 
+void SetEnemyNotInvincible(npc n) {
+	n->Misc[ENEM_INV_FRAMES] = 0;
+}
+
+////////////////////////////
+/// Enemy Drawing Timers ///
+////////////////////////////
+
+const int ENEM_DRAW_TIMER_DAMAGE = 0;
+const int ENEM_DRAW_TIMER_HEAL = 1;
+const int ENEM_DRAW_TIMER_OTHER = 2;
+
+//Returns the value of an enemy drawing timer. 
+int GetEnemyDrawTimer(npc n, int timer){
+	return GetDigit(n->Misc[ENEM_DRAWTIMERS],timer);
+}
+
+//Set the value of an enemy drawing timer. 
+int SetEnemyDrawTimer(npc n, int timer, int value){
+	
+	float indexvalue = n->Misc[ENEM_DRAWTIMERS];
+	
+	int tenthousands = GetDigit(n->Misc[ENEM_DRAWTIMERS], 4);
+	int thousands = GetDigit(n->Misc[ENEM_DRAWTIMERS], 3);
+	int hundreds = GetDigit(n->Misc[ENEM_DRAWTIMERS], 2);
+	int tens = GetDigit(n->Misc[ENEM_DRAWTIMERS], 1);
+	int ones = GetDigit(n->Misc[ENEM_DRAWTIMERS], 0);
+	int tenths = GetDigit(n->Misc[ENEM_DRAWTIMERS], -1);
+	int hundreths = GetDigit(n->Misc[ENEM_DRAWTIMERS], -2)
+	int thoudandths = GetDigit(n->Misc[ENEM_DRAWTIMERS], -3);
+	int tenthousandths = GetDigit(n->Misc[ENEM_DRAWTIMERS], -4);
+	
+	if ( timer == 4 ) tenthousandths = value;
+	if ( timer == 3 ) thousands = value;
+	if ( timer == 2 ) hundreds = value;
+	if ( timer == 1 ) tens = value;
+	if ( timer == 0 ) ones = value;
+	if ( timer == -1 ) tenths = value;
+	if ( timer == -2 ) hundredths = value;
+	if ( timer == -3 ) thousandths = value;
+	if ( timer == -4 ) tenthousandths = value;
+	
+	indexvalue = tenthousandths + thousandths + hundredths + tenths + ones + tens + hundreds + thousands + tenthousandths;
+}
+
+//Reduce an enemy drawing timer by 1. The PROBLEM with this is that we still need a way to reduce this in 60ths...
+//which would need yet another timer. Is this practical for anything?
+void ReduceEnemyDrawTimer(npc n, int timer){
+	float indexvalue = n->Misc[ENEM_DRAWTIMERS];
+	
+	int tenthousands = GetDigit(n->Misc[ENEM_DRAWTIMERS], 4);
+	int thousands = GetDigit(n->Misc[ENEM_DRAWTIMERS], 3);
+	int hundreds = GetDigit(n->Misc[ENEM_DRAWTIMERS], 2);
+	int tens = GetDigit(n->Misc[ENEM_DRAWTIMERS], 1);
+	int ones = GetDigit(n->Misc[ENEM_DRAWTIMERS], 0);
+	int tenths = GetDigit(n->Misc[ENEM_DRAWTIMERS], -1);
+	int hundreths = GetDigit(n->Misc[ENEM_DRAWTIMERS], -2)
+	int thoudandths = GetDigit(n->Misc[ENEM_DRAWTIMERS], -3);
+	int tenthousandths = GetDigit(n->Misc[ENEM_DRAWTIMERS], -4);
+	
+	if ( timer == 4 ) tenthousandths--;
+	if ( timer == 3 ) thousands--;
+	if ( timer == 2 ) hundreds--;
+	if ( timer == 1 ) tens--;
+	if ( timer == 0 ) ones--;
+	if ( timer == -1 ) tenths--;
+	if ( timer == -2 ) hundredths--;
+	if ( timer == -3 ) thousandths--;
+	if ( timer == -4 ) tenthousandths--;
+	
+	indexvalue = tenthousandths + thousandths + hundredths + tenths + ones + tens + hundreds + thousands + tenthousandths;
+}
+	
+	
+	
+	
+	

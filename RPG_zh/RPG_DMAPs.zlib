@@ -1,0 +1,136 @@
+//DMap Utilities
+//v0.2
+
+const int MAPCOUNT = 100;
+const int SCREENSPERMAP = 131;
+
+void WipeScreen(int map, int screen, bool value){
+	for ( int q = 0; q < 14; q++ ) {
+		Game->SetScreenState(map, screen, q, value);
+	}
+}
+
+void WipeScreens(int value){
+	for ( int w = MAPCOUNT; w > 0; w -- ) {
+		for ( int e = SCREENSPERMAP; e > 0; e-- ) {
+			WipeScreen(w,e,value);
+		}
+	}
+}
+
+
+void WipeScreens(){
+	for ( int w = MAPCOUNT; w > 0; w -- ) {
+		for ( int e = SCREENSPERMAP; e > 0; e-- ) {
+			WipeScreen(w,e,false);
+		}
+	}
+}
+
+
+SetScreenState(int map, int screen, int flag, bool value);
+
+//RPG_DMapIntro.zlib
+//v0.1
+
+ffc script DisplayDmap {
+	void run(int type, int dmap){
+		int dmapString[]="The present area informtion, is: ";
+		int dmapName[21]; //20 + NULL
+		int dmapTitle[21]; //20 + NULL
+		int dmapIntro[73]; //72 + NULL
+		int linebreak[]="@26";
+		int suspendSlot[]="@suspend";
+
+		Game->GetDMapName(dmap,dmapName);
+		Game->GetDMapIntro(dmap, dmapIntro);
+		Game->GetDMapTitle(dmap, dmapTitle);
+		
+		//The following requires Tango.
+		SetUpWindow(WINDOW_SLOT_1, WINDOW_STYLE_1, 16, 16, SIZE_LARGE);
+		Tango_LoadString(WINDOW_SLOT_1, dmapString);
+		if ( type == 1 || type == 3 || type == 5 || type == 7 ) {
+			Tango_AppendString(WINDOW_SLOT_1, dmapName);
+			Tango_AppendString(WINDOW_SLOT_1, linebreak);
+		}
+		if ( type == 2 || type == 3 || type == 6 || type == 7 ) {
+			Tango_AppendString(WINDOW_SLOT_1, dmapTitle);
+			Tango_AppendString(WINDOW_SLOT_1, linebreak);
+		}
+		if ( type == 4 || type == 5 || type == 6 || type == 7 ) {
+			Tango_AppendString(WINDOW_SLOT_1, dmapIntro);
+			Tango_AppendString(WINDOW_SLOT_1, linebreak);
+		}
+		Tango_AppendString(WINDOW_SLOT_1, suspendSlot);
+		Tango_ActivateSlot(WINDOW_SLOT_1);
+		
+		//Put while loop here.
+	}
+
+}
+
+void StoreDmapName(int dmap, bool wipe, int buffer){
+	if ( wipe ) {
+		for ( int q = 0; q <= SizeOfArray(buffer); q++ ){
+			dmapName[q] = 0; //Ensures we wipe the old string, before setting new string. 
+		}
+	}
+	Game->GetDMapName(dmap,buffer);
+}
+
+void StoreDmapIntro(int dmap, bool wipe, int buffer){
+	if ( wipe ) {
+		for ( int q = 0; q <= SizeOfArray(buffer); q++ ){
+			dmapIntro[q] = 0; //Ensures we wipe the old string, before setting new string. 
+		}
+	}
+	Game->GetDMapIntro(dmap, buffer);
+}
+
+void StoreDmapTitle(int dmap, bool wipe, int buffer){
+	if ( wipe ) {
+		for ( int q = 0; q <= SizeOfArray(buffer); q++ ){
+			dmapTitle[q] = 0; //Ensures we wipe the old string, before setting new string. 
+		}
+	}
+	Game->GetDMapTitle(dmap, buffer);
+}
+
+const int SCREEN_INTRO = 4;
+
+ffc script AreaIntro {
+	void run(int string, int dat, int element){
+		bool visited = false;
+		bool playMsg = true;
+		if ( Screen->D[SCREEN_INTRO] > 0 ) {
+				visited = true;
+		}
+		while(true){
+			if (visited){
+				break;
+			}
+			if ( playMsg) {
+				
+				//freezeAction();
+				Screen->Message(string);
+				
+				playMsg = false;
+				if ( dat > 0 ) {
+					Screen->D[SCREEN_INTRO]++;
+				}
+				//this->Data = MENU_FREEZE_ALL;
+				//Replace with Tango function.
+			}
+			//freezeAction();
+			if (Link->PressB || Link->PressA) {
+				
+				this->Data = 0;
+				//unfreezeAction();
+				break;
+			}
+			Waitframe();
+		}
+		//unfreezeAction();
+		return;
+	}
+}

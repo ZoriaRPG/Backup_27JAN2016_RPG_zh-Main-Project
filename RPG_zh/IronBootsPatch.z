@@ -1,0 +1,14 @@
+//Triggers Screen Secrets if the player touches an Iron Boots combo trigger while wearing them.
+void IronBootsPanel(){
+	if ( IronBoots() ) {
+		for ( int q = 0; q < 176; q++ ) {
+			for ( int w = 0; w < SizeOfArray(IronBootsCombos); w++ ) {
+				if ( Screen->ComboD[q] == IronBootsCombos[w] && _LinkComboCollision(q,BOOTS_SENS) ) {
+					
+					Game->PlaySound(SFX_BOOTS_TRIGGER);
+					Screen->TriggerSecrets();
+				}
+			}
+		}
+	}
+}

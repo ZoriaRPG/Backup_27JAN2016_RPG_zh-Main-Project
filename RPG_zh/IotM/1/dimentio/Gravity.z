@@ -1,0 +1,667 @@
+import "std.zh"
+import "string.zh"
+import "ghost.zh"
+import "ffcscript.zh"
+import "stdExtra.zh"
+//import "stdWeapons.zh"
+
+const int CMB_FAIRY            = 1652;    // Set here the first of the 4 Fairy combos, in the order Up, Down, Left, Right
+bool HasFairy = false;
+bool FairyInit = false;
+int FairyMovementMax = 90;
+int FairyMovementCounter;
+int Type = 0;
+bool Once = true;
+bool Used = false;
+
+global script Slot_2{
+    void run(){
+    int ScreenNumber;
+        while(true){
+			if((GetEquipmentA() == 143 || GetEquipmentB() == 143) && Used == false) 
+			{
+				HasFairy = true;
+				if (Once == true)
+				{
+					FairyInit = true;
+					Once = false;
+				}
+			}
+			else
+			{
+				HasFairy = false;
+				Once = true;
+				ffc Fairy = Screen->LoadFFC(30);
+				Fairy->Data = 0;
+			}
+            if(HasFairy) Fairy(ScreenNumber);
+            ScreenNumber = Game->GetCurScreen();
+			Used = false;
+			Waitframe();
+        }
+    }
+    //Fairy functions
+    void Fairy(int ScreenNumber){
+        ffc Fairy = Screen->LoadFFC(30);
+        bool ChangeDir;
+        if(FairyInit){
+            Fairy->Flags[0] = true;
+            Fairy->Flags[3] = true;
+            Fairy->Data = CMB_FAIRY+1;
+			if (Type == 1) Fairy->CSet = 8;
+			else if (Type == 2) Fairy->CSet = 7;
+			else Fairy->CSet = 11;
+            FairyInit = false;
+			Fairy->X = Link->X;
+			Fairy->Y = Link->Y;
+            //Fairy->X = Rand(28) + Link->X-16;
+            //Fairy->Y = Rand(28) + Link->Y-16;
+        }
+        if(ScreenNumber != Game->GetCurScreen()){
+            Fairy->X = Rand(28) + Link->X-16;
+            Fairy->Y = Rand(28) + Link->Y-16;
+        }
+        if(FairyMovementCounter == FairyMovementMax){
+            Fairy->Vx = (Rand(5)/10+0.4)*(Rand(2)*2-1);
+            Fairy->Vy = (Rand(5)/10+0.4)*(Rand(2)*2-1);
+            ChangeDir = true;
+            FairyMovementCounter = 0;
+        }
+        if(Distance(Fairy->X,Fairy->Y,Link->X,Link->Y) > 32){
+            if(Fairy->X < Link->X) Fairy->Vx = (Rand(5)/10+1);
+            else Fairy->Vx = -(Rand(5)/10+1);
+            if(Fairy->Y < Link->Y) Fairy->Vy = (Rand(5)/10+1);
+            else Fairy->Vy = -(Rand(5)/10+1);
+            ChangeDir = true;
+        }
+        if(ChangeDir){
+            if(Fairy->Vy < 0 && (Abs(Fairy->Vx) < 0.6)) Fairy->Data = CMB_FAIRY;
+            else if(Fairy->Vy > 0 && (Abs(Fairy->Vx) < 0.6)) Fairy->Data = CMB_FAIRY+1;
+            else if(Fairy->Vx < 0) Fairy->Data = CMB_FAIRY+2;
+            else if(Fairy->Vx > 0) Fairy->Data = CMB_FAIRY+3;
+            ChangeDir = false;
+        }
+		if (Type == 1) Fairy->CSet = 8;
+		else if (Type == 2) Fairy->CSet = 7;
+		else Fairy->CSet = 11;
+        FairyMovementCounter++;
+    }
+}
+
+global script Slot_3{
+    void run(){
+        if(HasFairy) FairyInit = true;
+    }
+}
+
+ffc script RemoveFairy{
+    void run(){
+        HasFairy = false;
+        ffc Fairy = Screen->LoadFFC(30);
+        Fairy->Data = 0;
+    }
+}
+
+ffc script ReturnFairy{
+    void run(){
+        HasFairy = true;
+        FairyInit = true;
+    }
+}
+
+ffc script Gravity_Rod_Animation
+{
+	int Yes(int Dir){ //Copying this from Banana, sorry Moosh.
+		if(Dir==DIR_UP||Dir==DIR_LEFTUP||Dir==DIR_RIGHTUP)return -90;
+		else if(Dir==DIR_DOWN||Dir==DIR_LEFTDOWN||Dir==DIR_RIGHTDOWN)return 90;
+		else if(Dir==DIR_LEFT)return 180;
+		return 0;
+	}
+	void run()
+	{
+		int Angle = (Yes(Link->Dir) + 45) % 360;
+		int NewAngle = (Yes(Link->Dir) - 45) % 360;
+		while(Abs(Angle - Yes(Link->Dir)) > 4)
+		{
+			Screen->DrawCombo(2, Link->X + VectorX(14, Angle), Link->Y + VectorY(14, Angle), 1651, 1, 1, 5, -1, -1, Link->X + VectorX(14, Angle), Link->Y + VectorY(14, Angle), Angle, 0, 0, true, OP_OPAQUE);
+			Angle -= 5;
+			Angle %= 360;
+			NoMovement();
+			Link->InputL = false;
+			Link->InputR = false;
+			Link->PressL = false;
+			Link->PressR = false;
+			Link->InputMap = false;
+			Link->PressMap = false;
+			Link->PressA = false;
+			Link->PressB = false;
+			Waitframe();
+		}
+		if (Type == 1)
+		{ 
+			lweapon Fire = Screen->CreateLWeapon(LW_SCRIPT1);
+			Fire->X = Link->X;
+			Fire->Y = Link->Y;
+			Fire->Dir = Link->Dir;
+			Fire->Step = 500;
+			Fire->Damage = 4;
+			Fire->UseSprite(88); 
+			Type = 0;
+			Game->PlaySound(13);
+		}
+		else if (Type == 2)
+		{ 
+			lweapon Fire = Screen->CreateLWeapon(LW_SCRIPT2);
+			Fire->X = Link->X;
+			Fire->Y = Link->Y;
+			Fire->Dir = Link->Dir;
+			Fire->Step = 500;
+			Fire->Damage = 4;
+			Fire->UseSprite(89);
+			Type = 0;
+			Game->PlaySound(44);
+		}
+		else
+		{
+			RunFFCScript(1, 0);
+			Game->PlaySound(53);
+		}
+		while(Abs(Angle - NewAngle) > 4)
+		{
+			Used = true;
+			Screen->DrawCombo(2, Link->X + VectorX(14, Angle), Link->Y + VectorY(14, Angle), 1651, 1, 1, 5, -1, -1, Link->X + VectorX(14, Angle), Link->Y + VectorY(14, Angle), Angle, 0, 0, true, OP_OPAQUE);
+			Angle -= 5;
+			Angle %= 360;
+			NoMovement();
+			Link->InputL = false;
+			Link->InputR = false;
+			Link->PressL = false;
+			Link->PressR = false;
+			Link->InputMap = false;
+			Link->PressMap = false;
+			Link->PressA = false;
+			Link->PressB = false;
+			Waitframe();
+		}
+	}
+}
+
+ffc script Gravity_Get
+{
+	
+	void run()
+	{
+		this->X = Link->X;
+		this->Y = Link->Y;
+		this->Data = CMB_FAIRY;
+		this->CSet = 11;
+		int dir = Link->Dir;
+		int TempType = 0;
+		while(this->X < 255 && this->X > 0 && this->Y < 175 && this->Y > 0)
+		{
+			Used = true;
+			if (dir == 0) 
+			{
+				this->Vy = -3.5;
+			}
+			else if (dir == 1) 
+			{
+				this->Vy = 3.5;
+			}
+			else if (dir == 2) 
+			{
+				this->Vx = -3.5;
+			}
+			else if (dir == 3) 
+			{
+				this->Vx = 3.5;
+			}
+			if(Screen->ComboF[ComboAt(this->X + 8, this->Y + 8)]==99)
+			{
+				TempType = 1;
+				this->CSet = 8;
+				break;
+			}
+			else if(Screen->ComboF[ComboAt(this->X + 8, this->Y + 8)]==100)
+			{
+				TempType = 2;
+				this->CSet = 7;
+				break;
+			}
+			Waitframe();
+		}
+		this->Vx = 0;
+		this->Vy = 0;
+		if (TempType == 0) 
+		{
+			this->Data = 0;
+			this->X = 0;
+			this->Y = 0;
+			Quit();
+		}
+		Game->PlaySound(52);
+		while(true)
+		{
+			Used = true;
+			this->X += VectorX(3.5, Angle(this->X, this->Y, Link->X, Link->Y));
+			this->Y += VectorY(3.5, Angle(this->X, this->Y, Link->X, Link->Y));
+			if (Abs(this->X - Link->X) < 4 && Abs(this->Y - Link->Y) < 4)
+			{
+				Type = TempType;
+				this->Data = 0;
+				this->X = 0;
+				this->Y = 0;
+				Quit();
+			}
+			Waitframe();
+		}
+	}
+}
+
+item script Gravity_Rod
+{
+	
+	void run()
+	{
+		if (CountFFCsRunning(1) <= 0 && CountFFCsRunning(2) <= 0 && NumLWeaponsOf(LW_SCRIPT1) <= 0 && NumLWeaponsOf(LW_SCRIPT2) <= 0) RunFFCScript(2, 0);
+	}
+}
+
+/////////////
+//Patra Rod//
+/////////////
+
+bool On = false;
+
+item script Patra_Rod
+{
+	
+	void run()
+	{
+		RunFFCScript(3, 0);
+	}
+}
+
+ffc script Patra_Rod_Animation
+{
+	int Yes(int Dir){ //Copying this from Banana, sorry Moosh.
+		if(Dir==DIR_UP||Dir==DIR_LEFTUP||Dir==DIR_RIGHTUP)return -90;
+		else if(Dir==DIR_DOWN||Dir==DIR_LEFTDOWN||Dir==DIR_RIGHTDOWN)return 90;
+		else if(Dir==DIR_LEFT)return 180;
+		return 0;
+	}
+	void run()
+	{
+		int Angle = (Yes(Link->Dir) + 45) % 360;
+		int NewAngle = (Yes(Link->Dir) - 45) % 360;
+		while(Abs(Angle - Yes(Link->Dir)) > 4)
+		{
+			Screen->DrawCombo(2, Link->X + VectorX(14, Angle), Link->Y + VectorY(14, Angle), 1651, 1, 1, 10, -1, -1, Link->X + VectorX(14, Angle), Link->Y + VectorY(14, Angle), Angle, 0, 0, true, OP_OPAQUE);
+			Angle -= 5;
+			Angle %= 360;
+			NoMovement();
+			Link->InputL = false;
+			Link->InputR = false;
+			Link->PressL = false;
+			Link->PressR = false;
+			Link->InputMap = false;
+			Link->PressMap = false;
+			Link->PressA = false;
+			Link->PressB = false;
+			Waitframe();
+		}
+		if (!On)
+		{
+			On = true;
+			RunFFCScript(4, 0);
+		}
+		else
+		{
+			On = false;
+		}
+		while(Abs(Angle - NewAngle) > 4)
+		{
+			Used = true;
+			Screen->DrawCombo(2, Link->X + VectorX(14, Angle), Link->Y + VectorY(14, Angle), 1651, 1, 1, 10, -1, -1, Link->X + VectorX(14, Angle), Link->Y + VectorY(14, Angle), Angle, 0, 0, true, OP_OPAQUE);
+			Angle -= 5;
+			Angle %= 360;
+			NoMovement();
+			Link->InputL = false;
+			Link->InputR = false;
+			Link->PressL = false;
+			Link->PressR = false;
+			Link->InputMap = false;
+			Link->PressMap = false;
+			Link->PressA = false;
+			Link->PressB = false;
+			Waitframe();
+		}
+	}
+}
+
+ffc script Patra
+{
+	void SetMolarCoordinates (lweapon f, int oX, int oY, float radius, int angle){
+		f->HitXOffset=VectorX(radius, angle);
+		f->HitYOffset=VectorY(radius, angle);
+		f->DrawXOffset=VectorX(radius, angle);
+		f->DrawYOffset=VectorY(radius, angle);
+	}
+	void SetMolarCoordinates (lweapon f, int oX, int oY, float radius, int angle, float radius2){
+		f->HitXOffset=VectorX(radius, angle);
+		f->HitYOffset=VectorY(radius2, angle);
+		f->DrawXOffset=VectorX(radius, angle);
+		f->DrawYOffset=VectorY(radius2, angle);
+	}
+	void run()
+	{
+		int Angle = 0;
+		int Angle2 = 0;
+		lweapon Patra1 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra1, Link->X, Link->Y, 24, Angle % 360);
+		lweapon Patra2 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra2, Link->X, Link->Y, 24, (Angle + 120) % 360);
+		lweapon Patra3 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra3, Link->X, Link->Y, 24, (Angle + 240) % 360);
+		lweapon Patra4 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra4, Link->X, Link->Y, 48, Angle2 % 360);
+		lweapon Patra5 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra5, Link->X, Link->Y, 48, (Angle2 + 40) % 360);
+		lweapon Patra6 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra6, Link->X, Link->Y, 48, (Angle2 + 80) % 360);
+		lweapon Patra7 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra7, Link->X, Link->Y, 48, (Angle2 + 120) % 360);
+		lweapon Patra8 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra8, Link->X, Link->Y, 48, (Angle2 + 160) % 360);
+		lweapon Patra9 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra9, Link->X, Link->Y, 48, (Angle2 + 200) % 360);
+		lweapon Patra10 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra10, Link->X, Link->Y, 48, (Angle2 + 240) % 360);
+		lweapon Patra11 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra11, Link->X, Link->Y, 48, (Angle2 + 280) % 360);
+		lweapon Patra12 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra12, Link->X, Link->Y, 48, (Angle2 + 320) % 360);
+		lweapon Patra13 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra13, Link->X, Link->Y, 24, (Angle + 60) % 360);
+		lweapon Patra14 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra14, Link->X, Link->Y, 24, (Angle + 180) % 360);
+		lweapon Patra15 = Screen->CreateLWeapon(LW_SCRIPT4);
+		SetMolarCoordinates (Patra15, Link->X, Link->Y, 24, (Angle + 300) % 360);
+		Patra1->UseSprite(87);
+		Patra2->UseSprite(87);
+		Patra3->UseSprite(87);
+		Patra4->UseSprite(87);
+		Patra5->UseSprite(87);
+		Patra6->UseSprite(87);
+		Patra7->UseSprite(87);
+		Patra8->UseSprite(87);
+		Patra9->UseSprite(87);
+		Patra10->UseSprite(87);
+		Patra11->UseSprite(87);
+		Patra12->UseSprite(87);
+		Patra13->UseSprite(87);
+		Patra14->UseSprite(87);
+		Patra15->UseSprite(87);
+		Patra1->Damage = 2;
+		Patra2->Damage = 2;
+		Patra3->Damage = 2;
+		Patra4->Damage = 1;
+		Patra5->Damage = 1;
+		Patra6->Damage = 1;
+		Patra7->Damage = 1;
+		Patra8->Damage = 1;
+		Patra9->Damage = 1;
+		Patra10->Damage = 1;
+		Patra11->Damage = 1;
+		Patra12->Damage = 1;
+		Patra13->Damage = 1;
+		Patra14->Damage = 1;
+		Patra15->Damage = 1;
+		Patra1->X = Link->X;
+		Patra1->Y = Link->Y;
+		Patra2->X = Link->X;
+		Patra2->Y = Link->Y;
+		Patra3->X = Link->X;
+		Patra3->Y = Link->Y;
+		Patra4->X = Link->X;
+		Patra4->Y = Link->Y;
+		Patra5->X = Link->X;
+		Patra5->Y = Link->Y;
+		Patra6->X = Link->X;
+		Patra6->Y = Link->Y;
+		Patra7->X = Link->X;
+		Patra7->Y = Link->Y;
+		Patra8->X = Link->X;
+		Patra8->Y = Link->Y;
+		Patra9->X = Link->X;
+		Patra9->Y = Link->Y;
+		Patra10->X = Link->X;
+		Patra10->Y = Link->Y;
+		Patra11->X = Link->X;
+		Patra11->Y = Link->Y;
+		Patra12->X = Link->X;
+		Patra12->Y = Link->Y;
+		Patra13->X = Link->X;
+		Patra13->Y = Link->Y;
+		Patra14->X = Link->X;
+		Patra14->Y = Link->Y;
+		Patra15->X = Link->X;
+		Patra15->Y = Link->Y;
+		int Radius = 0;
+		int OrbitCounter = 300;
+		int OrbitRadius = 24;
+		bool OrbitGrow = false;
+		int OrbitTimes = 3;
+		for (; Radius < 24; Radius++)
+		{
+			SetMolarCoordinates (Patra1, Link->X, Link->Y, Radius, Angle % 360);
+			SetMolarCoordinates (Patra2, Link->X, Link->Y, Radius, (Angle + 120) % 360);
+			SetMolarCoordinates (Patra3, Link->X, Link->Y, Radius, (Angle + 240) % 360);
+			SetMolarCoordinates (Patra4, Link->X, Link->Y, Radius * 2, Angle2 % 360);
+			SetMolarCoordinates (Patra5, Link->X, Link->Y, Radius * 2, (Angle2 + 40) % 360);
+			SetMolarCoordinates (Patra6, Link->X, Link->Y, Radius * 2, (Angle2 + 80) % 360);
+			SetMolarCoordinates (Patra7, Link->X, Link->Y, Radius * 2, (Angle2 + 120) % 360);
+			SetMolarCoordinates (Patra8, Link->X, Link->Y, Radius * 2, (Angle2 + 160) % 360);
+			SetMolarCoordinates (Patra9, Link->X, Link->Y, Radius * 2, (Angle2 + 200) % 360);
+			SetMolarCoordinates (Patra10, Link->X, Link->Y, Radius * 2, (Angle2 + 240) % 360);
+			SetMolarCoordinates (Patra11, Link->X, Link->Y, Radius * 2, (Angle2 + 280) % 360);
+			SetMolarCoordinates (Patra12, Link->X, Link->Y, Radius * 2, (Angle2 + 320) % 360);
+			SetMolarCoordinates (Patra13, Link->X, Link->Y, Radius, (Angle + 60) % 360);
+			SetMolarCoordinates (Patra14, Link->X, Link->Y, Radius, (Angle + 180) % 360);
+			SetMolarCoordinates (Patra15, Link->X, Link->Y, Radius, (Angle + 300) % 360);
+			Patra1->X = Link->X;
+			Patra1->Y = Link->Y;
+			Patra2->X = Link->X;
+			Patra2->Y = Link->Y;
+			Patra3->X = Link->X;
+			Patra3->Y = Link->Y;
+			Patra4->X = Link->X;
+			Patra4->Y = Link->Y;
+			Patra5->X = Link->X;
+			Patra5->Y = Link->Y;
+			Patra6->X = Link->X;
+			Patra6->Y = Link->Y;
+			Patra7->X = Link->X;
+			Patra7->Y = Link->Y;
+			Patra8->X = Link->X;
+			Patra8->Y = Link->Y;
+			Patra9->X = Link->X;
+			Patra9->Y = Link->Y;
+			Patra10->X = Link->X;
+			Patra10->Y = Link->Y;
+			Patra11->X = Link->X;
+			Patra11->Y = Link->Y;
+			Patra12->X = Link->X;
+			Patra12->Y = Link->Y;
+			Patra13->X = Link->X;
+			Patra13->Y = Link->Y;
+			Patra14->X = Link->X;
+			Patra14->Y = Link->Y;
+			Patra15->X = Link->X;
+			Patra15->Y = Link->Y;
+			Waitframes(2);
+		}
+		while(On)
+		{
+			if (OrbitCounter <= 0 && OrbitGrow == false)
+			{
+				OrbitRadius-=0.20;
+				if (OrbitRadius <= 2)
+				{
+					OrbitGrow = true;
+				}
+			}
+			else if (OrbitCounter <= 0 && OrbitGrow == true)
+			{
+				OrbitRadius+=0.20;
+				if (OrbitRadius >= 24)
+				{
+					if (OrbitTimes > 0)
+					{
+						OrbitTimes--;
+						OrbitGrow = false;
+					}
+					else 
+					{
+						OrbitCounter = 300;
+						OrbitGrow = false;
+						OrbitTimes = 3;
+					}
+				}
+			}
+			else
+			{
+				OrbitCounter--;
+			}
+			SetMolarCoordinates (Patra1, Link->X, Link->Y, 24, Angle % 360, OrbitRadius);
+			SetMolarCoordinates (Patra2, Link->X, Link->Y, 24, (Angle + 120) % 360, OrbitRadius);
+			SetMolarCoordinates (Patra3, Link->X, Link->Y, 24, (Angle + 240) % 360, OrbitRadius);
+			SetMolarCoordinates (Patra4, Link->X, Link->Y, 48, Angle2 % 360, OrbitRadius * 2);
+			SetMolarCoordinates (Patra5, Link->X, Link->Y, 48, (Angle2 + 40) % 360, OrbitRadius * 2);
+			SetMolarCoordinates (Patra6, Link->X, Link->Y, 48, (Angle2 + 80) % 360, OrbitRadius * 2);
+			SetMolarCoordinates (Patra7, Link->X, Link->Y, 48, (Angle2 + 120) % 360, OrbitRadius * 2);
+			SetMolarCoordinates (Patra8, Link->X, Link->Y, 48, (Angle2 + 160) % 360, OrbitRadius * 2);
+			SetMolarCoordinates (Patra9, Link->X, Link->Y, 48, (Angle2 + 200) % 360, OrbitRadius * 2);
+			SetMolarCoordinates (Patra10, Link->X, Link->Y, 48, (Angle2 + 240) % 360, OrbitRadius * 2);
+			SetMolarCoordinates (Patra11, Link->X, Link->Y, 48, (Angle2 + 280) % 360, OrbitRadius * 2);
+			SetMolarCoordinates (Patra12, Link->X, Link->Y, 48, (Angle2 + 320) % 360, OrbitRadius * 2);
+			SetMolarCoordinates (Patra13, Link->X, Link->Y, 24, (Angle + 60) % 360, OrbitRadius);
+			SetMolarCoordinates (Patra14, Link->X, Link->Y, 24, (Angle + 180) % 360, OrbitRadius);
+			SetMolarCoordinates (Patra15, Link->X, Link->Y, 24, (Angle + 300) % 360, OrbitRadius);
+			Angle+=4;
+			Angle2-=2;
+			Patra1->DeadState = -1;
+			Patra2->DeadState = -1;
+			Patra3->DeadState = -1;
+			Patra4->DeadState = -1;
+			Patra5->DeadState = -1;
+			Patra6->DeadState = -1;
+			Patra7->DeadState = -1;
+			Patra8->DeadState = -1;
+			Patra9->DeadState = -1;
+			Patra10->DeadState = -1;
+			Patra11->DeadState = -1;
+			Patra12->DeadState = -1;
+			Patra13->DeadState = -1;
+			Patra14->DeadState = -1;
+			Patra15->DeadState = -1;
+			Patra1->X = Link->X;
+			Patra1->Y = Link->Y;
+			Patra2->X = Link->X;
+			Patra2->Y = Link->Y;
+			Patra3->X = Link->X;
+			Patra3->Y = Link->Y;
+			Patra4->X = Link->X;
+			Patra4->Y = Link->Y;
+			Patra5->X = Link->X;
+			Patra5->Y = Link->Y;
+			Patra6->X = Link->X;
+			Patra6->Y = Link->Y;
+			Patra7->X = Link->X;
+			Patra7->Y = Link->Y;
+			Patra8->X = Link->X;
+			Patra8->Y = Link->Y;
+			Patra9->X = Link->X;
+			Patra9->Y = Link->Y;
+			Patra10->X = Link->X;
+			Patra10->Y = Link->Y;
+			Patra11->X = Link->X;
+			Patra11->Y = Link->Y;
+			Patra12->X = Link->X;
+			Patra12->Y = Link->Y;
+			Patra13->X = Link->X;
+			Patra13->Y = Link->Y;
+			Patra14->X = Link->X;
+			Patra14->Y = Link->Y;
+			Patra15->X = Link->X;
+			Patra15->Y = Link->Y;
+			Waitframe();
+		}
+		Radius = 24;
+		for (; Radius > 0; Radius--)
+		{
+			SetMolarCoordinates (Patra1, Link->X, Link->Y, Radius, Angle % 360);
+			SetMolarCoordinates (Patra2, Link->X, Link->Y, Radius, (Angle + 120) % 360);
+			SetMolarCoordinates (Patra3, Link->X, Link->Y, Radius, (Angle + 240) % 360);
+			SetMolarCoordinates (Patra4, Link->X, Link->Y, Radius * 2, Angle2 % 360);
+			SetMolarCoordinates (Patra5, Link->X, Link->Y, Radius * 2, (Angle2 + 40) % 360);
+			SetMolarCoordinates (Patra6, Link->X, Link->Y, Radius * 2, (Angle2 + 80) % 360);
+			SetMolarCoordinates (Patra7, Link->X, Link->Y, Radius * 2, (Angle2 + 120) % 360);
+			SetMolarCoordinates (Patra8, Link->X, Link->Y, Radius * 2, (Angle2 + 160) % 360);
+			SetMolarCoordinates (Patra9, Link->X, Link->Y, Radius * 2, (Angle2 + 200) % 360);
+			SetMolarCoordinates (Patra10, Link->X, Link->Y, Radius * 2, (Angle2 + 240) % 360);
+			SetMolarCoordinates (Patra11, Link->X, Link->Y, Radius * 2, (Angle2 + 280) % 360);
+			SetMolarCoordinates (Patra12, Link->X, Link->Y, Radius * 2, (Angle2 + 320) % 360);
+			SetMolarCoordinates (Patra13, Link->X, Link->Y, Radius, (Angle + 60) % 360);
+			SetMolarCoordinates (Patra14, Link->X, Link->Y, Radius, (Angle + 180) % 360);
+			SetMolarCoordinates (Patra15, Link->X, Link->Y, Radius, (Angle + 300) % 360);
+			Patra1->Y = Link->Y;
+			Patra2->X = Link->X;
+			Patra2->Y = Link->Y;
+			Patra3->X = Link->X;
+			Patra3->Y = Link->Y;
+			Patra4->X = Link->X;
+			Patra4->Y = Link->Y;
+			Patra5->X = Link->X;
+			Patra5->Y = Link->Y;
+			Patra6->X = Link->X;
+			Patra6->Y = Link->Y;
+			Patra7->X = Link->X;
+			Patra7->Y = Link->Y;
+			Patra8->X = Link->X;
+			Patra8->Y = Link->Y;
+			Patra9->X = Link->X;
+			Patra9->Y = Link->Y;
+			Patra10->X = Link->X;
+			Patra10->Y = Link->Y;
+			Patra11->X = Link->X;
+			Patra11->Y = Link->Y;
+			Patra12->X = Link->X;
+			Patra12->Y = Link->Y;
+			Patra13->X = Link->X;
+			Patra13->Y = Link->Y;
+			Patra14->X = Link->X;
+			Patra14->Y = Link->Y;
+			Patra15->X = Link->X;
+			Patra15->Y = Link->Y;
+
+			Waitframes(2);
+		}
+		Patra1->DeadState = 0;
+		Patra2->DeadState = 0;
+		Patra3->DeadState = 0;
+		Patra4->DeadState = 0;
+		Patra5->DeadState = 0;
+		Patra6->DeadState = 0;
+		Patra7->DeadState = 0;
+		Patra8->DeadState = 0;
+		Patra9->DeadState = 0;
+		Patra10->DeadState = 0;
+		Patra11->DeadState = 0;
+		Patra12->DeadState = 0;
+		Patra13->DeadState = 0;
+		Patra14->DeadState = 0;
+		Patra15->DeadState = 0;
+		Quit();
+	}
+}

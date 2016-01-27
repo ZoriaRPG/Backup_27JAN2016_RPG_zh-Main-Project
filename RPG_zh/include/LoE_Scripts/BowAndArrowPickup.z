@@ -1,0 +1,52 @@
+item script BowPickup{
+	void run(int arrowCount, int giveArrows, int quiver, int arrowType){
+		
+		if ( quiver && ! Link->item[quiver] )
+			Link->Item[quiver] = true;
+		}
+		if ( arrowType && !Link->Item[arrowType] ) {
+			Link->Item[arrowType] = true;
+		}
+		if ( giveArrows ) {
+			Game->Counter[CR_ARROWS] += giveArrows;
+		}
+		if ( giveArrows < 0 ) {
+			Game->Counter[CR_RUPEES] += giveArrows;
+		}
+		int arrowStringType;
+		if ( arrowType == I_ARROW2 ) {
+			arrowStringType = 1;
+		}
+		if ( arrowType == I_ARROW3 ) {
+			arrowStringType = 2;
+		}	
+		int arrowMsg[]="You found a bow and ";
+		int arrows[]="Arrows.";
+		int arrowsSilver[]="Silver Arrows.";
+		int arrowsGold[]="Golden Arrows.";
+		int buffer[255]=" ";
+		int buffer2[255]=" ";
+		int buffer3[255]=" ";
+		int arrowCt1[]=" You can carry up to ";
+		int arrowsNumber[]=" ";
+		itoa(arrowNumber, arrowCount);
+		int arrowCt2[]=" arrows at a time."
+		strcpy(arrowMsg,buffer);
+		if ( arrowType == 1 ) {
+			//int leng = strlen(arrowsSilver) -1;
+			strcat(arrowsSilver,buffer);
+		}
+		else if ( arrowType == 2 ){
+			strcat(arrowsGold,buffer);
+		}
+		else strcat(arrows,buffer);
+		
+		strcpy(arrowCt1,buffer2);
+		strcat(arrowsNumber,buffer2);
+		strcat(arrowCt2,buffer2);
+		
+		strcpy(buffer,buffer3);
+		strcat(buffer2,buffer3);
+		//Game->PlayString
+		
+		

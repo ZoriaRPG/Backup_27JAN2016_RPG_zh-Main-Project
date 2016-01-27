@@ -1,0 +1,11 @@
+ffc script playMIDI{
+	void run(int midiNumber){
+		Game->PlayMIDI(midiNumber);
+	}
+}
+
+//bool waiting = false;
+//	while(waiting){
+//	Game->PlayMIDI(midiNumber);
+//	waiting = false;
+//}

@@ -1,0 +1,82 @@
+/// Debugging Functions
+//v0.2
+
+/// Debugging Commands
+
+/// Menu -> Debug
+
+const int TY_SCREEN = 0;
+const int TY_DMAP = 1;
+const int TY_LINKX = 2;
+const int TY_LINKY = 3;
+void Debug(int type){
+	if ( type == TY_SCREEN ) {
+		//Print screen and DMAP to allegro log with pre-recorded ERROR FLAG MESSAGE.
+	}
+}
+
+void Debug(){
+	int thisScreen = Game->GetCurScreen();
+	int thisDMAP = Game->GetCurDMap();
+	int thisMap = Game->GetCurMap();
+	int thisX = Link->X;
+	int thisY = Link->Y;
+	int stringScreen[]="Bug Found on Screen: ";
+	int stringDMAP[]="on DMAP: ";
+	int stringMap[]="on Map Number: ";
+	int stringX[]="at X Coordinate: ";
+	int stringY[]="at Y Coordinate: ";
+	TraceNL();
+	TraceS(stringScreen);
+	Trace(thisScreen);
+	TraceNL();
+	TraceS(stringDMAP);
+	Trace(thisDMAP);
+	TraceNL();
+	TraceS(stringMap);
+	Trace(thisMap);
+	TraceNL();
+	TraceS(stringX);
+	Trace(thisX);
+	TraceNL();
+	TraceS(stringY);
+	Trace(thisY);
+	TraceNL();
+}
+
+//Needs to print FFC Slots to Allegro.log.
+
+//DrawPresses (originallyt, drawInput() ; renamed for clarity and scope) by Unames. 
+//Draws a character to the screen, if the player presses a button.
+void DrawPresses(int col){
+	
+	int strA[] = "A";
+	int strB[] = "B";
+	int strL[] = "L";
+	int strR[] = "R";
+	int str1[] = "1";
+	int str2[] = "2";
+	int str3[] = "3";
+	int str4[] = "4";
+	int strup[] = "^";
+	int strdown[] = "|";
+	int strleft[] = "<";
+	int strright[] = ">";
+	int strs[] = "S";
+	int strm[] = "M";
+	
+	if(Link->InputA) Screen->DrawString(7, 24, -16, FONT_Z1, col, 0, TF_NORMAL, strA, OP_OPAQUE);
+	if(Link->InputB) Screen->DrawString(7, 32, -16, FONT_Z1, col, 0, TF_NORMAL, strB, OP_OPAQUE);
+	if(Link->InputL) Screen->DrawString(7, 40, -16, FONT_Z1, col, 0, TF_NORMAL, strL, OP_OPAQUE);
+	if(Link->InputR) Screen->DrawString(7, 48, -16, FONT_Z1, col, 0, TF_NORMAL, strR, OP_OPAQUE);
+	if(Link->InputEx1) Screen->DrawString(7, 24, -8, FONT_Z1, col, 0, TF_NORMAL, str1, OP_OPAQUE);
+	if(Link->InputEx2) Screen->DrawString(7, 32, -8, FONT_Z1, col, 0, TF_NORMAL, str2, OP_OPAQUE);
+	if(Link->InputEx3) Screen->DrawString(7, 40, -8, FONT_Z1, col, 0, TF_NORMAL, str3, OP_OPAQUE);
+	if(Link->InputEx4) Screen->DrawString(7, 48, -8, FONT_Z1, col, 0, TF_NORMAL, str4, OP_OPAQUE);
+	if(Link->InputUp) Screen->DrawString(7, 8, -16, FONT_Z1, col, 0, TF_NORMAL, strup, OP_OPAQUE);
+	if(Link->InputDown) Screen->DrawString(7, 8, -8, FONT_Z1, col, 0, TF_NORMAL, strdown, OP_OPAQUE);
+	if(Link->InputLeft) Screen->DrawString(7, 0, -8, FONT_Z1, col, 0, TF_NORMAL, strleft, OP_OPAQUE);
+	if(Link->InputRight) Screen->DrawString(7, 16, -8, FONT_Z1, col, 0, TF_NORMAL, strright, OP_OPAQUE);
+	if(Link->InputStart) Screen->DrawString(7, 0, -16, FONT_Z1, col, 0, TF_NORMAL, strs, OP_OPAQUE);
+	if(Link->InputMap) Screen->DrawString(7, 16, -16, FONT_Z1, col, 0, TF_NORMAL, strm, OP_OPAQUE);
+}

@@ -1,0 +1,92 @@
+//Custom simple scripted hammer. D0-> Sprite used.
+ffc script MeleeWeaponTest{
+	void run(int sprite){
+		lweapon melee = LweaponInit (this, LW_GHOSTED, 8, sprite, 0);
+		MeleeWeaponPound(this, melee, melee->Misc[LWEAPON_MISC_ORIGTILE], 16, 12, 12, 89, true, 28, NPCD_HAMMER, 16, 42);
+		MeleeWeaponEndStrike(this, melee, melee->Misc[LWEAPON_MISC_ORIGTILE], 12, 2);
+	}
+}
+
+//LttP-styled bow. You can set to fire any ammo, 
+ffc script LttPBow{
+	void run(int dam, int arrsprite, int miscvar1, int launchspeed, int bowsprite, int scriptnum){
+		Game->PlaySound(1);
+		lweapon bow = LweaponInit (this, LW_GHOSTED, 4, bowsprite, 0);
+		int origtile = bow->OriginalTile;
+		MeleeWeaponDraw(this, bow, origtile, 12, 12);
+		int it = GetItemID(bow);
+		int args[8] = {dam, arrsprite, miscvar1, launchspeed, 0, 0 ,0, it};
+		ffc bombArrow = LaunchScriptedLweapon(scriptnum, args);
+		PutFFCInFrontOfLink(bombArrow, 12);
+		MeleeWeaponEndStrike(this, bow, (origtile+1), 2, 6);
+	}
+}
+
+ffc script BombArrow{
+	void run (int dam, int sprite, int bomb, int speed){
+		int bombtype = Cond((bomb>0), CR_SBOMBS, CR_BOMBS);
+		AmmoManager(this, CR_ARROWS, 1, I_QUIVER4, bombtype, 1, I_BOMBBAG4, false);
+		lweapon arrow =  CreateNewWeapon (this, LW_GHOSTED, dam, sprite);
+		LweaponSetFlag(arrow, LWF_AUTO_DIR_UPDATE);
+		LweaponSetFlag(arrow, LWF_AUTO_SPRITE_UPDATE);
+		LweaponSetFlag(arrow, LWF_NO_FALL);
+		SetStraightMotion4(this, speed);
+		if (this->Vx!=0)SetLweaponHitboxOffsets(arrow, 4, 4, 0, 0);
+		else if (this->Vy!=0)SetLweaponHitboxOffsets(arrow, 0, 0, 4, 4);		
+		while (true){
+			//DrawLweaponHitbox(arrow);
+			//debugValue(2, arrow->Misc[LWEAPON_MISC_HIT_OFFSET_X]);
+			//debugValue(3, arrow->Misc[LWEAPON_MISC_HIT_OFFSET_Y]);
+			UseEnemyDefense(arrow, 0, NPCD_ARROW);
+			TriggerUpdate (arrow, 5, SFX_SECRET, true);
+			if ((AnyNPCCollision(arrow))||(WallCollision8way(arrow))){
+				if (bomb>0) KillExplosion (this, arrow, dam, true);
+				else KillExplosion (this, arrow, dam, false);
+			}
+			LweaponWaitframe (this, arrow, true);
+		}
+	}
+}
+
+ffc script LargeLweapon{
+	void run(int TileX, int TileY, int sprite){
+		lweapon sword = LweaponInit (this, LW_GHOSTED, 4, sprite, 54);
+		//int origtile = sword->OriginalTile;
+		BigLweapon(sword, TileX, TileY);
+		SetLweaponHitboxOffsets(sword, 4, 1, 8, 8);
+		MeleeWeaponSlash360(this, sword, sword->Misc[LWEAPON_MISC_ORIGTILE], 10, 12, 79, 141, NPCD_SWORD, 41);
+		 MeleeWeaponEndStrike(this, sword, sword->Misc[LWEAPON_MISC_ORIGTILE], 12, 2);
+	}
+}
+
+ffc script FireRod{
+	void run(int damage, int wandsprite, int flamesprite, int speed, int cost, int scriptnum){
+		lweapon wand = LweaponInit (this, LW_GHOSTED, damage, wandsprite, 0);
+		MeleeWeaponStab(this, wand, wand->Misc[LWEAPON_MISC_ORIGTILE], 8, 12, 88, 0, NPCD_WAND, 0);
+		if (!AmmoManager(CR_RUPEES, cost, 0, false)){
+			MeleeWeaponEndStrike(this, wand, wand->Misc[LWEAPON_MISC_ORIGTILE], 12, 2);
+		}
+		int it = GetItemID(wand);
+		int args[8] = {damage, flamesprite, speed, 0, 0, 0 ,0, it};
+		ffc flame = LaunchScriptedLweapon(scriptnum, args);
+		PutFFCInFrontOfLink(flame, 16);
+		Game->PlaySound(SFX_FIRE);
+		MeleeWeaponEndStrike(this, wand, wand->Misc[LWEAPON_MISC_ORIGTILE], 12, 2);
+	}	
+}
+
+ffc script FireRodFlame{
+	void run(int dam, int sprite, int speed){
+		lweapon fire =  CreateNewWeapon (this, LW_GHOSTED, dam, sprite);
+		LweaponSetFlag(fire, LWF_NO_FALL);
+		LweaponSetFlag(fire, LWF_PENETRATING);
+		SetStraightMotion4(this, speed);
+		while (true){
+			UseEnemyDefense(fire, 0, NPCD_FIRE);
+			TriggerUpdate (fire, 4, SFX_SECRET, true);
+			if (dam>4) TriggerUpdate (fire, 73, SFX_SECRET, true);
+			TriggerUpdate (fire, 79, SFX_SECRET, true);
+			LweaponWaitframe (this,fire, true);
+		}
+	}
+}

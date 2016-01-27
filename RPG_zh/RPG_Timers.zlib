@@ -1,0 +1,815 @@
+// Timers v1.7.1
+//For RPG.zh v0.96.9/2
+
+///////////////////////////////
+/// Timers.zh | v1.7.1      ///
+/// 5th December, 2015      ///
+////////////////////////////////////////////
+/// Created, and maintained by: ZoriaRPG ///
+////////////////////////////////////////////
+
+
+//Array to hold timer values.  The index size of each of all of the following SIX arrays MUST be identical.
+
+float Timers[50]={	0,0,0,0,0,0,0,0,0,0, //Timers by ID
+			0,0,0,0,0,0,0,0,0,0, //Running state if each
+			1,1,1,1,1,1,1,1,1,1, //Decrement of each
+			0,0,0,0,0,0,0,0,0,0, //Does it reset automatically?
+			0,0,0,0,0,0,0,0,0,0 }; //if so, what is the delay before resetting?
+			
+			
+			
+			
+			
+//Backups for Backup and Restore Functions
+float Timers_BAK[50]={	0,0,0,0,0,0,0,0,0,0, //Timers by ID
+			0,0,0,0,0,0,0,0,0,0, //Running state if each
+			1,1,1,1,1,1,1,1,1,1, //Decrement of each
+			0,0,0,0,0,0,0,0,0,0, //Does it reset automatically?
+			0,0,0,0,0,0,0,0,0,0 }; //if so, what is the delay before resetting?
+			
+void BackupTimers(){
+	for ( int q = 0; q < SizeOfArray(Timers); q++ ) Timers_BAK[q] = Timers[q];
+}
+
+void RestoreTimers(){
+	for ( int q = 0; q < SizeOfArray(Timers); q++ ) Timers[q] = Timers_BAK[q];
+}
+
+			
+//Expand as needed.
+
+float TimersRunning[10];
+float TimersRunning_BAK[10];
+//Expand as needed.
+
+float TimersDecrements[10]={1,1,1,1,1,1,1,1,1,1}; //Hold special decrewment values for timers, if not 1. 
+float TimersDecrements_BAK[10]={1,1,1,1,1,1,1,1,1,1}; //Hold special decrewment values for timers, if not 1. 
+
+float ResetAtZero[10]; //If true, the timer loops.
+float ResetDelay[10];
+
+//Merge all of these arrays!
+
+//Array indices constants.
+const int TIMERS_TIMER_ID = 0;
+const int TIMERS_RUNNING = 10;
+const int TIMERS_DECREMENTS = 20;
+const int TIMERS_RESET_AT_ZERO = 30;
+const int TIMERS_RESET_DELAY = 40;
+const int TIMERS_BACKUP = 50;
+
+//Timer States
+const int TIMER_RESUMED = 2;
+const int TIMER_RUNNING = 1;
+const int TIMER_STOPPED = 0;
+const int TIMER_PAUSED = -1;
+const int TIMER_SUSPENDED = -2;
+
+//! Functions need to use these states, to operate. Must modify entire set of functions to use the states here.
+//! and add functions for states, or state-based conditions. e.g. paused to resumed, but not stopped to resumed.
+
+
+////////////////////////
+//Main Function: 
+
+
+void RunTimers(){ //v1.6: Call in global active script, before Waitdraw to run all active timers. 
+    int range = SizeOfArray(Timers);
+    int presentValue;
+    for ( int q = 0; q <= range; q++) {
+        if ( Timers[q] > 0  && TimersRunning[q] == 1 ) {
+            Timers[q] -= TimersDecrements[q];
+        }
+    }
+}
+
+
+void SaveTimers(){
+	for (int i = 0; i <= SizeOfArray(Timers); i++){
+		Timers_BAK[i] = Timers[i];
+		TimersRunning_BAK[i] = TimersRunning[i];
+		TimersDecrements_BAK[i] = TimersDecrements[i];
+	}
+}
+
+void RestoreTimers(){
+	for (int i = 0; i <= SizeOfArray(Timers); i++){
+		Timers[i] = Timers_BAK[i];
+		TimersRunning[i] = TimersRunning_BAK[i];
+		TimersDecrements[i] = TimersDecrements_BAK[i];
+	}
+}
+
+
+bool IsTimer(int timer){ //Checks to see if a timer is running
+	return TimersRunning[timer];
+}
+
+int IsTimerValue(int timer){ //Returns the present value of any timer
+	return Timers[timer];
+}
+
+int IsDecrement(int timer){
+	return TimersDecrements[timer];
+}
+
+//int TimersStatus[10]={0,0,0,0,0,0,0,0,0,0}; 
+//Reserved for future use. (0 = stopped, 1 = running, 2 = paused).
+
+
+//Timer Type Constants
+
+//Set up constants for your timers; remember that the array index starts at '0'.
+//These are timer IDs...
+
+const int TI_MYTIMER_1 = 0;
+const int TI_MYTIMER_2 = 1;
+const int TI_MYTIMER_3 = 2;
+const int TI_MYTIMER_4 = 3;
+const int TI_MYTIMER_5 = 4;
+const int TI_MYTIMER_6 = 5;
+const int TI_MYTIMER_7 = 6;
+const int TI_MYTIMER_8 = 7;
+const int TI_MYTIMER_9 = 8;
+const int TI_MYTIMER_0 = 9;
+
+
+//Timer Standard Duration Values
+
+const int TD_TENTH_SECOND = 6;
+const int TD_QUARTER_SECOND = 15;
+const int TD_HALF_SECOND = 30;
+const int TD_ONE_SECOND = 60;
+const int TD_FIVE_SECONDS = 300;
+const int TD_SIX_SECONDS = 360;
+const int TD_TEN_SECONDS = 600;
+const int TD_FIFTEEN_SECONDS = 900;
+const int TD_THIRTY_SECONDS = 1800;
+const int TD_1_MINUTE = 3600;
+const int TD_2_MINUTES = 7200;
+const int TD_3_MINUTES = 10800;
+const int TD_4_MINUTES = 14400;
+const int TD_5_MINUTES = 18000;
+
+////////////////////////////////////////
+//Initialisation and Value Manipulation
+
+
+void InitTimer(int timer, int value){
+    if ( Timers[timer] <= 0 ) {
+        Timers[timer] = value;
+    }
+    if ( !TimersRunning[timer] ) {
+        TimersRunning[timer] = 1;
+    }
+}
+
+
+//Initialises a timer, settign its value, and starting it. If the timer value is not zero, this will fail.
+
+void InitTimer(int timer, int value, bool forced){
+    if ( !forced ) {
+        if ( Timers[timer] <= 0 ) {
+            Timers[timer] = value;
+        }
+    }
+    else if ( forced ) {
+        Timers[timer] = value;
+    }
+    if ( !TimersRunning[timer] ) {
+        TimersRunning[timer] = 1;
+    }
+}
+
+//Initialises a timer, settign its value, and starting it. Can force-set a value.
+
+void SetTimer(int timer, int value){
+    if ( Timers[timer] <= 0 ) {
+        Timers[timer] = value;
+    }
+}
+
+//Sets the value of a specific timer, if it is zero. 
+//Used to initialise a timer, and to re-set it onced its count reaches zero. 
+
+void SetTimer(int timer, int value, bool forced){
+    if ( !forced ) {
+        if ( Timers[timer] <= 0 ) {
+            Timers[timer] = value;
+        }
+    }
+    else if ( forced ) {
+        Timers[timer] = value;
+    }
+}
+
+//Sets the value of a specific timer, if it is zero. May be forced to set any value, even if the timer is not zero.
+
+
+
+void StartTimer(int timer){
+    TimersRunning[timer] = 1;
+}
+
+//Starts a timer, without setting, or changing its value.
+
+void ResumeTimer(int timer){
+    TimersRunning[timer] = 1;
+}
+
+//Resumes a suspended timer; identical to startTimer() in all but name.
+
+
+void SuspendTimer(int timer){
+    TimersRunning[timer]= 0;
+}
+
+//Suspends (pauses) a timmer. A suspended timer will not lose value with frame counts. 
+
+////////////////////////////////////
+///Timer numeric value manipulation.
+
+void ReduceTimer(int timer){
+    if (TimersRunning[timer] == true ){
+        if ( Timers[timer] > 0 ) {
+            Timers[timer] -= 1;
+        }
+    }
+}
+
+//Reduce a specific, running timer by '1'. Use before Waitdraw();
+
+void ReduceTimer(int timer, int value){
+    if (TimersRunning[timer] ){
+        if ( Timers[timer] > 0 ) {
+            Timers[timer] -= value;
+        }
+    }
+}
+
+//Reduce a specific, running timer by 'value'. Use before Waitdraw();
+
+
+
+void ClearTimer(int timer){
+    Timers[timer] = 0;
+    TimersRunning[timer] = 0;
+}
+
+//Resets the value of a timer (to zero), and disables it. The opposite of initTimer.
+
+
+void ChangeTimer(int timer, int value){
+    Timers[timer] = value;
+}
+
+//Changs the value of a timer to any arbitrary value, with no regard to its present value.
+
+
+void IncreaseTimer(int timer, int value){
+    Timers[timer] += value;
+}
+
+//Adds an arbitrary amount to a timer
+
+void ShrinkTimer(int timer, int value){
+    Timers[timer] -= value;
+    int timerTotal = Timers[timer];
+    if ( timerTotal == 0 ) {
+        Timers[timer] = 0;
+    }
+}
+
+//Reduces a timer by an arbitrary amount, even if it is not running. If the reduction would cause the timer to be a negative value, this sets its value to '0'.
+
+void ShrinkTimer(int timer, int value, bool ignore){
+    Timers[timer] -= value;
+    if ( ignore == false ) {
+        int timerTotal = Timers[timer];
+        if ( timerTotal == 0 ) {
+            Timers[timer] = 0;
+        }
+    }
+}
+
+//.Reduces a timer by an arbitrary amount, and allows for a ignoring negative values. 
+
+
+
+
+//////////////////////////////////////
+//Check value and operation of timers.
+
+
+//Values of Timer
+
+int ReturnTimer(int timer){
+    int value = Timers[timer];
+    return value;
+}
+
+//Returns the value of timer as an integer. 
+//Useful for comparisons, ro events that occur at specific conts of a timer. 
+
+bool CheckTimer(int timer){
+    if ( Timers[timer] <= 1 ) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+//Boolean returns true when timer reaches '1', or less.
+
+bool CheckTimer(int timer, bool precise){
+    if ( precise == false ) {
+        if ( Timers[timer] <= 1 ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else if ( precise == true ) {
+        if ( Timers[timer] == 0.0000 ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+}
+
+//Boolean returns true when timer reaches 1, or less. May be forced to be sensitive to exactly zero.
+
+
+
+bool ZeroTimer(int timer){
+    if ( Timers[timer] == 0 ) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+//Boolean returns true when timer reaches exactly '0'.
+
+bool CheckTimer(int timer, int value){
+    if ( Timers[timer] == value ) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+//Boolean returns true when timer reaches a specific value.
+
+bool CheckTimer(int timer, int value, bool orLess){
+    if ( orLess == true ) {
+        if ( Timers[timer] <= value ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else if ( orLess == false ) {
+        if ( Timers[timer] == value ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+}
+
+//Boolean returns true when timer reaches a specific value, or less.
+
+
+
+
+///Booleans for Timer Status
+
+bool TimerRunning(int timer){
+    bool value = TimersRunning[timer];
+    return value;
+}
+
+//Returns true is a timer is running, false if 'tisn't.
+
+bool TimerOn(int timer){
+    bool value = TimersRunning[timer];
+    return value;
+}
+
+//Returns true is a timer IS running (ON), false if 'tisn't.
+
+bool TimerOff(int timer){
+    bool tOff;
+    bool value = TimersRunning[timer];
+    if ( value == false ) { 
+        tOff = true;
+    }
+    else {
+        tOff = false;
+    }
+    return tOff;
+}
+
+//Returns true is a timer is NOT running (OFF), false if 'tis.
+
+////////////////////////
+//Multiple Timer Actions
+
+
+
+
+
+///////////////////////////////////
+//Reduce - Decrease Multiple Timers
+
+void DecreaseAllTimers(){ //v1.6
+    int range = SizeOfArray(Timers);
+    int presentValue;
+    for ( int q = 0; q <= range; q++) {
+        if ( Timers[q] > 0  && TimersRunning[q] ) {
+            Timers[q] -= TimersDecrements[q];
+        }
+    }
+}
+
+void DecreaseAllTimers(int value){
+    int range = SizeOfArray(Timers);
+    int presentValue;
+    for ( int q = 0; q <= range; q++) {
+        if ( Timers[q] > 0 ) {
+            Timers[q] -= value;
+        }
+    }
+}
+
+//Reduces all timers by value specified; will not reduce a timer below zero.
+
+void DecreaseAllTimers(int value, bool allowNegative){
+    int range = SizeOfArray(Timers);
+    int presentValue;
+    for ( int i = 0; i <= range; i++) {
+        Timers[i] -= value;
+        presentValue = Timers[i];
+        if ( allowNegative == false && presentValue < 0 ) {
+                Timers[i] = 0;
+        }
+    }
+}
+
+//Reduces all timers, and allows for values below zero.
+
+void DecreaseRunningTimers(int amount){
+    int range = SizeOfArray(Timers);
+    bool active;
+    for ( int i = 0; i <= range; i++ ){
+        if ( TimersRunning[i] == true ) {
+            if ( Timers[i] > 0 ) {
+                Timers[i] -= amount;
+            }
+        }
+    }
+}
+
+//Decrease RUNNING timers by arbitrary amount. This will not permnit a timer to drop below zero.
+
+
+void DecreaseRunningTimers(int amount, bool allowNegative){
+    int range = SizeOfArray(Timers);
+    bool active;
+    int presentValue;
+    for ( int i = 0; i <= range; i++ ){
+        if ( TimersRunning[i] ) {
+            Timers[i] -= amount;
+            presentValue = Timers[i];
+            if ( allowNegative == false && presentValue < 0 ) {
+                Timers[i] = 0;
+            }
+        }
+    }
+}
+
+//Decrease RUNNING timers by arbitrary amount. This allows you to permit timers to drop below zero.
+
+
+void DecreaseRangeOfTimers(int min, int max, int value){
+    for ( int i = min; i <= max; i++ ){
+        if ( Timers[i] > 0 ) {
+            Timers[i] -= value;
+        }
+    }
+}
+
+//Reduces range of timers, from timer min, to timer max, by amount value.
+
+void DecreaseRangeOfTimers(int min, int max, int value, bool allowNegative){
+    int presentValue;
+    for ( int i = min; i <= max; i++ ){
+        Timers[i] -= value;
+        presentValue = Timers[i];
+        if ( allowNegative == false && presentValue < 0 ) {
+            Timers[i] = 0;
+        }
+    }
+}
+
+//Reduces range of timers, from timer min, to timer max, by amount value, with option to permit negative values.
+
+////////////////////////////
+//Increase Multiple Timers
+
+void IncreaseAllTimers(int value){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++) {
+        if ( Timers[i] > 0 ) {
+            Timers[i] += value;
+        }
+    }
+}
+
+//Increases all timers by arbitrary amount.
+
+void IncreaseRunningTimers(int amount){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++ ){
+        if ( TimersRunning[i] ) {
+            Timers[i] += amount;
+        }
+    }
+}
+
+//Increase all RUNNING timers by an arbitrary amount.
+
+void IncreaseRangeOfTimers(int min, int max, int value){
+    for ( int i = min; i <= max; i++ ){
+        if ( Timers[i] > 0 ) {
+            Timers[i] += value;
+        }
+    }
+}
+
+//Increases range of timers, from timer min, to timer max, by amount value.
+
+////////////////
+//Clear Commands
+
+void ClearAllTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++) {
+        Timers[i] = 0;
+    }
+}
+
+//Clears all timers back to a value of zero.
+
+void ClearRunningTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++ ){
+        if ( TimersRunning[i] ) {
+            Timers[i] = 0;
+        }
+    }
+}
+
+//Clears all RUNNING timers, back to a value of zero.
+
+
+void ClearSuspendedTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++ ){
+        if ( !TimersRunning[i] ) {
+            Timers[i] = 0;
+        }
+    }
+}
+
+//Clears all SUSPENDED timers, back to a value of zero.
+
+void ClearPausedTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++ ){
+        if ( !TimersRunning[i] ) {
+            Timers[i] = 0;
+        }
+    }
+}
+
+//Clears all PAUSED timers, back to a value of zero.
+
+void ClearStoppedTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++ ){
+        if ( !TimersRunning[i] ) {
+            Timers[i] = 0;
+        }
+    }
+}
+
+//Clears all STOPPED timers, back to a value of zero.
+
+void ClearRangeOfTimers(int min, int max){
+    for ( int i = min; i <= max; i++ ){
+        if ( Timers[i] > 0 ) {
+            Timers[i] = 0;
+        }
+    }
+}
+
+void ClearTimerState(int timer){
+	//
+}
+
+void ClearTimerStates(){
+	//all timer
+}
+
+void ClearTimerStates(int range){}
+	
+void ClearTimerStates(int min, int max){}
+	
+
+//Clears specific range of timers, from timer min,to timer max, back to a value of zero
+
+////////////////
+///Set Commands
+
+void SetAllTimers(int value){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++) {
+        Timers[i] = value;
+    }
+}
+
+//Sets all timers to an arbitrary amount.
+
+void SetRunningTimers(int amount){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++ ){
+        if ( TimersRunning[i] ) {
+            Timers[i] = amount;
+        }
+    }
+}
+
+//Sets all RUNNING timers, to an arbitrary value.
+
+void SetRangeOfTimers(int min, int max, int value){
+    for ( int i = min; i <= max; i++ ){
+        if ( Timers[i] > 0 ) {
+            Timers[i] = value;
+        }
+    }
+}
+
+//Sets specific range of timers, to an arbitrary value.
+
+////////////////////////////////
+//Multiple Timer Status Commands
+
+
+void StartAllTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++) {
+        if ( !TimersRunning[i] ) {
+            TimersRunning[i] = 1;
+        }
+    }
+}
+
+void StartAllTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++) {
+        if ( !TimersRunning[i] ) {
+            TimersRunning[i] = 1;
+        }
+    }
+}
+
+//Starts all timers - Call this if you have set multiple timers individually.
+
+
+void StartRangeOfimers(int min, int max){
+    for ( int i = min; i <= max; i++) {
+        if ( !TimersRunning[i] ) {
+            TimersRunning[i] = 1;
+        }
+    }
+}
+
+//Starts range of timers, from timer min, to timer max.
+
+void SuspendAllTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++) {
+        if ( TimersRunning[i] ) {
+            TimersRunning[i] = 0;
+        }
+    }
+}
+
+void SuspendAllTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++) {
+        if ( TimersRunning[i] ) {
+            TimersRunning[i] = 0;
+        }
+    }
+}
+
+//Suspends all timers.
+
+void SuspendRangeOfTimers(int min, int max){
+    for ( int i = min; i <= max; i++) {
+        if ( TimersRunning[i] ) {
+            TimersRunning[i] = 0;
+        }
+    }
+}
+
+//Suspends range of timers, from timer min, to timer max.
+
+void StopAllTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++) {
+        if ( TimersRunning[i] ) {
+            TimersRunning[i] = 0;
+        }
+    }
+}
+
+//Stops all timers. Reserved for future expansion.
+
+void StopRangeOfTimers(int min, int max){
+    for ( int i = min; i <= max; i++) {
+        if ( TimersRunning[i] ) {
+            TimersRunning[i] = 0;
+        }
+    }
+}
+
+//Stops range of timers, from timer min, to timer max. Reserved for future expansion,
+
+void ResumeAllTimers(){
+    int range = SizeOfArray(Timers);
+    for ( int i = 0; i <= range; i++) {
+        if ( !TimersRunning[i] ) {
+            TimersRunning[i] = 1;
+        }
+    }
+}
+
+//Resumes all timers. Reserved for future use with TimersPaused[] array.
+
+void ResumeRangeOfTimers(int min, int max){
+    for ( int i = min; i <= max; i++) {
+        if ( !TimersRunning[i] ) {
+            TimersRunning[i] = 1;
+        }
+    }
+}
+
+//Resumes range of timers, from timer min, to timer max.
+
+
+
+
+
+/////////
+//Scripts
+
+///////////////////////
+//Global Script Example
+
+global script activeSample{
+    void run(){
+    int swap;
+        while(true){
+            
+            InitTimer(TI_MYTIMER_1,( (TD_ONE_SECOND * 3) + TD_HALF_SECOND ) );
+            ReduceTimer(TI_MYTIMER_1,1);
+            Waitdraw();
+            if ( TimerOn(TI_MYTIMER_1) && Link->PressR ) {
+                SuspendTimer(TI_MYTIMER_1);
+            }
+            else if ( TimerOff(TI_MYTIMER_1)  && Link->PressR ) {
+                ResumeTimer(TI_MYTIMER_1);
+            }
+            //Trace(returnTimer(TI_MYTIMER_1)); //Prints vale of timer TI_MYTIMER_1 to allegro.log
+            //TraceB(timerRunning(TI_MYTIMER_1)); //Check timer status of TI_MYTIMER_1.
+            Waitframe();
+        }
+    }
+}
+
+//Copyright (C) 2014-2015 TMGS
+//Licensed Under: GLPL v2 (Read: https://www.gnu.org/licenses/old-licenses/lgpl-2.0.html)

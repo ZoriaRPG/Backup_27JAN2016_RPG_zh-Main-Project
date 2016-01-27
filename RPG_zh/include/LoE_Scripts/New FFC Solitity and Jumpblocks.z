@@ -1,0 +1,10 @@
+//Solid FFCs and Jump-Only FFCs
+
+bool linkJumping;
+bool FFC_isSolid;
+
+//function to make FFCs solid, if the FFC script declares isSolid(this)
+
+if (isSolidThis){
+    while (linkJumping){
+        !isSolidThis;

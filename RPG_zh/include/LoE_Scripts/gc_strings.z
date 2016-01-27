@@ -1,0 +1,46 @@
+void customStringTable(int stringNumber) {
+    //Keeps string arrys at local level.
+    
+    int string0000[] = " ";
+    int string0001[] = " ";
+    int string0002[] = " ";
+    int string0003[] = " ";
+    int string0004[] = " ";
+    int string0005[] = " ";
+    int string0006[] = " ";
+    int string0007[] = " ";
+    int string0008[] = " ";
+    int string0009[] = " ";
+    int string0010[] = " ";
+    int string0011[] = " ";
+    int string0012[] = " ";
+    int string0013[] = " ";
+    int string0014[] = " ";
+    int string0015[] = " ";
+    int string0016[] = " ";
+    int string0017[] = " ";
+    int string0018[] = " ";
+    int string0019[] = " ";
+    int string0020[] = " ";
+    int string0021[] = " ";
+    int string0022[] = " ";
+    int string0023[] = " ";
+    int string0024[] = " ";
+    int string0025[] = " ";
+    int string0026[] = " ";
+    
+    int strings[] = {string0000, string0001, string0003, string0004};
+    
+    //Draw string functions.
+    
+    //int string1[] = "String the first";
+    //int string2[] = "String the second";
+ 
+    //int strings[] = {string1, string2};
+    
+    
+    
+int loadString(int stringNumber) {
+    int string [MAX_MESSAGELENGTH] = Game->GetMessage(stringNumber);
+    return stringNumber;
+}

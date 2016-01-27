@@ -1,0 +1,9 @@
+//Give Link the L1 amulet by default.
+//	Add a L2 amulet to handle these effects.
+
+const int I_REVEAL = 100; //Item ID of L2 Amulet.
+
+void InvisibleEnemies(){
+	if ( GetNPCMiscFlag(e,  ) //Can;t use Enemy Flags because we can;t write to them, and Misc Flag Invisible is NOT cloaked. it's always invisible. 
+		if ( !Link->Item[I_REVEAL] ) {
+			e->OriginalTile = TILE_INVIS

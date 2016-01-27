@@ -1,0 +1,170 @@
+/// FFCs v0.2.1 for RPG.zh v0.9.6.47
+
+// Constants
+
+// Arrays
+
+// Vars
+
+// Functions
+
+/////////////////////
+/// FFC Functions ///
+/////////////////////
+
+
+void KillFFC(int slot){
+	int thisFFC;
+	ffc f;
+	for( int i = 1; i <= 32; i++ ){
+		f = Screen->LoadFFC(i);
+		if ( f->Script == slot ) {
+			f->Data = 0;
+		}
+	}
+}
+
+void ChangeFFCScript(int slot, int newScript){
+	int thisFFC;
+	ffc f;
+	for( int i = 1; i <= 32; i++ ){
+		f = Screen->LoadFFC(i);
+		if ( f->Script == slot ) {
+			f->Script = newScript;
+		}
+	}
+}
+
+
+int FreeFFC(){
+	ffc f;
+	for( int q = 1; q <= 32; q++ ){
+		f = Screen->LoadFFC(q);
+		if( f->Data == 0 ){
+			return q;
+		}	
+	} 
+	return 0;
+}
+
+int FreeFFC(int max){
+	ffc f;
+	for( int q = 1; q <= 32; q++ ){
+		f = Screen->LoadFFC(q);
+		if( f->Data == 0 && q <= max ){
+			return q;
+		}	
+	} 
+	return 0;
+}
+
+int FreeFFC(int min, int max){
+	ffc f;
+	for( int q = 1; q <= 32; q++ ){
+		f = Screen->LoadFFC(q);
+		if( f->Data == 0 && q >= min && q <= max ){
+			return q;
+		}	
+	} 
+	return 0;
+}
+
+void LoadFreeFFC(){
+	int free = FreeFFC();
+	if ( free > 0 ) {
+		Screen->LoadFFC(free);
+	}
+}
+
+// Functions for determination of player position, and distance, relative to a given FFC.
+
+//Returns difference between Link`s and FFC`s X coordinates.
+int DistanceXfromFFC(ffc f){
+	if ((Link->X) > (f->X)) return (Link->X) - (f->X);
+	else return (f->X) - (Link->X); 
+}
+
+//Returns difference between Link`s and FFC`s Y coordinates.
+int DistanceYfromFFC(ffc f){
+	if ((Link->Y) > (f->Y)) return (Link->Y) - (f->Y);
+	else return (f->Y) - (Link->Y); 
+}
+
+//Returns TRUE if Link is facing FFC and is sufficiently close to it`s side.
+bool FacingFFC(ffc f, int distance){
+	int curx = Link->X;
+	int cury = Link->Y;
+	int npcx = f->X;
+	int npcy = f->Y;
+	int borderx = f->EffectWidth;
+	int bordery = f->EffectHeight;
+	if (RectCollision(curx, cury, (curx+16), (cury+16), npcx, (npcy - distance), (npcx + borderx), npcy)){
+		if (Link->Dir == DIR_DOWN) return true;
+	}
+	if (RectCollision(curx, cury, (curx+16), (cury+16), npcx, (npcy + bordery), (npcx+borderx), (npcy+bordery+distance))){
+		if (Link->Dir == DIR_UP) return true;
+	}
+	if (RectCollision(curx, cury, (curx+16), (cury+16), (npcx-distance), npcy, npcx, (npcy+bordery))){
+		if (Link->Dir == DIR_RIGHT) return true;
+	}
+	if (RectCollision(curx, cury, (curx+16), (cury+16), (npcx+borderx), npcy, (npcx+borderx+distance), (npcy+bordery))){
+		if (Link->Dir == DIR_LEFT) return true;
+	}
+	return false;
+}
+
+//Returns TRUE if Link is facing right side of FFC and is sufficiently close to it.
+bool LinkRightRelativeToFFC( ffc f, int distance){
+	return ((FacingFFC(f, distance))&&(Link->Dir == DIR_LEFT));
+}
+
+//Returns TRUE if Link is facing left side of FFC and is sufficiently close to it.
+bool LinkLeftRelativeToFFC( ffc f, int distance){
+	return ((FacingFFC(f, distance))&&(Link->Dir == DIR_RIGHT));
+}
+
+//Returns TRUE if Link is facing top side of FFC and is sufficiently close to it.
+bool LinkUpRelativeToFFC( ffc f, int distance){
+	return ((FacingFFC(f, distance))&&(Link->Dir == DIR_DOWN));
+}
+
+//Returns TRUE if Link is facing bottom side of FFC and is sufficiently close to it.
+bool LinkDownRelativeToFFC( ffc f, int distance){
+	return ((FacingFFC(f, distance))&&(Link->Dir == DIR_UP));
+}
+
+//This function checks the path of LoS for Solid Combos (from Moosh)
+bool CheckPath(int X, int Y, int Angle, int Distance, int SafeDist, int Step){
+        for(int i = 0; i<Distance-Step; i+=Step){
+                X += VectorX(Step, Angle);
+                Y += VectorY(Step, Angle);
+                if(Screen->isSolid(X, Y)&&i>SafeDist)
+                        return false;
+        }
+        return true;
+}
+
+//Scripts
+
+//Kill an ffc with one command. Call as EndFFC(this) or EndFFC(id)
+void EndFFC(ffc f){
+	f->CSet = 0;
+	f->Delay = 0;
+	f->Y = -32768;
+	f->X = -32768;
+	f->Vy = 0;
+	f->Vx = 0;
+	f->Ax = 0;
+	f->Ay = 0;
+	for ( int q = 0; q <  SizeOfArray(f->Flags); q++) f->Flags[q] = 0;
+	f->TileWidth = 0;
+	f->TileHeight
+	f->EffectWidth
+	f->EffectHeight
+	f->Link
+	for ( int q = 0; q <  SizeOfArray(f->InitD); q++) f->InitD[q] = 0;
+	for ( int q = 0; q <  SizeOfArray(f->Misc); q++) f->Misc[q] = 0;
+	f->Data = 0;
+	f->Script = 0;
+	Quit();
+}

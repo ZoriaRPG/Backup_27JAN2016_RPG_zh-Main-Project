@@ -1,0 +1,137 @@
+import "std.zh"
+
+const int SFX_ERROR = 61; //Set to a general error sound from Quest->Audio->SFX Data
+
+int conjureArray[8] = {0,0,0,0,
+                    3600, //The initial timer value.
+                    32, //The base MP cost required to conjure an item.
+                    7, //The base, bonded item.
+                    50}; //The special item, to be conjured.
+//Using a global array, will save the state of a conjured item, and the count of the timer, and MP, between games.
+//The initial time is set to 3,600 frames, but you may change this; and you may use item scripts to change this value.
+
+const int CONJURATION_TIMER = 0;
+const int STORED_MP = 1;
+const int MPZero = 2;
+const int CAN_CONJURE = 3;
+const int CONJURE_TIME_DURATION = 4; //This array element sets the timer duration, in frames; and can be modified.
+const int BASE_MP_CONJURATION_COST = 5;
+const int ITEM_BONDED = 6;
+const int ITEM_CONJURED = 7;
+
+//Global script EXAMPLE.
+
+global script Conjuration {
+	void run() {
+		while ( true ) {
+			conjureItem();
+            Waitdraw();
+			Waitframe();
+		}
+	}
+}
+
+
+
+//Set to the item that will shift between BONDED and CONJURED items.
+//D0 will set the timer value, if desired, by setting a value greater than zero to that argument.
+
+item script ConjureSwap{
+	void run(int timerValue) {
+        if (timerValue > 0 ){
+            conjureArray[CONJURE_TIME_DURATION] = timerValue;
+        }
+        if ( conjureArray[CAN_CONJURE] > 0 ) {
+            if ( Link->MP >= conjureArray[BASE_MP_CONJURATION_COST] ){
+                Link->Item[conjureArray[ITEM_CONJURED]] = true;
+                Link->Item[conjureArray[ITEM_BONDED]] = false;
+            }
+            else if (Link->Item[conjureArray[ITEM_CONJURED]] ==  true) {
+                    Link->MP = conjureArray[STORED_MP];
+                    conjureArray[MPZero] = 0;
+                    Link->Item[conjureArray[ITEM_BONDED]] = true;
+                    Link->Item[conjureArray[ITEM_CONJURED]] = false;
+            }
+            else {
+                Game->PlaySound(SFX_ERROR);
+            }
+        }
+        else {
+            Game->PlaySound(SFX_ERROR);
+        }
+    }
+}
+
+//Set as Item Pick-Up Script on an item to ENABLE CONJURATION.
+//D0: Set the timer in frames.
+//D1: Set the minimum MP needed to swap items.
+//D2: Set the base, bonded item.
+//D3: Set the item to conjure dor the duration of the timer.
+
+item script enableConjuration{
+    void run(int timerValue, int minMP, int bondedItem, int conjuredItem){
+        conjureArray[CAN_CONJURE] = 1;
+        if ( minMP > 0 ) {
+            conjureArray[BASE_MP_CONJURATION_COST ] = minMP;
+        }
+        if ( bondedItem > 0 ) {
+            conjureArray[ITEM_BONDED] = bondedItem;
+        }
+        if ( conjuredItem > 0 ) {
+            conjureArray[ITEM_CONJURED] = conjuredItem;
+        }
+        if ( timerValue > 0 ) {
+            conjureArray[CONJURE_TIME_DURATION] = timerValue;
+        }
+        
+    }
+}
+
+
+
+//Set to an item, and aet D0 to the desired tie, to allow different timer rates as a PICK-UP script.. 
+item script changeConjureTimer{
+    void run(int timerValue){
+        conjureArray[CONJURE_TIME_DURATION] = timerValue;
+    }
+}
+
+void changeConjurationValues(int timerValue, int minMP, int bondedItem, int conjuredItem){
+    if ( minMP > 0 ) {
+        conjureArray[BASE_MP_CONJURATION_COST ] = minMP;
+    }
+    if ( bondedItem > 0 ) {
+        conjureArray[ITEM_BONDED] = bondedItem;
+    }
+    if ( conjuredItem > 0 ) {
+        conjureArray[ITEM_CONJURED] = conjuredItem;
+    }
+    if ( timerValue > 0 ) {
+        conjureArray[CONJURE_TIME_DURATION] = timerValue;
+    }
+}
+
+
+//Function to shift items based on a timer.
+
+void conjureItem(){
+    if (Link->Item[conjureArray[ITEM_CONJURED]]) {
+        if ( conjureArray[MPZero] == 0 ){
+            conjureArray[STORED_MP] = Link->MP;
+            conjureArray[MPZero] = 1;
+            conjureArray[CONJURATION_TIMER] = conjureArray[CONJURE_TIME_DURATION];
+        }
+        
+            Link->MP = 0;
+            conjureArray[CONJURATION_TIMER]--;
+            
+        if ( conjureArray[CONJURATION_TIMER] <= 0 && conjureArray[MPZero] == 1 && Link->Item[conjureArray[ITEM_CONJURED]] == true ||
+            conjureArray[CONJURATION_TIMER] <= 0 && Link->Item[conjureArray[ITEM_BONDED]] == false ) {
+            Link->MP = conjureArray[STORED_MP];
+            conjureArray[MPZero] = 0;
+            Link->Item[conjureArray[ITEM_CONJURED]] = false;
+            Link->Item[conjureArray[ITEM_BONDED]] = true;
+            
+        }
+    }
+}

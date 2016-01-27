@@ -1,0 +1,139 @@
+//Equipment Manipulation
+//v0.2.1
+
+//Equip Passive Items
+
+//bool OwnsItems[256]; This is in RPG_Engine.zlib : If you are not importing that file, enable this line.
+
+//Returns if an item is 'owned'. This is mandatory for toggling inventory items without massive item duplication.
+bool It(int itm){
+	return OwnsItems[itm];
+}
+
+//Alternative to It (Inv = Inventory)
+bool Inv(int itm){
+	return OwnsItems[itm];
+}
+
+bool Owns(int itm){
+	return OwnsItems[itm];
+}
+
+void Owns(int itm, bool set){
+	OwnsItems[itm] = set;
+}
+
+//Returns true if a counter is above '0', if used as a boolean, or returns the value of a counter otherwise.
+int Counter(int ctr){
+	return Game->Counter[ctr];
+}
+
+//Returns value of a counter.
+int CounterVal(int ctr){
+	return Game->Counter[ctr];
+}
+
+//Returns true if the player has an item in inventory.
+bool Has(int itm){
+	return Link->Item[itm];
+}
+
+
+//Safe way to set an inventory item to true or false, without slowing down ZC.
+void Has(int itm, bool set){
+	if ( Has(itm) != set ){
+		Link->Item[itm] = set;
+	}
+}
+
+//Sets the equipped state of an item.
+void Equip(int itm, bool equip){
+	if ( Has(itm) != equip ){
+		Has(itm,equip);
+	}
+}
+
+//Toggles the equipped state if an item.
+void Equip(int itm){
+	if ( !Has(itm) && Owns(itm) ){
+		Has(itm,true);
+	}
+	else if ( Has(itm) && Owns(itm) ){
+		Has(itm,false);
+	}
+}
+
+
+//Sets array index for OwnsItems[] true on pickup. Append Owns() function as here, to all item pickup scripts.
+item script PickupItem{
+	void run(int itm){
+		Owns(itm,true);
+	}
+}
+
+//Uses OwnsItems array to determine if Link owns an item. if he does, he can enable or disable it with a dummy item using this script. 
+item script EquipItem{
+	void run (int itm){
+		Equip(itm);
+	}
+}
+
+///Deprecated.
+
+//int Has(int itm, int number){
+//	if ( Game->Counter[itm] > 0 ){
+//	
+//	return OwnsItems[itm];
+//}
+
+//Returns true if the player has an item in inventory. Alternative to Has()
+bool LItm(int itm){
+	return Link->Item[itm];
+}
+
+//Safe way to set an inventory item to true or false, without slowing down ZC.
+void LItm(int itm, bool set){
+	if ( LItm(itm) != set ){
+		Link->Item[itm] = set;
+	}
+}
+
+
+//Returns true if a counter is above '0'.
+bool _Counter(int itm){
+	return Game->Counter[itm];
+}
+
+//Sets the equipped state of an item.
+void _Equip(int itm, bool equip){
+	if ( LItm(itm) != equip ){
+		LItm(itm,equip);
+	}
+}
+
+//Toggles the equipped state if an item.
+void _Equip(int itm){
+	if ( !LItm(itm) && Owns(itm) ){
+		LItm(itm,true);
+	}
+	else if ( LItm(itm) && Owns(itm) ){
+		LItm(itm,false);
+	}
+}
+
+
+
+
+//Uses OwnsItems array to determine if Link owns an item. if he does, he can enable or disable it with a dummy item using this script. 
+item script _EquipItem{
+	void run (int itm){
+		if ( Inv(itm) ) {
+			if ( LItm(itm) ){
+				Equip(itm,false);
+			}
+			else if ( !LItm(itm) ){
+				Equip(itm,true);
+			}
+		}
+	}
+}

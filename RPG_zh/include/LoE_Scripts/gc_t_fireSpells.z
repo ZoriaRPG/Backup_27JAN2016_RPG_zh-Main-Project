@@ -1,0 +1,118 @@
+int fireArray[8]={1,0,1,0,0,0,0,0};
+
+bool fireSpells()
+{
+    int lineBreak[]="@26";
+    int menuEnd[]="@domenu(1)@suspend()";
+    
+    if ( fireArray[0] > 0 ){
+        int line1[]="@choice(1)Blaze@26";
+    }
+    else if ( fireArray[0] == 0 ) {
+        int line1[]="@26";
+    }
+    
+    
+    if ( fireArray[1] > 0 ){
+        int line2[]="@choice(1)Infernos@26";
+    }
+    else if ( fireArray[1] == 0 ) {
+        int line2[]="@26";
+    }
+    
+    if ( fireArray[2] > 0 ){
+        int line3[]="@choice(1)BFireball@26";
+    }
+    else if ( fireArray[2] == 0 ) {
+        int line3[]="@26";
+    }
+    
+    if ( fireArray[3] > 0 ){
+        int line4[]="@choice(1)Burn@26";
+    }
+    else if ( fireArray[3] == 0 ) {
+        int line4[]="@26";
+    }
+    
+    
+    SetUpWindow(WINDOW_SLOT_3, WINDOW_STYLE_2, 32, 32, SIZE_LARGE);
+        Tango_LoadString(WINDOW_SLOT_3, line1);
+        Tango_AppendString(WINDOW_SLOT_3, line2);
+        Tango_AppendString(WINDOW_SLOT_3, line3);
+        Tango_AppendString(WINDOW_SLOT_3, line4);
+        Tango_AppendString(WINDOW_SLOT_3, menuEnd);
+        Tango_ActivateSlot(WINDOW_SLOT_3);
+    
+    
+    while(!Tango_MenuIsActive())
+        Waitframe();
+    
+    // Save the state again...
+    int slotState[274];
+    int menuState[60];
+    int cursorPos;
+    Tango_SaveSlotState(WINDOW_SLOT_3, slotState);
+    Tango_SaveMenuState(menuState);
+    
+    int done=0;
+    int choice;
+    while(true)
+    {
+        while(Tango_MenuIsActive())
+        {
+            cursorPos=Tango_GetMenuCursorPosition();
+            Waitframe();
+        }
+        
+        choice=Tango_GetLastMenuChoice();
+        if(choice==0) // Canceled
+            done=2;
+        else if(choice == 1) 
+        {
+            int text[]="Blaze Magic.";
+            ShowString(text, WINDOW_SLOT_4, WINDOW_STYLE_3, 48, 48);
+        }
+        
+        else if(choice == 2) 
+        {
+            int text[]="Infernos Magic.";
+            ShowString(text, WINDOW_SLOT_4, WINDOW_STYLE_3, 48, 48);
+        }
+        
+        else if(choice == 3) 
+        {
+            int text[]="Fireball Magic.";
+            ShowString(text, WINDOW_SLOT_4, WINDOW_STYLE_3, 48, 48);
+        }
+        
+        else if(choice == 4) 
+        {
+            int text[]="Burn Magic.";
+            ShowString(text, WINDOW_SLOT_4, WINDOW_STYLE_3, 48, 48);
+        }
+        
+        else // And odd-numbered spells do
+        {
+            done=1;
+            menuCommand=52; //FFC Slot of spell.
+            menuArg=choice;
+        }
+        
+        if(done>0)
+            break;
+        else
+        {
+            Tango_RestoreSlotState(WINDOW_SLOT_3, slotState);
+            Tango_RestoreMenuState(menuState);
+            Tango_SetMenuCursorPosition(cursorPos);
+        }
+    }
+    
+    Tango_ClearSlot(WINDOW_SLOT_3);
+    
+    if(done==1)
+        return true; // Tell parent menu to close
+    else
+        return false; // Tell parent not to close
+}
+

@@ -1,0 +1,153 @@
+ffc script Sideview_Walker_II{
+	void run(int enemyid){ //D0 arg set by ghost.zh
+		npc ghost = Ghost_InitAutoGhost(this, enemyid); //Create the enemy...
+		Ghost_SetFlag(GHF_NORMAL); //Give it ordinary movement and flags.
+		int TurnEdge = ghost->Attributes[0]; //Determine if it will change direction on the edge of platforms (pace).
+		int Dir = ghost->Attributes[1]; //The initial movement direction.
+		//! These may need to be swapped for consistent use of constants.
+		int Combo = ghost->Attributes[SIDEVIEW_ATTRIB_COMBO]; //The enemy sprite.
+		//! Why combos, and not tiles?
+		int FlashCounter; //A timer, for enemy invincibility frames.
+		while(true){
+			
+			if ( Dir == DIR_LEFT && Ghost_CanMove(DIR_LEFT, 1, 0) ) {
+				Ghost_Data = Combo;
+				Dir == DIR_LEFT;
+			}
+			else if ( Dir == DIR_LEFT && !Ghost_CanMove(DIR_LEFT, 1, 0) ) {
+				Ghost_Data = Combo+1;
+				Dir == DIR_RIGHT;
+			}
+			else if ( Dir == DIR_RIGHT && Ghost_CanMove(DIR_RIGHT, 1, 0) ) {
+				Ghost_Data = Combo+1;
+				Dir == DIR_RIGHT;
+			}
+			else if ( Dir == DIR_RIGHT && !Ghost_CanMove(DIR_RIGHT, 1, 0) ) {
+				Ghost_Data = Combo;
+				Dir == DIR_LEFT;
+			}
+			
+			
+		//! I'd suggest while ( ghost->HP > 0 ) here, so that you can run removal routines, unless you
+		//! are relying on ghost_waitdraw to remove it. I suppose that also works. 
+			if ( Ghost_GotHit() ) //If the enemy was hit, and damaged...
+				FlashCounter = SV_ENEM_INVINCIBILITY_FRAMES; 
+			else if ( FlashCounter > 0 )
+				FlashCounter--;
+			//Keep it moving at a constant rate...
+			if ( Ghost_CanMove(DIR_DOWN, 1, 0) || FlashCounter > 0 ){ //If t5he enemy can move, or is invincible...
+				//Why DIR_DOWN? I understand that it should always have a platform under it, but that platform 
+				//will never be walkable. Does CanMove() ignore solidity for a frame?
+				if( Dir == DIR_LEFT ){ //if the enemy is facing left...
+					Ghost_Move(DIR_LEFT, ghost->Step/100, 0); //Move 1/100 its step speed left this frame.
+					if(!Ghost_CanMove(DIR_LEFT, 1, 0)){ //If it cannot move left...
+						Ghost_Data = Combo + 1; //Advance its combo to a right-facing combo...
+						//! This is where using tiles would be more efficient, as you could just flip it.
+						//! In fact, can't you flip it anyway, rather than wasting combos?
+						Dir = DIR_RIGHT; //Change its direction to face right.
+					}
+					//! This will not work with shielded enemies, as you are not actually changing the enemy direction.
+					//! This meaning, that yoiu aren;t using a pointer with this variable.
+					//! In fact, I would call it dir, not Dir, to avoid confusion with the internal
+					//! Dir variable, as that normally is used with pointers ( e.g. ghost->Dir ).
+				}
+				else{ //if it is facing right...
+					Ghost_Move( DIR_RIGHT, ghost->Step/100, 0 ); //Move it at 1/100 its stwp speed in pixels this frame
+					//Would step calculations work better at 1/60, or 1/120 instead of 1/100?
+					if ( !Ghost_CanMove(DIR_RIGHT, 1, 0) ){ //If it can't movwe right...
+						Ghost_Data = Combo; //Change its combo to left facing
+						Dir = DIR_RIGHT; //Set its dir back to right.
+					}
+				}
+				//! This if/else statement block may have a potential bug: if the enemy can move neither left, nor right, 
+				//! It will just flip between sprites EVERY FRAME that it is invincible. 
+				//! This would be better...
+				
+				// if ( Dir == DIR_LEFT && Ghost_CanMove(DIR_LEFT, 1, 0) ) {
+				// else if ( Dir == DIR_RIGHT && Ghost_CanMove(DIR_RIGHT, 1, 0)){
+				// else ( do something else )
+				
+				//! It sets up a routine that will do something with the enemy if it's blocked on both sides, which
+				//! is a very strong liklihood with moving solid objects (e.g. blocks) in a quest.
+			}
+			else{ //If it can't move down, and isn't invincible...
+				if ( Dir == DIR_LEFT ){ //If it's facing left...
+					float Step = ghost->Step/100; //Set the value of its step speed. 
+					//! I would rename this variable, to avoid confusion with the pointer variable of the same declaration.
+					//! svStep would work. 
+					for(int i=0; i<Floor(ghost->Step/100); i++){ //Floor the step speed to move it using a for loop.
+						Ghost_Move(DIR_LEFT, 1, 0); //Move it left one pixel.
+						//! Why are you moving it one pixel here in this loop, and also moving it based on step below?
+						Step--; //Reduce the value of this variable.
+						if ( !Ghost_CanMove(DIR_LEFT, 1, 0) ){ //If it can;t move left...
+							Ghost_Data = Combo+1; //Advance it to a right-facing combo.
+							Dir = DIR_RIGHT; //Change its direction. 
+								//Shouldn't it only turn if TurnEdge == 0 ?
+						}
+						//! This is redundant, is it not? Both of these statements change the enemy direction.
+						else if ( TurnEdge == SV_CAN_PACE ){ //if the enemy can pace platforms...
+							if ( CanWalk(Ghost_X-16, Ghost_Y, DIR_DOWN, 1, true) ){ //If it is still on a platform...
+								Ghost_Data = Combo+1; //Advance to a right-facing combo.
+								Dir = DIR_RIGHT; //Change its direction.
+							}
+						}
+					}
+					if ( Step > 0 ){
+						
+						Ghost_Move(DIR_LEFT, Step, 0);
+						if(!Ghost_CanMove(DIR_LEFT, 1, 0)){
+							Ghost_Data = Combo+1;
+							Dir = 1;
+						}
+						else if(TurnEdge==1){
+							if(CanWalk(Ghost_X-16, Ghost_Y, DIR_DOWN, 1, true)){
+								Ghost_Data = Combo+1;
+								Dir = 1;
+							}
+						}
+					}
+				}
+				else{ //It's facing right...
+					// Reset step once it reaches zero and run additional frame of movement. 
+					//! Can't we simplify this by adding:
+					//! if ( Step == 0 ) Step = ghost->Step 
+					//! at the top of the loop?
+					//! A routine to check where it can move, and validate if it is allowed to turn, at
+					//! the head of the loop, would also be ideal.
+					//! that way, we set its direction at the top of the loop, and just move it, rather
+					//! than making all of these extra checks. 
+					//! If that wouldn't work, I;d like to know why.
+					float Step = ghost->Step/100;
+					for(int i=0; i<Floor(ghost->Step/100); i++){
+						Ghost_Move(DIR_RIGHT, 1, 0);
+						Step--;
+						if(!Ghost_CanMove(DIR_RIGHT, 1, 0)){
+							Ghost_Data = Combo;
+							Dir = 0;
+						}
+						else if(TurnEdge==1){
+							if(CanWalk(Ghost_X+16, Ghost_Y, DIR_DOWN, 1, true)){
+								Ghost_Data = Combo;
+								Dir = 0;
+							}
+						}
+					}
+					if(Step>0){
+						Ghost_Move(DIR_RIGHT, Step, 0);
+						if(!Ghost_CanMove(DIR_RIGHT, 1, 0)){
+							Ghost_Data = Combo;
+							Dir = 0;
+						}
+						else if(TurnEdge==1){
+							if(CanWalk(Ghost_X+16, Ghost_Y, DIR_DOWN, 1, true)){
+								Ghost_Data = Combo;
+								Dir = 0;
+							}
+						}
+					}
+				}
+			}
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}

@@ -1,0 +1,233 @@
+const int FIRST_VAL = 0;
+const int SECOND_VAL =1;
+const int THIRD_VAL =2;
+const int FOURTH_VAL = 3;
+const int FIFTH_VAL = 4;
+const int SIXTH_VAL = 5;
+const int SEVENTH_VAL = 6;
+const int EIGHTH_VAL = 7;
+const int NINTH_VAL = 8;
+const int TENTH_VAL = 9;
+
+bool excluded[10]={
+                    false, 
+                    false, 
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false}; //I planned to use this, bit in retrospect, it;s probably superfluous.
+                    
+int listTen[10]= {
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+                //Holds the ten present values.
+
+
+
+int reRand(int min, int max, int exclude){
+        int value;
+        do{
+            value = Rand(min, max);
+        }
+            while(value < min || value == exclude);
+            return value;
+        }
+
+
+void reRandTen(){ //Sets ten values, never dupicating one. Values must be between 1 and 10.
+    int exclude1 = 0;
+    int exclude2 = 0;
+    int exclude3 = 0; 
+    int exclude4 = 0; 
+    int exclude5 = 0; 
+    int exclude6 = 0; 
+    int exclude7 = 0; 
+    int exclude8 = 0;
+    int exclude9 = 0;
+    int exclude10 = 0;
+    int valueOne;
+    int vaueTwo;
+    int valueThree;
+    int valueFour;
+    int valuefive;
+    int valueSix;
+    int valueSeven;
+    int valueeight;
+    int valueNine;
+    int valueTen;
+
+    do{
+        valueOne = Rand(1,10);
+    }
+    while(valueOne != exclude1);
+    exclude1 = valueOne;
+    
+    do{
+        valueTwo = Rand(1,10);
+    }
+    while(valueTwo != exclude1 && valueTwo != exclude2);
+    exclude2 = valueTwo;
+    
+    do{
+        valueThree = Rand(1,10);
+    }
+    while(valueThree != exclude1 && valueThree != exclude2 && valueThree != exclude3);
+    exclude3 = valueThree;
+    
+    do{
+        valueFour = Rand(1,10);
+    }
+    while(valueFour != exclude1 && valueFour != exclude2 && valueFOur != exclude3 && valueFour != exclude4);
+    exclude4 = valueFoue;
+
+    do{
+        valueFive = Rand(1,10);
+    }
+    while(valueFive != exclude1 && valueFive != exclude2 && valueFive != exclude3 && valueFive != exclude4 && valueFive != exclude5);
+    exclude5 = valueFive;
+
+    do{
+        valueSix = Rand(1,10);
+    }
+    while(valueSix != exclude1 && valueSix != exclude2 && valueSix != exclude3 && valueSix != exclude4 && valueSix != exclude5 && valueSix != exclude6);
+    exclude6 = valueSix;
+    
+    do{
+        valueSeven = Rand(1,10);
+    }
+    while(valueSeven != exclude1 && valueSeven != exclude2 && valueSeven != exclude3 && valueSeven != exclude4 && valueSeven != exclude5 && valueSeven != exclude6 && valueSeven != exclude7);
+    exclude7 = valueSeven;
+    
+    do{
+        valueEight = Rand(1,10);
+    }
+    while(valueEight != exclude1 && valueEight != exclude2 && valueEight != exclude3 && valueEight != exclude4 && valueEight != exclude5 && valueEight != exclude6 && valueEight != exclude 7 && valueEight != exclude8);
+    exclude8 = valueEight;
+    
+    do{
+        valueNine = Rand(1,10);
+    }
+    while(valueNine != exclude1 && valueNine != exclude2 && valueNine != exclude3 && valueNine != exclude4 && valueNine != exclude5 && valueNine != exclude6 && valueNine != exclude 7 && valueNine != exclude8 && valueNine != exclude9);
+    exclude9 = valueNine;
+    
+    do{
+        valueTen = Rand(1,10);
+    }
+    while(valueTen != exclude1 && valueTen != exclude2 && valueTen != exclude3 && valueTen != exclude4 && valueTen != exclude5 && valueTen != exclude6 && valueTen != exclude 7 && valueTen != exclude8 && valueTen != exclude9 && valueTen != exclude10);
+    exclude10 = valueTen;
+    
+    //Deposits values in array, to read.
+    listTen[FIRST_VAL] = valueOne;
+    listTen[SECOND_VAL] = valueTwo;
+    listTen[THIRD_VAL] = valueThree;
+    listTen[FOURTH_VAL] = valueFour;
+    listTen[FIFTH_VAL] = valueFive;
+    listTen[SIXTH_VAL] = valueSix;
+    listTen[SEVENTH_VAL] = valueSeven;
+    listTen[EIGHTH_VAL] = valueEight;
+    listTen[NINTH_VAL] = valueNine;
+    listTen[TENTH_VAL] = valueTen;
+}
+    
+//returns the ten values, from the array.
+int returnTenalues(){
+    return listTen[FIRST_VAL];
+    return listTen[SECOND_VAL];
+    return listTen[THIRD_VAL];
+    return listTen[FOURTH_VAL];
+    return listTen[FIFTH_VAL];
+    return listTen[SIXTH_VAL];
+    return listTen[SEVENTH_VAL];
+    return listTen[EIGHTH_VAL];
+    return listTen[NINTH_VAL];
+    return listTen[TENTH_VAL];
+}
+
+
+//clears the array entirely.
+void clearRandomTen(){
+    listTen[FIRST_VAL] = 0;
+    listTen[SECOND_VAL] = 0;
+    listTen[THIRD_VAL] = 0;
+    listTen[FOURTH_VAL] = 0;
+    listTen[FIFTH_VAL] = 0;
+    listTen[SIXTH_VAL] = 0;
+    listTen[SEVENTH_VAL] = 0;
+    listTen[EIGHTH_VAL] = 0;
+    listTen[NINTH_VAL] = 0;
+    listTen[TENTH_VAL] = 0;
+}
+
+//clears one array value. May not be useful without additional functions. 
+void clearSingleRandomValue(int element){
+    listTen[element] = 0;
+}
+
+const int TEN_VALUES_FFC = 0; // Set to FFC script slot. 
+
+void runFFC_Calcs{
+    RunFFCScript(TEN_VALUES_FFC, null);
+    
+}
+
+item script produceReRandTen{
+    void run(int min, int max, int exclude){
+        reRandTen();
+        Trace(listTen[FIRST_VAL]);
+        Trace(listTen[SECOND_VAL]);
+        Trace(listTen[THIRD_VAL]);
+        Trace(listTen[FOURTH_VAL]);
+        Trace(listTen[FIFTH_VAL]);
+        Trace(listTen[SIXTH_VAL]):
+        Trace(listTen[SEVENTH_VAL]):
+        Trace(listTen[EIGHTH_VAL]);
+        Trace(listTen[NINTH_VAL]);
+        Trace(listTen[TENTH_VAL]);
+        clearRandomTen();
+    }
+}
+
+ffc script tenRands_FFC {
+    void run{
+        reRandTen();
+        bool waiting;
+        waiting = true;
+        while(waiting){
+            //Do stuff
+            Trace(listTen[FIRST_VAL]);
+            Trace(listTen[SECOND_VAL]);
+            Trace(listTen[THIRD_VAL]);
+            Trace(listTen[FOURTH_VAL]);
+            Trace(listTen[FIFTH_VAL]);
+            Trace(listTen[SIXTH_VAL]):
+            Trace(listTen[SEVENTH_VAL]):
+            Trace(listTen[EIGHTH_VAL]);
+            Trace(listTen[NINTH_VAL]);
+            Trace(listTen[TENTH_VAL]);
+
+            if ( Link->PressEx3 ){
+            waiting = false;
+            }
+            Waitframe();
+        }
+        clearRandomTen();
+    }
+}
+
+    
+        
+    
+    
+    
+
+
+
+
+
+
+
+//if ( value == valueArray[0] || value == valueAray[1] //etc
+//create exclusion map.

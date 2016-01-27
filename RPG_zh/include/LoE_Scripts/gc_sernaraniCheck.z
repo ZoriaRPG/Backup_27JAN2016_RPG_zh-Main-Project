@@ -1,0 +1,199 @@
+// Place this FFC on the screen, on which you want to perform a Triforce check.
+// Arguments
+// D0:  <target>: This is what combos that this trigger will change when it is actually triggered. 
+// If positive, it specifies that all combos on screen with the given Combo ID will be changed 
+// (e.g. a 12 means change all instances of combo 12). If negative, it specifies that all combos on 
+// screen with the given flag will be changed (e.g. a -CF_SECRETS01 means to change all combos with the
+// Secret 1 flag on them).
+//
+// D1: <result>: This is what the target combos are changed to. 
+// If positive, it specifies a combo id to change them to. 
+// If negative, it instead specifies a map and screen to grab combos from. 
+// The format is "-MMMYXX", where MMM is the map number, Y is the screen's Y position on that map 
+// (from 0 to 7), and XX is the screen's X position on that map (from 0 to 15). Every target
+// combo is changed to whatever combo is at the same coordinates on that screen.
+//
+// D2: <dieOnComboChange>: If positive, this causes this ffc to cancel if the combo underneath the 
+// ffc every changes its Combo ID.
+//
+// D3:  <sound>: If this is non-zero, it causes the given sound to be played when the trigger occurs.
+//
+// D4:  <message>: If this is non-zero, it causes the given message to be displayed when the trigger occurs.
+
+ //   bool hasSernarani = false;
+
+ffc script triforceCheckSpotRangeFFC { //This is like a sensitive warp bersion of triforceCheckSpotPreciseFFC. 
+//Place this FFC on the area that you want to use to activat the TF check.
+  void run(int target, int result, int dieOnComboChange, int sound, int message) {
+
+
+    
+    int loc = ComboAt(CenterX(this), CenterY(this));     // Grab the combo id underneath us so we can tell when it changes.
+    int underComboId = Screen->ComboD[loc];
+    int map;
+    int screen;
+    if (result < 0) { // Interpret <result> if it is negative.
+      map = (result * -0.001) >> 0;
+      screen = ((result * -0.01 % 10) >> 0) * 16 + (-result % 100);}
+ 
+    bool waiting = true;     // Wait for something to happen.
+    
+
+    
+
+    
+    while (waiting) {
+    
+    
+
+
+        if (dieOnComboChange > 0 && Screen->ComboD[loc] != underComboId) { // If <dieOnComboChange> is set and the combo does change, terminate.
+        return;
+        }
+
+        if ( DistanceLink(this) <= 8 &&
+        Game->LItems[1] & LI_TRIFORCE &&
+        Game->LItems[2] & LI_TRIFORCE &&
+        Game->LItems[3] & LI_TRIFORCE &&
+        Game->LItems[4] & LI_TRIFORCE &&
+        Game->LItems[5] & LI_TRIFORCE &&
+        Game->LItems[6] & LI_TRIFORCE &&
+        Game->LItems[7] & LI_TRIFORCE &&
+        Game->LItems[8] & LI_TRIFORCE
+        ) {
+        waiting = false;
+        }
+
+        Waitframe();  // Advance to next frame.
+        } 
+ 
+    // If we reach this point, it means that the player has the whole Triforce.
+ 
+    
+    for (loc = 0; loc < 176; loc++) {  // Now loop through every combo on screen looking for combos matching <target>.
+        bool match = false;
+
+ 
+    if (target > 0) {       // If <target> is positive, test for Combo ID.
+        if (Screen->ComboD[loc] == target) {
+          match = true;
+        }
+    }
+
+      
+    else if (target < 0) {  // If <target> is negative, test for the flag being present.
+        if (ComboFI(loc, -target)) {
+          match = true;
+        }
+    }
+ 
+      
+    if (match) {  // If the current combo is a match, then transform the combo according to <result>.
+ 
+        
+        if (result > 0) {   // If <result> is positive, just change the target to <result>.
+          Screen->ComboD[loc] = result;
+        }
+        
+        else if (result < 0) {   // If <result> is negative, grab the combo from the given screen.
+            Screen->ComboD[loc] = Game->GetComboData(map, screen, loc);
+            }
+        }
+    }
+ 
+    
+    if (sound != 0) {
+        Game->PlaySound(sound);  // Now play the message and sound, if appropriate.
+    }  
+    if (message != 0) {
+        Screen->Message(message);
+        }
+    }
+}
+
+ffc script triforceCheckSpotTouchFFC { //This is like a sensitive warp bersion of triforceCheckSpotPreciseFFC. 
+//Place this FFC on the area that you want to use to activat the TF check.
+  void run(int target, int result, int dieOnComboChange, int sound, int message) {
+    
+    
+    
+    int loc = ComboAt(CenterX(this), CenterY(this));     // Grab the combo id underneath us so we can tell when it changes.
+    int underComboId = Screen->ComboD[loc];
+    int map;
+    int screen;
+    if (result < 0) { // Interpret <result> if it is negative.
+      map = (result * -0.001) >> 0;
+      screen = ((result * -0.01 % 10) >> 0) * 16 + (-result % 100);}
+ 
+    bool waiting = true;     // Wait for something to happen.
+    
+
+    
+
+    
+    while (waiting) {
+    
+
+        if (dieOnComboChange > 0 && Screen->ComboD[loc] != underComboId) { // If <dieOnComboChange> is set and the combo does change, terminate.
+        return;
+        }
+
+        if ( LinkCollision(this) == true && 
+        Game->LItems[1] & LI_TRIFORCE &&
+        Game->LItems[2] & LI_TRIFORCE &&
+        Game->LItems[3] & LI_TRIFORCE &&
+        Game->LItems[4] & LI_TRIFORCE &&
+        Game->LItems[5] & LI_TRIFORCE &&
+        Game->LItems[6] & LI_TRIFORCE &&
+        Game->LItems[7] & LI_TRIFORCE &&
+        Game->LItems[8] & LI_TRIFORCE
+        ) {
+        waiting = false;
+        }
+
+        Waitframe();  // Advance to next frame.
+        } 
+ 
+    // If we reach this point, it means that the player has the whole Triforce.
+ 
+    
+    for (loc = 0; loc < 176; loc++) {  // Now loop through every combo on screen looking for combos matching <target>.
+        bool match = false;
+
+ 
+    if (target > 0) {       // If <target> is positive, test for Combo ID.
+        if (Screen->ComboD[loc] == target) {
+          match = true;
+        }
+    }
+
+      
+    else if (target < 0) {  // If <target> is negative, test for the flag being present.
+        if (ComboFI(loc, -target)) {
+          match = true;
+        }
+    }
+ 
+      
+    if (match) {  // If the current combo is a match, then transform the combo according to <result>.
+ 
+        
+        if (result > 0) {   // If <result> is positive, just change the target to <result>.
+          Screen->ComboD[loc] = result;
+        }
+        
+        else if (result < 0) {   // If <result> is negative, grab the combo from the given screen.
+            Screen->ComboD[loc] = Game->GetComboData(map, screen, loc);
+            }
+        }
+    }
+ 
+    
+    if (sound != 0) {
+        Game->PlaySound(sound);  // Now play the message and sound, if appropriate.
+    }  
+    if (message != 0) {
+        Screen->Message(message);
+        }
+    }
+}

@@ -1,0 +1,59 @@
+//Subscreen
+
+const int SS_ITEMS = 2;
+const int SS_INVENTORY = 1;
+const int SS_QUEST = 3;
+const int SS_MAPS = 4;
+const int SS_COM = 5;
+const int SS_NONE = 0;
+
+int SubScreen[5000];
+
+const int SS_CURSCREEN = 4099;
+const int SS_ACTIVE = 4098;
+
+int Subscreen(){
+	if ( SubScreen[SS_ACTIVE] ) return SubScreen[SS_CURSCREEN];
+	return 0;
+}
+
+void Subscreen(int subscreen){
+	if ( subscreen) {
+		if ( !SubScreen[SS_ACTIVE] ) {
+			SubScreen[SS_CURSCREEN] = subscreen;
+		}
+	}
+	else SubScreen[SS_ACTIVE] = subscreen;
+}
+
+void ShiftSubscreen(){
+	int curSS = Subscreen();
+	if ( Link->PressR ) 
+
+const int SS_INVENTORY = 0;
+const int SS_EQUIPPED
+const int SS_MAPS
+const int SS_MAPS_TILES
+const int SS_COUNTERS
+const int SS_TILES_ITEMS_OWNED
+const int SS_TILES_ITEMS_NOT_OWNED
+const int SS_CURSOR_POS
+const int SS_CURSOR_TILE
+const int SS_CURSOR_SFX_NOVE
+const int SS_CURSOR_SFX_SELECT
+const int SS_CURSOR_SFX_ERROR
+const int SS_CURSOR_SFX_EQUIP
+const int SS_CURSOR_SFX_UNEQUIP
+const int SS_CURSOR_FFC
+const int SS_MOUSE_POS
+const int SS_SELECTED
+const int SS_MOUSEOVER
+const int SS_LORE_CHECK
+const int SS_EQUIPA
+const int SS_EQUIPB
+const int SS_CURSOR_ITEM_A
+const int SS_CURSOR_ITEM_B
+const int SS_CURSOR_ITEM_EX1
+const int SS_CURSOR_ITEM_EX2
+const int SS_CURSOR_ITEM_EX3
+const int SS_CURSOR_ITEM_EX4

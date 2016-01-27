@@ -1,0 +1,523 @@
+//Statistics v0.2 for RPG.zh v0.9.6.4
+
+//Constants
+
+const int CR_HP = 8; //Sript 2
+const int CR_MP = 9; //Script 3
+const int CR_HP_MAX = 10; //Script 4
+const int CR_MP_MAX = 11; //Script 5
+
+const int CR_STAT_MUSC = 0; // statsArray[0]
+const int CR_STAT_BODY = 1; // statsArray[1]
+const int CR_STAT_MIND = 2; // statsArray[2]
+const int CR_STAT_MYST = 3; // statsArray[3]
+const int CR_STAT_INFL = 4; // statsArray[4]
+const int CR_STAT_LUCK = 5; // statsArray[5]
+
+//Arrays
+
+int statsArray[6]= {10, 10, 10, 10, 10, 10};
+// Muscle, Body, Mind, Myst, infl, Luck
+// These are the starting values. The Increase functions 
+// will operate via this array, as will all other stat functions.
+
+
+//Vars
+
+
+//Functions
+///////////////////////////
+/// Statistic Functions ///
+///////////////////////////
+
+///////////////////////
+/// GET STAT VALUES /////////////////////////////////////////////////////////
+/// these functions read the present value of a statistic, and return it. ///
+/////////////////////////////////////////////////////////////////////////////
+
+int getStatisticValue(int stat){
+    return statsArray[stat];
+}
+
+int getMuscStat(){
+    return statsArray[CR_STAT_MUSC];
+}
+
+int getBodyStat(){
+    return statsArray[CR_STAT_BODY];
+}
+
+int getMindStat(){
+    return statsArray[CR_STAT_MIND];
+}
+
+int getMystStat(){
+    return statsArray[CR_STAT_MYST];
+}
+
+int getInflStat(){
+    return statsArray[CR_STAT_INFL];
+}
+
+int getLuckStat(){
+    return statsArray[CR_STAT_LUCK];
+}
+
+/// Get Modifiers
+
+int getStatisticModifier(int stat){
+    int statValue = statsArray[stat];
+    int modifiedValue;
+    if ( Is(D20MODS) ) {
+        modifiedValue = ( ( statValue * 0.5 ) - 5 );
+    }
+    else {
+        modifiedValue = ( statValue * Val(STAT_MOD_MULTIPLIER) );
+    }
+    return modifiedValue;
+}
+
+int getMuscMod(){
+    int statValue = getMuscStat();
+    int modifiedValue;
+    if ( Is(D20MODS)  ) {
+        modifiedValue = ( ( statValue * 0.5 ) - 5 );
+    }
+    else {
+        modifiedValue = ( statValue * Val(STAT_MOD_MULTIPLIER) );
+    }
+    return modifiedValue;
+}
+
+int getBodyMod(){
+    int statValue = getBodyStat();
+    int modifiedValue;
+    if ( Is(D20MODS)  ) {
+        modifiedValue = ( ( statValue * 0.5 ) - 5 );
+    }
+    else {
+        modifiedValue = ( statValue * Val(STAT_MOD_MULTIPLIER) );
+    }
+    return modifiedValue;
+}
+        
+int getMindMod(){
+    int statValue = getMindStat();
+    int modifiedValue;
+    if ( Is(D20MODS)  ) {
+        modifiedValue = ( ( statValue * 0.5 ) - 5 );
+    }
+    else {
+        modifiedValue = ( statValue * Val(STAT_MOD_MULTIPLIER) );
+    }
+    return modifiedValue;
+}
+
+int getMystMod(){
+    int statValue = getMystStat();
+    int modifiedValue;
+    if ( Is(D20MODS)  ) {
+        modifiedValue = ( ( statValue * 0.5 ) - 5 );
+    }
+    else {
+        modifiedValue = ( statValue * Val(STAT_MOD_MULTIPLIER) );
+    }
+    return modifiedValue;
+}
+
+int getInflMod(){
+    int statValue = getInflStat();
+    int modifiedValue;
+    if ( Is(D20MODS)  ) {
+        modifiedValue = ( ( statValue * 0.5 ) - 5 );
+    }
+    else {
+        modifiedValue = ( statValue * Val(STAT_MOD_MULTIPLIER) );
+    }
+    return modifiedValue;
+}
+
+int getLuckMod(){
+    int statValue = getLuckStat();
+    int modifiedValue;
+    if ( Is(D20MODS)  ) {
+        modifiedValue = ( ( statValue * 0.5 ) - 5 );
+    }
+    else {
+        modifiedValue = ( statValue * Val(STAT_MOD_MULTIPLIER) );
+    }
+    return modifiedValue;
+}
+
+int getStatModifier(int stat){
+    int statValue = statsArray[stat];
+    int modifiedValue;
+    if ( Is(D20MODS)  ) {
+        modifiedValue = ( ( statValue * 0.5 ) - 5 );
+    }
+    else {
+        modifiedValue = ( statValue * Val(STAT_MOD_MULTIPLIER) );
+    }
+    return modifiedValue;
+}
+
+///////////////////////////////
+/// INCREASE STAT FUNCTIONS ////////////////////////////////////////
+/// These increase statistics by either fixed, or random values. ///
+////////////////////////////////////////////////////////////////////
+
+void IncreaseStat(int dieType, int dice) {
+    int stat = Rand(5);
+    int n = Roll(dieType,dice);
+    statsArray[stat] += n;
+}
+
+//Increases a stat at random, by 1d6
+//These need to be updated.
+
+
+
+void increaseStat() {
+    int stat = Rand(5);
+    int n = rollDie(6);
+    statsArray[stat] += n;
+}
+
+//increases a random stat at random, with a minimum, and a maximum value set by args.
+void increaseRandomStat(int min, int max){
+    int stat = Rand(5);
+    int n = Rand(min, max);
+    statsArray[stat] += n;
+}
+
+//Increases a random stat by 1dX, where X is set as an argument.
+void increaseRandomStatByDie(int die){
+    int stat = Rand(5);
+    int n = rollDie(die);
+    statsArray[stat] += n;
+}
+
+void increaseSpecificStat(int stat, int value){
+    statsArray[stat] += value;
+}
+
+void increaseMuscleStat(int value){
+    statsArray[CR_STAT_MUSC] += value;
+}
+
+void increaseBodyStat(int value){
+    statsArray[CR_STAT_BODY] += value;
+}
+
+void increaseMindStat(int value){
+    statsArray[CR_STAT_MIND] += value;
+}
+
+void increaseMystStat(int value){
+    statsArray[CR_STAT_MYST] += value;
+}
+
+void increaseInflStat(int value){
+    statsArray[CR_STAT_INFL] += value;
+}
+
+void increaseLuckStat(int value){
+    statsArray[CR_STAT_LUCK] += value;
+}
+
+/// Increase specific stats, by a random value.
+
+void increaseMuscleStatRandom(int min, int max){
+    int value = Rand(min, max);
+    statsArray[CR_STAT_MUSC] += value;
+}
+
+void increaseBodyStatRandom(int min, int max){
+    int value = Rand(min, max);
+    statsArray[CR_STAT_BODY] += value;
+}
+
+void increaseMindStatRandom(int min, int max){
+    int value = Rand(min, max);
+    statsArray[CR_STAT_MIND] += value;
+}
+
+void increaseMystStatRandom(int min, int max){
+    int value = Rand(min, max);
+    statsArray[CR_STAT_MYST] += value;
+}
+
+void increaseInflStatRandom(int min, int max){
+    int value = Rand(min, max);
+    statsArray[CR_STAT_INFL] += value;
+}
+
+void increaseLuckStatRandom(int min, int max){
+    int value = Rand(min, max);
+    statsArray[CR_STAT_LUCK] += value;
+}
+
+///Increase specific stats by random number based on a die roll
+
+void increaseStatByDie(int stat, int dieType){
+    int value = rollDie(dieType);
+    statsArray[stat] += value;
+}
+
+void increaseMuscleStatDie(int dieType){
+    int value = rollDie(dieType);
+    statsArray[CR_STAT_MUSC] += value;
+}
+
+void increaseBodyStatDie(int dieType){
+    int value = rollDie(dieType);
+    statsArray[CR_STAT_BODY] += value;
+}
+
+void increaseMindStatDie(int dieType){
+    int value = rollDie(dieType);
+    statsArray[CR_STAT_MIND] += value;
+}
+
+void increaseMystStatDie(int dieType){
+    int value = rollDie(dieType);
+    statsArray[CR_STAT_MYST] += value;
+}
+
+void increaseInflStatDie(int dieType){
+    int value = rollDie(dieType);
+    statsArray[CR_STAT_INFL] += value;
+}
+
+void increaseLuckStatDie(int dieType){
+    int value = rollDie(dieType);
+    statsArray[CR_STAT_LUCK] += value;
+}
+
+//////////////////////////
+/// SET STAT FUNCTIONS ////////////////////////////////////////////
+/// These set a statistic to the exact value specified as arg0. ///
+///////////////////////////////////////////////////////////////////
+    
+//Sets specified stat to value desired The stat must be passed as an argument..
+
+void setStat(int stat, int value){
+    statsArray[stat] = value;
+}
+
+//Sets a stat, without passing the value of the stat, by referencing it directly.
+
+
+void setMuscStat(int value){
+    statsArray[CR_STAT_MUSC] = value;
+}
+
+void setBodyStat(int value){
+    statsArray[CR_STAT_BODY] = value;
+}
+
+void setMindStat(int value){
+    statsArray[CR_STAT_MIND] = value;
+}
+
+void setMystStat(int value){
+    statsArray[CR_STAT_MYST] = value;
+}
+
+void setInflStat(int value){
+    statsArray[CR_STAT_INFL] = value;
+}
+
+void setLuckStat(int value){
+    statsArray[CR_STAT_LUCK] = value;
+}
+
+////////////////////////////
+/// MISC STATS FUNCTIONS ///
+////////////////////////////
+
+/// Selects a statistic at random, and returns its value.
+
+int rollStat() {
+	int statsarr = SizeOfArray(statsArray);
+	int r = Rand(statsarr);
+	return statsArray[r];
+}
+
+///Decrease a statistic by set amount.
+
+void decreaseStat(int stat, int amount){
+	statsArray[stat] -= amount;
+}
+   
+
+
+// Using Stats
+// heavy weapon script particles
+// discover present slot of item
+// set int of slot of item for bools
+// when trying to use the item
+// if CT_MUSC  < x 
+// set other slot to 'hand' until item is changed.
+//
+// Use Body to affect HP:
+// Use Body to set HP at level increases. Use to set HP regen rate.
+// Use MUSC to set-augment weapon damage, via roll1dX rands. 
+// Use MUSC for ability to move objects.
+// bracelets increase Musc, as well as activating triggers. 
+// Bracelet / gauntlet takes up a slot. Any combination of two rings, or one ring and one bracelet at one time. 
+// Use Luck to set jinx durations.
+// Use Myst to set spell damage.
+// Require Myst of certain value to use some spells.
+// Ue Mind for Lore skills. 
+// Use Mind for raw (untrained) examination checks. 
+// Create LWeapon that deals damage based on dX rolls.
+// Is there any way to use MUSC and random damage on swords?
+// Possibly replace rhe power of the LW_SWORD generated with a sword with a different value?
+// INF should set the strings used on FFC scripts when conversing.
+// A higher INF would open up more lines of dialogue. 
+
+//////////////////////
+/// Bump Functions /////////////////////
+/// These Functions increase HP & MP ///
+////////////////////////////////////////
+
+/// MP Functions
+
+void IncreaseMP(int dieType, int dice) {
+    int amount = Roll(dieType,dice);
+    int myst = ( getMystStat() * 0.5 );
+    int total = ( amount + myst );
+    Link->MP += total;
+    Link->MaxMP += total;
+}
+    
+
+//These are deprecated, and need to be updated.
+
+
+
+void increaseMP() {
+    int amount = ( rollDie(10) + rollDie(10) + rollDie(10) );
+    int myst = ( getMystStat() * 0.5 );
+    int total = ( amount + myst );
+    Link->MP += total;
+    Link->MaxMP += total;
+}
+    
+    void increaseMP_ByDietype(int dieType){
+    int amount = rollDie(dieType);
+    int body = ( getBodyStat() * 0.5 );
+    int total = ( amount + body );
+    Link->MP += total;
+    Link->MaxMP += total;
+}
+
+void increaseMP_MultipleDice(int dice, int dieType){
+    int amount = rollDice(dice, dieType);
+    int body = ( getBodyStat() * 0.5 );
+    int total = ( amount + body );
+    Link->MP += total;
+    Link->MaxMP += total;
+}
+
+void increaseMP_specificAmount_withStatboost(int amount){
+    int body = ( getBodyStat() * 0.5 );
+    int total = ( amount + body );
+    Link->MP += total;
+    Link->MaxMP += total;
+}
+
+void increaseMP_specificAmount_noStatBoost(int amount){
+    Link->MP += amount;
+    Link->MaxMP += amount;
+}
+
+void increaseMP_Random_withStatBoost(int min, int max){
+    int amount = Rand(min, max);
+    int body = ( getBodyStat() * 0.5 );
+    int total = ( amount + body );
+    Link->MP += total;
+    Link->MaxMP += total;
+}
+
+void increaseMP_Random_withoutStatBoost(int min, int max){
+    int amount = Rand(min, max);
+    Link->MP += amount;
+    Link->MaxMP += amount;
+}
+
+/// HP Functions
+
+
+void IncreaseHP(int dieType, int dice ) {
+    int amount = Roll(dieType,dice);
+    int body = ( getBodyStat() * 0.5 );
+    int total = ( amount + body );
+    Link->HP += total;
+    Link->MaxHP += total;
+}
+
+// These are deprecaqted functions, and need to be updated.
+
+void increaseHP() {
+    int amount = ( rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10) );
+    int body = ( getBodyStat() * 0.5 );
+    int total = ( amount + body );
+    Link->HP += total;
+    Link->MaxHP += total;
+}
+
+void increaseHP_ByDietype(int dieType){
+    int amount = rollDie(dieType);
+    int body = ( getBodyStat() * 0.5 );
+    int total = ( amount + body );
+    Link->HP += total;
+    Link->MaxHP += total;
+}
+
+void increaseHP_MultipleDice(int dice, int dieType){
+    int amount = rollDice(dice, dieType);
+    int body = ( getBodyStat() * 0.5 );
+    int total = ( amount + body );
+    Link->HP += total;
+    Link->MaxHP += total;
+}
+
+void increaseHP_specificAmount_withStatboost(int amount){
+    int body = ( getBodyStat() * 0.5 );
+    int total = ( amount + body );
+    Link->HP += total;
+    Link->MaxHP += total;
+}
+
+void increaseHP_specificAmount_noStatBoost(int amount){
+    Link->HP += amount;
+    Link->MaxHP += amount;
+}
+
+void increaseHP_Random_withStatBoost(int min, int max){
+    int amount = Rand(min, max);
+    int body = ( getBodyStat() * 0.5 );
+    int total = ( amount + body );
+    Link->HP += total;
+    Link->MaxHP += total;
+}
+
+void increaseHP_Random_withoutStatBoost(int min, int max){
+    int amount = Rand(min, max);
+    Link->HP += amount;
+    Link->MaxHP += amount;
+}
+
+// Scripts
+
+///////////////////////
+/// Statistic Items ///
+///////////////////////
+
+item script statIncreaseItem{
+    void run(int stat, int amount) {
+        statsArray[stat] += amount;
+    }
+}

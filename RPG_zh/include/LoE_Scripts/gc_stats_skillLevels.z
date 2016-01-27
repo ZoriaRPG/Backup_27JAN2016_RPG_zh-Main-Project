@@ -1,0 +1,307 @@
+int statArray[12] = { 10, 10, 10, 10, 10, 10, 
+                    10, 10, 10, 10, 10, 10 }
+                    
+// TABLE
+
+/// { MUSC, BODY, MIND, MYST, INFL, LUCK
+      LoreMyst, LoreHistory, LoreXeno, LoreDivine, Swordsman, Marksman }
+
+// Old constants to update.
+//const int CR_STAT_MUSC = 25; //Script 19
+//const int CR_STAT_BODY = 26; //Script 20
+//const int CR_STAT_MIND = 27; //Script 21
+//const int CR_STAT_MYST = 28; //Script 22
+//const int CR_STAT_INFL = 29; //Script 23
+//const int CR_STAT_LUCK = 30; //Script 24
+
+int modify_d20_Stat(int stat) {
+    int modifierCalculation  = ( ( stat % 2 ) - 5 );
+    
+    //Select Stat
+    
+    int selectBodyStat(){
+        int stat = statArray[1];
+        return stat;
+    }
+    
+    
+    //Get stat Values
+    
+    //Return Full Stat
+    
+    int getBodyStat(){
+        int stat = statArray[1];
+        return stat;
+    }
+
+    int getMindStat(){
+        int stat = statArray[2];
+        return stat;
+    }
+
+    int getLuckStat(){
+        int stat = statArray[5];
+        return stat;
+    }
+
+    int getMystStat(){
+        int stat = statArray[3];
+        return stat;
+    }
+
+    int getInflStat(){
+        int stat = statArray[4];
+        return stat;
+    }
+
+    int getMuscStat(){
+        int stat = statArray[6];
+        return stat;
+    }
+    
+    
+    
+    //Half Stat
+    
+    int getHalfBodyStat(){
+        int stat = ( getBodyStat() * 0.5 );
+        return stat;
+    }
+    
+    int getHalfMuscStat(){
+        int stat = ( getMuscStat() * 0.5 );
+        return stat;
+    }
+    
+    int getHalfMindStat(){
+        int stat = ( getMindStat() * 0.5 );
+        return stat;
+    }
+    
+    int getHalfMystStat(){
+        int stat = ( getMystStat() * 0.5 );
+        return stat;
+    }
+    
+    int getHalfInflStat(){
+        int stat = ( getInflStat() * 0.5 );
+        return stat;
+    }
+    
+    int getHalfLuckStat(){
+        int stat = ( getLuckStat() * 0.5 );
+        return stat;
+    }
+    
+    //d20 Stat
+    
+     int d20_getGetMuscMod(){
+        int stat = getMuscStat();
+        modStat = modify_d20_Stat(stat)
+        return modStat;
+    }
+    
+     int d20_getGetBodyMod(){
+        int stat = getBodyStat();
+        modStat = modify_d20_Stat(stat)
+        return modStat;
+    }
+    
+     int d20_getGetMindMod(){
+        int stat = getMindStat();
+        modStat = modify_d20_Stat(stat)
+        return modStat;
+    }
+    
+     int d20_getGetMystMod(){
+        int stat = getMystStat();
+        modStat = modify_d20_Stat(stat)
+        return modStat;
+    }
+    
+     int d20_getGetInflMod(){
+        int stat = getInflStat();
+        modStat = modify_d20_Stat(stat)
+        return modStat;
+    }
+    
+    int d20_getGetLuckMod(){
+        int stat = getLuckStat();
+        modStat = modify_d20_Stat(stat)
+        return modStat;
+    }
+    
+    
+    //Fixed stat increases (from items, like +2 STR);
+    
+    int increaseMuscStatFixed(int amount){
+        int stat = statArray[0];
+        stat += amount;
+    }
+    
+    int increaseBodyStatFixed(int amount){
+        int stat = statArray[1];
+        stat += amount;
+    }
+    
+    int increaseMindStatFixed(int amount){
+        int stat = statArray[2];
+        stat += amount;
+    }
+    
+    int increaseMystStatFixed(int amount){
+        int stat = statArray[3];
+        stat += amount;
+    }
+    
+    int increaseInflStatFixed(int amount){
+        int stat = statArray[4];
+        stat += amount;
+    }
+    
+    int increaseLuckStatFixed(int amount){
+        int stat = statArray[5];
+        stat += amount;
+    }
+    
+
+    
+    
+    //Rolled Stat Increases
+    
+    
+    int increaseMuscStatRolled(int die){
+        int amount = rollDie(die)
+        increaseMuscStatFixed(amount);
+    }
+     int increaseBodyStatRolled(int die){
+        int amount = rollDie(die)
+        increaseBodyStatFixed(amount);
+    }
+    int increaseMindStatRolled(int die){
+        int amount = rollDie(die)
+        increaseMindStatFixed(amount);
+    }
+    int increaseMystStatRolled(int die){
+        int amount = rollDie(die)
+        increaseMystStatFixed(amount);
+    }
+    int increaseInflStatRolled(int die){
+        int amount = rollDie(die)
+        increaseInflStatFixed(amount);
+    }
+    int increaseLuckStatRolled(int die){
+        int amount = rollDie(die)
+        increaseLuckStatFixed(amount);
+    }
+    
+    //Increase Random stat
+    
+    int randomStatRolledIncrease(int die) {
+        int r = Rand(1,6); //specific value of 1-6 set at random;
+            if ( r == 1 ) {
+                increaseMuscStatRolled(die);
+            }
+            else if ( r == 2 ) {
+                increaseBodyStatRolled(die);
+            }
+            
+            else if ( r == 3 ) {
+                increaseMindStatRolled(die);
+            }
+            
+            else if ( r == 4 ) {
+                increaseMystStatRolled(die);
+            }
+            
+            else if ( r == 5 ) {
+                increaseInflStatRolled(die);
+            }
+            
+            else if ( r == 6 ) {
+                int increaseLuckStatRolled(die);
+            }
+    }
+    
+    int randomStatFixedIncrease(int amount) {
+        int r = Rand(1,6); //specific value of 1-6 set at random;
+            if ( r == 1 ) {
+                increaseMuscStatFixed(amount);
+            }
+            else if ( r == 2 ) {
+                increaseBodyStatFixed(amount);
+            }
+            
+            else if ( r == 3 ) {
+                increaseMindStatFixed(amount);
+            }
+            
+            else if ( r == 4 ) {
+                increaseMystStatFixed(amount);
+            }
+            
+            else if ( r == 5 ) {
+                increaseInflStatFixed(amount);
+            }
+            
+            else if ( r == 6 ) {
+                int increaseLuckStatFixed(amount);
+            }
+    }
+    
+    
+    //Specific stat
+    
+    //Set stat to specific amount.
+    
+    //Roll amount...
+    
+    int setMuscStatRolled(int die){
+        statArray[0] = die;
+    }
+    
+    int setMuscBodyRolled(int die){
+        statArray[1] = die;
+    }
+    
+    int setMuscMindRolled(int die){
+        statArray[2] = die;
+    }
+    
+    int setMuscMystRolled(int die){
+        statArray[3] = die;
+    }
+    
+    int setInflStatRolled(int die){
+        statArray[4] = die;
+    }
+    
+    int setLuckStatRolled(int die){
+        statArray[5] = die;
+    }
+    
+    //Fixed amount...
+    
+    int setMuscStatFixed(int amount){
+        statArray[0] = amount;
+    }
+    
+    int setMuscBodyFixed(int amount){
+        statArray[1] = amount;
+    }
+    
+    int setMuscMindFixed(int amount){
+        statArray[2] = amount;
+    }
+    
+    int setMuscMystFixed(int amount){
+        statArray[3] = amount;
+    }
+    
+    int setInflStatFixed(int amount){
+        statArray[4] = amount;
+    }
+    
+    int setLuckStatFixed(int amount){
+        statArray[5] = amount;
+    }

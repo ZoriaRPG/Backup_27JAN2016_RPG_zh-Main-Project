@@ -1,0 +1,22 @@
+//Kills Link Knockback if he is hit by a specific enemy on this screen.
+//Det D0 to the enemy ID to ignore. To ignore all enemie son the screen, set D0 to '0'.
+
+ffc script NoCollision{
+	void run (int enemNoCollide){ //D0: The ID of the enemy to ignore. 
+		while(true){
+			for(int i = 1; i < Screen->NumNPCs(); i++){ //Cycle through the enemies on the screen
+				npc enem = Screen->LoadNPC(i); //Load them one at a time
+				 
+				if ( ( ( enemNoCollide && enem->ID == enemNoCollide ) || ( !enemNoCollide ) )
+					&& LinkCollision(enem) ) { 
+					//If the enemy is the type that we specified, and Link touches it 
+						//or no type is specified (affects all enemies on the screen)
+						//and Link touches any enemy.
+					Link->Action = LA_NONE; //Change Link's action from hit, to nothing
+					Link->HitDir = -1; //Prevent knockback by setting his HitDir to -1
+				}
+			}
+			Waitframe();
+		}
+	}
+}

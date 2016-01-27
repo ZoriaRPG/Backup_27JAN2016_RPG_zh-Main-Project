@@ -1,0 +1,186 @@
+//Player Functions
+//v0.4 for RPG.zh v0.97.2
+
+//lweapon Player; //Declare in global active script to use as player sprite pointer. 
+
+
+
+int HurtSFX[]={110,135,136,137,138,139,140,141}; //Sound effects to play when Link is hurt by something.
+
+
+void StoreHP(){ //Call in global script init, and global script OnContinue
+	GameDynamics[CURRENT_HP] = Link->HP;
+	GameDynamics[LAST_HP = Link->HP;
+}
+
+     
+
+void UpdateHP(){ //Call Every Frame
+	if ( Link->HP != LinkStats[CURRENTHP] ){
+		GameDynamics[CURRENT_HP] - Link->HP;
+	}
+}
+
+
+void LinkDamaged(){ //Call every frame.
+	if ( LinkStats[CURRENT_HP] < LinkStats[LAST_HP] )
+		GameDynamics[LINK_HURT] = 1;
+		GameDynamics[LAST_HP] = LinkStats[CURRENT_HP];
+	}
+}
+
+void HurtSound(){
+	if ( ( Link->Action == LA_GOTHURTLAND || Link->Action == LA_GOTHURTWATER ) && LinkStats[LINK_HURT != 0 ){
+		GameDynamics[LINK_HURT] = 0;
+		int HurtSound = HurtSFX[Rand(1,SizeOfArray(HurtSFX))];
+		Game->PlaySound(HurtSound);
+	}
+}
+
+//Hunger and Thirst
+
+//Resurrection
+
+
+
+void Resurrect(int lifeCount) {
+	if ( Link->HP <= 0 ) Link->HP = lifeCount;
+}
+
+void Resurrect(int lifeCount, int maxLife) { //Resurrects the player with lifeCount HP if his MaxHP is less than or equal to maxLife.
+	if ( Link->HP <= 0 && Link->MaxHP <= maxLife ) Link->HP = lifeCount;
+}
+
+void Resurrect(int lifeCount, bool itm, int it) { //Resurrects the player if he has 0 or fewer HP, and is carrying item it.
+	if ( Link->HP <= 0 && Link->Item[it]==true ) Link->HP = lifeCount;
+}
+
+void Resurrect(int lifeCount, int requireDMAP, int maxLife) { //Ressurrects the player if he is on a given DMAP. This may conflict with above function, and args may nee dto be rearrangged.
+	int curDMAP = Game->GetCurDMap();
+	if ( curDMAP == requireDMAP && Link->MaxHP <= maxLife ) Link->HP = lifeCount;
+}
+
+
+void Resurrect(int lifeCount, bool itm, int it, bool removeItem) { //Ressurects the player if he has 0 or fewer HP, and is carrying item it. Optionally remove that item by setting removeItem true.
+	if ( Link->HP <= 0 && Link->Item[it]==true ){
+		Link->HP = lifeCount;
+		if ( removeItem ) {
+			Link->Item[it] = false;
+		}
+	}
+}
+
+void Resurrect(int lifeCount, bool itemAndMaxLife, int it, int maxLife) { 
+	if ( Link->HP <= 0 && Link->Item[it]==true  && Link->MaxHP <= maxLife ) Link->HP = lifeCount;
+}
+
+
+
+const int REASON_NONE = 0;
+const int REASON_DMAP = 1;
+const int REASON_MAXHP = 2;
+const int REASON_ITEM = 4;
+
+
+//Resurrect with the ability to nable all options as ints. Combine REASON flags to stack requirements.
+//The if statement with inclusive ors may need fine tuning to ensure that the priority of inclusions is not in conflict.
+void Resurrect(int lifeCount, int reason, int it, int maxLife, int requireDMAP) {
+	if ( Link->HP <= 0 ) {
+		int curDMAP = Game->GetCurDMap();
+		if ( reason == REASON_DMAP && curDMAP == requireDMAP ||
+			reason == REASON_MAXHP && Link->MaxHP <= maxLife ||
+			reason == REASON_ITEM && Link->Item[it] == true ||
+			reason == 3 && curDMAP == requireDMAP && Link->MaxHP <= maxLife ||
+			reason == 5 && curDMAP == requireDMAP && Link->Item[it] == true ||
+			reason == 6 && Link->MaxHP <= maxLife && Link->Item[it] == true ||
+			reason == 7 && curDMAP == requireDMAP && Link->MaxHP <= maxLife && Link->Item[it] == true){
+				
+			Link->HP = lifeCount;
+		}
+
+	}
+}
+
+void CreateRandomTreasure(int numOfTreasures, int arrList, bool NonSolidOnly){
+	//This function is broken, and needs repair.
+	int x;
+	int y;
+	int v;
+	int itm;
+	int loc;
+	int max = SizeOfArray(arrList);
+	for (int q = 0; q < numOfTreasures; q++){
+		v = Rand(max);
+		//Need function to check if any x or y coordinate is solid. 
+		//if ( NonSolidOnly ){
+		//	do {
+		//		x = Rand(176);
+		//		loc = GetComboData(x);
+		//	}
+		//	while ( loc == isSolid(x,y));
+		//	do {
+		//		y = Rand(240);
+		//	}
+		//	while ( y == isSolid(x,y));
+		//}
+		//else {
+			x = Rand(176);
+			y = Rand(240);
+		//}
+		itm = arrList[v];
+		CreateTimeoutItem(itm,x, y);
+	}
+}
+
+ffc script TreasureRoom{ //Run on screen init.
+	void run(int itemNumber, int dat){
+		if ( Screen->D[dat] == 0 ){
+			//Screen->Item at positions to replicate Z1 rupee room formation.
+			Screen->D[dat]++;
+		}
+	}
+}
+
+int UselessCounterItems[30];
+
+//If a player picks up an item that they don't need, add it here. 
+//Then, at the end of the game, list how many items thay collected when they couldn't carry them!
+
+ffc script ItemFlower{ 
+	void run(int itm, int dur, int src, int repl, int regrowDur){
+		//dur is how long, in seconds, this ffc waits before it starts regrowing.
+		//regrowDur is duration in seconds, that the combo cycle for the repl combo takes to complete.
+		//src is the combo of the item growing back.
+		//repl is the combo to shift to, when the flower item is taken, while waiting for the timer to refresh.
+		bool taken;
+		int tmr;
+		int x = this->X;
+		int y = this->Y;
+		int thisScreen = Game->GetCurScreen();
+		while(true){
+			do {
+				if ( this->Data == repl ){
+					this->Data = src;
+					for (int r = (regrowDur  * 60); r > 0; r--) {
+						Waitframe();
+					}
+				}
+				if ( LinkCollision(this) ){
+					item crItem = Screen->CreateItem(itm);
+					crItem->X = x;
+					crItem->Y = y;
+					this->Data = repl;
+					taken = true;
+					tmr = dur * 60;
+				}
+			}
+			while(!taken);
+			for (int q = tmr; q > 0; q--){
+				Waitframe();
+			}
+			taken = false;
+			Waitframe();
+		}
+	}
+}
+		

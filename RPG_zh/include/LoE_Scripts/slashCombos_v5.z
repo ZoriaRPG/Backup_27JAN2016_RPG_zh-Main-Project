@@ -1,0 +1,225 @@
+ void slashCombos(lweapon sword) {
+ 
+     int loc = ComboAt(CenterX(sword), CenterY(sword));
+     int locX = ComboAt(CenterX(sword);
+     int locY = ComboAt(CenterY(sword);
+     int replaceThis = loc;
+     int target;
+     const int SLASH_GRASS = 0;
+     const int SLASH_BUSH = 0;
+     const int SLASH_FLOWER = 0;
+     const int SLASH_POT = 0;
+     int match;
+     int item;
+     int underComboId = Screen->ComboD[loc];
+
+ 
+ // Loop through every combo on screen looking for combos
+
+    for (loc = 0; loc < 176; loc++) {
+        int match = 0;
+      
+        if ( Screen->ComboT[loc] == CT_SLASH && ( ComboCollision (loc, sword) ) ) {
+            match = CT_SLASH;
+        }
+        if ( Screen->ComboT[loc] ==  CT_SLASHC && ( ComboCollision (loc, sword) ) ) {
+            match = CT_SLASHC;
+        }
+        if ( Screen->ComboT[loc] == CT_SLASHITEM && ( ComboCollision (loc, sword) ) ) {
+            match = CT_SLASHITEM;
+        }
+        if ( Screen->ComboT[loc] == CT_SLASHITEMC && ( ComboCollision (loc, sword) ) ) {
+            match = CT_SLASHITEMC;
+        }
+        if ( Screen->ComboT[loc] == CT_SLASHNEXT && ( ComboCollision (loc, sword) ) ) {
+            match = CT_SLASHNEXT;
+        }
+        if ( Screen->ComboT[loc] == CT_SLASHNEXTC && ( ComboCollision (loc, sword) ) ) {
+            match = CT_SLASHNEXTC;
+        } 
+        if ( Screen->ComboT[loc] == CT_SLASHNEXTITEM && ( ComboCollision (loc, sword) ) ) {
+            match = CT_SLASHNEXTITEM;
+        }
+        if ( Screen->ComboT[loc] == CT_SLASHNEXTITEMC && ( ComboCollision (loc, sword) ) ) {
+            match = CT_SLASHNEXTITEMC;
+        }
+        if ( Screen->ComboT[loc] == CT_TALLGRASS && ( ComboCollision (loc, sword) ) ) {
+            match = CT_TALLGRASS;
+        }
+        if ( Screen->ComboT[loc] == CT_TALLGRASSC && ( ComboCollision (loc, sword) ) ) {
+            match = CT_TALLGRASSC;
+        }
+        if ( Screen->ComboT[loc] == CT_TALLGRASSNEXT && ( ComboCollision (loc, sword) ) ) {
+            match = CT_TALLGRASSNEXT;
+        }
+        if ( Screen->ComboT[loc] == CT_BUSH && ( ComboCollision (loc, sword) ) ) {
+            match = CT_BUSH;
+        }
+        if ( Screen->ComboT[loc] == CT_BUSHC && ( ComboCollision (loc, sword) ) ) {
+            match = CT_BUSHC;
+        }
+        if ( Screen->ComboT[loc] == CT_BUSHNEXT && ( ComboCollision (loc, sword) ) ) {
+            match = CT_BUSHNEXT;
+        }
+        if ( Screen->ComboT[loc] == CT_BUSHNEXTC && ( ComboCollision (loc, sword) ) ) {
+            match = CT_BUSHNEXTC;
+        }
+        if ( Screen->ComboT[loc] == CT_FLOWERS && ( ComboCollision (loc, sword) ) ) {
+            match = CT_FLOWERS;
+        }
+        if ( Screen->ComboT[loc] == CT_FLOWERSC && ( ComboCollision (loc, sword) ) ) {
+            match = CT_FLOWERSC;
+        }
+        else {
+            break;
+        }
+          
+    }
+        
+        
+    if ( match ==  CT_SLASHC ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+        
+    }
+    if ( match ==  CT_SLASHITEM ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_SLASHITEMC ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_SLASHNEXT ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_SLASHNEXTC ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_SLASHNEXTITEM ){
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_SLASHNEXTITEMC ){
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_TALLGRASS ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_TALLGRASSC ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_TALLGRASSNEXT ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_BUSH ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_BUSHC ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_BUSHNEXT ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_BUSHNEXTC ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_FLOWERS ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+    if ( match ==  CT_FLOWERSC ) {
+        target = underComboId;
+        Game->PlaySound(SLASH_GRASS);
+        Screen->ComboD[replaceThis] == target;
+        item dropItem = Screen->CreateItem(item);
+        dropItem->X = locX;
+        dropItem->Y = locY;
+        //dropItem->Z = Link->Z;
+    }
+}

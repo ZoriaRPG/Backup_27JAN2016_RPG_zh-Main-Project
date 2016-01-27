@@ -1,0 +1,343 @@
+///RPG.ZH
+///Spellcasting
+
+const int SECONDS = 60;
+const int BASE_SPELLCASTING_TIME = 360;
+const int CTL_GAMEPAD = 1;
+const int GAMEPAD = 1;
+
+const int CTL_MOUSE = 2;
+const int MOUSE = 2;
+
+const int CTL_AXIAL = 4;
+const int AXIAL = 4;
+const int CTL_ANALOGUE = 4;
+const int ANALOGUE = 4;
+
+const int CTL_MAP = 8;
+const int MAPBUTTON = 8;
+
+const int CTL_ALL = 15;
+
+const int SFX_SPELLCASTING = 0; //Assign a short sound to repeat during spellcasting/chanting.
+
+bool castingSpellInvincibility = false;
+
+int coordinates[2] = {0,0};
+//Use to store coordinates of various things.
+
+const int SPELL_X = 0;
+const int SPELL_Y = 1;
+
+void mouseSpell(int spellType, int spellDegree, int castingDuration, bool invincibility, int invincibilityTime){
+    //
+    CastingAnim(castingDuration, invincibility, invincibilityTime);
+    ///Does this need a global timer value? I think that Timers.zh would be quite useful here.
+    //Use values stored, and run by Timers.zh, and a boolean (isCastingAnim) to execute 
+    //These routines as part of a while loop, rather than calling it.
+    //That would however, add lines of active code to the global script at all times...
+    //Use mouse pointer to target effect.
+    int spellX;
+    int spellY;
+    if ( Link->InputMouseB ) {
+        spellX = InputMouseX;
+        spellY = InputMouseY;
+        //RunSpellAt(spellType, spellDegree, spellX, spellY);
+    }
+
+}
+
+void explanationWindow(){
+    //Tango box
+    //if mouse spell is used for first time,l display a box that explains the use of the mouse until the player exits box.
+    //Detail what button to press to exit the box, and what mouse button to click to complete the spell effect.
+    //If the spell has already been used, do not display.
+    //Requirs a global array to store what spells that player has,or has not used.
+}
+
+void CastingThis(int spell){
+    //Sets value of array element for the given spell, to true.
+}
+
+bool hasCast(int spell){
+    //Returns true of the player has cast a specific spell.
+}
+
+void CastingAnim(int animTime, bool invincibility, int invincibilityTime){
+    int timeRemaining = invincibilityTime;
+    //This (timeRemaining) won't work, as this value will vanish when the function repeats each frame. 
+    //This will work in the FFC version, but not int he function version.
+    //Use Timers.zh for this.
+    
+    for ( i = animTime; i > 0; i--) {
+        
+        if ( invincibility == true && !castingSpellInvincibility ){
+            while(timeRemaining > 0){
+                if ( Link->CollDetection = true ) {
+                    Link->CollDetection = false;
+                }
+                timeRemaining--;
+            }
+        }
+        
+        BlockInputs(GAMEPAD+MAP);
+        BlockPresses(GAMEPAD+MOUSE);
+        Link->Action = LA_CASTING;
+        Game->PlaySound(SFX_SPELLCASTING);
+        Waitframe();
+    }
+}
+
+ffc script mouseSpell(int time){
+    void run(){
+        //Spellcasting animation.
+        //Make Link immune to damage for X-time
+        //(enemies still move)
+        //Freeze all non-mouse inputs.
+        //Player clicks omn scren.
+        //Effect happens on targeted area.
+    }
+}
+
+void BlockInputs(int type){
+    if ( type == 1 ) {      //Main entry, blocks gamepad input.
+        Link->InputUp = false;
+        Link->InputDown = false;
+        Link->InputRight = false;
+        Link->InputLeft = false;
+        Link->InputEx1 = false;
+        Link->InputEx2 = false;
+        Link->InputEx3 = false;
+        Link->InputEx4 = false;
+        Link->InputStart = false;
+        Link->InputA = false;
+        Link->InputB = false;
+        Link->InputL = false;
+        Link->InputR = false;
+    }
+    else if ( type == 2 ) {     //Main entry, blocks mouse button input.
+        Link->InputMouseB = false;
+    }
+    else if ( type == 3 ) {     //2+1
+        Link->InputUp = false;
+        Link->InputDown = false;
+        Link->InputRight = false;
+        Link->InputLeft = false;
+        Link->InputEx1 = false;
+        Link->InputEx2 = false;
+        Link->InputEx3 = false;
+        Link->InputEx4 = false;
+        Link->InputStart = false;
+        Link->InputA = false;
+        Link->InputB = false;
+        Link->InputL = false;
+        Link->InputR = false;
+        Link->InputMouseB = false;
+    }
+    else if ( type == 4 ) {     //Main entry, blocks analogue input.
+        Link->InputAxisUp = false;
+	    Link->InputAxisDown = false;
+	    Link->InputAxisLeft = false;
+	    Link->InputAxisRight = false;
+    }    
+    else if ( type == 5 ) {     //4+1
+        Link->InputAxisUp = false;
+	    Link->InputAxisDown = false;
+	    Link->InputAxisLeft = false;
+	    Link->InputAxisRight = false;
+        Link->InputUp = false;
+        Link->InputDown = false;
+        Link->InputRight = false;
+        Link->InputLeft = false;
+        Link->InputEx1 = false;
+        Link->InputEx2 = false;
+        Link->InputEx3 = false;
+        Link->InputEx4 = false;
+        Link->InputStart = false;
+        Link->InputA = false;
+        Link->InputB = false;
+        Link->InputL = false;
+        Link->InputR = false;
+    }
+    else if ( type == 6 ) {     //4+2
+        Link->InputAxisUp = false;
+	    Link->InputAxisDown = false;
+	    Link->InputAxisLeft = false;
+	    Link->InputAxisRight = false;
+        Link->InputMouseB = false;
+    }
+    else if ( type == 7 ) {     //4+2+1
+        Link->InputAxisUp = false;
+	    Link->InputAxisDown = false;
+	    Link->InputAxisLeft = false;
+	    Link->InputAxisRight = false;
+        Link->InputMouseB = false;
+        Link->InputUp = false;
+        Link->InputDown = false;
+        Link->InputRight = false;
+        Link->InputLeft = false;
+        Link->InputEx1 = false;
+        Link->InputEx2 = false;
+        Link->InputEx3 = false;
+        Link->InputEx4 = false;
+        Link->InputStart = false;
+        Link->InputA = false;
+        Link->InputB = false;
+        Link->InputL = false;
+        Link->InputR = false;
+    }
+    else if ( type == 8 ) {      //Main entry, blocks map button input.
+        Link->InputMap = false;
+    }
+    else if ( type == 9 ) {     //8+1
+        Link->InputMap = false;
+        Link->InputUp = false;
+        Link->InputDown = false;
+        Link->InputRight = false;
+        Link->InputLeft = false;
+        Link->InputEx1 = false;
+        Link->InputEx2 = false;
+        Link->InputEx3 = false;
+        Link->InputEx4 = false;
+        Link->InputStart = false;
+        Link->InputA = false;
+        Link->InputB = false;
+        Link->InputL = false;
+        Link->InputR = false;
+    }
+    else if ( type == 10 ) {    //8+2
+        Link->InputMap = false;
+        Link->InputMouseB = false;
+    }
+    else if ( type == 11 ){     //8+2+1
+        Link->InputMap = false;
+        Link->InputMouseB = false;
+        Link->InputUp = false;
+        Link->InputDown = false;
+        Link->InputRight = false;
+        Link->InputLeft = false;
+        Link->InputEx1 = false;
+        Link->InputEx2 = false;
+        Link->InputEx3 = false;
+        Link->InputEx4 = false;
+        Link->InputStart = false;
+        Link->InputA = false;
+        Link->InputB = false;
+        Link->InputL = false;
+        Link->InputR = false;
+    }
+    else if ( type == 12 ) {    // 8+4
+        Link->InputMap = false;
+        Link->InputAxisUp = false;
+	    Link->InputAxisDown = false;
+	    Link->InputAxisLeft = false;
+	    Link->InputAxisRight = false;
+    }
+    else if ( type == 13 ) {      //8+4+1
+        Link->InputMap = false;
+        Link->InputAxisUp = false;
+	    Link->InputAxisDown = false;
+	    Link->InputAxisLeft = false;
+	    Link->InputAxisRight = false;
+        Link->InputUp = false;
+        Link->InputDown = false;
+        Link->InputRight = false;
+        Link->InputLeft = false;
+        Link->InputEx1 = false;
+        Link->InputEx2 = false;
+        Link->InputEx3 = false;
+        Link->InputEx4 = false;
+        Link->InputStart = false;
+        Link->InputA = false;
+        Link->InputB = false;
+        Link->InputL = false;
+        Link->InputR = false;
+    }
+    else if ( type == 14 ) {        //8+4+2
+        Link->InputMap = false;
+        Link->InputAxisUp = false;
+	    Link->InputAxisDown = false;
+	    Link->InputAxisLeft = false;
+	    Link->InputAxisRight = false;
+        Link->InputMouseB = false;
+    }
+    else if ( type == 15 ) {    //8+4+2+1 (all)
+        Link->InputMap = false;
+        Link->InputAxisUp = false;
+	    Link->InputAxisDown = false;
+	    Link->InputAxisLeft = false;
+	    Link->InputAxisRight = false;
+        Link->InputMouseB = false;
+        Link->InputUp = false;
+        Link->InputDown = false;
+        Link->InputRight = false;
+        Link->InputLeft = false;
+        Link->InputEx1 = false;
+        Link->InputEx2 = false;
+        Link->InputEx3 = false;
+        Link->InputEx4 = false;
+        Link->InputStart = false;
+        Link->InputA = false;
+        Link->InputB = false;
+        Link->InputL = false;
+        Link->InputR = false;
+    }
+}
+
+//This blocks inputs from the player. The effects are cumulative.
+//Examples:     BlockInputs(MOuSE+ANALOGUE);
+//              BlockInputs(MAP+AXIAL);
+
+void BlockInputs(int type, bool Cumulative) {
+}
+        
+void BlockPresses(int type){
+        Link->PressUp = false;
+        Link->PressDown = false;
+        Link->PressRight = false;
+        Link->PressLeft = false;
+        Link->PressEx1 = false;
+        Link->PressEx2 = false;
+        Link->PressEx3 = false;
+        Link->PressEx4 = false;
+        Link->PressStart = false;
+        Link->PressA = false;
+        Link->PressB = false;
+        Link->PressL = false;
+        Link->PressR = false;
+    }
+    
+    
+
+bool doCastingAnim = false;
+
+void callCastingAnim(int seconds){
+}
+
+void globalCastingAnim(){
+    //This is the same as castingAnim, but with no Waitframe().
+}
+
+ffc script castingAnim{
+    void run(){
+    //Check running ffc scripts.
+    //If slot is free, use this.
+    ////// Else run function version.
+    //Run functions
+    }
+}
+
+//Global example:
+
+global script SpellcastingGlobal{
+    void run(){
+        while(true) {
+            if ( doCastingAnim ) {
+                callCastingAnim( BASE_SPELLCASTING_TIME );
+            }
+            Waitframe();
+        }
+    }
+}
+            
+

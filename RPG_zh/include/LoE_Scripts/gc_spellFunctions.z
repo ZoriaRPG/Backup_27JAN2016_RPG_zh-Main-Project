@@ -1,0 +1,594 @@
+void spellCasting(int item){
+    if ( item == 0 ) {
+        useSpellItem(I_GRIMOIRE);
+    }
+        if ( item == 1 ) {
+        useSpellItem(I_SERN1);
+    }
+        if ( item == 2 ) {
+        useSpellItem(I_SERN2);
+    }
+        if ( item == 3 ) {
+        useSpellItem(I_SERN3);
+    }
+        if ( item == 4 ) {
+        useSpellItem(I_SERN4);
+    }
+        if ( item == 5 ) {
+        useSpellItem(I_SERN5);
+    }
+        if ( item == 6 ) {
+        useSpellItem(I_SERN6);
+    }
+        if ( item == 7 ) {
+        useSpellItem(I_SERN7);
+    }
+        if ( item == 8 ) {
+        useSpellItem(I_CORONET);
+    }
+}
+
+/////////Initiate spellcasting!
+
+void useSpellItem(int item, int cost){
+    castThisSpell( ( spellsSet[item+9] ), spellsSet[item], cost ); 
+}
+
+
+
+const int I_GRIMOIRE = 0;
+const int I_SERN1 = 1;
+const int I_SERN2 = 2;
+const int I_SERN3 = 3;
+const int I_SERN4 = 4;
+const int I_SERN5 = 5;
+const int I_SERN6 = 6;
+const int I_SERN7 = 7;
+const int I_CORONET = 8;
+
+int spellsSet[18] = {0,0,0,0,0,0,0,0,0
+                    0,0,0,0,0,0,0,0,0};
+cont int SPELLLIST = 9; //Rows
+
+
+const int SPELL_GRIMOIRE = 0;
+const int SPELL_SERN_1 = 1;
+const int SPELL_SERN_1 = 2;
+const int SPELL_SERN_1 = 3;
+const int SPELL_SERN_1 = 4;
+const int SPELL_SERN_1 = 5;
+const int SPELL_SERN_1 = 6;
+const int SPELL_SERN_1 = 7;
+const int SPELL_CORONET = 8;
+
+void setSpell(int item, int spell, int spellList) {
+    spellsSet[item+9] = spellList;
+    spellsSet[item] = spell;
+}
+
+int getSpell(int item) {
+    return spellsSet[item];
+}
+
+void castThisSpell(int spellSet, int spell, int cost){
+    if ( Link->MP >= cost ) {
+        if ( spellSet == 0 ) {
+        
+        // Life
+            if ( spell == 0 ) {
+                //RestoreHP1
+            }
+            else if ( spell == 1 ) {
+            }
+        
+        }
+        //else if list for spell sets.
+    }
+    else {
+        Game->PlaySound(ERROR_SFX);
+    }
+}
+
+//The above casts a spell passed by a function without an ffc.
+
+void castThisSpell(int spellList, int spell, int cost, int ffc, bool ffc){
+    if ( Link->MP >= cost ) {
+    
+        Link->MP -= cost;
+    
+        if ( spellSet == 0 ) {
+        
+            // Life
+            if ( spell == 0 ) {
+                //Torch
+            }
+            if ( spell == 1 ) {
+                //Flare
+            }
+            if ( spell == 2 ) {
+                //Lumen
+            }
+            if ( spell == 3 ) {
+                //Gala
+            }
+            if ( spell == 4 ) {
+                //Light of Creation
+            }
+            if ( spell == 5 ) {
+                CloseWounds(12, RESTORE_MP);
+            }
+            else if ( spell == 6 ) {
+                CloseWounds(4, RESTORE_HP);
+            }
+            else if ( spell == 7 ) {
+                CloseWounds(6, RESTORE_HP);
+            }
+            else if ( spell == 8 ) {
+                CloseWounds(8, RESTORE_HP);
+            }
+            else if ( spell == 9 ) {
+                CloseWounds(10, RESTORE_HP);
+            }
+            else if ( spell == 10 ) {
+                CloseWounds(12, RESTORE_HP);
+            }
+            else if ( spell == 11 ) {
+                CloseWounds(20, RESTORE_HP);
+            }
+        
+        }
+        //else if list for spell sets.
+    }
+    else {
+        Game=>PlaySound(ERROR_SFX);
+    }
+}
+
+//The above casts a spell passed by a function with, or without an ffc.
+
+//Spell Types
+const int ST_LIGHT = 0;
+const int ST_HEALING = 0;
+const int ST_FIRE = 1;
+const int ST_WATER = 2;
+const int ST_AIR = 3;
+const int ST_EARTH = 4;
+const int ST_DARK = 5;
+const int ST_HARMING = 5;
+const int ST_DIVINE = 6;
+const int ST_SKILL = 7;
+const int ST_ENH = 8;
+const int ST_PROT = 9;
+const int ST_SUMMON = 10;
+const int ST_MISC - 11;
+const int ST_META = 12;
+const int ST_OTHER = 13;
+
+//Spells (by type)
+
+//Light
+const int SP_TORCH = 0; //Illuminates an area for X*level; defeats deep darkness.
+const int SP_FLARE = 1; //Damages one UNDEAD enemy (mouse tareted) by 2d6.
+const int SP_LUMEN = 2; //Defeats Nightfall/Deeper Darkness with 5% chance Rand per level.
+const int SP_GALA = 3; //Deals 1d6/leve; damage to one (mouse tareted) UNDEAD enemy.
+const int SP_LIGHT_OF_CREATION = 4; //(Sernaran of Light ONLY) Utterly destroys one undead (NON-BOSS) enemy (aimed), and defeats Nightfall zones of deeper darkness for entire screen.
+const int SP_ESSENCE = 5; // Restores MP, at the cost of HP (or money). (Sernaran of Light)
+//Healing (part of Light)
+
+const int SP_CLOSE_WOUNDS = 6; //Heals 1d6 HP/level.
+const int SP_HEAL_WOUNDS = 7; //Heals 1d8 HP/level.
+const int SP_CURE WOUNDS = 8; //Heals 1d10 HP/level
+const int SP_RESTORE = 9; //Cures one status ailment.
+const int SP_CADUCEUS = 10; //Heals 3d6 HP/level.
+const int SP_HEAL256 = 11; //Heals 3d6 HP/level (second comstant for SP_CADUCEUS)
+const int SP_LIFE = 12; //Heals 4d8 HP/level.
+const int SP_RENEW = 13; //Restores all status ailments, and restores HP by 50%.
+const int SP YEAPO = 14; //Fully recovers HP, and restores all status ailments.
+const int SP_REVIVE = 15; //Revives one dead ally.
+
+//Light costs
+
+SPC_TORCH = 16;
+SPC_FLARE = 32;
+SPC_LUMEN = 64;
+SPC_GALA2 = 128;
+SPC_LIGHT_OF_CREATION = 256;
+SPC_ESSENCE = 0;
+SP_CLOSE_WOUNDS= 8;
+SP_HEAL_WOUNDS = 16;
+SP_CURE WOUNDS = 32;
+SP_RESTORE = 64;
+SP_CADUCEUS = 128
+SP_HEAL256 = 128;
+SP_LIFE = 256;
+SP_RENEW = 52;
+SP YEAPO = 1024;
+SP_REVIVE = 1024;
+
+
+// ST_HEALING
+//See above.
+
+// ST_FIRE
+
+const int SP_FLAME = 0; //'Flame' Bolt of fire, short range. 1d3/level
+const int SP_BURN = 1; //'Burn' Bolt of fire, medium range, 1d4/level
+const int SP_MELT = 2; //'Melt', melts frozen objects.
+const int SP_FIREBOLT = 3; //'Firebolt' Bplt of fire, medium range, 1d6/level
+const int SP_FIREBALL = 4; //'Fireball', sphere of fire, tareted with mouse.
+const int SP_INFERNO = 5//Like Din's Fire
+const int SP_VULCAN = 6; //two-tile wide LINE of flame, 1d8/level.
+const int SP_SAELOS = 7; 'Saelos' Vulcan, plus 1d3/level to all enemies within 4-tiles
+const int SP_SAEARA = 8; ' Sae'ara 'Vulcan, plus 1d4/level tto all enemies onpscreen.
+
+//Fire Costs
+
+const int SPC_FLAME = 8;
+const int SPC_BURN = 16;
+const int SPC_MELT = 16;
+const int SPC_FIREBOLT = 16;
+const int SPC_FIREBALL = 32;
+const int SPC_INFERNO = 64;
+const int SPC_VULCAN = 128; //two-tile wide LINE of flame, 1d8/level.
+const int SPC_SAELOS = 256; 'Saelos' Vulcan, plus 1d3/level to all enemies within 4-tiles
+const int SPC_SAEARA = 512; ' Sae'ara 'Vulcan, plus 1d4/level tto all enemies onpscreen.
+
+
+
+// ST_WATER Water, and Ice
+
+const int SP_CHILL = 0; //Stun enemy for 1d6 seconds, plus 1d6 damage. Mouse targeted.
+const int SP_FROST = 1; //Stuns enemy for 1d8 seconds, plus 1d8 damage. Mouse targeted.
+const int SP_ICERAY = 2; //Ray of ice stuns enemy for 1d10 seconds; plus damages for 1d6/level. Aimed in front of player.
+const int SP_FREEZE = 3; Stuns enemy for 2d6 seconds, plus 1d10 damage. Mouse targeted.
+const int SP_FROSTGLOBE = 4; //Mouse-tareted area effect in circle, stuns enemies for 1d10 seconds, plus 1d4/level.
+const int SP_WINTERCHILL = 5; //Stuns one enemy for 2d6 seconds, plus 1d4/level damae.
+C = 6; //Stuns one enemy for 4d6 secods, plus 1d6/level damae.
+const int SP_CALMEN = 7; // tuns all enemies on-screen for 1d6 seconds, plus deals 1d4/level to all enemies on-screen. Uss FFC animation.
+
+//Water Costs
+
+const int SPC_CHILL = 8;
+const int SPC_FROST = 16;
+const int SPC_ICERAY = 16;
+const int SPC_FREEZE = 32;
+const int SPC_FROSTGLOBE = 32;
+const int SPC_WINTERCHILL = 64;
+const int SP_WINTERWIND = 128;
+const int SPC_CALMEN = 256;
+
+
+// ST_AIR Air and Electricity
+//Note: Electricity can damae more enemies than any other spell type.
+
+const int SP_SHOCK = 0; //Deals 1d6 electrical damage to one enemy,
+const int SP_ELECTRIFY = 1; //Touchin Link deals 1d3/level damage to an enemy; Link still takes damage from enemies.
+const int SP_POWER = 2; //Powers one device for 2d6 seconds/level.
+const int SP_RECHARE = 3; //Recharges power/eclips for 1d4 points/level.
+const int SP_GUST = 4; //Deals 1d4/level to all enemies in direction Link is facing.
+const int SP_GALE = 5; //Deals 1d6/level to all enemies in direction Link is facing.
+const int SP_MINIBOLT = 6; Bolt of lihtning. Damaes one neemy (tareted ray) for 1d4/level.
+const int SP_LIGHTNING = 7; Damages all enemies in path for 1d6/level.
+const int SP_TZYEF = 8; //As LIHTNIN, plus 1d4 to all other enemies on-screen.
+
+//Air & Electrical Costs
+
+const int SPC_SHOCK = 8;
+const int SPC_ELECTRIFY = 16;
+const int SPC_POWER = 16; //Powers one device for 2d6 seconds/level.
+const int SPC_RECHARE = 32; //Recharges power/eclips for 1d4 points/level.
+const int SPC_GUST = 32; 
+const int SPC_GALE = 64;
+const int SPC_BOLT = 128;
+const int SPC_LIGHTNIN = 256;
+const int SPC_TZYEF = 512;
+
+
+// ST_EARTH
+
+const int SP_RUMBLE = 0; //Shakes screen, deals 1d3 damae to all enemies on-screen.
+const int SP_TREMOR = 1; //Shakes screen, deals 1d4 damae to all enemies on-screen.
+const int SP_ACIDICBALL = 2; //Spherelweapon launches toward one enemy, dealing 1d4/level acid damagge. 
+const int SP_QUAKE = 3; //Shakes screen, deals 1d5 damae to all enemies on-screen. Triggers bomb serets within 4 tiles of player.
+const int SP_ACIDGLOBE = 4; //Deals acid damae of 1d4/level to all enemies within a 5-tile circle. Mouse targeted. 
+const int SP_GROUNDSPLIT = 5; //Shakes screen, deals 1d6 damage to all enemies on-screen. Triers bonb secrets within 6 tiles of player.
+const int SP_FAULTINE = 6; //Shakes screen, deals 1d8 damage to all enemies on-screen. Triers bonb secrets within 8 tiles of player.
+const int SP_EARTHSHATTER = 7; //Shakes screen, deals 1d8 damage to all enemies on-screen. Triggers bonb secrets on-screen, and super-bomb secrets within 6 tiles of player.
+
+// Earth Costs
+
+const int SPC_RUMBLE = 8;
+const int SPC_TREMOR = 16;
+const int SPC_ACIDICBALL = 16;
+const int SPC_QUAKE = 32;
+const int SPC_ACIDGLOBE = 32
+const int SPC_GROUNDSPLIT = 64;
+const int SPC_FAULTLINE = 128;
+const int SPC_EARTHSHATTER = 256;
+
+
+
+// ST_DARK Darkness, and Harming
+
+const int SP_DIM = 0; // Increases damae to living (not undead) enemies to 2x for 4-seconds/level.
+const int SP_BLIND = 1; Turns off collDetection for one enemy (mouse targeted) for 10s/level, and places a dark circle around them witn an ffc. 
+const int SP_SHADOW = 2; Chreates a dark (50% opacity) circle FFC centred on Link for 10s/level. Enemies entering this field suffer 1d3 HP daname per 10 seconds. 
+const int SP_DARKBOLT = 3; //Creates an aimed bolt of darklight that deals 1d4/level damaeto LIVING (not undead) enemies. Heals undead for the same value.
+const int SP_DARKLIGHT = 4; //As shadow, except 15 seconds/level, and 1d4/level damage.
+const int SP_NIGHTFALL = 5; //As shadow, except for 1d8 damae/level.
+
+//Darkness Costs
+
+const int SPC_DIM = 16; // Increases damae to living (not undead) enemies to 2x for 4-seconds/level.
+const int SPC_BLIND = 16;
+const int SPC_DARKBOLT = 32;
+const int SPC_SHADOW = 32;
+const int SPC_DARKLIHT = 128; 
+const int SPC_NIGHTFALL = 246;
+
+
+// ST_HARMING
+
+const int SP_INFLICT = 6; //Tareted attack (aimed ray), deals 1d8 damage to a living enemy, inoring defences. 
+const int SP_HURT = 7; //Tareted attack (aimed ray), deals 1d10 damage to a living enemy, inoring defences. 
+const int SP_HARM = 8; //Tareted attack (aimed ray), deals 1d3/level damage to a living enemy, inoring defences. 
+const int SP_MAME = 9; //Tareted attack (aimed ray), deals 1d6/level damage to a living enemy, inoring defences. 
+const int SP_CRUSH = 10; //Tareted attack (aimed ray), deals 1d8/level damage to a living enemy, inoring defences. 
+const int SP_DEVASTATE = 11; //Tareted attack (aimed ray), deals 1d10/level damage to a living enemy, inoring defences. 
+const int SP_ERADICATE - 13; Mouse aimed. Deals 1d20/level damage to one single (LIVIN) enemy, inoring defences. 
+const int SP_EXTERMINATE = 14; Mouse aimed Entirely destorys one (LIVING) enemy with a 5% chance/level of working.
+
+//Harming Costs
+
+const int SPC_INFLICT = 8;
+const int SPC_HURT = 16;
+const int SPC_HARM = 32;
+const int SPC_MAME = 64;
+const int SPC_CRUSH = 128;
+const int SP_CDEVASTATE = 256;
+const int SPC_ERADICATE = 512;
+const int SPC_EXTERMINATE = 1024;
+
+
+// ST_DIVINE (Divination)
+
+const int SP_PING = 0; //Lasts for 6 seconds/level. Produces a sound if the player is within 1-tile/level of a secret.
+const int SP_SONAR = 1; //Lasts for 6-seconds/level. Makes constant sound, that increases in tempo when near a bomb or superbomb secret.
+const int SP_POINT = 2; // Creates an FFC near player, pointing in the direction of a boss. ?
+const int SP_CUNNING = 3; //As Sonar, but for arrow triggers.
+const int SP_JHARYA = 4; // As Sonar, but for TRAPS.
+const int SP_ASSENSE = 5; // As Sonar, but for Maic triggers.
+const int SP_GOLDSEEK = 6; //Lasts for 15s/level. Makes sound if there is hidden treasure (or item) on a screen.
+const int SP_REVEAL = 7; //Lasts for 10s/level. Reveals cloaked combos (illusions); works with 'cloakCombo FFC'
+
+//Divination Costs
+
+const int SPC_PING = 8;
+const int SPC_SONAR = 16;
+const int SPC_POINT = 24;
+const int SPC_CUNNING = 32;
+const int SPC_JHARYA = 48;
+const int SPC_ASSENSE = 64;
+const int SPC_GOLDSEEK = 80;
+const int SPC_REVEAL = 128;
+
+
+
+
+// ST_SKILL
+
+const int SP_CLOAK = 0; //makes player invisible for 6s/level.
+const int SP_TECH = 1; //Operates basic, unknown tech device.
+const int SP_HOVER = 2; //Float over pits for 6s/level.
+const int SP_ZHEN = 3; //Operate alien devices for 10s/level.
+const int SP_HALDO = 4; //Reveals information about a device, or object.
+
+//Skill Spell Costs 
+
+const int SPC_CLOAK = 16;
+const int SPC_TECH = 32;
+const int SPC_HOVER = 64;
+const int SPC_ZHEN = 128;
+const int SPC_HALDO = 256;
+
+
+// ST_ENH (Enhancing)
+//These cannot stack
+
+const int SP_BOOST = 0; //Increases LW damae by x1.5 for 10s/level.
+const int SP_ENHANCE = 1; //Increases LW damage by x2 for 10s/level.
+const int SP_HERO = 8; //Increases LW damage by x3 for 10s/level
+const int SP_SHAZAM = 9; //Temporarily increases HP by +50%, and incrases LW damae by x4 for 15s/level.
+
+//These do not stack.
+
+bool boostedStats[6]={false,false,false,false,false,false,false};
+const int BOOSTED = 6;
+
+const int SP_MIGHT = 2; //Increases MUSCLE by +1d8 for 30 seconds. Cannot stack.
+const int SP_ENDURE = 3; //Increases BODY by +1d8 for 30 seconds. Cannot stack.
+const int SP_GENIUS = 4; //Increases MIND by +1d8 for 30 seconds. Cannot stack.
+const int SP_ESSENSE = 5; //Increases MYST by +1d8 for 30 seconds. Cannot stack.
+const int SP_FLAIR = 6; //Increases INFL by +1d8 for 30 seconds. Cannot stack.
+const int SP_FORTUNE = 7; //Increases LUCK by +1d8 for 30 seconds. Cannot stack.
+
+//These use the 'boostedStats' array, as follows:
+//boostedStats[CR_MIND]
+//If the value is already true, the MP is wasted, and the spell does nothing.
+
+//Perhaps add additional calculations to getStat(int stat) to calculate boost values instead?
+
+int buffedStats[6]={0,0,0,0,0,0}; //Array to hold stat buffs.
+
+//Function to buff stats.
+
+void buffStat(int stat, int value){
+    buffedStats[stat] = value;
+}
+
+
+//Enhancement Costs
+
+const int SPC_BOOST = 16;
+const int SPC_ENHANCE = 64;
+
+const int SPC_MIGHT = 32;
+const int SPC_ENDURE = 32;
+const int SPC_GENIUS = 32;
+const int SPC_ESSENSE = 32;
+const int SPC_FLAIR = 32;
+const int SPC_FORTUNE = 32;
+
+const int SPC_HERO = 128;
+const int SPC_SHAZAM = 256;
+
+// ST_PROT (Protection)
+
+const int SP_BARRIER = 0; Gives player 'Magic Shied' item for 10s/level.
+const int SP_CURTAIN = 1; ives player Blue Ring item for 10s/level.
+const int SP_SHELL = 2; //Acts as Nayru's Love for 10s/level.
+const int SP_ARMOUR = 3; //Acts as Red Ring for 10s/level.
+const int SP_FLECTO = 4; //ives p;ayer Mirror Shield for 10s/level.
+const int SP_FORCEFIELD = 5; //Gives player Gold Ring for 10s/level. (or, makes FFC forcefield that absorbs all damage, and shrinks with each hit.
+
+//Protection Costs
+
+const int SPC_BARRIER = 24;
+const int SPC_CURTAIN = 48;
+const int SPC_SHELL = 96;
+const int SPC_ARMOUR = 96;
+const int SPC_FLECTO = 192;
+const int SPC_FORCEFIELD = 384;
+
+
+
+// ST_SUMMON (Summoning)
+
+const int SP_CONJURE = 0; //Summons one helpful NPC, minor ally, etc. (using Rand tables.)
+const int SP_CALL = 1; //Summons one moderate helpful NPC, or monster that shoots LWeapons.
+const int SP_SUMMON = 2; //As Summon, but 1d3 NPCs.
+const int SP_PACT = 3; Summons one SUmmoner NPC ally, or summons boss enemy (must have pact with that boss) to fight for you.
+const int SP_VOID = 4; Summons one horror as an ally. (Sernaran of Darkness only)
+const int SP_RAMPAGE = 5; // Summons Rand(1,10) allies (Sernaran of Chaos)
+
+//Summoning Costs
+
+const int SPC_CONJURE = 32;
+const int SPC_CALL = 64;
+const int SPC_SUMMON = 128;
+const int SPC_PACT = 256;
+const int SPC_VOID = 512;
+const int SPC_RAMPAGE = 256;
+
+
+// ST_MISC (Antimaiggic, and utility spells)
+
+const int SP_REVERT = 0; //Returns Link to last save square, without losing progress.
+const int SP_TRANSLATE = 1; //Translate text (unknown language).
+const int SP_DISPEL = 2; //Dispells minor illusions, and minor barriers.
+const int SP_BREAK = 3; //Dispells moderate barriers, and illusions.
+const int SP_WIZARDLOCK = 4; //Unlocks magical seals / locks.
+const int SP_COUNTERSPELL = 5; //Removes EXPERT illusions. 
+const int SP_COLLAPSE = 6; //Removes EXPERT barriers.
+const int SP_NEGATE = 7; //Dispells LEGENDARY barriers, LEGENDARY illusions, and breaks LEGENDARY seals and locks.
+
+//Dispelling affects stated level of power, and any lower-level.
+
+//Misc Spell Costs
+
+const int SPC_REVERT = 16;
+const int SPC_TRANSLATE = 32;
+const int SPC_DISPEL = 64;
+const int SPC_BREAK = 128;
+const int SPC_WIZARDLOCK = 128;
+const int SPC_COUNTERSPELL = 256;
+const int SPC_COLLAPSE = 512;
+const int SPC_NEGATE = 1024;
+
+// ST_META (Metagame, and Antimagic)
+
+const int SP_HELP = 0; //Gives minor clue.
+const int SP_FORTUNE = 1; //Gives basic clue.
+const int SP_DEMYSTIFY = 2; //Gives moderate clue.
+const int SP_REVALATION = 3; //Gives critical clue
+const int SP_HALEOZ = 4; // Gives extremely-obscure, and unusual fact.
+
+//Meta Costs
+
+const int SPC_HELP = 64;
+const int SPC_FORTUNE = 128;
+const int SPC_DEMYSTIFY = 256;
+const int SPC_REVALATION = 512;
+const int SPC_HALEOZ = 1024;
+
+
+
+// ST_OTHER 
+
+const int SP_CHAOS = 0; //*Sernaran of Chaos only) Does one of the following (Rand(1,10):
+
+//1: Refills Rand HP
+//2: Does Rand damage to self.
+//3: Kills one enemy on screen, with any HP.
+//4: Spawns summoner enemy.
+//5: Increases defence for X.
+//6: Decreases Defense for X
+//7: Boosts LW damage for X
+//8: Reduces LW damage for X.
+//9: Warps Link to random screen, on same DMAP. (How do I force only screens with rooms?)
+//10: Warps to weird DMAP.
+
+
+//'Other' Costs
+
+int chaosCost(){
+    value = Rand(10,500);
+    return value;
+}
+
+
+
+const int SFX_HEAL_MAGIC = 0;
+
+const int RESTORE_HP = 0;
+const int RESTORE_MP = 1;
+const int RESTORE_HP_MP = 2;
+
+void CloseWounds(int dieType, int restoreType){
+    int diceNumber = Game->Counter[CR_LEVEL];
+    int restoreSound = SFX_HEAL_MAGIC;
+    
+    ///!!!!!!!!!!!!///////////
+    int restoreMessage = 0; //Need restore string/Tango menu
+    ////////////////////////////////////////////////////////
+    
+    int totalRestored = rollDice(diceNumber, dieType);
+    if ( restoreSound > 0 ) {
+        Game->PlaySound(restoreSound);
+    }
+    if ( restoreMessage > 0 ) {
+        Screen->Message(restoreMessage);
+        //Drawstring would be ideal here, to tell the player how much MP they re-gained.
+    }
+    if ( restoreType == 0 ) { 
+        Link->HP += totalRestored;
+    }
+    else if ( restoreType == 1 ) { 
+        Link->MP += totalRestored;
+    }
+    else if ( restoreType == 2 ) { 
+        Link->HP += totalRestored;
+        Link->MP += totalRestored;
+    }
+    else if ( restoreType == 3 ) { 
+        Link->MP += ( totalRestored * 2 );
+    }
+    else if ( restoreType == 2 ) { 
+        Link->HP += totalRestored;
+        Link->MP += ( totalRestored * 2 );
+    }
+}
+
+
+    
+    

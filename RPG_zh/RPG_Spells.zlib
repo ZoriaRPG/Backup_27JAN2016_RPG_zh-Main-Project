@@ -1,0 +1,140 @@
+// Spells
+// v0.3 for RPG.zh v0.96.7
+// Constants
+
+const int SET_GRIMORIE = 0;
+const int SET_SERNARAN_ELEMENTS= 1;
+const int SET_SERNARAN_LIGHT = 2;
+const int SET_SERNARAN_DARKNESS= 3;
+const int SET_SERNARAN_LAW = 4;
+const int SET_SERNARAN_CHAOS = 5;
+const int SET_SERNARAN_LIFE = 6;
+const int SET_SERNARAN_POWER = 7;
+const int SET_SERNARAN_CORONET = 9;
+
+// Example functions, that replicate an item script, to cast a spell.
+// This can therefore be called from anywhere, using items, booleans, and the main active loop.
+// Items set castingSpell to rrue, and the spells held in the currentSpells array are used with that 
+// boolean, to trigger a spell created as a function.
+
+const int SPELL_LIFE = 0; //Set constants for every spell.
+
+int Spells[2048];
+
+const int KNOWS_SPELL = 0;
+const int SPELL_KNOWN = 0;
+const int SPELL_CASTING = 256;
+const int SPELL_ACTIVE = 512;
+const int SPELL_FFC = 768;
+const int SPELL_COST = 1024;
+const int SPELL_TYPE = 1280;
+const int SPELL_EFFECT = 1536;
+const int SPELL_DAMAGE = 1536;
+const int SPELL_RANGE = 1792;
+
+//0 to 255 Knows Spell
+//256 to 511: Casting Spell
+//512 to 767: Spell Active
+//768 to 1023: //Spell FFC Slot
+//1024 to 1279: Spell cost
+//1280 to 1535: Spell type
+//1536 to 1791: Spell effect/damage
+//1792 to 2047: Spell range
+//is projecftile
+//sprite
+//affects counter
+//restore / add amount dietype
+//restore / add amount dice
+//sound effect
+//GameEvent to set
+
+void Cast(int spellType, int spellLevel, int duration, int ffcSlot, int ctr, int projectile, bool setEvent){
+}
+
+//Spell Type + Level to get spell.
+
+
+// Arrays
+
+int currentSpells[9]={0,0,0,0,0,0,0,0,0};   //Hplds current spells (see Spell Constants) for each 
+                                            //item that can be set with the SET menuy command.
+
+// Vars
+
+bool playerCasting = false; //Like the menu function, this value is set to true
+                            //when the player is casting a spell, that causes events
+                            //in the main active loop to run, that, when complete,
+                            //reset this to false.
+
+// Functions
+
+void castSpell(int spellCast) {
+    if (playerCasting){
+        if (spellCast == SPELL_LIFE) {
+            castSpell_Life(0,0);
+        }
+    }
+}
+
+void castSpell(int spellCast, int cost) {
+    if (playerCasting){
+        if (spellCast == SPELL_LIFE) {
+            castSpell_Life(cost, 0);
+        }
+    }
+}
+
+void castSpell(int spellCast, int cost, int dieType) {
+    if (playerCasting){
+        if (spellCast == SPELL_LIFE) {
+            castSpell_Life(cost, dieType);
+        }
+    }
+}
+
+void castSpell(int spellCast, int cost, int dieType, bool perLevel) {
+    if (playerCasting){
+        if (spellCast == SPELL_LIFE)  {
+            castSpell_Life(cost, dieType);
+        }
+    }
+}
+
+void castSpell_Life(int cost, int dieType){
+    if (dieType == 0) {
+        dieType = 6;
+    }
+    if (cost == 0) {
+        cost = 32;
+    }
+    if (Link->MP >= cost) {
+        Game->Counter[CR_LIFE] += rollDie(dieType);
+    }
+    else {
+        Game->PlaySound(ERROR_SFX);
+    }
+}
+
+const int ARMOURTIMER = 1031;
+const int PVS_ARMOUR = 1033;
+
+bool IncreaseArmour(int val, item it){
+	//Need to check present armour item and validate it.
+	//int presValue; //Stores 'Power' (damage divisor) or present armour.
+	//Need 'green ring' base item.
+	//Use for loop to check for highest level armour.
+	//GameDynamics[PVS_ARMOUR] = 
+	//Change power (damage divisor) of that armour.
+	//Start timer;
+	//return true; //Closes menus.
+}
+
+void ResetArmour(){ //Runs in main while loop to shift Power of armour back to old setting, when spell timer expires. 
+	//Reset value of armour to stored power value.
+}
+
+//THIS NEEDS TO BE MOVED FROM gAMEdYNAMICS[] TO timers[]
+
+
+
+// Scripts

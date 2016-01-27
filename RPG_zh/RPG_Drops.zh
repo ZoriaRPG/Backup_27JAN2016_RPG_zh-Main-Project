@@ -1,0 +1,135 @@
+
+//int reRand(int itemsArray, int excludeArray){
+        //int value;
+       // do{
+      //      value = Rand(min, max);
+     //   }
+    //        while(value < min || value == exclude);
+   //         return value;
+  //      }
+	
+//int ExcludeItems[255]={0};
+//int IncludeItems[255]={0};
+
+
+
+
+					
+
+		
+		
+
+
+
+
+
+bool NeedsHearts(){
+	if ( Link->HP < Link->MaxHP ) return true;
+}
+
+bool NeedsMagic(){
+	if ( Link->HP < Link->MaxMP && Game->MCounter[CR_MAGIC] > 0 ) return true;
+}
+
+bool NeedsBombs(){
+	if ( Game->Counter[CR_BOMBS] < Game->MCounter[CR_BOMBS] && Game->MCounter[CR_BOMBS > 0 ) return true;
+}
+
+bool NeedsRupees(){
+	if ( Game->Counter[CR_RUPEES] < Game->Counter[CR_RUPEES] && Game->MCounter[CR_RUPEES] > 0 ) return true;
+}
+
+bool NeedsArrows(){
+	if ( Game->Counter[CR_ARROWS] < Game->Counter[CR_ARROWS] && Game->MCounter[CR_ARROWS] > 0 ) return true;
+}
+
+void NeedsDrop(){
+	if ( NeedsHearts() || NeedsArrows() || NeedsMagic() || NeedsBombs() || NeedsRupees() ) {
+		return true;
+	}
+	else {
+		return false;
+	}	
+}
+
+bool MayDrop(int arr){
+	for ( int i = 0; i < SizeOfArray(arr); i++) {
+		if ( arr[i] = true ) {
+			return true;
+		}
+		else if ( i == SizeofArray(arr) {
+			return false;
+		}
+	}
+}
+
+void DropEnforcer(int chanceOfGoodDrop){ //Original function by Orithan
+	for(int i = 1; i <= Screen->NumItems(); i ++){ //Load all items on the screen
+		item itm = Screen->LoadItem(i); //Load item i
+		int itmx = i->X;
+		int itmy = i->Y;
+		itemdata itmd = GetItemData(itm); //Get the itemdata for item i
+		if(((itmd->Family == IC_ARROWAMMO && Game->MCounter[CR_ARROWS] <= 0 || itmd->Family == IC_ARROWAMMO && Game->Counter[CR_ARROWS] >= Game->MCounter[CR_ARROWS]) && (itm->Pickup | IP_TIMEOUT) == True) //Check for wherever Link can hold Arrows and wherever he is full
+		|| ((itmd->Family == IC_BOMBAMMO && Game->MCounter[CR_BOMBS] <= 0 || itmd->Family == IC_BOMBAMMO && Game->Counter[CR_BOMBS] >= Game->MCounter[CR_BOMBS]) && (itm->Pickup | IP_TIMEOUT) == True) //Ditto for Bombs
+		|| ((itmd->Family == IC_RUPEE && Game->MCounter[CR_RUPEES] <= 0 || itmd->Family == IC_RUPEE && Game->Counter[CR_RUPEES] >= Game->MCounter[CR_RUPEES]) && (itm->Pickup | IP_TIMEOUT) == True) //Ditto for Rupees
+		|| ((itmd->Family == IC_SBOMB && Game->MCounter[CR_SBOMBS] <= 0 || itmd->Family == IC_SBOMB && Game->Counter[CR_SBOMBS] >= Game->MCounter[CR_SBOMBS]) && (itm->Pickup | IP_TIMEOUT) == True) //Ditto for Super Bombs
+		|| ((itmd->Family == IC_MAGIC && Game->MCounter[CR_MAGIC] <= 0 || itmd->Family == IC_MAGIC && Game->Counter[CR_MAGIC] >= Game->MCounter[CR_MAGIC]) && (itm->Pickup | IP_TIMEOUT) == True) //Check for wherever Link has Magic containers and wherever he is at full magic
+		|| ((itmd->Family == IC_HEART && Game->Counter[CR_LIFE] >= Game->MCounter[CR_LIFE]) && (itm->Pickup | IP_TIMEOUT) == True)){ //Check for Link being at full health
+			Remove(itm); //Remove the item from the screen.
+			if ( NeedsDrop() ){
+				ReplaceDropWithNeeded(chanceOfGoodDrop, itmx, itmy);
+			}
+		}
+	}
+}
+
+void ReplaceDropWithNeeded(int chance, int x, int y){
+	int value;
+	bool isGoodDrop = false;
+	int goodDropChance = Rand(1,100);
+	int drops[5]={I_RUPEE1, I_ARROWAMMO1, I_MAGICJAR1, I_HEART, I_BOMBAMMO1};
+	int goodDrops[5]={I_RUPEE5, I_ARROWAMMO5, I_MAGICJAR2, I_FAIRY,  I_SBOMB};
+	if ( goodDropChance <= chance ) {
+		isGoodDrop = true;
+	}
+	bool MayDropThese[6] = {true,true,true,true,true,false};
+	bool dropping = true;
+	
+	if ( !NeedsHealth) {
+		doNotDrop[3] = true;
+	}
+	if ( !NeedsRupees ) {
+		doNotDrop[0] = true;
+	}
+	if ( !NeedsBombs ) {
+		doNotDrop[4] = true;
+	}
+	if ( !NeedsArrows ) {
+		doNotDrop[1] = true;
+	}
+	if ( !NeedsMagic ) {
+		doNotDrop[2] = true;
+	}
+	
+	
+	if ( MayDrop(MayDropThese) ) {
+		if ( !isGoodDrop ) {
+			for ( int i = 0; i < 5; i++) {
+				do {
+					value = Rand(4);
+					while(MayDrop[i] != false;
+				}
+			}
+			CreateTimeoutItem(drops[value], int x, int y);
+		}
+		if ( isGoodDrop ) {
+			for ( int i = 0; i < 5; i++) {
+				do {
+					value = Rand(4);
+					while(MayDrop[i] != false;
+				}
+			}
+			CreateTimeoutItem(goodDrops[value], int x, int y);
+		}
+	}
+}

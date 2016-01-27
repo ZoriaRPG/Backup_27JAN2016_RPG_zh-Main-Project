@@ -1,0 +1,741 @@
+////////////////////////////////
+///     Ice Rod for epad     ///
+///       By: ZoriaRPG       ///
+///   18th September, 2014   ///
+///        Version 6.0       ///
+////////////////////////////////
+
+import "ItemHandling.zh" //Version 6.2, or later. 
+import "stdCombos.zh" //Version b1.1
+
+
+//Constants
+
+//LW, Item, and Sound Effects
+
+const int LW_ICE = 32; //Script_2
+const int I_ICEROD = 0; //Set to item number of Ice Rod (from the Item Editor).
+const int SFX_ERROR = 0; //Set to general error sound effect, or comment out if you already have this constant.
+
+const int SFX_FREEZE_WATER = 0; //Set to sound effect for freezing water. 
+const int SFX_FREEZE_WATER_DURATION; //Set to duration of water freezing sound in frames.
+
+const int SFX_FREEZE_MAGMA = 0;
+const int SFX_FREEZE_MAGMA_DURATION = 0;
+
+const int SFX_SOLIDIFY_MAGMA = 0; //Se to sound effect for freezing magma,
+
+//Combos
+//Each of these is a serties of nine combos, set up like this:
+
+//  UL     U   UR
+//  L      C   R
+//  LL     D   LR
+
+//Normal Water 
+const int CMB_WATER_NORMAL_UL = 0; //Set to upper-left combo.
+const int CMB_WATER_NORMAL_U = 0; //Set to upper, central combo.
+const int CMB_WATER_NORMAL_UR = 0; //Set to upper-right combo.
+const int CMB_WATER_NORMAL_L = 0; //Set to left-centre-row combo.
+const int CMB_WATER_NORMAL_C = 0; //Set to core combo.
+const int CMB_WATER_NORMAL_R = 0; //Set to right-cente-row combo.
+const int CMB_WATER_NORMAL_LL = 0; //Set to lower-left combo.
+const int CMB_WATER_NORMAL_D = 0; //Set to lower, central combo.
+const int CMB_WATER_NORMAL_LR = 0; //Set to lower-right combo.
+ 
+//Frozen Water (Normal)
+
+const int CMB_WATER_NORMAL_FROZEN_UL = 0; //Set to upper-left combo.
+const int CMB_WATER_NORMAL_FROZEN_U = 0; //Set to upper, central combo.
+const int CMB_WATER_NORMAL_FROZEN_UR = 0; //Set to upper-right combo.
+const int CMB_WATER_NORMAL_FROZEN_L = 0; //Set to left-centre-row combo.
+const int CMB_WATER_NORMAL_FROZEN_C = 0; //Set to core combo.
+const int CMB_WATER_NORMAL_FROZEN_R = 0; //Set to right-cente-row combo.
+const int CMB_WATER_NORMAL_FROZEN_LL = 0; //Set to lower-left combo.
+const int CMB_WATER_NORMAL_FROZEN_D = 0; //Set to lower, central combo.
+const int CMB_WATER_NORMAL_FROZEN_LR = 0; //Set to lower-right combo.
+
+//Shallow Water
+
+const int CMB_WATER_SHALLOW_UL = 0; //Set to upper-left combo.
+const int CMB_WATER_SHALLOW_U = 0; //Set to upper, central combo.
+const int CMB_WATER_SHALLOW_UR = 0; //Set to upper-right combo.
+const int CMB_WATER_SHALLOW_L = 0; //Set to left-centre-row combo.
+const int CMB_WATER_SHALLOW_C = 0; //Set to core combo.
+const int CMB_WATER_SHALLOW_R = 0; //Set to right-cente-row combo.
+const int CMB_WATER_SHALLOW_LL = 0; //Set to lower-left combo.
+const int CMB_WATER_SHALLOW_D = 0; //Set to lower, central combo.
+const int CMB_WATER_SHALLOW_LR = 0; //Set to lower-right combo.
+
+//Frozen Shallow Water
+
+const int CMB_WATER_SHALLOW_FROZEN_UL = 0; //Set to upper-left combo.
+const int CMB_WATER_SHALLOW_FROZEN_U = 0; //Set to upper, central combo.
+const int CMB_WATER_SHALLOW_FROZEN_UR = 0; //Set to upper-right combo.
+const int CMB_WATER_SHALLOW_FROZEN_L = 0; //Set to left-centre-row combo.
+const int CMB_WATER_SHALLOW_FROZEN_C = 0; //Set to core combo.
+const int CMB_WATER_SHALLOW_FROZEN_R = 0; //Set to right-cente-row combo.
+const int CMB_WATER_SHALLOW_FROZEN_LL = 0; //Set to lower-left combo.
+const int CMB_WATER_SHALLOW_FROZEN_D = 0; //Set to lower, central combo.
+const int CMB_WATER_SHALLOW_FROZEN_LR = 0; //Set to lower-right combo.
+
+//Special Water
+
+const int CMB_WATER_SPECIAL_UL = 0; //Set to upper-left combo.
+const int CMB_WATER_SPECIAL_U = 0; //Set to upper, central combo.
+const int CMB_WATER_SPECIAL_UR = 0; //Set to upper-right combo.
+const int CMB_WATER_SPECIAL_L = 0; //Set to left-centre-row combo.
+const int CMB_WATER_SPECIAL_C = 0; //Set to core combo.
+const int CMB_WATER_SPECIAL_R = 0; //Set to right-cente-row combo.
+const int CMB_WATER_SPECIAL_LL = 0; //Set to lower-left combo.
+const int CMB_WATER_SPECIAL_D = 0; //Set to lower, central combo.
+const int CMB_WATER_SPECIAL_LR = 0; //Set to lower-right combo.
+
+//Frozen Special Water
+
+const int CMB_WATER_SPECIAL_FROZEN_UL = 0; //Set to upper-left combo.
+const int CMB_WATER_SPECIAL_FROZEN_U = 0; //Set to upper, central combo.
+const int CMB_WATER_SPECIAL_FROZEN_UR = 0; //Set to upper-right combo.
+const int CMB_WATER_SPECIAL_FROZEN_L = 0; //Set to left-centre-row combo.
+const int CMB_WATER_SPECIAL_FROZEN_C = 0; //Set to core combo.
+const int CMB_WATER_SPECIAL_FROZEN_R = 0; //Set to right-cente-row combo.
+const int CMB_WATER_SPECIAL_FROZEN_LL = 0; //Set to lower-left combo.
+const int CMB_WATER_SPECIAL_FROZEN_D = 0; //Set to lower, central combo.
+const int CMB_WATER_SPECIAL_FROZEN_LR = 0; //Set to lower-right combo.
+
+//Magma
+
+const int CMB_MAGMA_UL = 0; //Set to upper-left combo.
+const int CMB_MAGMA_U = 0; //Set to upper, central combo.
+const int CMB_MAGMA_UR = 0; //Set to upper-right combo.
+const int CMB_MAGMA_L = 0; //Set to left-centre-row combo.
+const int CMB_MAGMA_C = 0; //Set to core combo.
+const int CMB_MAGMA_R = 0; //Set to right-cente-row combo.
+const int CMB_MAGMA_LL = 0; //Set to lower-left combo.
+const int CMB_MAGMA_D = 0; //Set to lower, central combo.
+const int CMB_MAGMA_LR = 0; //Set to lower-right combo.
+
+//Solidified Magma
+
+const int CMB_MAGMA_FROZEN_UL = 0; //Set to upper-left combo.
+const int CMB_MAGMA_FROZEN_U = 0; //Set to upper, central combo.
+const int CMB_MAGMA_FROZEN_UR = 0; //Set to upper-right combo.
+const int CMB_MAGMA_FROZEN_L = 0; //Set to left-centre-row combo.
+const int CMB_MAGMA_FROZEN_C = 0; //Set to core combo.
+const int CMB_MAGMA_FROZEN_R = 0; //Set to right-cente-row combo.
+const int CMB_MAGMA_FROZEN_LL = 0; //Set to lower-left combo.
+const int CMB_MAGMA_FROZEN_D = 0; //Set to lower, central combo.
+const int CMB_MAGMA_FROZEN_LR = 0; //Set to lower-right combo.
+
+//Variables
+
+bool playingMagmaFreezeSound = false;
+bool playingWaterFreezeSound = false;
+
+//Global Functions
+
+//Change by LW Type
+
+void MagmaChange(int LType) {
+    for ( i = 0; i < 176; i++ ) {
+        if Screen->ComboD[i] == CMB_MAGMA_UL ) {
+            if ( ComboCollision(i, LType) {
+                playingMagmaFreezeSound = true;
+                Screen->ComboD[i] = CMB_MAGMA_FROZEN_UL;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_MAGMA_U ) {
+            if ( ComboCollision(i, LType) {
+                playingMagmaFreezeSound = true;
+                Screen->ComboD[i] = CMB_MAGMA_FROZEN_U;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_MAGMA_UR ) {
+            if ( ComboCollision(i, LType) {
+                playingMagmaFreezeSound = true;
+                Screen->ComboD[i] = CMB_MAGMA_FROZEN_UR;            }
+        }
+        else if  Screen->ComboD[i] == CMB_MAGMA_L ) {
+            if ( ComboCollision(i, LType) {
+                playingMagmaFreezeSound = true;
+                Screen->ComboD[i] = CMB_MAGMA_FROZEN_L;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_MAGMA_C ) {
+            if ( ComboCollision(i, LType) {
+                playingMagmaFreezeSound = true;
+                Screen->ComboD[i] = CMB_MAGMA_FROZEN_C;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_MAGMA_R ) {
+            if ( ComboCollision(i, LType) {
+                playingMagmaFreezeSound = true;
+                Screen->ComboD[i] = CMB_MAGMA_FROZEN_R;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_MAGMA_LL ) {
+            if ( ComboCollision(i, LType) {
+                playingMagmaFreezeSound = true;
+                Screen->ComboD[i] = CMB_MAGMA_FROZEN_LL;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_MAGMA_D ) {
+            if ( ComboCollision(i, LType) {
+                playingMagmaFreezeSound = true;
+                Screen->ComboD[i] = CMB_MAGMA_FROZEN_D;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_MAGMA_LR ) {
+            if ( ComboCollision(i, LType) {
+                playingMagmaFreezeSound = true;
+                Screen->ComboD[i] = CMB_MAGMA_FROZEN_LR;
+            }
+        }
+    }
+}
+
+void WaterChangeNormal(int LType){
+    for ( i = 0; i < 176; i++ ) {
+        if Screen->ComboD[i] == CMB_WATER_NORMAL_UL ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_UL;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_NORMAL_U ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_U;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_NORMAL_UR ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CCMB_WATER_NORMAL_FROZEN_UR;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_NORMAL_L ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_L;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_NORMAL_C ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_C;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_NORMAL_R ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_R;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_NORMAL_LL ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_LL;
+            }
+        }
+        else if  Screen->ComboD[i] ==CMB_WATER_NORMALD ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_D;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_NORMAL_LR ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_LR;
+            }
+        }
+    }
+}
+
+void WaterChangeShallow(int LType){
+    for ( i = 0; i < 176; i++ ) {
+        if Screen->ComboD[i] == CMB_WATER_SHALLOW_UL ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_UL;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_U ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_U;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_UR ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CCMB_WATER_SHALLOW_FROZEN_UR;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_L ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_L;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_C ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_C;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_R ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_R;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_LL ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_LL;
+            }
+        }
+        else if  Screen->ComboD[i] ==CMB_WATER_SHALLOWD ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_D;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_LR ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_LR;
+            }
+        }
+    }
+}
+
+void WaterChangeSpecial(int LType){
+    for ( i = 0; i < 176; i++ ) {
+        if Screen->ComboD[i] == CMB_WATER_SPECIAL_UL ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_UL;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_U ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_U;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_UR ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CCMB_WATER_SPECIAL_FROZEN_UR;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_L ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_L;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_C ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_C;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_R ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_R;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_LL ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_LL;
+            }
+        }
+        else if  Screen->ComboD[i] ==CMB_WATER_SPECIALD ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_D;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_LR ) {
+            if ( ComboCollision(i, LType) {
+                playingWaterFreezeSound = true;
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_LR;
+            }
+        }
+    }
+}
+
+
+//Change by Specific Item
+
+void MagmaChangeByItem(int changeItem){
+    for ( int j = 1; j <= <= Screen->NumLWeapons(); j++ ) {
+        lweapon lw = Screen->LoadLWeapon(j);
+        if ( j == changeItem ) {
+            for ( i = 0; i < 176; i++ ) {
+            
+                if Screen->ComboD[i] == CMB_MAGMA_UL ) {
+                    if ( ComboCollision(i, j) {
+                        playingMagmaFreezeSound = true;
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_UL;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_U ) {
+                    if ( ComboCollision(i, j) {
+                        playingMagmaFreezeSound = true;
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_U;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_UR ) {
+                    if ( ComboCollision(i, j) {
+                        playingMagmaFreezeSound = true;
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_UR;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_L ) {
+                    if ( ComboCollision(i, j) {
+                        playingMagmaFreezeSound = true;
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_L;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_C ) {
+                    if ( ComboCollision(i, j) {
+                        playingMagmaFreezeSound = true;
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_C;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_R ) {
+                    if ( ComboCollision(i, j) {
+                        playingMagmaFreezeSound = true;
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_R;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_LL ) {
+                    if ( ComboCollision(i, j) {
+                        playingMagmaFreezeSound = true;
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_LL;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_D ) {
+                    if ( ComboCollision(i, j) {
+                        playingMagmaFreezeSound = true;
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_D;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_LR ) {
+                    if ( ComboCollision(i, j) {
+                        playingMagmaFreezeSound = true;
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_LR;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void WaterChangeNormalByItem(int changeItem){
+    for ( int j = 1; j <= <= Screen->NumLWeapons(); j++ ) {
+        lweapon lw = Screen->LoadLWeapon(j);
+        if ( j == changeItem ) {
+            for ( i = 0; i < 176; i++ ) {
+            
+                if Screen->ComboD[i] == CMB_WATER_NORMAL_UL ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_UL;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_NORMAL_U ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_U;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_NORMAL_UR ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CCMB_WATER_NORMAL_FROZEN_UR;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_NORMAL_L ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_L;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_NORMAL_C ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_C;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_NORMAL_R ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_R;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_NORMAL_LL ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_LL;
+                    }
+                }
+                else if  Screen->ComboD[i] ==CMB_WATER_NORMAL_D ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_D;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_NORMAL_LR ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_NORMAL_FROZEN_LR;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void WaterChangeShallowByItem(int changeItem){
+    for ( int j = 1; j <= <= Screen->NumLWeapons(); j++ ) {
+        lweapon lw = Screen->LoadLWeapon(j);
+        if ( j == changeItem ) {
+            for ( i = 0; i < 176; i++ ) {
+            
+                if Screen->ComboD[i] == CMB_WATER_SHALLOW_UL ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_UL;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_U ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_U;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_UR ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CCMB_WATER_SHALLOW_FROZEN_UR;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_L ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_L;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_C ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_C;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_R ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_R;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_LL ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_LL;
+                    }
+                }
+                else if  Screen->ComboD[i] ==CMB_WATER_SHALLOWD ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_D;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SHALLOW_LR ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SHALLOW_FROZEN_LR;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void WaterChangeSpecialByItem(int changeItem){
+    for ( int j = 1; j <= <= Screen->NumLWeapons(); j++ ) {
+        lweapon lw = Screen->LoadLWeapon(j);
+        if ( j == changeItem ) {
+            for ( i = 0; i < 176; i++ ) {
+            
+                if Screen->ComboD[i] == CMB_WATER_SPECIAL_UL ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_UL;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_U ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_U;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_UR ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CCMB_WATER_SPECIAL_FROZEN_UR;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_L ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_L;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_C ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_C;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_R ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_R;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_LL ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_LL;
+                    }
+                }
+                else if  Screen->ComboD[i] ==CMB_WATER_SPECIALD ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_D;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_LR ) {
+                    if ( ComboCollision(i, j) {
+                        playingWaterFreezeSound = true;
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_LR;
+                    }
+                }
+            }
+        }
+    }
+}
+
+//Combined functions for before Waitdraw().
+
+void freezeCombosByItem(int itemNumber){
+    MagmaChangeByItem(I_ICEROD);
+    WaterChangeNormalByItem(I_ICEROD);
+    WaterChangeShallowByItem(I_ICEROD);
+    WaterChangeSpevialByItem(I_ICEROD);
+}
+
+
+void freezeCombos(int LType){
+    WaterChangeNormal(LType);
+    WaterChangeShallow(LType);
+    WaterChangeSpecial(LType);
+    MagmaChange(LType);
+}
+
+//Sound effect functions.
+
+void freezeWaterSound(int dur){
+    if ( SFX_FREEZE_WATER > 0 && playingWaterFreezeSound ) {
+        Game->PlaySound(SFX_FREEZE_WATER);
+        if ( dur > 0 ) {
+            Waitframes(dur);
+        }
+        playingWaterFreezeSound = false;
+    }
+}
+
+void freezeMagmaSound(int dur){
+        if ( SFX_FREEZE_MAGMA > 0 && playingMagmaFreezeSound ) {
+        Game->PlaySound(SFX_FREEZE_MAGMA);
+        if ( dur > 0 ) {
+            Waitframes(dur);
+        }
+        playingMagmaFreezeSound = false;
+    }
+}
+
+//Scripts
+
+//Global Example
+
+global script activeExample{
+    void run(){
+        while(true){
+            UpdateLWeapons();
+			UpdateLastItem();
+            freezeCombosByItem(I_ICEROD);
+            freezeCombos(LW_ICE);
+            Waitdraw();
+            freezeWaterSound(SFX_FREEZE_WATER_DURATION);
+            freezeMagmaSound(SFX_FREEZE_MAGMA_DURATION);
+            Waitframe();
+        }
+    }
+}
+
+//Items
+
+/////////////////////////
+/// Ice Rod //////// /////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
+/// D0: MP cost per use.                                           ///
+/// D1: Speed that Subweapon Travels across screen; suggest > 500. ///
+/// D2: Amount of Damage that Subweapon Deals to Enemies.          ///
+/// D3: Sprite used by Subweapon; select from:                     ///
+///            Quest->Graphics->Sprites->WeaponsMisc.              ///   
+/// D4: Maximum number of projectiles allowed at once.             ///
+/// D5: Error Sound Effects.                                       ///
+/// D6: Item Sound Effects.  Select sounds from:                   ///
+///            Quest->Audio->SFX Data                              ///   
+/// D7: Delay before Link can use item again.                      ///     
+//////////////////////////////////////////////////////////////////////
+
+item script iceRod {
+    void run(int magicCost, int speed, int power, int spriteUsed, int maxProjectiles, int SXF_ERROR, int SFX_ITEM, int multiply) {
+        if ( Game->Counter[CR_MAGIC] >= magicCost && NumLWeaponsOf(LW_MAGIC) < maxProjectiles ) { 
+            Game->Counter[CR_MAGIC] -= magicCost; //fill in the magic consumption here as well
+            lweapon iceMagic = Screen->CreateLWeapon(LW_ICE);
+            iceMagic->UseSprite(spriteUsed); // the number of the sprite used for the projectile. Use two tiles, the first for up/down, the second for left/right
+            iceMagic->X = Link->X; //Find Link's Position X
+            iceMagic->Y = Link->Y; //Find Link's Position Y
+            iceMagic->Dir = Link->Dir; //Find the Direction that Link is facing.
+            iceMagic->Step = speed; // the speed the projectile travels
+            iceMagic->Damage = power; //the damage the projectile will do. Set to '0' to stun.
+            Game->PlaySound(SFX_ITEM); // the sound effect for the weapon
+            //Link->ItemJinx = (nouse * 1); //Set delay between firing. Change multiplier if desired, but set base in argument D7.
+            if(Link->Dir == DIR_DOWN) { //If Link is facing down...
+                iceMagic->Flip = 2; //Change direction of spriteUsed to down.
+            }
+            if(Link->Dir == DIR_RIGHT) { //If Link is facing right.
+                iceMagic->Tile += 1; //Use next tile as well.
+            }
+            if(Link->Dir == DIR_LEFT) {
+                iceMagic->Tile += 1; //If Link is facing left.
+                iceMagic->Flip = 1; //Flip spriteUsed tile and use next tile as well.
+            }
+            
+        }
+            
+        else{
+            Game->PlaySound(SFX_ERROR); //If out of MP, play ERROR SOund Effects.
+        }
+    }
+}

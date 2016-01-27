@@ -1,0 +1,110 @@
+// Metroid Components
+// By: ZoriaRPG
+// v0.1
+// 25th Sept, 2015
+
+
+//Constants for E-Tanks and HP Display
+const int CR_CURRENT_HP = 9; //Script 3;
+const int CR_HP_TANKS = 10; //Script 4
+const int CR_HP_TANKS_REMAIN = 11; //Script 5\
+
+//Constants for functions (Settings)
+const int MAX_HP_TANKS_F6 = 3; //When resuming from F6 Continue/Retry
+const int MAX_HP_TANKS_RELOAD = 10; //When resuming from a Saved Game
+
+//Life Gauge Settings
+const int LIFE_GAUGE_LAYER = 7; //Draw to Layer
+const int LIFE_GAUGE_START_X = -16; //Set to to X position for start of life bar.
+const int LIFE_GAUGE_START_Y = 8;  //Set to Y position for start of life bar.
+const int LIFE_GAUGE_COLOUR = 10; //Set to life bar colourm, based on your main palette.
+const int LIFE_GAUGE_HEIGHT = 6; //Set to how tall the life bar will be (for horizontal bars)
+const int LIFE_GAUGE_OPACITY = 128; //Set to opacity (128 is opaque, 64 is translucent).
+//const int LIFE_GAUGE_TRANSPARENT = 1; //Set to '1' if life guage will be transparent (a bitmap thing). 
+
+//Global Functions
+
+//Set and update HP and Tank counters, and refill HP + Use a Tank
+void MetroidHP(){
+	Game->Counter[CR_CURRENT_HP] = Link->HP; //To draw the counter as a numeral, and update it every frame.
+	if ( Link->HP < 1 && Game->Counter[CR_TANKS_REMAIN >=1 ) { //Check if the player has remaining energy tanks.
+		Game->Counter[CR_TANKS_REMAIN]--;
+		Link->HP = Link->MaxHP; //If his HP is zero, or below, and he has tanks, refill it. 
+	}
+}
+
+//Set a number of tanks that the player will have if he F6-Continues, and onContinue.
+void MetroidTanksOnExit(int maxNumberOfTanksRefilled){
+	int numberOfTanks = Game->Counter[CR_HP_TANKS];
+	if numberOfTanks > maxNumberOfTanksRefilled ) Game->Counter[CR_TANKS_REMAIN] = maxNumberOfTanksRefilled;
+	else Game->Counter[CR_TANKS_REMAIN] = numberOfTanks;
+}
+
+
+//Display a Life Bar on the Screen, or on the Subscreen
+void DisplayLifeGauge(int posX, int posY, int length, int width, int colour, bool transparent, int opacity){
+	Screen->Rectangle(LIFE_GAUGE_LAYER, posX, posY, posX+length, posY+width, CHARGE_GAUGE_COLOUR, 1, 0, 0, 0, transparent, opacity);
+}
+
+
+//Example Global Scripts:
+
+global script active{
+	void run(){
+		MetroidHP();
+		DisplayLifeGauge(	LIFE_GAUGE_START_X, LIFE_GAUGE_START_Y,	LIFE_GAUGE_HEIGHT, 
+					( ( Link->Max->HP / 100 ) * Link->HP ),	LIFE_GAUGE_COLOUR, 
+					true,					LIFE_GAUGE_OPACITY			
+		);
+		Waitdraw();
+		MetroidHP(); //Update, after drawing.
+		Waitframe();
+	}
+}
+
+global script OnExit{
+	void run(){
+		MetroidTanksOnExit(MAX_HP_TANKS_F6);
+	}
+}
+
+global script OnContinue{
+	void run(){
+		MetroidTanksOnExit(MAX_HP_TANKS_RELOAD);
+	}
+}
+
+//Item Script for Energy Tanks
+//D0: Set to new max health, if Tank should give a boost. (Admittedly, somewhat redundant)
+//D1: Set to amount of HP to refill when picking up the Tank, if any.
+//D2: If set to '1' or higher, all Tanks will also be refilled, like a Refill Station.
+
+item script E_TankPickup{
+	void run ( int newMaxHealth, int refillHP, int refillOtherTanks ){
+		Game->Counter[CR_HP_TANKS]++;
+		Game->Counter[CR_TANKS_REMAIN]++;
+		if ( newMaxHealth && newMaxHealth > Link->MaxHP ) Link->MaxHP = newMaxHealth;
+		if ( refillHP > 0 ) Link->HP = Link->MaxHP;
+		if ( refillOtherTanks ) Game->Counter[CR_TANKS_REMAIN] = Game->Counter[CR_HP_TANKS];
+	}
+}
+
+//FFC Script for Refill Stations
+//D0: Set to '1' or higher, to allow using more than once. 
+ffc script RefillStation{
+	void run(int infiniteUse){
+		bool used;
+		while ( true ) {
+			if ( used && !infiniteUse ) {
+				this->Data = 0;
+				this->Script = 0;
+				Quit();
+			}
+			if ( LinkCollision(this) ) {
+				used = true;
+				Link->HP = Link->MaxHP;
+				Game->Counter[CR_TANKS_REMAIN] = Game->Counter[CR_HP_TANKS];
+			}
+		}
+	}
+}

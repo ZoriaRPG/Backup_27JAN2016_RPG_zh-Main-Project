@@ -1,0 +1,980 @@
+// CONSTANTS \\
+
+// ID to use for drawing Heart Pieces in the subscreen. Set up an item with this ID with its tile being an empty HC slot, 
+// and each tile afterward an extra piece of the continer filled (or equilivent tiles).
+const int DUMMY_HEARTPIECE_ID = 148;
+
+// The FFC to load to use for freezing the screen.
+const int SCREENFREEZE_FFC = 31;
+// The FFC to load to use for freezing the FFC's onscreen.
+const int FFCFREEZE_FFC = 30;
+
+
+// The Combo to use for freezing the screen.
+const int SCREENFREEZE_COMBO = 1108;
+// The Combo to use for freezing the FFC's onscreen.
+const int FFCFREEZE_COMBO = 1109;
+
+
+// The FFC to load to use for the subscreen cursor.
+const int CURSOR_FFC = 32;
+
+
+// The Combo to use for the item cursor.
+const int CURSOR_COMBO_1 = 1112;
+// The Combo to use for the cursor used for Saving/Quitting.
+const int CURSOR_COMBO_2 = 1113;
+// The CSet to use for the item cursor.
+const int CURSOR_CSET_1 = 7;
+// The CSet to use for the cursor used for Saving/Quitting.
+const int CURSOR_CSET_2 = 7;
+
+
+// The screen for the first tab of the Subscreen's background.
+const int SUBSCREEN_SCREEN = 0x82;
+// The map that the screen for the Subscreen background is on.
+const int SUBSCREEN_MAP = 1;
+
+
+// Used for checking some items on the subscreen. Don't mess with this unless you know what you're doing.
+const int M_SUBSCREEN_IS_SUBSCREEN_ITEM = 0;
+
+// Misc indice for ->Misc on a subscreen's item's X.
+const int M_SUBSCREEN_ITEM_X = 1;
+
+// Misc indice for ->Misc on a subscreen's item's X.
+const int M_SUBSCREEN_ITEM_Y = 2;
+
+// Misc indice for ->Misc on a subscreen's item's current tab.
+const int M_SUBSCREEN_ITEM_CURTAB = 3;
+
+// The opening SFX for the subscreen.
+const int SFX_SUBSCREEN_OPEN = 53;
+// The closing SFX for the subscreen.
+const int SFX_SUBSCREEN_CLOSE = 52;
+// The SFX of changing the subscreen panel.
+const int SUBSCREEN_PANEL_CHANGE_SFX = 60;
+
+
+// The SFX to use for putting an item on the  *A*  button.
+// Use a positive number for a SFX ID, or use a negative number (eg. -1) to use the Item's "use" SFX.
+const int A_ITEM_BUTTONSELECT_SFX = 39;
+// The SFX to use for putting an item on the  *B*  button.
+// Use a positive number for a SFX ID, or use a negative number (eg. -1) to use the Item's "use" SFX.
+const int B_ITEM_BUTTONSELECT_SFX = 56;
+
+
+// The sound effect to play if the player selects to save.
+const int SAVE_SFX = 36;
+// The sound effect to play if the player decides to not quit on the "are you sure" overlay.
+const int QUIT_DENY_SFX = 10;
+
+
+// Item ID of a dummy item that will be ignored on the subscreen. Needed so that ZC doesn't freeze up when selecting between only 2 items.
+const int DUMMY_SUBSCREEN_ITEM = 149;
+
+
+// The amount of subscreen panels, minus 1 (So, if you wanted only 1 panel, you would use 0, if you wanted 3 panels, you would use 2, etc).
+const int MAX_SUBSCREEN_PANELS = 1;
+
+
+// The item to use for a "Save" option, to be selected.
+const int SUBSCREEN_SAVE_ITEM = 150;
+// The item to use for a "Quit" option, to be selected.
+const int SUBSCREEN_QUIT_ITEM = 151;
+// The item to use for a "Save-And-Quit" option, to be selected.
+const int SUBSCREEN_SAVE_QUIT_ITEM = 152;
+
+
+// Screen overlay to use for when the player is saving.
+const int SAVING_OVERLAY_SCREEN = 0x85;
+// The map the saving screen overlay is on.
+const int SAVING_OVERLAY_MAP = 1;
+
+// Screen overlay to use to confirm if the player wants to quit or not.
+const int QUIT_CONFIRM_SCREEN = 0x86;
+// The map the quit confirm screen overlay is on.
+const int QUIT_CONFIRM_MAP = 1;
+
+
+// The quit overlay confirm X position.
+const int QUIT_CONFIRM_X = 64;
+// The quit overlay confirm Y position.
+const int QUIT_CONFIRM_Y = 96;
+// The quit overlay deny X position.
+const int QUIT_DENY_X = 176;
+// The quit overlay deny Y position.
+const int QUIT_DENY_Y = 96;
+
+// Indice used for PrevScreenMultiPos.
+const int PREV_SCREEN_INDEX = 0;
+// Indice used for PrevScreenMultiPos.
+const int PREV_MAP_INDEX = 1;
+// Indice used for PrevScreenMultiPos.
+const int PREV_DMAP_INDEX = 2;
+
+// GLOBAL VARIABLES \\
+
+
+// Stores if the scripted subscreen is active or not.
+bool SubscreenActive = false;
+
+
+// Stores the currently selected item on the scripted subscreen (NOT the Item's ID)
+int CurSelectedItem = 0;
+
+
+// Stores the current Subscreen 'panel'.
+int CurSubscreenPanel = 0;
+
+
+// Stores the selectable items on the subscreen.
+int Subscreen_Items[255];
+// Stores the items on the subscreen's X positions.
+int Subscreen_Items_X[255];
+// Stores the items on the subscreen's Y positions.
+int Subscreen_Items_Y[255];
+
+// Stores the non-selectable items on the subscreen.
+int Subscreen_NoSelect_Items[255];
+// Stores the items on the subscreen's X positions.
+int Subscreen_NoSelect_Items_X[255];
+// Stores the items on the subscreen's Y positions.
+int Subscreen_NoSelect_Items_Y[255];
+
+
+// Stores what tabs selectable items in the subscreen are.
+int Subscreen_Items_Tabs[255];
+// Stores what tabs non-selectable items in the subscreen are.
+int Subscreen_NoSelect_Items_Tabs[255];
+
+
+// A buffer used to store what screen to draw when the subscreen is active. Add more indexes for each screen you want to use for each panel.
+int Subscreen_Screen_Buffer[] = {SUBSCREEN_SCREEN, SUBSCREEN_SCREEN + 1};
+
+
+// Used for correctly setting the Cursor's position in the subscreen after scrolling through screens. Don't mess with this unless you know what you're doing.
+int Screen_Cursor_X;
+int Screen_Cursor_Y;
+
+
+// A buffer used for what combo to draw over the subscreen Cursor. Don't mess with this unless you know what you're doing.
+int Cursor_Combo_Buffer;
+
+// Stores the previous screen/map/dmap Link was on.
+int PrevScreenMultiPos[2];
+
+// THE ACTUAL SCRIPT \\
+
+
+
+void ExampleFunction()
+{
+	// No code needed here.
+}
+	
+
+// Example global script.
+global script Subscreen_Global_Example
+{
+	void run()
+	{
+		// This needs to be placed here.
+		BeforeLoop_Function();
+		
+		while(true)
+		{
+			if(SubscreenActive == false)
+			{
+				// Put any functions that would run when the subscreen is off (eg. scripted enemies).
+				ExampleFunction();
+			}
+			
+			
+			// This should be placed before ScriptedSubscreen();.
+			SetSubscreenItems();
+			// And this is the most important part. Put this before Waitframe(); and after any other functions.
+			// I don't know if Waitdraw would effect this or not.
+			ScriptedSubscreen();
+			
+			Waitframe(); 
+		}
+	}
+}
+
+// Does some stuff so the script doesn't break when used at first.
+// Put this after void run() and before the global while(true).
+void BeforeLoop_Function()
+{
+	ffc Cursor = Screen->LoadFFC(CURSOR_FFC);
+	Cursor->X = 24;// Put starting Item coords here.
+	Cursor->Y = 24;// Put starting Item coords here.
+	Cursor->Misc[0] == A_FLOATING;
+	
+	for(int i = 1; i <= 255; i += 1)
+	{
+		Subscreen_Items[i] = -1;//Link->Item[i];
+		Subscreen_NoSelect_Items[i] = -1;
+	}
+	
+	CurSubscreenPanel = 0;
+	
+	SubscreenActive = false;
+	
+	Cursor_Combo_Buffer = CURSOR_COMBO_1;
+}
+
+// Sets what slots will be what in the subscreen, and sets their positions.
+void SetSubscreenItems()
+{
+	if(Link->Item[I_SWORD1] == true)
+	{Subscreen_Items[0] = I_SWORD1;}
+	else
+	{Subscreen_Items[0] = -1;}
+	Subscreen_Items_X[0] = 24;
+	Subscreen_Items_Y[0] = 24;
+	Subscreen_Items_Tabs[0] = 0;
+	
+	if(Link->Item[I_BRANG1] == true)
+	{Subscreen_Items[1] = I_BRANG1;}
+	else
+	{Subscreen_Items[1] = -1;}
+	Subscreen_Items_X[1] = 72;
+	Subscreen_Items_Y[1] = 24;
+	Subscreen_Items_Tabs[1] = 0;
+	
+	if(Link->Item[I_HAMMER] == true)
+	{Subscreen_Items[2] = I_HAMMER;}
+	else
+	{Subscreen_Items[2] = -1;}
+	Subscreen_Items_X[2] = 24;
+	Subscreen_Items_Y[2] = 56;
+	Subscreen_Items_Tabs[2] = 0;
+	
+	if(Link->Item[I_BOMB] == true)
+	{Subscreen_Items[3] = I_BOMB;}
+	else
+	{Subscreen_Items[3] = -1;}
+	Subscreen_Items_X[3] = 24;
+	Subscreen_Items_Y[3] = 72;
+	Subscreen_Items_Tabs[3] = 0;
+	
+	
+	// **** NON_SELECTABLE ITEMS THAT YOU WANT TO SHOW UP ON THE SUBSCREEN **** \\
+	
+	if(Link->Item[I_CANDLE1] == true)
+	{Subscreen_NoSelect_Items[0] = I_CANDLE1;}
+	else
+	{Subscreen_NoSelect_Items[0] = -1;}
+	Subscreen_NoSelect_Items_X[0] = 48;
+	Subscreen_NoSelect_Items_Y[0] = 112;
+	Subscreen_NoSelect_Items_Tabs[0] = 1;
+	
+	// Heart pieces.
+	Subscreen_NoSelect_Items[1] = DUMMY_HEARTPIECE_ID;
+	Subscreen_NoSelect_Items_X[1] = 24;
+	Subscreen_NoSelect_Items_Y[1] = 120;
+	Subscreen_NoSelect_Items_Tabs[1] = 0;
+	
+	// **** GAME SAVING ITEM STUFF ***** \\
+	
+	if(Link->Item[SUBSCREEN_SAVE_ITEM] == true)
+	{Subscreen_Items[4] = SUBSCREEN_SAVE_ITEM;}
+	else
+	{Subscreen_Items[4] = -1;}
+	Subscreen_Items_X[4] = 120;
+	Subscreen_Items_Y[4] = 64;
+	Subscreen_Items_Tabs[4] = 2;
+	
+	if(Link->Item[SUBSCREEN_QUIT_ITEM] == true)
+	{Subscreen_Items[5] = SUBSCREEN_QUIT_ITEM;}
+	else
+	{Subscreen_Items[5] = -1;}
+	Subscreen_Items_X[5] = 120;
+	Subscreen_Items_Y[5] = 96;
+	Subscreen_Items_Tabs[5] = 2;
+	
+	if(Link->Item[SUBSCREEN_SAVE_QUIT_ITEM] == true)
+	{Subscreen_Items[6] = SUBSCREEN_SAVE_QUIT_ITEM;}
+	else
+	{Subscreen_Items[6] = -1;}
+	Subscreen_Items_X[6] = 120;
+	Subscreen_Items_Y[6] = 128;
+	Subscreen_Items_Tabs[6] = 2;
+}
+
+void ScriptedSubscreen()
+{
+	// Makes the 'Cursor'.
+	ffc Cursor = Screen->LoadFFC(CURSOR_FFC);
+	
+	// Disables the actual subscreen from triggering, and sets that the scripted subscreen is active.
+	if(Link->InputStart == true)
+	{
+		Link->InputStart = false;
+		if(Link->PressStart)
+		{
+			if(SubscreenActive == true)
+			{
+				Game->PlaySound(SFX_SUBSCREEN_CLOSE);
+				SubscreenActive = false;
+				
+				for(int i = 1; i <= Screen->NumItems(); i += 1)
+				{
+					item lit = Screen->LoadItem(i);
+
+					if(lit->Misc[M_SUBSCREEN_IS_SUBSCREEN_ITEM] == 1)
+					{
+						Remove(lit);
+					}
+					
+					if(lit->Misc[M_SUBSCREEN_IS_SUBSCREEN_ITEM] == 2)
+					{
+						Remove(lit);
+					}
+				}
+			}
+			else if(SubscreenActive == false)
+			{
+				Game->PlaySound(SFX_SUBSCREEN_OPEN);
+				SubscreenActive = true;
+				
+				// Creates all the items in the Subscreen.
+				for(int i = 0; i < 255; i += 1)
+				{
+					// Prevents drawing an item that has an ID lower than 0.
+					if(Subscreen_Items[i] >= 0)// && Subscreen_Items_Tabs[i] == CurSubscreenPanel
+					{
+						// Creates an item at the coords' for the currently indexed item on the subscreen. 
+						// item it = CreateItemAt(Subscreen_Items[i], Subscreen_Items_X[i], Subscreen_Items_Y[i]);
+						item it = CreateItemAt(Subscreen_Items[i], 256, 176);
+						
+						it->Misc[M_SUBSCREEN_IS_SUBSCREEN_ITEM] = 1;
+						it->Misc[M_SUBSCREEN_ITEM_X] = Subscreen_Items_X[i];
+						it->Misc[M_SUBSCREEN_ITEM_Y] = Subscreen_Items_Y[i];
+						it->Misc[M_SUBSCREEN_ITEM_CURTAB] = Subscreen_Items_Tabs[i];
+						
+						// Removes the item.
+						// Remove(it);
+					}
+					// Prevents drawing a non-selectable item that has an ID lower than 0.
+					if(Subscreen_NoSelect_Items[i] >= 0)// && Subscreen_Items_Tabs[i] == CurSubscreenPanel
+					{
+						// Creates an item at the coords' for the currently indexed item on the subscreen. 
+						// item it = CreateItemAt(Subscreen_Items[i], Subscreen_Items_X[i], Subscreen_Items_Y[i]);
+						item it = CreateItemAt(Subscreen_NoSelect_Items[i], 256, 176);
+						
+						it->Misc[M_SUBSCREEN_IS_SUBSCREEN_ITEM] = 2;
+						it->Misc[M_SUBSCREEN_ITEM_X] = Subscreen_NoSelect_Items_X[i];
+						it->Misc[M_SUBSCREEN_ITEM_Y] = Subscreen_NoSelect_Items_Y[i];
+						it->Misc[M_SUBSCREEN_ITEM_CURTAB] = Subscreen_NoSelect_Items_Tabs[i];
+						
+						// Removes the item.
+						// Remove(it);
+					}
+				}
+			}
+		}
+	}
+	
+	if(SubscreenActive == true)
+	{
+		// Something for a background.
+		// Screen->Rectangle(7, 0, 0, 256, 176, 0x0e, 1, 0,0, 0, true, OP_TRANS);
+		Screen->DrawScreen(7, SUBSCREEN_MAP, Subscreen_Screen_Buffer[CurSubscreenPanel], 0, 0, 0);
+		
+		// Freezes the screen and FFC scripts.
+		ffc FreezeScreen = Screen->LoadFFC(SCREENFREEZE_FFC);
+		ffc FreezeFFCs = Screen->LoadFFC(FFCFREEZE_FFC);
+		FreezeScreen->Data = SCREENFREEZE_COMBO;
+		FreezeFFCs->Data = FFCFREEZE_COMBO;
+		
+		// Moves the cursor to an item left-up of itself.
+		if((Link->PressLeft && Link->InputUp) || (Link->InputLeft && Link->PressUp))
+		{
+			for(int i = 255; i >= 0; i -= 1)
+			{
+				//if(Subscreen_Items[CurSelectedItem + 1] >= 0)
+				if(Subscreen_Items_X[i] < Subscreen_Items_X[CurSelectedItem] && Subscreen_Items_Y[i] < Subscreen_Items_Y[CurSelectedItem] 
+				&& Subscreen_Items[i] >= 0 && Subscreen_Items_Tabs[i] == CurSubscreenPanel)
+				{
+					CurSelectedItem = i;
+					
+					Cursor->Y = Subscreen_Items_Y[CurSelectedItem]; 
+					Cursor->X = Subscreen_Items_X[CurSelectedItem];
+					
+					Game->PlaySound(SFX_CURSOR);
+					
+					break;
+				}
+			}
+		}
+		
+		// Moves the cursor to an item right-up of itself.
+		if((Link->PressRight && Link->InputUp) || (Link->InputRight && Link->PressUp))
+		{
+			for(int i = 255; i >= 0; i -= 1)
+			{
+				//if(Subscreen_Items[CurSelectedItem + 1] >= 0)
+				if(Subscreen_Items_X[i] > Subscreen_Items_X[CurSelectedItem] && Subscreen_Items_Y[i] < Subscreen_Items_Y[CurSelectedItem] 
+				&& Subscreen_Items[i] >= 0 && Subscreen_Items_Tabs[i] == CurSubscreenPanel)
+				{
+					CurSelectedItem = i;
+					
+					Cursor->Y = Subscreen_Items_Y[CurSelectedItem]; 
+					Cursor->X = Subscreen_Items_X[CurSelectedItem];
+					
+					Game->PlaySound(SFX_CURSOR);
+					
+					break;
+				}
+			}
+		}
+		
+		// Moves the cursor to an item left-down of itself.
+		if((Link->PressLeft && Link->InputDown) || (Link->InputLeft && Link->PressDown))
+		{
+			for(int i = 0; i < 255; i += 1)
+			{
+				//if(Subscreen_Items[CurSelectedItem + 1] >= 0)
+				if(Subscreen_Items_X[i] < Subscreen_Items_X[CurSelectedItem] && Subscreen_Items_Y[i] > Subscreen_Items_Y[CurSelectedItem] 
+				&& Subscreen_Items[i] >= 0 && Subscreen_Items_Tabs[i] == CurSubscreenPanel)
+				{
+					CurSelectedItem = i;
+					
+					Cursor->Y = Subscreen_Items_Y[CurSelectedItem]; 
+					Cursor->X = Subscreen_Items_X[CurSelectedItem];
+					
+					Game->PlaySound(SFX_CURSOR);
+					
+					break;
+				}
+			}
+		}
+		
+		// Moves the cursor to an item to right-down of itself.
+		if((Link->PressRight && Link->InputDown) || (Link->InputRight && Link->PressDown))
+		{
+			for(int i = 0; i < 255; i += 1)
+			{
+				//if(Subscreen_Items[CurSelectedItem + 1] >= 0)
+				if(Subscreen_Items_X[i] > Subscreen_Items_X[CurSelectedItem] && Subscreen_Items_Y[i] > Subscreen_Items_Y[CurSelectedItem] 
+				&& Subscreen_Items[i] >= 0 && Subscreen_Items_Tabs[i] == CurSubscreenPanel)
+				{
+					CurSelectedItem = i;
+					
+					Cursor->Y = Subscreen_Items_Y[CurSelectedItem]; 
+					Cursor->X = Subscreen_Items_X[CurSelectedItem];
+					
+					Game->PlaySound(SFX_CURSOR);
+					
+					break;
+				}
+			}
+		}
+		
+		// Moves the cursor to an item above itself.
+		if(Link->PressUp)
+		{
+			for(int i = 255; i >= 0; i -= 1)
+			{
+				if(Subscreen_Items_Y[i] < Subscreen_Items_Y[CurSelectedItem] && Subscreen_Items_X[i] == Subscreen_Items_X[CurSelectedItem] 
+				&& Subscreen_Items[i] >= 0 && Subscreen_Items_Tabs[i] == CurSubscreenPanel)
+				{
+					CurSelectedItem = i;
+					
+					Cursor->Y = Subscreen_Items_Y[CurSelectedItem]; 
+					Cursor->X = Subscreen_Items_X[CurSelectedItem];
+					
+					Game->PlaySound(SFX_CURSOR);
+					
+					break;
+				}
+			}
+		}
+
+		// Moves the cursor to an item below itself.
+		if(Link->PressDown)
+		{
+			for(int i = 0; i < 255; i += 1)
+			{
+				if(Subscreen_Items_Y[i] > Subscreen_Items_Y[CurSelectedItem] && Subscreen_Items_X[i] == Subscreen_Items_X[CurSelectedItem] 
+				&& Subscreen_Items[i] >= 0 && Subscreen_Items_Tabs[i] == CurSubscreenPanel)
+				{
+					CurSelectedItem = i;
+					
+					Cursor->Y = Subscreen_Items_Y[CurSelectedItem]; 
+					Cursor->X = Subscreen_Items_X[CurSelectedItem];
+					
+					Game->PlaySound(SFX_CURSOR);
+					
+					break;
+				}
+			}
+		}
+		
+		// Moves the cursor to an item to the left of itself.
+		if(Link->PressLeft)
+		{
+			for(int i = 255; i >= 0; i -= 1)
+			{
+				//if(Subscreen_Items[CurSelectedItem - 1] >= 0)
+				if(Subscreen_Items_X[i] < Subscreen_Items_X[CurSelectedItem] && Subscreen_Items_Y[i] == Subscreen_Items_Y[CurSelectedItem] 
+				&& Subscreen_Items[i] >= 0 && Subscreen_Items_Tabs[i] == CurSubscreenPanel)
+				{
+					CurSelectedItem = i;
+					
+					Cursor->X = Subscreen_Items_X[CurSelectedItem]; 
+					Cursor->Y = Subscreen_Items_Y[CurSelectedItem];
+					
+					Game->PlaySound(SFX_CURSOR);
+					
+					break;
+				}
+			}
+		}
+		
+		// Moves the cursor to an item to the right of itself.
+		if(Link->PressRight)
+		{
+			for(int i = 0; i < 255; i += 1)
+			{
+				//if(Subscreen_Items[CurSelectedItem + 1] >= 0)
+				if(Subscreen_Items_X[i] > Subscreen_Items_X[CurSelectedItem] && Subscreen_Items_Y[i] == Subscreen_Items_Y[CurSelectedItem] 
+				&& Subscreen_Items[i] >= 0 && Subscreen_Items_Tabs[i] == CurSubscreenPanel)
+				{
+					CurSelectedItem = i;
+					
+					Cursor->Y = Subscreen_Items_Y[CurSelectedItem]; 
+					Cursor->X = Subscreen_Items_X[CurSelectedItem];
+					
+					Game->PlaySound(SFX_CURSOR);
+					
+					break;
+				}
+			}
+		}
+		// Subscreen_Items[CurSelectedItem] == I_SBOMB && Game->Counter[CR_SBOMBS] > 0 && Game->MCounter[CR_SBOMBS] > 0
+		// Sets the currently selected item to the A button 
+		if(	Link->PressA
+		&& ((Subscreen_Items[CurSelectedItem] == I_BOMB && Game->Counter[CR_BOMBS] > 0 && Game->MCounter[CR_BOMBS] > 0) ||	Subscreen_Items[CurSelectedItem] != I_BOMB)
+		&& ((Subscreen_Items[CurSelectedItem] == I_SBOMB && Game->Counter[CR_SBOMBS] > 0 && Game->MCounter[CR_SBOMBS] > 0) ||	Subscreen_Items[CurSelectedItem] != I_SBOMB)
+		&& 	Subscreen_Items_Tabs[CurSelectedItem] == CurSubscreenPanel
+		&& 	Link->Item[Subscreen_Items[CurSelectedItem]] == true
+		&& 	Subscreen_Items[CurSelectedItem] != SUBSCREEN_SAVE_ITEM
+		&& 	Subscreen_Items[CurSelectedItem] != SUBSCREEN_QUIT_ITEM
+		&& 	Subscreen_Items[CurSelectedItem] != SUBSCREEN_SAVE_QUIT_ITEM)
+		{
+			if(GetEquipmentB() != Subscreen_Items[CurSelectedItem] && GetEquipmentA() != Subscreen_Items[CurSelectedItem])
+			{
+				while(GetEquipmentA() != Subscreen_Items[CurSelectedItem])
+				{
+					Link->SelectAWeapon(DIR_LEFT);
+				}
+				
+				if(A_ITEM_BUTTONSELECT_SFX >= 0)
+				{
+					Game->PlaySound(A_ITEM_BUTTONSELECT_SFX);
+				}
+				else
+				{
+					itemdata itID = Game->LoadItemData(Subscreen_Items[CurSelectedItem]);
+					
+					Game->PlaySound(itID->UseSound);
+				}
+			}
+			else if(GetEquipmentB() == Subscreen_Items[CurSelectedItem])
+			{
+				int PrevEquipmentA = GetEquipmentA();
+				int PrevEquipmentB = GetEquipmentB();
+
+				while(GetEquipmentB() != DUMMY_SUBSCREEN_ITEM)
+				{
+					// Dir up is the default for the blank item
+					Link->SelectBWeapon(DIR_UP);
+				}
+				
+				while(GetEquipmentA() != PrevEquipmentB)
+				{
+					Link->SelectAWeapon(DIR_LEFT);
+				}
+				
+				while(GetEquipmentB() != PrevEquipmentA)
+				{
+					Link->SelectBWeapon(DIR_LEFT);
+				}
+				
+				if(A_ITEM_BUTTONSELECT_SFX >= 0)
+				{
+					Game->PlaySound(A_ITEM_BUTTONSELECT_SFX);
+				}
+				else
+				{
+					itemdata itID = Game->LoadItemData(Subscreen_Items[CurSelectedItem]);
+					
+					Game->PlaySound(itID->UseSound);
+				}
+			}
+		}
+
+		// Sets the currently selected item to the B button 
+		if(	Link->PressB
+		&& ((Subscreen_Items[CurSelectedItem] == I_BOMB && Game->Counter[CR_BOMBS] > 0 && Game->MCounter[CR_BOMBS] > 0) ||	Subscreen_Items[CurSelectedItem] != I_BOMB)
+		&& ((Subscreen_Items[CurSelectedItem] == I_SBOMB && Game->Counter[CR_SBOMBS] > 0 && Game->MCounter[CR_SBOMBS] > 0) ||	Subscreen_Items[CurSelectedItem] != I_SBOMB)
+		&& 	Subscreen_Items_Tabs[CurSelectedItem] == CurSubscreenPanel
+		&& 	Link->Item[Subscreen_Items[CurSelectedItem]] == true
+		&& 	Subscreen_Items[CurSelectedItem] != SUBSCREEN_SAVE_ITEM
+		&& 	Subscreen_Items[CurSelectedItem] != SUBSCREEN_QUIT_ITEM
+		&& 	Subscreen_Items[CurSelectedItem] != SUBSCREEN_SAVE_QUIT_ITEM)
+		{
+			if(GetEquipmentA() != Subscreen_Items[CurSelectedItem] && GetEquipmentB() != Subscreen_Items[CurSelectedItem])
+			{
+				while(GetEquipmentB() != Subscreen_Items[CurSelectedItem])
+				{
+					// Dir up is the default for the blank item
+					Link->SelectBWeapon(DIR_LEFT);
+					Game->PlaySound(2);
+				}
+
+				if(B_ITEM_BUTTONSELECT_SFX >= 0)
+				{
+					Game->PlaySound(B_ITEM_BUTTONSELECT_SFX);
+				}
+				else
+				{
+					itemdata itID = Game->LoadItemData(Subscreen_Items[CurSelectedItem]);
+					
+					Game->PlaySound(itID->UseSound);
+				}
+			}
+			else if(GetEquipmentA() == Subscreen_Items[CurSelectedItem])
+			{
+				int PrevEquipmentB = GetEquipmentB();
+				int PrevEquipmentA = GetEquipmentA();
+
+				while(GetEquipmentA() != DUMMY_SUBSCREEN_ITEM)
+				{
+					Link->SelectAWeapon(DIR_UP);
+				}
+				
+				while(GetEquipmentB() != PrevEquipmentA)
+				{
+					Link->SelectBWeapon(DIR_LEFT);
+				}
+				
+				// while(GetEquipmentB() != PrevEquipmentA)
+				// {
+					// Link->SelectBWeapon(DIR_RIGHT);
+					// Game->PlaySound(2);
+				// }
+				
+				while(GetEquipmentA() != PrevEquipmentB)
+				{
+					Link->SelectAWeapon(DIR_LEFT);
+				}
+
+				if(B_ITEM_BUTTONSELECT_SFX >= 0)
+				{
+					Game->PlaySound(B_ITEM_BUTTONSELECT_SFX);
+				}
+				else
+				{
+					itemdata itID = Game->LoadItemData(Subscreen_Items[CurSelectedItem]);
+					
+					Game->PlaySound(itID->UseSound);
+				}
+			}
+		}
+		
+		// Saves the quest when the player selects and press A/B on the Save item. 
+		if(	(Link->PressA || Link->PressB)
+		&& 	Subscreen_Items[CurSelectedItem] == SUBSCREEN_SAVE_ITEM
+		&&	Subscreen_Items_Tabs[CurSelectedItem] == CurSubscreenPanel)
+		{
+			Subscreen_Save();
+		}
+		// Quits the quest when the player selects and press A/B on the Quit item.
+		if(	(Link->PressA || Link->PressB)
+		&& 	Subscreen_Items[CurSelectedItem] == SUBSCREEN_QUIT_ITEM
+		&&	Subscreen_Items_Tabs[CurSelectedItem] == CurSubscreenPanel)
+		{
+			Subscreen_Quit();
+		}
+		// Saves and Quits the quest when the player selects and press A/B on the Save/Quit item.
+		if(	(Link->PressA || Link->PressB)
+		&& 	Subscreen_Items[CurSelectedItem] == SUBSCREEN_SAVE_QUIT_ITEM
+		&&	Subscreen_Items_Tabs[CurSelectedItem] == CurSubscreenPanel)
+		{
+			Subscreen_Save();
+			Subscreen_Quit();
+		}
+		
+		
+		if((Subscreen_Items[CurSelectedItem] == SUBSCREEN_SAVE_ITEM
+		||	Subscreen_Items[CurSelectedItem] == SUBSCREEN_QUIT_ITEM
+		||	Subscreen_Items[CurSelectedItem] == SUBSCREEN_SAVE_QUIT_ITEM)
+		&& 	Subscreen_Items_Tabs[CurSelectedItem] == CurSubscreenPanel)
+		{
+			Cursor_Combo_Buffer = CURSOR_COMBO_2;
+		}
+		else
+		{
+			Cursor_Combo_Buffer = CURSOR_COMBO_1;
+		}
+		
+		// Keeps the currently selected item 'in bounds'.
+		if(CurSelectedItem < 0)
+		{
+			CurSelectedItem = 0;
+		}
+		
+		if(CurSelectedItem > 255)
+		{
+			CurSelectedItem = 255;
+		}
+		
+		
+		if(Link->PressR)
+		{
+			CurSubscreenPanel += 1;
+			
+			if(CurSubscreenPanel > MAX_SUBSCREEN_PANELS)
+			{
+				CurSubscreenPanel = 0;
+			}
+			
+			for(int i = 0; i < 255; i += 1)
+			{
+				if(Subscreen_Items_Tabs[i] == CurSubscreenPanel && Link->Item[Subscreen_Items[i]] == true)
+				{
+					CurSelectedItem = i;
+					
+					Cursor->X = Subscreen_Items_X[i];
+					Cursor->Y = Subscreen_Items_Y[i];
+					
+					break;
+				}
+				else
+				{
+					CurSelectedItem = 0;
+					Cursor->X = 256;
+					Cursor->Y = 176;
+				}
+			}
+
+			Game->PlaySound(SUBSCREEN_PANEL_CHANGE_SFX);
+		}
+
+		if(Link->PressL)
+		{
+			CurSubscreenPanel -= 1;
+			
+			if(CurSubscreenPanel < 0)
+			{
+				CurSubscreenPanel = MAX_SUBSCREEN_PANELS;
+			}
+			
+			for(int i = 0; i < 255; i += 1)
+			{
+				if(Subscreen_Items_Tabs[i] == CurSubscreenPanel && Link->Item[Subscreen_Items[i]] == true)
+				{
+					CurSelectedItem = i;
+					
+					Cursor->X = Subscreen_Items_X[i];
+					Cursor->Y = Subscreen_Items_Y[i];
+					
+					break;
+				}
+				else
+				{
+					CurSelectedItem = 0;
+					Cursor->X = 256;
+					Cursor->Y = 176;
+				}
+			}
+			
+			Game->PlaySound(SUBSCREEN_PANEL_CHANGE_SFX);
+		}
+		
+		
+		bool ItemOnCurPanel = false;
+		
+		for(int i = 0; i < 255; i += 1)
+		{
+			if(Subscreen_Items_Tabs[i] == CurSubscreenPanel && Link->Item[Subscreen_Items[i]] == true)
+			{
+				ItemOnCurPanel = true;
+			}
+		}
+		
+		if(ItemOnCurPanel == false)
+		{
+			Cursor->X = 256;
+			Cursor->Y = 176;
+		}
+
+		
+		// for(int i = 1; i <= Screen->NumItems(); i += 1)
+		// {
+			// item lit = Screen->LoadItem(i);
+			// if(lit->Misc[M_SUBSCREEN_IS_SUBSCREEN_ITEM] == 1 && lit->Misc[M_SUBSCREEN_ITEM_CURTAB] == CurSubscreenPanel)
+			// {
+			   // Draws the item's tile.
+				// Screen->FastTile(7, lit->Misc[M_SUBSCREEN_ITEM_X], lit->Misc[M_SUBSCREEN_ITEM_Y], lit->Tile, lit->CSet, OP_OPAQUE);
+			// }
+		// }
+		
+		
+		// Draws the item's tile.
+		for(int i = 1; i <= Screen->NumItems(); i += 1)
+		{
+			item lit = Screen->LoadItem(i);
+			
+			if(lit->Misc[M_SUBSCREEN_IS_SUBSCREEN_ITEM] == 1 && lit->Misc[M_SUBSCREEN_ITEM_CURTAB] == CurSubscreenPanel)
+			{
+			   // Draws the item's tile.
+				Screen->FastTile(7, lit->Misc[M_SUBSCREEN_ITEM_X], lit->Misc[M_SUBSCREEN_ITEM_Y], lit->Tile, lit->CSet, OP_OPAQUE);
+			}
+			
+			if(lit->Misc[M_SUBSCREEN_IS_SUBSCREEN_ITEM] == 2 && lit->Misc[M_SUBSCREEN_ITEM_CURTAB] == CurSubscreenPanel)
+			{
+				// item HC_ID = 
+				
+			   // Draws the item's tile.
+				if(lit->ID != DUMMY_HEARTPIECE_ID)
+				{
+					Screen->FastTile(7, lit->Misc[M_SUBSCREEN_ITEM_X], lit->Misc[M_SUBSCREEN_ITEM_Y], lit->Tile, lit->CSet, OP_OPAQUE);
+				}
+				else
+				{
+					Screen->FastTile(7, lit->Misc[M_SUBSCREEN_ITEM_X], lit->Misc[M_SUBSCREEN_ITEM_Y], lit->Tile + Game->Generic[GEN_HEARTPIECES], lit->CSet, OP_OPAQUE);
+				}
+			}
+		}
+
+		// Draws the Cursor.
+		Screen->FastCombo(7, Cursor->X, Cursor->Y, Cursor_Combo_Buffer, CURSOR_CSET_1, OP_OPAQUE);
+	}
+	else
+	{
+		// Unfreezes the screen when the scripted subscreen isn't active.
+		ffc FreezeScreen = Screen->LoadFFC(SCREENFREEZE_FFC);
+		ffc FreezeFFCs = Screen->LoadFFC(FFCFREEZE_FFC);
+		FreezeScreen->Data = 0;
+		FreezeFFCs->Data = 0;
+		
+		if(Subscreen_Items_Tabs[CurSelectedItem] == CurSubscreenPanel && Link->Item[Subscreen_Items[CurSelectedItem]] == true)
+		{
+			Cursor->X = Subscreen_Items_X[CurSelectedItem];
+			Cursor->Y = Subscreen_Items_Y[CurSelectedItem];
+		}
+		// Cursor->X = Screen_Cursor_X;
+		// Cursor->Y = Screen_Cursor_Y;
+	}
+	
+	// PrevScreenMultiPos[PREV_SCREEN_INDEX] = Game->GetCurScreen();
+	// PrevScreenMultiPos[PREV_MAP_INDEX] = Game->GetCurMap();
+	// PrevScreenMultiPos[PREV_DMAP_INDEX] = Game->GetCurDMap();
+}
+
+void Subscreen_Save()
+{
+	// Screen->DrawScreen(7, SAVING_OVERLAY_MAP, SAVING_OVERLAY_SCREEN, 0, 0, 0);
+	Screen->DrawScreen(7, SUBSCREEN_MAP, Subscreen_Screen_Buffer[CurSubscreenPanel], 0, 0, 0);
+	Screen->DrawScreen(7, SAVING_OVERLAY_MAP, SAVING_OVERLAY_SCREEN, 0, 0, 0);
+	Game->PlaySound(SAVE_SFX);
+	Waitframe();
+	Game->Save();
+}
+
+void Subscreen_Quit()
+{
+	ffc Cursor = Screen->LoadFFC(CURSOR_FFC);
+	
+	int PrevCurX = Cursor->X;
+	int PrevCurY = Cursor->Y;
+	
+	Cursor->X = QUIT_DENY_X;
+	Cursor->Y = QUIT_DENY_Y;
+	
+	bool CurSelectedQuit = false;
+	
+	NoAction();
+	
+	while(true)
+	{
+		Screen->DrawScreen(7, SUBSCREEN_MAP, Subscreen_Screen_Buffer[CurSubscreenPanel], 0, 0, 0);
+		Screen->DrawScreen(7, SAVING_OVERLAY_MAP, QUIT_CONFIRM_SCREEN, 0, 0, 0);
+		
+		// Draws the item's tiles.
+		for(int i = 1; i <= Screen->NumItems(); i += 1)
+		{
+			item lit = Screen->LoadItem(i);
+			
+			if(lit->Misc[M_SUBSCREEN_IS_SUBSCREEN_ITEM] == 1 && lit->Misc[M_SUBSCREEN_ITEM_CURTAB] == CurSubscreenPanel)
+			{
+			   // Draws the item's tile.
+				Screen->FastTile(7, lit->Misc[M_SUBSCREEN_ITEM_X], lit->Misc[M_SUBSCREEN_ITEM_Y], lit->Tile, lit->CSet, OP_OPAQUE);
+			}
+			
+			if(lit->Misc[M_SUBSCREEN_IS_SUBSCREEN_ITEM] == 2 && lit->Misc[M_SUBSCREEN_ITEM_CURTAB] == CurSubscreenPanel)
+			{
+				// item HC_ID = 
+				
+			   // Draws the item's tile.
+				if(lit->ID != DUMMY_HEARTPIECE_ID)
+				{
+					Screen->FastTile(7, lit->Misc[M_SUBSCREEN_ITEM_X], lit->Misc[M_SUBSCREEN_ITEM_Y], lit->Tile, lit->CSet, OP_OPAQUE);
+				}
+				else
+				{
+					Screen->FastTile(7, lit->Misc[M_SUBSCREEN_ITEM_X], lit->Misc[M_SUBSCREEN_ITEM_Y], lit->Tile + Game->Generic[GEN_HEARTPIECES], lit->CSet, OP_OPAQUE);
+				}
+			}
+		}
+		
+		Screen->FastCombo(7, Cursor->X, Cursor->Y, Cursor_Combo_Buffer, CURSOR_CSET_1, OP_OPAQUE);
+		
+		
+		if(Link->PressLeft || Link->PressRight)
+		{
+			CurSelectedQuit = !CurSelectedQuit;
+			Game->PlaySound(SFX_CURSOR);
+		}
+		
+		if(CurSelectedQuit == false)
+		{
+			Cursor->X = QUIT_DENY_X;
+			Cursor->Y = QUIT_DENY_Y;
+	
+			if(Link->PressA || Link->PressB)
+			{
+				Game->PlaySound(QUIT_DENY_SFX);
+				break;
+			}
+		}
+		
+		if(CurSelectedQuit == true)
+		{
+			Cursor->X = QUIT_CONFIRM_X;
+			Cursor->Y = QUIT_CONFIRM_Y;
+	
+			if(Link->PressA)
+			{
+				Game->End();
+			}
+			else if(Link->PressB)
+			{
+				Game->PlaySound(SFX_CURSOR);
+				CurSelectedQuit = !CurSelectedQuit;
+			}
+		}
+			
+		NoAction();
+		Waitframe();
+	}
+	
+	Cursor->X = PrevCurX;
+	Cursor->Y = PrevCurY;
+	
+}

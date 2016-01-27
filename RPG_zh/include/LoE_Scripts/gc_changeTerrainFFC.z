@@ -1,0 +1,327 @@
+/////////////////////////////////////
+///    Enemy Vulnerabilities      ///
+/// Modified from: the Gibdo Burn ///
+///      Script by Avataro        ///
+///       and MoscowModder        ///
+/// Combined with the FFC Trigger ///
+///    Script by: grayswandir     ///
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/// Place on screen with an enemy, so that if it is killed by a specific type of weapon   ///
+/// it spawms a different enemy. or produces a different effect.                          ///
+/// D0: Enemy Number of SOurce Enemy to Affect.                                           ///
+/// D1: Enemy to Replace D0 with on Contact with Trigger.                                 ///
+/// D2: Trigger - Positive Number for Specific Item Number; Negative Number of LW Type.   ///
+/////////////////////////////////////////////////////////////////////////////////////////////
+/// Place one FFC of this script on the screen for each enemy to affect by it.            ///
+/// You can cascade this by setting the replacement enemy type as a source type in        ///
+/// a second instance of this FFC.                                                        ///
+/// THis can be especially useful for spells: You can have enemies that are outwardly     ///
+/// invincible, but are changed once affected by a spell or item. You can use the same    ///
+/// sprite, or a variation of itl to reflect the change int he state of the enemy, or to  ///
+/// make the change invisible to the player.                                              ///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+
+ 
+
+
+//Trigger is a specific item (item number in editor).
+//Vulnerability is an item class (LW Type).
+
+ffc script changeTerrain{
+    void run (int originalCombo0, int newCombo0, int originalCombo1, int newCombo1, int originalCombo2, int newCombo2, int requiredItem_minLevel, int switches) {
+     
+     int requiredItem = GetValue3Lower123(requiredItem_minLevel);
+     int TF_PIECE = GetValueSingle6(requiredItem_minLevel);
+     int minLevel = GetValue2_45(requiredItem_minLevel);
+     
+    bool daleks = false; //Set up a switch, that makes this true, if a setting is toggled, to determine of this FFC requires Daleks.
+     
+    int loc = ComboAt(CenterX(this), CenterY(this));
+    int underComboId = Screen->ComboD[loc];
+    int map;
+    int screen;
+    if (newCombo0 < 0) {
+      map = (newCombo0 * -0.001) >> 0;
+      screen = ((newCombo0 * -0.01 % 10) >> 0) * 16 + (-newCombo0 % 100);}
+     
+     
+     //If using TF piece as a requirement, 
+     // 00000.0000
+     // (0) (0) (0) (00) (.0) (000)
+     // (Unused) (EventFlag) (CauseFlag) (Minlevel) (TF PIECE) (ITEM)
+
+    int switch0 = GetDigit(switches, 4);
+    int switch1 = GetDigit(switches, 3);
+    int switch2 = GetDigit(switches, 2);
+    int switch3 = GetDigit(switches, 1);
+    int switch4 = GetDigit(switches, 0);
+    int switch5 = GetDigit(switches, -1);
+    int switch6 = GetDigit(switches, -2);
+    int switch7 = GetDigit(switches, -3);
+    int switch8 = GetDigit(switches, -4);
+//
+// Switch:		Decimal Place:					Value Range:
+//    0			#xxxx.xxxx	(Ten-Thousands)		   0-to-2
+//    1			x#xxx.xxxx	(Thousands)			   0-to-9
+//    2			xx#xx.xxxx	(Hundreds)			   0-to-9
+//    3			xxx#x.xxxx	(Tens)				   0-to-9
+//    4			xxxx#.xxxx	(Ones)				   0-to-9
+//    5			xxxxx.#xxx	(Tenths)			   0-to-9
+//    6			xxxxx.x#xx	(Hundredths)		   0-to-9
+//    7			xxxxx.xx#x	(Thousandths)		   0-to-9
+//    8			xxxxx.xxx#	(Ten-Thousandths)	   0-to-9
+
+
+    int haveitem;
+    int haveTFpiece;
+    int triggerAndVulnerability;
+    int triggerAndLevel;
+    int vulnerabilityAndLevel;
+    int triggerAndLevelAndVulnerability;
+    
+    int none;
+    
+    bool levelRequired = false;
+    bool TF_Required = false;
+    bool itemRequired = false;
+    
+    bool haveTF = false;
+    bool isLevel = false;
+    bool hasItem = false;
+    
+    bool changeCause = false;
+    
+    bool requiredEvent = false;
+    bool eventHappened = false;
+    
+    if ( switch8 == 0)  {
+        if ( daleks == true ) {
+            requiredEvent = true;
+        }
+    }
+    
+
+//Sets the main operator, whether it is or is not level dependant:
+//if the enemy should always be changed, set this to none. 
+    
+  //  xxxxx.xxx0
+  
+  //Switch 8
+  // Events
+  // Daleks
+  
+    if ( switch8 == 0)  {
+        requiredEvent = true;
+    }
+    
+    if ( Event(DALEKLANDING) ) {
+        eventHappened = true;
+    }
+  
+
+////////////////////////////////////////////////////////////////
+/// Switch 7: Set flag for item, level, and TF requirements. ///
+////////////////////////////////////////////////////////////////
+/// FLAG    TFORCE      LEVEL   ITEM  /// 
+/// 0 :     FALSE       FALSE   FALSE ///
+/// 1 :     TRUE        FALSE   FALSE ///
+/// 2 :     FALSE       TRUE    FALSE ///
+/// 3 :     TRUE        TRUE    FALSE ///
+/// 4 :     FALSE       FALSE   TRUE  ///
+/// 5 :     TRUE        FALSE   TRUE  ///
+/// 6 :     FALSE       TRUE    TRUE  ///
+/// 7 :     TRUE        TRUE    TRUE  ///
+/////////////////////////////////////////
+    
+    if ( switch7 == 0)  {
+    itemRequired = false;
+    levelRequired = false;
+    TF_Required = false;
+    }
+    if ( switch7 == 1 ) {
+    itemRequired = true;
+    levelRequired = false;
+    TF_Required = false;
+    }
+    if ( switch7 == 2)  {
+    itemRequired = false;
+    levelRequired = true;
+    TF_Required = false;
+    }
+    if ( switch7 == 3 ) {
+    itemRequired = true;
+    levelRequired = true;
+    TF_Required = false;
+    }
+    if ( switch7 == 4 ) {
+    itemRequired = false;
+    levelRequired = false;
+    TF_Required = true;
+    }
+    if ( switch7 == 5 ) {
+    itemRequired = true;
+    levelRequired = false;
+    TF_Required = true;
+    }
+    if ( switch7 == 6 ) {
+    itemRequired = false;
+    levelRequired = true;
+    TF_Required = true;
+    }
+    if ( switch7 == 7 ) {
+    itemRequired = true;
+    levelRequired = true;
+    TF_Required = true;
+    }
+    
+    //  xxxxx.xx0x
+    
+    int TFLevel = GetValueSingle6(requiredItem_minLevel);
+    
+    bool TFLevelRequired = Game->LItems[TFLevel];
+  //  if ( Game->LItem[TFLevel]&LI_TRIFORCE == LI_TRIFORCE ) {
+  // if ( TFLevelRequired == true )
+
+//  xxxxx.x#xx value 0 (for none) or 1 to 8. 
+
+//Switches 4-through-6: Sets the item number for the required item (if any), 
+//either as an item is true, as a trigger, or as a vulnerability
+
+    int requireThisItem = GetValue3Lower123(requiredItem_minLevel);
+
+//  xxxx#.##xx Value 000 to 999
+
+    
+//Switches 2-and-3: Sets the minimum character level for the change to occur (if any)
+    int requireTheLevel = GetValue2_45(requiredItem_minLevel);
+
+//  xx##x.xxxx Value 00 - 99
+    
+    
+// Switch 1: Sets additional, conditional effect (from list, or user defined).
+    int effect = switch1;
+    
+    //Continue HP. If set to 1, the replacement enemy will have the same hP as the enemy that it replaces
+    //If set to 2, the enemy will have 2x the HP of the enemy it replaces.
+
+//  x#xxx.xxxx
+
+// Switch 0: Sets additional, conditional cause (user defined).
+    int cause = switch0;
+
+//  #xxxx.xxxx
+
+
+
+
+
+    
+ //   if ( trigger == true && vulnerability == true ){
+ //   }
+    
+    
+    
+   // if ( switch 7 == 0 ) {
+   // cause = haveitem;
+   // }
+   // if (switch 7 == 0 ) {
+   // cause = haveTFPiece;
+   // }
+     
+        while(true){
+        
+            if ( Link->Item[requiredItem] == true ) {
+                hasItem = true;
+            }
+
+   //         if ( Game->LItems[TF_PIECE]&LI_TRIFORCE == LI_TRIFORCE ) {
+   //             haveTF = true;
+   //         }
+
+            if ( Game->Counter[CR_LEVEL] >= requireTheLevel ) {
+                isLevel= true;
+            }
+            
+            if ( switch8 == 0 )  {
+            requiredEvent = false;
+            }
+            else if ( switch8 == 1 )  {
+            requiredEvent = true;
+            }
+
+            
+            if ( requiredEvent == true && eventHappened == false ) {
+            Waitframe();
+            }
+
+            if (itemRequired == false && levelRequired == false && TF_Required == false ){
+                changeCause == true;
+            }
+            if ( itemRequired == true && hasItem == true && levelRequired == false && TF_Required == false ){
+                changeCause == true;
+            }
+            if ( itemRequired == false && levelRequired == true && isLevel == true && TF_Required == false ){
+                changeCause == true;
+            }
+            
+            if ( itemRequired == true && hasItem == true && levelRequired == true && isLevel == true && TF_Required == false ){
+                changeCause == true;
+            }
+            
+            if ( itemRequired == false && levelRequired == false && TF_Required == true && haveTF == true ) {
+                changeCause == true;
+            }
+
+            if ( itemRequired == true && hasItem == true && levelRequired == false && TF_Required == true && haveTF == true ){
+                changeCause == true;
+            }
+            
+            if ( itemRequired == false && levelRequired == true && isLevel == true && TF_Required == true && haveTF == true ) {
+                changeCause == true;
+            }
+            
+            if ( itemRequired == true && hasItem == true && levelRequired == true && isLevel == true && TF_Required == true && haveTF == true ) {
+                changeCause == true;
+            }
+            
+            if ( changeCause == false ) {
+                Waitframe();
+            }
+            else if ( changeCause == true ) {
+            
+            
+    // Now loop through every combo on screen looking for combos
+    // matching <originalCombo>.
+    for (loc = 0; loc < 176; loc++) {
+      bool match = false;
+
+      // If <target> is positive, test for Combo ID.
+      if (originalCombo0 > 0) {
+        if (Screen->ComboD[loc] == originalCombo0) {
+          match = true;}}
+
+      // If <target> is negative, test for the flag being present.
+      else if (originalCombo0 < 0) {
+        if (ComboFI(loc, -originalCombo0)) {
+          match = true;}}
+ 
+      // If the current combo is a match, then transform the combo
+      // according to <result>.
+      if (match) {
+ 
+        // If <result> is positive, just change the target to <result>.
+        if (newCombo0 > 0) {
+          Screen->ComboD[loc] = newCombo0;}
+        // If <result> is negative, grab the combo from the given screen.
+        else if (newCombo0 < 0) {
+          Screen->ComboD[loc] = Game->GetComboData(map, screen, loc);
+          }
+          }
+          }
+}
+}
+}
+}
+            

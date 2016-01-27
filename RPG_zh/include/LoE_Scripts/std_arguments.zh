@@ -1,0 +1,368 @@
+///stdArguments.zh
+
+int GetHighArgument(int arg) {return arg >> 0;}
+int GetLowArgument(int arg) {return (arg - (arg >> 0)) * 10000;}
+
+// These functions allow you to use the integer and decimal portions of an argument as two separate arguments.
+// For example, if you have D0 as 0010.0023, you can split it into two arguments with the values '10' and '23' respectively. 
+// An example of using this is appended below:
+//
+//item script HighLow{
+//	void run (int High0_Low0, int High1_Low1, int High2_Low2, int High3_Low3, int High4_Low4, int High5_Low5, int High6_Low6, int High7_Low7) {
+//		int Argument0H = GetHighArgument(High0_Low0);
+//		int Argument0L = GetLowArgument(High0_Low0);
+//		int Argument1H = GetHighArgument(High1_Low1);
+//		int Argument1L = GetLowArgument(High1_Low1);
+//		int Argument2H = GetHighArgument(High2_Low2);
+//		int Argument2L = GetLowArgument(High2_Low2);
+//		int Argument3H = GetHighArgument(High3_Low3);
+//		int Argument3L = GetLowArgument(High3_Low3);
+//		int Argument4H = GetHighArgument(High4_Low4);
+//		int Argument4L = GetLowArgument(High4_Low4);
+//		int Argument5H = GetHighArgument(High5_Low5);
+//		int Argument5L = GetLowArgument(High5_Low5);
+//		int Argument6H = GetHighArgument(High6_Low6);
+//		int Argument6L = GetLowArgument(High6_Low6);
+//		int Argument7H = GetHighArgument(High7_Low7);
+//		int Argument7L = GetLowArgument(High7_Low7);
+//		}
+//	}
+//
+// Obviously, you will want to name assigns in a way that allows you to remember what they do!
+// Merely change both the original assign for the D# argument in your void run() command to something you can rememeber...
+// Then name the assigns (or sub-assigns) for the high and low halves to something that makes sense for your script.
+// For example:
+//
+//item script SpecialItem{
+//	void run (int hearts_magic, int colour_duration, int power_speed, int FFCSlot_SpecialCounter, int LType_nouse, int SFX_Weapon_SFX_ERROR, int ItemNumber_SWSprite, int other1_other2) {
+//		int hearts = GetHighArgument(hearts_magic);
+//		int magic = GetLowArgument(hearts_magic);
+//		int colour = GetHighArgument(colour_duration);
+//		int duration = GetLowArgument(colour_duration);
+//		int power = GetHighArgument(power_speed);
+//		int speed = GetLowArgument(power_speed);
+//		int FFCSlot = GetHighArgument(FFCSlot_SpecialCounter);
+//		int itemCounter = GetLowArgument(FFCSlot_SpecialCounter);
+//		int LType = GetHighArgument(LType_nouse);
+//		int nouse = GetLowArgument(LType_nouse);
+//		int SFX_Weapon = GetHighArgument(SFX_Weapon_SFX_ERROR);
+//		int ERROR_SFX = GetLowArgument(SFX_Weapon_SFX_ERROR);
+//		int ItemNumber = GetHighArgument(ItemNumber_SWSprite);
+//		int SWSprite = GetLowArgument(ItemNumber_SWSprite);
+//		int Other1 = GetHighArgument(Other1_Other2);
+//		int Other2 = GetLowArgument(Other1_Other2);
+//		}
+//	}
+//
+
+int GetRemainderAsInt(int v)
+{
+    int r = (v - (v << 0)) * 10000;
+    return r;
+}
+
+// This function breaks up the value of an argument into individual digits. It is combined with the function GetDigit below.
+
+
+
+int GetDigit(int n, int place)
+{
+	place = Clamp(place, -4, 4);
+	if(place < 0)
+	{
+		n = GetRemainderAsInt(n);
+		place += 4;
+	}
+
+	int r = ((n / Pow(10, place)) % 10) << 0;
+	return r;
+}
+
+
+			
+// This function breaks up each digit of an argument value into a single, usable value. 
+// This means that you can use nine values from one argument...
+// As an example, if you have D0 set to 12345.6789, you can break up each digit of this argument value
+// and individually set the values for '1', '2', '3', '4', '5', '6', '7', '8', and '9' as values in an assign.
+// An example of using this is below.
+// To create the assigns, you must first set the D# value that you wish to use to an assign (e.g. 'switches')
+// and then set assigns for each of the GetDigit values.
+//
+//
+//item script GetDigitScript{
+//	void run(switches){
+// 		int switch0 = GetDigit(switches, 4);
+//		int switch1 = GetDigit(switches, 3);
+//		int switch2 = GetDigit(switches, 2);
+//		int switch3 = GetDigit(switches, 1);
+//		int switch4 = GetDigit(switches, 0);
+//		int switch5 = GetDigit(switches, -1);
+//		int switch6 = GetDigit(switches, -2);
+//		int switch7 = GetDigit(switches, -3);
+//		int switch8 = GetDigit(switches, -4);
+//
+// Switch:		Decimal Place:					Value Range:
+//    0			#xxxx.xxxx	(Ten-Thousands)		   0-to-2
+//    1			x#xxx.xxxx	(Thousands)			   0-to-9
+//    2			xx#xx.xxxx	(Hundreds)			   0-to-9
+//    3			xxx#x.xxxx	(Tens)				   0-to-9
+//    4			xxxx#.xxxx	(Ones)				   0-to-9
+//    5			xxxxx.#xxx	(Tenths)			   0-to-9
+//    6			xxxxx.x#xx	(Hundredths)		   0-to-9
+//    7			xxxxx.xx#x	(Thousandths)		   0-to-9
+//    8			xxxxx.xxx#	(Ten-Thousandths)	   0-to-9
+//
+// Using this, your D0 argument now has nine places, eight of which can have a value that you can place at 0 through 9, 
+// and one with a value of 0-2. using these as individual assigns switch0 through switch8, as if each was its own *individual argument*.
+//
+// Now, you can combine both of these special functions in one script, which allows you to use regular argument assigns
+// or split (high and low) assigns, or digit-based assigns as you require. You can make each D# argument in your
+// script use any of these types of assigns:
+//
+// The script that follows is a working example, and requires ffcscript.zh, stdExtra.zh and stdArguments.zh (this header).
+// Other headers are optional, but highly recommended. 
+//
+//import "std.zh"
+//import "ffcscript.zh"
+//import "string.zh"
+//import "stdExtra.zh"
+//import "stdArguments.zh"
+//import "stdFunctions.zh"
+//import "stdConstants.zh"
+//import "stdAnimation.zh"
+//
+//////////////////////
+///// Subweapon V /////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///// D0 (#.x)    : Number of Hearts to Use when Activating Subweapon.      ///
+///// D0 (x.0###) : MP to Use when Activating Subweapon.                    ///
+///// D1 (#.x)    : Colour of Screen Flash.                                 ///
+///// D1 (x.0###) : Duration of Screen Flash.                               ///
+///// D2 (#.x)    : Amount of Damage that Subweapon Deals to Enemies.       ///
+///// D2 (x.0###) : Speed that Subweapon Travels across screen; suggest 60. ///
+///// D3 (#.x)    : FFC Slot for FFC Effects.                               ///
+///// D3 (x.0###) : Other Item Counter Used by Subweapon (if any).          ///
+///// D4 (#.x)    : Type of lweapon to generate (see std_constsnts.zh).     ///
+///// D4 (x.0###) : Time before Link can use Subweapon Again.               ///
+///// D5 (#.x)    : Sound Effects for using this Subweapon.                 ///
+///// D5 (x.0###) : Error Sound Effects for this Subweapon.                 ///
+/////                     Select Sounds from Quest->Audio->SFX Data         ///
+///// D6 (#.x)    : Item number (in item editor) for this Subweapon.        ///
+///// D6 (x.0###) : Sprite used by Subweapon; select from:.                 ///
+/////                     Quest->Graphics->Sprites->WeaponsMisc.            ///
+///// D7 (#.x)    : SWITCHES                                                ///      
+///////////////////////////////////////////////////////////////////////////////
+//
+//item script SubweaponV{
+//	void run (int hearts_magic, int colour_duration, int power_speed, int FFC_Slot_SpecialCounter, int LType_nouse, int SFX_Weapon_SFX_ERROR, int ItemNumber_SWSprite, int switches) {
+//		int hearts = GetHighArgument(hearts_magic);
+//		int magic = GetLowArgument(hearts_magic);
+//		int colour = GetHighArgument(colour_duration);
+//		int duration = GetLowArgument(colour_duration);
+//		int power = GetHighArgument(power_speed);
+//		int speed = GetLowArgument(power_speed);
+//		int FFC_Slot = GetHighArgument(FFC_Slot_SpecialCounter);
+//		int itemCounter = GetLowArgument(FFC_Slot_SpecialCounter);
+//		int LType = GetHighArgument(LType_nouse);
+//		int nouse = GetLowArgument(LType_nouse);
+//		int SFX_Weapon = GetHighArgument(SFX_Weapon_SFX_ERROR);
+//		int ERROR_SFX = GetLowArgument(SFX_Weapon_SFX_ERROR);
+//		int ItemNumber = GetHighArgument(ItemNumber_SWSprite);
+//		int SWSprite = GetLowArgument(ItemNumber_SWSprite);
+//		
+//		//code for enabling SWITCHES 0-8
+//			
+//		int switch0 = GetDigit(switches, 4);
+//		int switch1 = GetDigit(switches, 3);
+//		int switch2 = GetDigit(switches, 2);
+//		int switch3 = GetDigit(switches, 1);
+//		int switch4 = GetDigit(switches, 0);
+//		int switch5 = GetDigit(switches, -1);
+//		int switch6 = GetDigit(switches, -2);
+//		int switch7 = GetDigit(switches, -3);
+//		int switch8 = GetDigit(switches, -4);
+//
+//		if (NumLWeaponsOf(LType) < Game->Counter[itemCounter]){
+//			if ((Game->Counter[CR_RUPEES] >= hearts) && (Game->Counter[CR_MAGIC] >= magic)){
+//				Game->Counter[CR_RUPEES] -= hearts;
+//				Game->Counter[CR_MAGIC] -= magic;
+//				//Game->Counter[itemCounter] -= itemCounterDecrease;
+//				Link->ItemJinx = nouse;
+//				lweapon subweapon;
+//				Link->Action = LA_ATTACKING;
+//				subweapon = NextToLink(LType, 8);                        //Create in front of Link
+//				subweapon->UseSprite(SWSprite);                            //Graphics
+//				if (switch0 == 0){
+//				//Do something.
+//				}
+//				else if (switch0 == 1){
+//				if ( Link->Dir == DIR_DOWN ){                            //Sprite selection/rotation
+//					subweapon->Tile++;
+//					subweapon->Flip = 0;
+//					}
+//				else if ( Link->Dir == DIR_LEFT ){
+//					subweapon->Flip = 1;
+//					}
+//				else if ( Link->Dir == DIR_RIGHT ){
+//					subweapon->Flip = 0;
+//					}
+//				else if ( Link->Dir == DIR_UP ){
+//					subweapon->Tile++;
+//					subweapon->Flip = 2;
+//					}
+//				}
+//				else if (switch0 == 2){
+//				//Do something.
+//				}
+//				subweapon->Damage = power;                                    //Damage
+//				subweapon->Step = speed;                                    //Speed
+//				int args[8] = {colour, duration};
+//				RunFFCScript(FFC_Slot, args);
+//				Game->PlaySound(SFX_Weapon);
+//		
+//				for ( int i = 0; i < 30; i++ ){ //For 30 frames
+//					subweapon->DeadState = WDS_ALIVE; //Keep it alive at all times
+//					Waitframe();
+//				}
+//				subweapon->DeadState = WDS_ALIVE;}  			
+//				else{
+//			//Using Switch 1, place x0xxx.xxxx ; place code here.
+//			if (switch1 == 8){
+//				return;
+//				}
+//			else if (switch1 == 1){
+//				//do this
+//				Game->PlaySound(2);
+//				}
+//			//Using Switch 2, place xx0xx.xxxx ; place code here.
+//			if (switch2 == 0){
+//				return;
+//				}
+//			else if (switch2 == 1){
+//				//do this
+//				Game->PlaySound(3);
+//				}
+//			//Using Switch 3, place xxx0x.xxxx ; place code here.
+//			if (switch4 == 0){
+//				return;
+//				}
+//			else if (switch3 == 1){
+//				//do this
+//				Game->PlaySound(4);
+//				}
+//			//Using Switch 4, place xxxx0.xxxx ; place code here.
+//			if (switch4 == 0){
+//				return;
+//				}
+//			else if (switch4 == 1){
+//				//do this
+//				Game->PlaySound(5);
+//				}
+//			//Using Switch 5, place xxxxx.0xxx ; place code here.
+//			if (switch5 == 0){
+//				return;
+//				}
+//			else if (switch5 == 1){
+//				//do this
+//				Game->PlaySound(6);
+//				}
+//			//Using Switch 6, place xxxxx.x0xx ; place code here.
+//			if (switch6 == 0){
+//				return;
+//				Game->PlaySound(7);
+//				}
+//			else if (switch6 == 1){
+//				//do this
+//				}
+//			//Using Switch 7, place xxxxx.xx0x ; place code here.
+//			if (switch7 == 0){
+//				return;
+//				}
+//			else if (switch7 == 1){
+//				//do this
+//				Game->PlaySound(8);
+//				}
+//				//Using Switch 8, place xxxxx.xxx0 ; place code here.
+//			if (switch0 == 8){
+//				return;
+//				}
+//			else if (switch8 == 1){
+//				//do this
+//				Game->PlaySound(ERROR_SFX);
+//				}
+//			}
+//			}
+//			
+//			
+//		}
+//
+//
+// As you can see, you can use these 'switches' to set up item (or other) code that you can enable or disable.
+// You can also set up switches to depend on other switches, as in this snippet example:
+// (You may consider these as 'conditional switches'.) 
+//
+//Switch 8 sets season.
+//Switch 7 sets Weather base.
+//
+//if (Switch8 == 0){ //Springtime
+// if (Switch7 == 0){
+//  //Clear Sunshine
+//  }
+// else if (Switch7 == 1){
+//  //Windy
+//  }
+// else if (Switch7 == 2){
+//  //Light Rain
+//  }
+// else if (Switch7 == 3){
+//  //Heavy Rain
+// }
+// }
+//
+//else if (Switch8 == 1){ //Summertime
+// if (Switch7 == 0){
+//  //Bright Sunshine
+//  }
+// else if (Switch7 == 1){
+//  //Heat & Wind
+//  // Grasses Dry Up
+//  }
+// else if (Switch7 == 2){
+//  //Overcast
+// }
+// else if (Switch7 == 3){
+//  //Light Rain
+//  }
+// }
+// 
+//else if (Switch8 == 2){ //Autumn
+// if (Switch7 == 0){
+//  //Normal Sunshine
+//  //Leaves Turn Orange
+//  }
+// else if (Switch7 == 1){
+//  //Overcast
+//  }
+// else if (Switch7 == 2){
+//  //Light Rain
+// }
+// else if (Switch7 == 3){
+//  //Light Snow
+//  }
+// }
+//
+//else if (Switch8 == 3){ //Winter
+// if (Switch7 == 0){
+//  //Light Sunshine
+//  //Trees Lose Leaves
+//  }
+// else if (Switch7 == 1){
+//  //Snow on Ground
+//  }
+// else if (Switch7 == 2){
+//  //Light Snowfall
+//  }
+// else if (Switch7 == 3){
+//  //Heavy Snowfalll
+//  }
+// }

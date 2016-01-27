@@ -1,0 +1,31 @@
+//Weapon Modifier Combos
+
+
+//Spell Magnification Lens
+
+const int SPELL_LENS_CONVEX = 0;
+const int SPELL_LENS_CONCAVE = 1;
+
+void SpellLensCombo(int type, int loc, lweapon l){
+	bool magnify;
+	bool reduce;
+	if ( type == SPELL_LENS_CONVEX ) magnify = true;
+	else reduce = true;
+	if ( ComboCollison(loc,l) {
+		if ( magnify ) l->Damage = l->Damage * 2;
+		if ( reduce ) l->Damage = l->Damage * 0.5;
+	}
+}
+	
+
+void SpellLensCombo(int type, int loc, eweapon e){
+	bool magnify;
+	bool reduce;
+	if ( type == SPELL_LENS_CONVEX ) magnify = true;
+	else reduce = true;
+	if ( ComboCollison(loc,e) {
+		if ( magnify ) e->Damage = e->Damage * 2;
+		if ( reduce ) e->Damage = e->Damage * 0.5;
+	}
+}
+

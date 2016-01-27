@@ -1,0 +1,23 @@
+//Screen Changed THings...
+
+int LastScreen;
+int LastDMap;
+int ScreenChanged;
+int DMapChanged;
+int ScreenAndDMapChanged;
+
+void UpdateScreen(){
+	if ( LastScreen != Game->GetCurScreen() || LastDMap != Game->GetCurDMap(){
+		ScreenChanged = 1;
+		LastScreen = Game->GetCurScreen();
+		LastDMap = Game->GetCurDMap();
+	}
+}
+
+void ScreenChangedCleanupRoutines(){
+	if ( ScreenChanged ) {
+		//Run all functions that should happen when the screen changes, here.
+		ScreenChanged = 0;
+	}
+}
+		

@@ -1,0 +1,40 @@
+//Global Script Active Functions- Before Waitdraw
+
+PlantCleaveD(int comboArray, int ltype, int cutSound)//What array to reference, what lweapon to look for, what sound to make. Looks for combo ID.
+
+PlantCleaveT(int comboArray, int ltype, int cutSound)//Same as above, but looks for combo Type.
+
+PlantCleaveF(int comboArray, int ltype, int cutSound)//Same as above, but looks for placed combo Flag.
+
+PlantCleaveI(int comboArray, int ltype, int cutSound)//Same as above, but looks for inherent combo Flag.
+
+ELevelup()//Changes values stored in NPC Misc so enemies are leveled up.
+
+Eapply()//Applies those changes to each individual enemy onscreen.
+
+SetRingPower()//Set power of equiped armor rings.
+
+Xtals()//Handles switching things.
+
+//Drags keys back to Link, if touched by a boomerang, or hookshot. 
+BrangKey()//Can add arguments for instant acquisition of item
+		  //Or only items from a list.
+		  //Or both.
+		  //Or instant acquisition of item and whether to hold it up.
+		  //Or only items from a list. With the above two arguments.
+		  
+//Function to shift items based on a timer.
+
+conjureItem() 
+
+//Cause enemies to have a death animation explosion with custom sprites.
+//Run before Waitdraw() in the infinite ( while(true) ) loop of your global active script. 
+//You need only call this one function to run the entirety of this code.
+EnemiesExplodeOnDeath()
+	
+doBrang()//Handles custom boomerang
+
+UpdateLWeapons()//Updates Lweapons
+				//Also, update a particular Lweapon.
+				
+UpdateLastItem()//Updates variable relating to last item used.

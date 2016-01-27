@@ -1,0 +1,224 @@
+//import "std.zh"
+
+///////////////////////////////////////
+/// ItemHandling.zh                 ///
+/// v6.2, originally by grayswandir ///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// This is a global function set for handling item interaction.                                            ///
+/// The original authors of this function set are grayswandir, who provided it to me, for use in TGC,       ///
+/// and SUCCESSOR, who contributed item use functions. I use it for so many components, that in sharing     ///
+/// other scripts, I may as well make it a header, to provide the functionality needed for many FFC scripts ///
+/// that I make available to others, operable without duplicating these functions in every instance.        ///
+/// I may expand on it at some future point.                                                                ///
+///                                                                                                         ///
+/// Note: The pick-up is instantaneous, and does not need to wait for Link to touch the item.               ///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////
+/// Global Constants ///
+////////////////////////
+ 
+const int MISC_LWEAPON_ITEM = 0; // The id of the item used to create an lweapon.
+ 
+////////////////////////
+/// Global Variables ///
+////////////////////////
+ 
+int LastItemUsed = 0; // The item id of the last item Link has used.
+bool itemActivate = false;
+ 
+////////////////////////
+/// Global Functions ///
+////////////////////////
+ 
+void UpdateLWeapons() {     //// Updates every LWeapon on screen. Call in the active script.
+    for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+        UpdateLWeapon(Screen->LoadLWeapon(i));
+    }
+}
+ 
+
+void UpdateLWeapon(lweapon lw) {    //// Update a given LWeapon.
+// If the weapon does not have it's source item marked, mark it as being created by the last item that Link has used.
+    if (lw->Misc[MISC_LWEAPON_ITEM] == 0) {
+        lw->Misc[MISC_LWEAPON_ITEM] = LastItemUsed;
+    }
+}
+ 
+/////////////////////////////////////////////////////////////////////////
+/// Updates the LastItemUsed variable to our best guess at what was   ///
+/// most recently used. This should be called at the end of the loop, ///
+/// right before Waitdraw or Waitframe, because the item marked in    ///
+/// LastItemUsed isn't actually used until after the Waitdraw or      ///
+/// Waitframe.                                                        ///
+/////////////////////////////////////////////////////////////////////////
+
+
+void UpdateLastItem() {
+
+  // Since we don't know which button has priority if both are pressed
+  // at once, cancel the B button press if A has also been pressed
+  // this frame.
+  
+    if (Link->PressA && Link->PressB) {
+        Link->PressB = false;
+    }
+
+    // If Link is currently in an action where he obviously can't use items, then ignore his button presses.
+    if (Link->Action != LA_NONE &&      
+        Link->Action != LA_WALKING) {
+            return;
+    }
+
+    // Check which button is being pressed, if any. Also check for the appopriate Jinx.
+
+    if (Link->PressA && Link->SwordJinx == 0) {
+        LastItemUsed = GetEquipmentA();
+    }
+    else if (Link->PressB && Link->ItemJinx == 0) {
+        LastItemUsed = GetEquipmentB();
+        }
+}
+ 
+
+
+bool IsFromItem(lweapon lw, int itemNumber) {   //// Return true if the given lweapon is from the given item.
+    return lw->Misc[MISC_LWEAPON_ITEM] == itemNumber;
+}
+ 
+
+
+bool IsFromItemClass(lweapon lw, int itemClass) {   //// Return true if the given lweapon is from the given item class.
+    itemdata data = Game->LoadItemData(lw->Misc[MISC_LWEAPON_ITEM]);
+    return data->Family == itemClass;
+}
+
+//Changes B to specified item
+void SetItemB(int it){
+	//save current item to mark where we started
+	int storeB = GetEquipmentB();
+	
+	//move to next item before checking conditions
+	do Link->SelectBWeapon(DIR_RIGHT);
+	
+	//if Item B is the right item or the item we started at stop
+	while(GetEquipmentB() != it && storeB != GetEquipmentB())
+
+//added check to confirm 
+  //      return GetEquipmentB() == it;
+}
+
+void UseItemOnB(int input){
+    int EquipB = GetEquipmentB();
+    SetItemB(input);
+    Link->InputB = true;
+    Waitframe();
+    SetItemB(EquipB);
+	itemActivate = false;
+}
+
+bool SetCheckItemB(int it){
+	SetItemB(it);
+	return GetEquipmentB() == it;
+}
+
+
+//Change A to specified item
+void SetItemA(int it){
+	//save current item to mark where we started
+	int storeA = GetEquipmentA();
+	
+	//move to next item before checking conditions
+	do Link->SelectAWeapon(DIR_RIGHT);
+	
+	//stop if Item A is the right item or the item we started at
+	while(GetEquipmentA() != it && storeA != GetEquipmentA())
+
+	//added check to confirm 
+ //       return GetEquipmentA() == it;
+}
+
+void UseItemOnA(int input){
+    int EquipA = GetEquipmentA();
+    SetItemA(input);
+    Link->InputA = true;
+    Waitframe();
+    SetItemA(EquipA);
+}
+
+bool SetCheckItemA(int it){
+	SetItemA(it);
+	return GetEquipmentA() == it;
+}
+
+ffc script useRItem{
+	void run(int input){
+		//store B
+		int EquipB = GetEquipmentB();
+		
+		//set B to "R" item
+		SetItemB(input);
+		
+		//tell game that B was pressed
+		Link->InputB = true;
+		
+		//wait a frame so game triggers B 
+		Waitframe();
+		
+		//reset B
+		SetItemB(EquipB);
+	}
+}
+	
+
+
+ffc script NoDrops {
+    void run() {
+        npc en;
+        while(true) {
+            for(int i=1; i<=Screen->NumNPCs(); i++)
+            {
+                en=Screen->LoadNPC(i);
+                if(en->ItemSet!=IS_NONE)
+                    en->ItemSet=IS_NONE;
+            }
+
+            Waitframe();
+        }
+    }
+}
+
+ffc script removeDrops{
+    void run(){
+        while(true){
+            for(int i = 1; i <= Screen->NumItems(); i++){
+                item drop = Screen->LoadItem(i);
+                if(drop->Pickup & IP_TIMEOUT){
+                    Remove(drop);
+                }
+            }
+            Waitframe();
+        }
+    }
+}
+
+//////////////////////////////
+/// CREDITS (ALPHABETICAL) ///
+//////////////////////////////
+
+///////////////////////////
+/// Programming Credits ///
+///////////////////////////////////////////////////////////////////////
+/// Aevin                                                           ///
+/// Alucard                                                         ///
+/// blackbishop89                                                   ///
+/// Gleeok (Assorted functions, that led to this.)                  ///
+/// grayswandir (Original creatorof most funtions herein.)          ///        
+/// jsm116 (FFCs and FFC functions.)                                ///
+/// MasterManiac                                                    ///
+/// MoscowModder (Too much to list; possible also UseRItem)         ///
+/// Saffith (Tango, Ghost, FFCs, etc.)                              ///
+/// SUCCESSOR (Set/Use Item Funtions)                               ///
+/// Zecora (Forum discussions, and assistance.)                     ///
+/// ZoriaRPG (Repackaging, testing, and /Library Maintainer.)       ///
+///////////////////////////////////////////////////////////////////////

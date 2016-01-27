@@ -1,0 +1,18 @@
+item script rollDiceIISword {
+    void run (int dice, int dieType) {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        itemdamage = ( rollDiceII(dice,dieType) );
+        //int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage + levelDamage;
+        //itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+    }
+}
+
+

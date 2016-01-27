@@ -1,0 +1,147 @@
+int BOSS_GHOST_ID = 1; //Set ID of enemy to spawn as a last resort for a defeated boss.
+int minionX;
+int minionY;
+int minionID;
+
+int firstWave = 32;
+int secondWave = 16;
+int thirdWave = 8;
+
+
+
+
+
+do  {
+        minionX = Boss->X;
+        minionY = Boss->Y;
+        minionID = 38;
+        if ( Boss->HP > firstWave ) { //Initial pattern.
+            minionID = 38;
+        }
+        else if ( Boss->HP <= firstWave && > secondWave ) { //After wounded.
+            minionID = 39;
+        }
+        else if ( Boss->HP <= secondWave && > thirdWave ) { //After 50% damaged.
+            minionID = 40;
+        }
+        else if ( Boss->HP <= thirdWave && Boss->HP > 0 ) { //After  75% damaged.
+            minionID = 41;
+        }
+        else if ( Boss->HP <= 0 ) { //When dead.
+            bossGhost = Screen->CreateNPC(BOSS_GHOST_ID);
+            Minion1->X = minionX;
+            Minion1->Y = minionY;
+            isAlive = false;
+        }
+        randValue = Rand(300,600);
+        
+        for (int i = randValue; i > 0; i--) {
+            Waitframe;
+        }
+        
+        MonsterCount = Screen->NumNPCs();
+        minionX = Boss->X;
+        minionX = Boss->Y;
+        minionDist = Rand(5,12);
+                
+        Minion1 = Screen->CreateNPC(minionID);
+            Minion1->X = ( minionX - minionDist );
+            Minion1->Y = minionY;
+        Minion2 = Screen->CreateNPC(minionID);
+            Minion2->X = minionX;
+            Minion1->Y = ( minionY - minionDist );
+        Minion3 = Screen->CreateNPC(minionID);
+            Minion1->X = ( minionX + minionDist );
+            Minion1->Y = minionY;
+    
+    }
+    while(isAlive);
+    
+    //////
+    
+    
+    int bossHP;
+int xp = 20;
+
+while(true){
+    bossHP = Boss->HP;
+    
+    //normal attacks and movement.
+    
+    if ( Boss->HP == bossHP ) {
+    
+        if ( bossHP <= 0 ) {
+            break; //if boss is dead, exit while true loop.
+        }
+        
+        continue; //if boss isn;t damaged, return to its normal attacks and movement.
+    }
+    
+    
+    //special attacks.
+    Waitframe();
+}
+
+Game->PlaySound(victorySFX);
+return; 
+
+
+////////
+
+bool bossWounded = false;
+
+while(true){
+    if (Boss->HP < 64) {
+        bossWounded = true;
+    }
+
+    do {
+        
+        //basic boss movement
+        //minimal boss attacks
+    }
+    while(!bossWounded);
+    
+    do {
+    
+        //special attacks
+        //spawns
+        //special movement
+    }
+    while(bossWounded);
+    
+    if (isAlive){
+        continue;
+    }
+    else{
+        break
+    }
+    Waitframe();
+}
+//////////////
+
+int bossHP;
+int xp = 20;
+
+while(true){
+    bossHP = Boss->HP;
+    
+    //normal attacks and movement.
+    
+    if ( bossHP <= 0 ) {
+            break; //if boss is dead, exit while true loop.
+    }
+    
+    if ( Boss->HP == bossHP ) {
+    
+        continue; //if boss isn;t damaged, return to its normal attacks and movement.
+    }
+    
+    
+    //special attacks.
+    Waitframe();
+}
+
+Game->PlaySound(victorySFX);
+return; 
+return; 

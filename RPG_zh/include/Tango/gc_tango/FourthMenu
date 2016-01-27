@@ -1,0 +1,87 @@
+bool burnSpellOptions()
+{
+    int line1[]="@choice(1)Line@26";
+    int line2[]="@choice(2)Area@26";
+
+    int lineBreak[]="@26";
+    int menuEnd[]="@domenu(1)@suspend()";
+
+
+    
+    
+    SetUpWindow(WINDOW_SLOT_4, WINDOW_STYLE_2, 32, 32, SIZE_LARGE);
+    
+    Tango_LoadString(WINDOW_SLOT_4, line1);
+    Tango_AppendString(WINDOW_SLOT_4, line2);
+
+    Tango_AppendString(WINDOW_SLOT_4, menuEnd);
+    Tango_ActivateSlot(WINDOW_SLOT_4);
+    
+    
+    while(!Tango_MenuIsActive()){
+        
+        Waitframe();
+    }
+    
+    // Save the state again...
+    int slotState[274];
+    int menuState[60];
+    int cursorPos;
+    Tango_SaveSlotState(WINDOW_SLOT_4, slotState);
+    Tango_SaveMenuState(menuState);
+    
+    int done=0;
+    int choice;
+    while(true)
+    {
+        while(Tango_MenuIsActive())
+        {
+            
+
+                
+            cursorPos=Tango_GetMenuCursorPosition();
+            
+            Waitframe();
+        }
+        
+        choice=Tango_GetLastMenuChoice();
+        if(choice==0) // Canceled
+            done=2;
+        else if(choice == 1) 
+        {
+            int text[]="...in a Line.";
+            Tango_ClearSlot(3);
+            ShowString(text, WINDOW_SLOT_5, WINDOW_STYLE_2, 48, 48);
+
+                
+        }
+        
+        else if(choice == 2) 
+        {
+            int text[]="...in an area clicked.";
+            ShowString(text, WINDOW_SLOT_5, WINDOW_STYLE_2, 48, 48);
+
+              
+        }
+
+        
+        
+        if(done>0){
+            
+            break;
+        }
+        else
+        {
+            Tango_RestoreSlotState(WINDOW_SLOT_4, slotState);
+            Tango_RestoreMenuState(menuState);
+            Tango_SetMenuCursorPosition(cursorPos);
+        }
+    }
+    
+    Tango_ClearSlot(WINDOW_SLOT_4);
+    
+    if(done==1)
+        return true; // Tell parent menu to close
+    else
+        return false; // Tell parent not to close
+}

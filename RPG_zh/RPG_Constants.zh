@@ -1,0 +1,5 @@
+//Constants
+
+/// Constants for GameEvents[] and GameDynamics[]
+
+const int NOMENU = 1100;

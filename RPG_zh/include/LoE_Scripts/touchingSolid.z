@@ -1,0 +1,15 @@
+const int SOLIDITY_CHECK_DISTANCE = 7;
+
+bool touchingSolid (int x, int y) {
+    if ( Screen->isSolid(x) || 
+    Screen->isSolid(x + SOLIDITY_CHECK_DISTANCE) || 
+    Screen->isSolid(x - SOLIDITY_CHECK_DISTANCE) || 
+    Screen->isSolid(y) || 
+    Screen->isSolid(y + SOLIDITY_CHECK_DISTANCE) || 
+    Screen->isSolid(y - SOLIDITY_CHECK_DISTANCE) ) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}

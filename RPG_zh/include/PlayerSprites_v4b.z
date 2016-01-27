@@ -1,0 +1,101 @@
+import "std.zh"
+int PlayerSprites[100] = {88};
+
+const int OLD_LINK_TILE = 1;
+const int ZQ_LAST_TILE = 65519;
+const int ZQ_BLANK_TILE = 65518;
+
+const int TILES_BACKUP = 62560;
+const int TILES_BLANK = 65000;
+
+const int BASE_TILE = 35620;
+const int TILE_LENGTH = 260; //EACH TILE PAGE CONTAINS 259 TILES.
+
+bool IsInvisible;
+bool TilesCopiedInvis;
+bool TilesCopiedVis;
+
+int LastLinkX;
+int LastLinkY;
+bool LinkMoved;
+int PlayerFrameDelay;
+int PlayerFrame;
+
+global script active{
+	void run(){
+		//Link->Invisible = true;
+		int SpriteLink[1]={88};
+		int LinkTile;
+	
+		while ( true ) {
+			//Trace(Link->Tile);
+			
+			if ( Link->X == LastLinkX && Link->Y == LastLinkY ) LinkMoved = false;
+			if ( Link->X != LastLinkX || Link->Y != LastLinkY ) {
+				LastLinkY = Link->Y;
+				LastLinkX = Link->X;
+				LinkMoved = true;
+			}
+			PlayerFrameDelay++;
+			if ( PlayerFrameDelay >= 10 ) {
+				PlayerFrameDelay = 0;
+				PlayerFrame++;
+			}
+			if ( PlayerFrame == 6 ) PlayerFrame = 0;
+			
+			LinkTile = Link->Tile;
+			if ( IsInvisible && !TilesCopiedInvis ) {
+				TilesCopiedVis = false;
+				for ( int q = 0; q < TILE_LENGTH; q++ ) {
+					CopyTile(BASE_TILE+q, TILES_BACKUP+q);
+					CopyTile(TILES_BLANK+q, BASE_TILE+q);
+				}
+				TilesCopiedInvis = true;
+			}
+			//if ( !IsInvisible && TilesCopiedVis ) {
+			//	TilesCopiedInvis = false;
+			//	for ( int q = 0; q < TILE_LENGTH; q++ ) {
+			//		CopyTile(TILES_BACKUP+q, BASE_TILE+q); 
+			//	}
+			//	for ( int q = 0; q < TILE_LENGTH; q++ ) {
+			//		CopyTile(TILES_BLANK+q, TILES_BACKUP+q);
+			//	}
+			//	TilesCopiedVis = true;
+			//}
+			
+			//if ( Link->Tile != ZQ_BLANK_TILE ) {
+			//	CopyTile(LinkTile,ZQ_LAST_TILE);
+			//	CopyTile(ZQ_BLANK_TILE,LinkTile);
+			//}
+			eweapon PlayerSprite = Screen->CreateEWeapon(EW_SCRIPT10);
+			PlayerSprite->X = Link->X;
+			PlayerSprite->Y = Link->Y;
+			PlayerSprite->CollDetection = false;
+			PlayerSprite->Dir = Link->Dir;
+			PlayerSprite->Flip = Link->Flip;
+			PlayerSprite->Frame = PlayerFrame;
+			
+			PlayerSprite->UseSprite(PlayerSprites[0]);
+			Waitdraw();
+			//if ( LinkMoved) 
+			PlayerSprite->DeadState = WDS_DEAD;
+			//PlayerSprite(PlayerSprite,SpriteLink);
+			Waitframe();
+		}
+	}
+	void PlayerSprite(int SpriteLink, int sprite){
+		SpriteLink[0] = sprite;
+	}
+	
+}
+
+item script PlayerSprites{ 
+	void run(int SpriteLink){
+		//PlayerSprites[0]=Rand(1,50);
+		if ( !IsInvisible ) {
+			IsInvisible = true;
+		}
+		//else IsInvisible = true;
+		
+	}
+}

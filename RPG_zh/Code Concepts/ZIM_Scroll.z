@@ -1,0 +1,3207 @@
+import "std.zh"
+int N[100];//1-999 of Calculator number.
+int N1[100];int ET[100];
+//Various Boolians to determine Proximity of objects and players
+int click;int oiT;int kiN;int kiK;
+int V[100];
+int EqA;int EqB;
+int MegaFighTr[25];
+int CLOUD[25];
+int M[100];int MU[100];int Tr[100];
+int XY[100];int ARROWEWI[100];int ROCKEWI[100];
+int MOBNUM;int kiM;int zmN;int zmK;int zmM;int zmB;int zmT;int zbN;int zbK;int zbM;
+int GT[]="GT.mp3";int dz1A[]="dz1A.mp3";
+int deathofcivilization;
+int Z[100];
+bool Cal;// boolian Cal is true when the mouseX and mouseY are over a numeral.
+int LinkX;int LinkY;//Link's place of where he is.
+int WarpM;int WarpS;//Saved on hackscreen for Warping purposes.
+int Spawn;int SpawnX;int SpawnY;//Enemy ID to spawn, and storage for X and Y for Spawn location.
+int Store1;int Store2;int Store3;int Store4;int Store5;int Store6;int Store7;int Store8;int Store9;
+//FFC SCRIPTS
+
+
+int SCR1a[]="The turkey";int SCR1b[]="Mom";int SCR1c[]="Dad";int SCR1d[]="The dog";int SCR1e[]="My teacher";int SCR1f[]="The elephant";int SCR1g[]="The cat";			
+int SCR2a[]="sat on";int SCR2b[]="ate";int SCR2c[]="danced with";int SCR2d[]="saw";int SCR2e[]="doesn't like";int SCR2f[]="kissed";
+int SCR3a[]="a funny";int SCR3b[]="a scary";int SCR3c[]="a goofy";int SCR3d[]="a slimey";int SCR3e[]="a barking";int SCR3f[]="a fat";
+int SCR4a[]="goat";int SCR4b[]="monkey";int SCR4c[]="fish";int SCR4d[]="cow";int SCR4e[]="frog";int SCR4f[]="bug";int SCR4g[]="worm";
+int SCR5a[]="on the moon.";int SCR5b[]="on the chair.";int SCR5c[]="in my spaghetti.";int SCR5d[]="in my soup.";int SCR5e[]="on the grass.";int SCR5f[]="in my shoes.";
+			
+
+int HaveBoard; int UseBoard; int Stolen;
+//INT Z[100]; INTEGERS FOR FUNCTIONS
+//0==MAP X AXIS COORDINATE
+//1==MAP Y AXIS COORDINATE
+//2==MAP X AXIS COORDINATE LAST FRAME
+//3==MAP Y AXIS COORDINATE LAST FRAME
+//4==LINK MOVEMENT SPEED IN PIXELS PER FRAME
+//5==MINIMUM X FOR CURRENT BLOCK OF SCREENS
+//6==MAXIMUM X FOR CURRENT BLOCK OF SCREENS
+//7==MINIMUM Y FOR CURRENT BLOCK OF SCREENS
+//8==MAXIMUM Y FOR CURRENT BLOCK OF SCREENS
+//9==0 IF UP PRESSED LAST, 1 IF DOWN PRESSED LAST
+//10==2 IF LEFT PRESSED LAST, 3 IF RIGHT
+//11==B BUTTON EQUIPMENT ITEM ID/IS EQUIPPED
+//12==A BUTTON EQUIPMENT ITEM ID//IS EQUIPPED
+//13==AMOUNT OF SCREENS TO THE EAST OF TOP-LEFT SCREEN ON THE CURRENT MAP
+//14==AMOUNT OF SCREENS TO THE SOUTH OF THE TOP-LEFT SCREEN ON THE CURRENT MAP
+//15==IS PRESSING UP AND COLLISION W/SOLID
+//16==IS PRESSING DOWN AND COLLISION W/SOLID
+//17==IS PRESSING LEFT AND COLLISION W/SOLID
+//18==IS PRESSING RIGHT AND COLLISION W/SOLID
+//19==B BUTTON CURRENT EQUIPMENT ITEM
+//20==A BUTTON CURRENT EQUIPMENT ITEM
+//21==X LOCATION OF L & R BUTTON SELECTOR BOXES
+//22==Y LOCATION OF L & R BUTTON SELECTOR BOXES
+//23==L BUTTON MENU IS ACTIVE IF == 1
+//24==R BUTTON MENU IS ACTIVE IF == 1
+//25==MAXIMUM NUMBER OF NPCS THAT WILL AGRESS TOWARDS LINK WHEN THERE'S MORE THAN 1.
+//26==WALL KICK DIR LAST 1 OR 2
+//27==SUPERBOMBS BLOW UP EVERYTHING IF == 1.
+//28==LINK WALL KICK STAT/AMOUNT IN JUMP HE CAN WALL KICK.
+//29==Y AXIS SCROLLING SPEED.
+//30==X COORDINATE OF NEAREST KEY LOCATION
+//31==Y COORDINATE OF NEAREST KEY LOCATION
+//32==ANGLE TO NEAREST KEY LOCATION FROM LINK'S POSITION
+//33==MAGIC COMPASS COOLDOWN/SHOWTIME
+//34==RADIUS OF SWORD'S CIRCLE OF AWAKENING ENEMIES.
+//35==TIME IN FRAMES SWORD LIGHT EFFECTS SCREEN.
+//36==SWORD LIGHT COLOR - IMPORTANT FOR OTHER REASONS ALSO.
+//37==MAGIC COMPASS SUBJECT INDICATOR TILE
+//38==0 FOR LINK CAN NOT MOVE WHILE ATTACKING, 1 FOR CAN MOVE WHILE ATTACKING.
+//50==LINK EXP. POINTS COUNTER
+//51==IS SIDEVIEW SCROLLING 1=SCROLLING SIDEVIEW 0=OVERHEAD SCROLLING 2==NONE
+//97==0 FOR NO DISABLE ACTION EXPRESSIONS, 1 FOR DISABLE ACTION EXPRESSIONS. DOES NOT DISABLE EXPRESSION DRAWING, FOR CUTSCENE/MESSAGING PURPOSES.
+//98==LINK'S FACE EXPRESSION.0 SERIOUS,1 INNOCENT,2 HAPPY,3 SHOCKED,4 CONCERN,5 ATTENTIVE,6 WHATEV,7 ANGERED
+//99==LINK'S MOUTH MOVEMENTS.0 STRAIGHT LINE,1 SMALL DOT,2 OPEN,3 FROWN,4 OPEN WIDER,5 TEETH,6 GRIN,7 DUR,8 MEGADURRR
+//CHANGING 98 AND 99 WILL CHANGE LINK'S FACIAL EXPRESSION ACCORDINGLY.
+////////MUST CLEAN THIS UP/////
+const int LUNGE_DIST=8;//Distance Link will Lunge for a bite.
+const int LUNGE_SPEED=8;//speed of Lunges, DON'T SET TO NEGATIVE!
+const int LUNGE_DAMAGE=8;
+//Maybe even spinning and animated.
+int MISSLE_SPEED=1;//multiplier for missile speed.
+////////CONSTANT INTEGERS EXCLUSIVE TO GLOBAL FUNCTIONS END///////////
+////////INTEGERS EXCLUSIVE TO GLOBAL FUNCTIONS///////////
+	
+int time;//frame tic because there's no MousePressB
+int x0;int y0;//x and y coordinates of their number's Cell Button number.
+
+
+int LUNGELVL;int SWORD;
+int MarioJump;
+int UseBite;int rebound;int tick;
+int ruff;int UseLunge;int linkx;int linky;int triA;int triB;int tri;int WOLFMOD;int MARIOMOD;
+int Slope;int dztic;int LINKX; int LINKY;int npcX; int npcY;int HPLAST;int MPLAST;int npz;int eNumber;
+bool WOLFLINK;bool Mario;bool Simon;int GAME;int GAME1;int whee;int dzA;
+int dzDMaP;int attail;int tiki;int set;
+//Integers for Experience Card
+int C2X;int C2Y;int eo;int ME;int EXPMOD;
+//Integers for Subdued Counter Card
+int CX;int CY; 
+//Integers for  TitleScreen
+int T; 
+//For Attempted Damage Amount. (Player to Enemy)
+int HPTIC;int EHP;int eX;int eY;int EH;
+//For Submissions Counter Card
+int K;int ee;
+//For Sword Selection Card
+int C3X;int C3Y;int S;int SM;
+//For determining that the Player is on the same Dmap and Screen as last time or not
+int SCN;int xSCN;int DMAP;int xDMAP;
+//For FileCard Switching
+int cx;int cy;int C;int CO;
+//For the Skateboard Relocation Program
+int mapstore;int screenstore;int bail;int combstore;int ystore;int xstore;
+//For Enemy ShowHP display/Other targeting systems or reference to enemy.
+int dz;
+//Ganon's ints
+int trigger;
+//For Attempted Damage Amount.  (Enemy to Player)
+int HP;int TIC;
+//For Skateboard Velocity Button
+int SK;
+//Item Number for storage, and respective coordinates.
+int IN;int iX;int iY;
+//Number for stats screen display changer buttons
+int biT; 
+//For LockBom System
+int B;//speed and graphic upgrade.
+int R;//number of rounds/lockons able to fire at once.
+int UseBoo;//item switch on number 1==active, 2==inactive.
+int triga;//is armed==1			not yet armed==2 Currently set to B button
+int trigb;//launched missile 1==1	not launched == 0
+int trigc;//launched missile 2==1	not launched == 0
+int trigd;//launched missile 3==1	not launched == 0
+int dznpcA;int dznpcB;int dznpcC;//targets 1, 2, and 3, respectively.
+int dr;//tentative target for target selection purposes.
+int trigA;int trigB;int trigC;//locked on to 1, 2, or 3 targets
+int tic;//used to delay InputA by n tics, currntly disabled.
+int LS;//Leader seeking for missiles. 0==off 1==on.
+float MV;//Missle Velocity upon launch, Missle Type(s) 0.
+float MS;//Missle "Spread" for 2 or 3 missle at once time.
+int VM;//Velocity Modifier for Missle Type 0 as per Link->Dir on launch.
+int MD;//Maximum Missle Speed by velocity, also the multiplier for accelleration for Type 0.
+int MD1;//Missle Speed for Type 1. Type 1 missles have direct homing, wheras the Type 0
+//have a velocity modification that accellerates towards the target, but exhibits more of an 
+//inertia quality movement.  It must compensate forward velocity before it can turn around.
+//WHEEEE LockBom System done.
+int twip;
+//Integers for things the mouse might do. mX and mY are where the mouse is. mA is if clicking or not.
+int mX;int mY;int mA;
+//Morph2() function integers
+int aseXmob;int aseYmob;int orsXmob;int orsYmob;int ekYmob;int ekXmob; 
+int attai;int iki;int et;int or;int xx;int xy;int eggy;int d4;
+//Morph()1 function integers
+int toke;int mor;int baseXmob;int baseYmob;int torsXmob;int torsYmob;int nekYmob;int nekXmob;
+int leggy;int ScorpionHP=200;int ON;int MTYPE;
+//On-Screen Draw Function
+int Triangle;
+int BP;//Blade Power
+int LX;int LY;//Link->X and Link->Y coordinates.
+int NPCLAST;
+int LHP;int LMP;int ZHP;int ZMP;int GHP;int GMP;
+int event;int inside;int TimeSig;int zam;int EVENT;
+int diB;int Ni;int oiK;int oiB;int oiM;int biB;//Sloppily made replica integers.
+int Rain1;int Rain2;
+int Snow1;int Snow2;
+int INSIDE;
+int DG[]="DG";
+/////WHEEEE///
+int HPUP;
+
+
+global script Z
+{
+void run()
+	{
+
+
+	//ALSO NEEDS CLEANING UP!!
+npc NPC1;npc NPC2;npc NPC3;npc NPC4;npc NPC5;
+npc NPC6;npc NPC7;npc NPC8;npc NPC9;npc NPC10;
+ffc FFC1;ffc FFC2;ffc FFC3;ffc FFC4;ffc FFC5;
+ffc FFC6;ffc FFC7;ffc FFC8;ffc FFC9;ffc FFC10;
+V[3]=0;V[4]=8;V[20]=0;V[21]=0;
+V[99]=-1;
+V[0]=0;V[99]=-1;SM=-1;S=-1;
+ARROWEWI[22]=0;ARROWEWI[20]=0;
+ROCKEWI[28]=0;ROCKEWI[29]=0;
+CLOUD[0]=0;CLOUD[1]=0;CLOUD[2]=0;CLOUD[3]=0;CLOUD[4]=0;CLOUD[5]=0;CLOUD[6]=0;CLOUD[7]=0;
+CLOUD[8]=0;CLOUD[9]=0;CLOUD[10]=0;CLOUD[11]=0;CLOUD[12]=0;CLOUD[13]=0;CLOUD[14]=0;CLOUD[15]=0;
+event=0;inside=0;HPUP=0;WOLFLINK=false;Mario=false;biT=0;CO=7;Rain1=0;inside=0;
+if(Game->HasPlayed==true){GHP=Game->Counter[29];ZHP=Game->Counter[10];GMP=Game->Counter[30];ZMP=Game->Counter[11];Link->MaxHP=Game->Counter[27];Link->MaxMP=Game->Counter[28];Link->MP=Link->MaxMP;Link->HP=Link->MaxHP;}
+if(Link->MaxHP<11){S=-1;SM=-1;Game->Counter[2]=0;LHP=10;LMP=10;ZHP=10;ZMP=10;GHP=10;GMP=10;Game->Counter[29]=10;Game->Counter[30]=10;Game->Counter[10]=10;Game->Counter[11]=10;}
+if(GHP==0){GHP=Game->Counter[29];}
+if(ZHP==0){ZHP=Game->Counter[10];}
+Triangle=0;click=0;LX=Ceiling(Link->X);LY=Ceiling(Link->Y);
+Store1=0;Store2=9;Store3=9;Store4=3;Store5=3;Store6=52;Store7=52;Store8=6;Store9=6;
+Cal=false;time=0;LinkX=0;LinkY=0;WarpS=0;WarpM=0;
+dznpcA=0;dznpcB=0;dznpcC=0;B=2;R=2;LS=1;MS=1.5;MV=3;MD=5;MD1=5;
+//ONE TIME BOOTUP INTEGERS
+MTYPE=0;cx=0;cy=0;//Card Coordinates
+CX=-6;CY=-32;C2X=-6;C2Y=-53;eo=0;ME=0;ee=0;C3X=0;C3Y=-16;C=0;CO=0;
+HPTIC=0;//Tic for holding place of HP display function.
+HaveBoard=0;UseBoard=0;Stolen=0;bail=0;
+dz=1;EXPMOD=0;TIC=0;HP=0;SK=5;//Skateboard Max Velocity
+//ONE TIME BOOTUP INTEGERS END
+ffc Neme=Screen->LoadFFC(18);
+ffc d1=Screen->LoadFFC(22);d1->Data=2;
+ffc d2=Screen->LoadFFC(21);d2->Data=2;
+ffc d3=Screen->LoadFFC(20);d3->Data=2;
+ffc Vr=Screen->LoadFFC(28);ffc vR=Screen->LoadFFC(27);
+Vr->Flags[3]=true;Vr->Flags[6]=true;Vr->Data=2;vR->Flags[3]=true;vR->Flags[6]=true;
+//OTHER SETTINGS OR SWITCHINGS ON STARTUP
+toke=0;mor=0;twip=0;LUNGELVL=1;
+WOLFMOD=0;UseBoard=0;Slope=0;
+MarioJump=0;tiki=0;set=0;IN=0;
+npc z1;trigger=3;UseBoo=-1;or=0;mor=0;
+//WHEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE//
+//WHILE LOOP OF GLOBAL SCRIPT START
+dztic=45;
+zam=1;TimeSig=0;zbN=8;EVENT=0;Z[0]=0;
+Game->Counter[1]=100;
+
+//WHEEE X 2!
+	for(int z=99;z>=0;z--){Z[z]=0;ET[z]=0;N[z]=0;N1[z]=0;MU[z]=0;Tr[z]=0;}Z[4]=2;
+	//Z[5]=120;Z[7]=80;Z[6]=632;Z[8]=572;Z[0]=120;Z[1]=80;
+	Z[28]=3;
+	Z[29]=2;
+	Z[30]=-1;
+	Z[31]=-1;
+	Z[51]=2;
+	Z[20]=8;
+	Z[38]=0;
+//
+	while(true)
+		{
+		if(Game->GetCurDMap()==8){Z[51]=2;E();REGCOL();CLOUDS();}
+		if(Game->GetCurDMap()==0){Z[51]=2;E();REGCOL();}
+		LP();//LINK HP DISPLAY
+		T();//TITLESCREEN
+		IM();//ITEM BUTTONS FOR B & A, SET TO R AND L BY DEFAULT.
+		Z[25]=0;Z[27]=1;
+		Z[5]=120;Z[7]=80;
+		SWORDLIGHT(Z[34]);
+		if(GetEquipmentA()==53||GetEquipmentB()==53){if(GetEquipmentB()==53&&Link->PressB&&Z[33]==0){MAPSCAN();}if(GetEquipmentA()==53&&Link->PressA&&Z[33]==0){if(Z[51]==2){Z[0]=Floor((Game->GetCurScreen()%16)*256)+Link->X;Z[1]=Floor((Game->GetCurScreen()/16)*176)+Link->Y;}MAPSCAN();}if(Z[33]>0){Z[33]--;Z[32]=AnglePos(Z[0],Z[1],Z[30],Z[31]);Screen->DrawTile(7,Link->X,Link->Y,32,1,1,6,-1,-1,Link->X,Link->Y,Z[32],0,true,128);}}
+		if(Link->PressUp&&!Link->PressDown){Z[9]=0;}
+		if(!Link->PressUp&&Link->PressDown){Z[9]=1;}
+		if(Link->PressLeft&&!Link->PressRight){Z[10]=2;}
+		if(!Link->PressLeft&&Link->PressRight){Z[10]=3;}
+
+		if(Game->GetCurDMap()==20){if(Screen->ComboD[0]!=64000){R();L(3,4);M(Z[5],Z[8]-32);Z[51]=0;Z[38]=0;}D();F();K();E();E(118,456,600,800,28,Rand(240),Rand(160),4,0,25);E(118,456,600,800,20,Rand(240),Rand(160),7,1,25);E(118,456,600,800,49,Rand(240),Rand(160),10,1,25);}//
+		if(Game->GetCurDMap()==7){if(Screen->ComboD[0]!=64000){R();L(15,7);Z[38]=0;Z[51]=0;}CLOUDS();D();F();K();E();}
+		if(Game->GetCurDMap()==27){if(Screen->ComboD[0]!=64000){R();L(15,7);M(Z[5],Z[8]-176*2-16);Z[38]=1;Z[51]=1;Link->Y=64;}E();}
+		if(Game->GetCurDMap()==14){if(Screen->ComboD[0]!=64000){R();L(15,7);M(Z[5],360);Z[38]=1;Z[51]=1;Link->Y=76;}E();}
+		if(Game->GetCurDMap()==5){if(Screen->ComboD[0]!=64000){R();L(15,3);M(Z[5],360);Z[51]=1;Z[38]=1;Link->Y=76;}E();}
+		if(Screen->Flags[SF_ROOMTYPE]&4){D();K();Scr();E();}
+EWepWall();
+//Beginning of game sequences.
+		Event1();
+		if(N[0]==66){EVENT();}
+		if(N[0]==111){EDAMAGERS();}
+		//TIME SENSITIVE DAY/NIGHT FUNCTIONS
+		if(zam==0&&zbN==8){event=1;}
+		if(zam==0&&zbN==8&&zmT){event=2;}
+		if(zam==0&&zbN==9){event=3;}
+		if(zam==1&&zbK==1&&zbN==2){event=4;}
+		if(zam==1&&zbN==5){event=3;}
+		if(zam==1&&zbN==5&&zmT){event=2;}
+		if(zam==1&&zbN==6){event=1;}
+		if(zam==1&&zbN==6&&zmT){event=0;}
+		if(zam==1&&zbN==7){event=0;}
+		//TIME-SENSITIVE WEATHER CHANGES
+		if(zam==1&&zbN==8&&zmT==0&&zmB>=5){Rain1=Rand(4);}
+		if(zam==1&&zbN==8&&zmT==0&&zmB>=8){Rain1=0;}
+		if(zam==1&&zbN==8&&zmT==1&&zmB>=2){Rain1=Rand(4);Rain2=Rand(4);}
+		if(zam==1&&zbN==8&&zmT==2&&zmB>=3){Rain1=0;Rain2=0;}
+		if(zam==1&&zbN==8&&zmT==4&&zmB>=5){Rain1=Rand(4);Rain2=Rand(4);}
+		if(zam==1&&zbN==9&&zmT==0&&zmB>=1){Snow1=Rand(10);Snow2=Rand(10);Rain1=Rand(4);Rain2=Rand(4);}
+		if(zam==1&&zbN==10&&zmT==5&&zmB==3){Snow1=0;Snow2=0;Rain1=0;Rain2=0;}
+
+		//Weather indices
+		if(Rain1==1&&INSIDE==0){Screen->DrawLayer(7,12,0,0,0,0,0,OP_OPAQUE);}//Light Rain Going West
+		if(Rain1==2&&INSIDE==0){Screen->DrawLayer(7,12,1,0,0,0,0,OP_OPAQUE);}//Light Rain Going East
+		if(Rain1==3&&INSIDE==0){Screen->DrawLayer(7,12,2,0,0,0,0,OP_OPAQUE);}//Heavy Rain Going West
+		if(Rain1==4&&INSIDE==0){Screen->DrawLayer(7,12,3,0,0,0,0,OP_OPAQUE);}//Heavy Rain Going East
+		if(Rain2==1&&INSIDE==0){Screen->DrawLayer(7,12,0,0,0,0,0,OP_OPAQUE);}//Light Rain Going West
+		if(Rain2==2&&INSIDE==0){Screen->DrawLayer(7,12,1,0,0,0,0,OP_OPAQUE);}//Light Rain Going East
+		if(Rain2==3&&INSIDE==0){Screen->DrawLayer(7,12,2,0,0,0,0,OP_OPAQUE);}//Heavy Rain Going West
+		if(Rain2==4&&INSIDE==0){Screen->DrawLayer(7,12,3,0,0,0,0,OP_OPAQUE);}//Heavy Rain Going East
+		if(Snow1==1&&INSIDE==0){Screen->DrawLayer(7,12,4,0,0,0,0,OP_OPAQUE);}//Light Snow Going West
+		if(Snow1==2&&INSIDE==0){Screen->DrawLayer(7,12,5,0,0,0,0,OP_OPAQUE);}//Light Snow Going East
+		if(Snow1==3&&INSIDE==0){Screen->DrawLayer(7,12,6,0,0,0,0,OP_OPAQUE);}//Heavy Snow Going West
+		if(Snow1==4&&INSIDE==0){Screen->DrawLayer(7,12,7,0,0,0,0,OP_OPAQUE);}//Heavy Snow Going East
+		if(Snow1==5&&INSIDE==0){Screen->DrawLayer(7,12,8,0,0,0,0,OP_OPAQUE);}//Blizz Snow Going West
+		if(Snow1==6&&INSIDE==0){Screen->DrawLayer(7,12,9,0,0,0,0,OP_OPAQUE);}//Blizz Snow Going East
+		if(Snow1==7&&INSIDE==0){Screen->DrawLayer(7,12,10,0,0,0,0,OP_OPAQUE);}//Heavy Snow Big Going Slow
+		if(Snow1==8&&INSIDE==0){Screen->DrawLayer(7,12,11,0,0,0,0,OP_OPAQUE);}//Light Snow Going Slow
+		if(Snow1==9&&INSIDE==0){Screen->DrawLayer(7,12,12,0,0,0,0,OP_OPAQUE);}//Glistening Euphoric Ambiance
+		if(Snow1==10&&INSIDE==0){Screen->DrawLayer(7,12,13,0,0,0,0,OP_OPAQUE);}//Glistening Euphoric Ambiance Random
+		if(Snow2==1&&INSIDE==0){Screen->DrawLayer(7,12,4,0,0,0,0,OP_OPAQUE);}//Light Snow Going West
+		if(Snow2==2&&INSIDE==0){Screen->DrawLayer(7,12,5,0,0,0,0,OP_OPAQUE);}//Light Snow Going East
+		if(Snow2==3&&INSIDE==0){Screen->DrawLayer(7,12,6,0,0,0,0,OP_OPAQUE);}//Heavy Snow Going West
+		if(Snow2==4&&INSIDE==0){Screen->DrawLayer(7,12,7,0,0,0,0,OP_OPAQUE);}//Heavy Snow Going East
+		if(Snow2==5&&INSIDE==0){Screen->DrawLayer(7,12,8,0,0,0,0,OP_OPAQUE);}//Blizz Snow Going West
+		if(Snow2==6&&INSIDE==0){Screen->DrawLayer(7,12,9,0,0,0,0,OP_OPAQUE);}//Blizz Snow Going East
+		if(Snow2==7&&INSIDE==0){Screen->DrawLayer(7,12,10,0,0,0,0,OP_OPAQUE);}//Heavy Snow Big Going Slow
+		if(Snow2==8&&INSIDE==0){Screen->DrawLayer(7,12,11,0,0,0,0,OP_OPAQUE);}//Light Snow Going Slow
+		if(Snow2==9&&INSIDE==0){Screen->DrawLayer(7,12,12,0,0,0,0,OP_OPAQUE);}//Glistening Euphoric Ambiance
+		if(Snow2==10&&INSIDE==0){Screen->DrawLayer(7,12,13,0,0,0,0,OP_OPAQUE);}//Glistening Euphoric Ambiance Random
+
+
+		if(event==1&&INSIDE==0&&Link->Item[162]==true){Lantern(32);}//Twighlight
+		if(event==2&&INSIDE==0&&Link->Item[162]==true){Lantern(32);Lantern(48);}//Getting Darker
+		if(event==3&&INSIDE==0&&Link->Item[162]==true){Lantern(32);Lantern(48);Lantern(56);}//Evening
+		if(event==4&&INSIDE==0&&Link->Item[162]==true){Lantern(32);Lantern(48);Lantern(56);Lantern(56);}//The Black Night
+		
+		if(event==1&&INSIDE==0&&Link->Item[163]==true){Lantern(64);}//Twighlight
+		if(event==2&&INSIDE==0&&Link->Item[163]==true){Lantern(64);Lantern(80);}//Getting Darker
+		if(event==3&&INSIDE==0&&Link->Item[163]==true){Lantern(64);Lantern(80);Lantern(88);}//Evening
+		if(event==4&&INSIDE==0&&Link->Item[163]==true){Lantern(64);Lantern(80);Lantern(88);Lantern(96);}//The Black Night
+		
+		
+		if(event==1&&INSIDE==0&&Link->Item[162]==false&&Link->Item[163]==false){Lantern(8);}//Twighlight
+		if(event==2&&INSIDE==0&&Link->Item[162]==false&&Link->Item[163]==false){Lantern(8);Lantern(8);}//Getting Darker
+		if(event==3&&INSIDE==0&&Link->Item[162]==false&&Link->Item[163]==false){Lantern(8);Lantern(8);Lantern(8);}//Evening
+		if(event==4&&INSIDE==0&&Link->Item[162]==false&&Link->Item[163]==false){Lantern(8);Lantern(8);Lantern(8);Lantern(8);}//The Black Night
+		
+
+		//if(Mario==true)
+			//{
+			//if(Link->InputL&&Link->MP>1){int PJS=Choose(1,2,3);AutoMShield();if(PJS==3){Link->MP--;}}
+			//if(Link->InputR&&Link->MP>1){int PJS=Choose(1,2,3);AutoWShield();if(PJS==3){Link->MP--;}}
+			//}
+		//HPUPCLouD(Screen->LoadFFC(19));check(0,HPUP,32,32);
+		if(Game->Counter[9]<=0){Game->Counter[9]=10;}if(Game->Counter[8]<=0){Game->Counter[8]=10;}
+		//if(InputRightClick()==true){ME=ME+10000;}
+		//New Script Trial Phase Space.
+		if(Game->Counter[7]>0&&Link->Item[150]==false){Link->Item[150]=true;Game->Counter[7]--;}
+		//check(counternumber,y axis placement,int. else of counter to check)
+		//check(7,0,0,0);check(12,0,0,16);
+		//Maximum HP/MP each character set to at least 10;
+		if(Game->Counter[27]<=0){Game->Counter[27]=10;}if(Game->Counter[28]<=0){Game->Counter[28]=10;}
+		if(Game->Counter[29]<=0){Game->Counter[29]=10;}if(Game->Counter[30]<=0){Game->Counter[30]=10;}
+		if(Game->Counter[10]<=0){Game->Counter[10]=10;}if(Game->Counter[11]<=0){Game->Counter[11]=10;}
+		//And reset back to Link's Maximums upon death/continue
+		//if(Link->HP<=0){WOLFLINK=false;Mario=false;Link->MaxHP=Game->Counter[27];Link->MaxMP=Game->Counter[28];Link->MP=LMP;}
+//Any variable can be set to be reassigned as demonstrated here.
+//Click one of the Store buttons on the bottom left to assign the store button to what
+//the display currently reads.
+		//if(Store1==100){MTYPE=N1[0];}//Type of missle, MTYPE defines change in missle patterns.
+		//if(Store2==101){MD=N1[0];}//Missle speed.
+		//if(Store3==102){MV=N1[0];}//Missle speed on delivery
+		//if(Store1==103){MS=N1[0];}//Missle sread speed.
+		//if(N[0]==104){MD1=N1[0];}//Smart Missle speed.
+		//if(N[0]==666)
+			//{Morph1(Screen->LoadNPC(1),Screen->LoadNPC(2),Screen->LoadNPC(3),Screen->LoadNPC(4),
+ 			//Screen->LoadFFC(1),Screen->LoadFFC(2),Screen->LoadFFC(3),Screen->LoadFFC(4));}
+		//if(N[0]==555){Morph2();}
+		//mX=Link->InputMouseX;mY=Link->InputMouseY;//Mouse inputs referenced now as mX, mY, mA, N[13]
+		//mA=Link->InputMouseB; 
+		d1->Data=2;d2->Data=2;d3->Data=2;
+		//Game->Counter[16]=4;//Target Bom/Missle Damage.
+		//Link->HP=32;//Erase the // to enable Invincible Link
+		//if(Link->InputMouseZ>0&&Link->InputMouseZ<3){Q();}
+		//if(Link->InputMouseZ<6&&Link->InputMouseZ>2){EB();}
+		//if(Link->InputMouseZ<9&&Link->InputMouseZ>5){BB();}
+		//if(Link->InputMouseZ>=9&&Link->InputMouseZ<100){Screen->DrawTile(7,16,16,65181,1,1,6,-1,-1,0,0,0,0,true,128);if(Link->PressR)ItemSpawn();}
+		//if(ON==1){}
+	//STORES THE CURRENT DMAP AND SCREEN
+		
+	//THIS IS IMPORTANT FOR A FEW SCRIPTS THAT ARE GLOBAL BUT HAVE A CONCEPT OF THE EXACT OPPOSITE OF CARRYOVER
+	//AND INSTEAD STAY PUT OR CHANGE BASED ON IF THE SCREEN HAS CHANGED OR NOT
+	//This is the counter for NPC elimination
+	if(xDMAP!=DMAP||xSCN!=SCN||Screen->NumNPCs()>ee){ee=Screen->NumNPCs();}
+	if(ee>Screen->NumNPCs()){K+=ee-Screen->NumNPCs();ee=Screen->NumNPCs();}
+	//It just checks to see if the screen has changed or an NPC has spawned or whatever, compensates for that
+	//then checks to see if the number has diminished, if so, add to counter K and readjust basis for comparison.
+	//FUNCTIONS THAT RUN DURING GLOBAL
+		//SD();//Draws a triangle based on Store Integers.
+		//DDT();//Draws a triangle based on Store Integers, Clickable Mouse reassignment of corners.
+		//NV();//While N[0]==777, Shows all NPCs lit up under a cursor.
+		C();//SWITCHING FUNCTION FOR FUNCTION CARDS
+
+		KL();//Clock Display
+		SHOWEID();LB(d1,d2,d3);
+		M();
+		
+		X();//Sword/Weapon being used on A button press Damage display
+	//FUNCTIONS THAT RUN DURING GLOBAL END
+
+	//STORES THE CURRENT DMAP AND SCREEN AGAIN, SCRIPTS WITH COMPARISONS BETWEEN THESE AND PREVIOUS STORED VALUES
+	//USED AS A BOOL TYPED COMPARISON CAN TELL IF THE SCREEN AND DMAP IS THE SAME AS THE LAST TIME THE FUNCTION RAN.
+		U();//SWORD DAMAGE MODIFIER FUNCTION, HAS WAITDRAW() IN IT SO IT'S LAST IN THE LIST OF FUNCTIONS
+		//Damage to Enemy display
+		HPLAST=Link->HP;MPLAST=Link->MP;NPCLAST=Screen->NumNPCs();//for a few functions involving a check of Link's current HP or MP versus last frame.
+		Z[4]=2;J();Z[3]=Z[1];Z[2]=Z[0];
+		Waitdraw();
+		EL();EE();ED();ME();
+		if(Screen->NumNPCs()>=1)
+			{
+			for(int e=1;e<=Screen->NumNPCs();e++)
+				{npc NPC=Screen->LoadNPC(e);N[89+e]=NPC->HP;LE(NPC);
+				if(NPC->HP==0){NPC->Attributes[11]=1;}
+				}
+			}
+		Waitframe();
+		}//WHILE LOOP END
+	}//VOID RUN END
+//GLOBAL SCRIPT EXCLUSIVE FUNCTIONS START
+
+void L(int a,int b)
+{Z[13]=a;Z[14]=b;
+Z[5]=Floor((Game->GetCurScreen()%16)*256)+120;Z[6]=Z[5]+256*Z[13];
+Z[7]=Floor((Game->GetCurScreen()/16)*176)+80;Z[8]=Z[7]+176*Z[14];
+}
+void Z(int x,int y,int s)
+{
+Screen->DrawTile(6,x,y,18,1,1,6,-1,-1,0,0,0,0,true,64);
+}
+void M(int a,int b){Z[0]=a;Z[1]=b;}
+
+//DRAW SCREEN LAYERS
+void DRAW(int x,int a,int b,int y)
+{if(x<Z[5]){x=Z[5];}if(y<Z[7]){y=Z[7];}int X=x-Z[0];int Y=y-Z[1];if(H()==false){X=0;}if(I()==false){Y=0;}
+Screen->DrawLayer(2,a,b,2,X,Y,0,128);Screen->DrawLayer(3,a,b,3,X,Y,0,128);
+Screen->DrawLayer(0,a,b,0,X,Y,0,128);
+Screen->DrawLayer(1,a,b,1,X,Y,0,128);Screen->DrawLayer(4,a,b,4,X,Y,0,128);Screen->DrawLayer(5,a,b,5,X,Y,0,128);Screen->DrawLayer(6,a,b,6,X,Y,0,128);
+}
+void BB(int b,int a)
+{}
+void SOLI(int sourcemap,int sscreen)
+{
+for(int x=0;x<=240;x+=16)
+	{
+	for(int y=0;y<=160;y+=16)
+		{int a=y+Floor(sscreen/16)*176+(Z[7]-Z[1]);int b=(sscreen%16)*256-(Z[0]-Z[5])+x;//x+8
+		if(H()==false){b=x;}if(I()==false){a=y;}
+		if(a<=175&&a>=0&&b<=255&&b>=0)
+			{
+			if(Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))==10)
+				{	
+				ffc FFC=Screen->LoadFFC(1);
+				FFC->Y=a;FFC->Data=304;FFC->TileWidth=2;
+				if(LinkFFCProxi(15,15,1,16,FFC)){Link->Y=FFC->Y-15;Link->Jump=0;if((Link->PressA&&Z[20]==8)||(Link->PressB&&Z[19]==8)){Link->Jump=5;}}
+				if(FFC->X<b-64){FFC->Vx=1;}if(FFC->X>b+64){FFC->Vy=-1;}
+				}
+			if(Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))==470)
+				{
+				if(NumLWeaponsOf(1)>0)
+					{
+					lweapon WEP=LoadLWeaponOf(1);
+					if(RectCollision(b,a,b+15,a+15,WEP->X,WEP->Y+15,WEP->X+15,WEP->Y+15)){Game->PlaySound(63);Screen->ComboD[ComboAt(x,y)]=472;}
+					}	
+				}
+			
+			if(isSolidScreen(sourcemap,sscreen,b,a)||Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))==22752||Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))==22753)
+				{		
+				if(Screen->NumItems()>0)
+					{
+					for(int i=Screen->NumItems();i>0;i--)
+						{item ITEM=Screen->LoadItem(i);
+						if(RectCollision(b,a,b+15,a+15,ITEM->X,ITEM->Y+15,ITEM->X+15,ITEM->Y+15)){ITEM->Y=a-16;}
+						}
+					}
+				if(Screen->NumNPCs()>0)
+					{
+					for(int i=Screen->NumNPCs();i>0;i--)
+						{npc NPC=Screen->LoadNPC(i);ffc FFC=Screen->LoadFFC(i+10);
+						if(RectCollision(FFC->X,FFC->Y-2,FFC->X+15,FFC->Y-1,b,a,b+15,a+15)){FFC->InitD[0]=1;}
+						if(RectCollision(FFC->X,FFC->Y+16,FFC->X+15,FFC->Y+17,b,a,b+15,a+15)){FFC->InitD[1]=1;Screen->ComboS[ComboAt(b,a)]=Game->GetComboSolid(sourcemap,sscreen,ComboAt(x,y));}
+						if(RectCollision(FFC->X-2,FFC->Y+15,FFC->X-1,FFC->Y+15,b,a,b+15,a+15)){FFC->InitD[2]=1;}
+						if(RectCollision(FFC->X+16,FFC->Y,FFC->X+17,FFC->Y+15,b,a,b+15,a+15)){FFC->InitD[3]=1;}
+						}
+					}
+				
+				if(NumLWeaponsOf(6)>0)
+					{
+					lweapon WEP=LoadLWeaponOf(6);
+					if(RectCollision(b,a,b+15,a+15,WEP->X,WEP->Y+15,WEP->X+15,WEP->Y+15)){WEP->Y=a-16;}
+					}
+				if(NumLWeaponsOf(6)>0)
+					{
+					lweapon WEP=LoadLWeaponOf(6);
+					if(RectCollision(b,a,b+15,a+15,WEP->X,WEP->Y,WEP->X+15,WEP->Y+15)){Remove(WEP);}
+					}
+				if(Game->GetComboType(sourcemap,sscreen,ComboAt(x,y))!=3)
+					{
+					if(Game->GetComboType(sourcemap,sscreen,ComboAt(x,y))!=100&&RectCollision(Link->X+1,Link->Y+1,Link->X+14,Link->Y+4,b,a,b+15,a+15)){Z[15]=1;if(Link->Jump>0){if(Link->Y<80){Z[1]-=2;}if(Link->Y>=80){Link->Y+=2;}}}
+					if(RectCollision(Link->X,Link->Y+15,Link->X+15,Link->Y+16,b,a,b+15,a+15)){Screen->ComboS[ComboAt(b,a)]=Game->GetComboSolid(sourcemap,sscreen,ComboAt(x,y));Z[26]=0;}
+					if(RectCollision(Link->X-1,Link->Y+1,Link->X,Link->Y+14,b,a,b+15,a+15)){Z[17]=1;if(Link->InputLeft){if(Link->InputEx4){Link->Jump=0;}if(((GetEquipmentA()==91&&Link->PressA)||(GetEquipmentB()==91&&Link->PressB))&&(Z[26]==3||Z[26]==0)){Z[26]=2;Link->Jump=Z[28];}}}
+					if(RectCollision(Link->X+15,Link->Y+1,Link->X+16,Link->Y+14,b,a,b+15,a+15)){Z[18]=1;if(Link->InputRight){if(Link->InputEx4){Link->Jump=0;}if(((GetEquipmentA()==91&&Link->PressA)||(GetEquipmentB()==91&&Link->PressB))&&(Z[26]==2||Z[26]==0)){Z[26]=3;Link->Jump=Z[28];}}}
+					}
+				}
+			if(Link->InputUp&&Game->GetComboInherentFlag(sourcemap,sscreen,ComboAt(x,y))==101&&RectCollision(b,a,b+15,a+15,Link->X,Link->Y-1,Link->X+15,Link->Y))
+				{
+				Link->Jump=0;
+				//MAKE GRAPHICS FOR THIS. CEILING GRAPPLE
+				}
+			if(Game->GetComboType(sourcemap,sscreen,ComboAt(x,y))==142)
+				{	
+				BB(b,a);
+				}
+			if(Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))==509)
+				{	
+				if(NumLWeaponsOf(1)>0)
+					{lweapon z=LoadLWeaponOf(1);
+					if(RectCollision(b,a,b+15,a+15,z->X,z->Y,z->X+15,z->Y+15))
+						{Game->PlaySound(62);Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);}
+					}
+				if(Link->Jump>0&&RectCollision(b,a,b+15,a+15,Link->X+8,Link->Y-2,Link->X+9,Link->Y))
+					{Game->PlaySound(62);Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);}
+						
+				}
+			if(Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))==463)
+				{	
+				if(RectCollision(b,a,b+15,a+15,Link->X,Link->Y,Link->X+15,Link->Y+15))
+						{Z[50]+=5;Game->PlaySound(61);Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);}
+					
+				}
+			if(Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))>36095&&Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))<36095+255)
+				{
+				if(NumLWeaponsOf(1)>0)
+					{lweapon w=LoadLWeaponOf(1);
+					if(CircleCollision(w->X+8,w->Y+8,Z[34],b+8,a+8,8))
+						{
+						int n=20+Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))-36096;
+						ffc FFC=Screen->LoadFFC(Screen->NumNPCs()+11);
+						FFC->X=b;FFC->Y=a;CreateNPCAt(n,b,a);
+						Game->PlaySound(44);Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);
+						}
+					}	
+				}
+			if(Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))>36351&&Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))<36351+255)
+				{
+				if(b<224&&b>16&&a>16&&a<144)
+					{
+					int n=Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))-36352;
+					item ITEM=CreateItemAt(n,b,a);ITEM->Pickup=IP_HOLDUP;
+					Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);
+					}
+				}
+			}	
+		}
+	}
+}
+
+//Screen->DrawTile(7,16,16,deathofcivilization,1,1,1,-1,-1,0,0,0,0,true,128);	
+void Scr()
+{B();
+for(int X=15;X>=0;X--)
+	{
+	for(int Y=7;Y>=0;Y--)
+		{
+		if(Z[0]>=256*(X-1)+Z[5]&&Z[0]<=(X+1)*256+Z[5]&&Z[1]>=176*(Y-1)+Z[7]&&Z[1]<=(Y+1)*176+Z[7])
+			{int S=X+Y*16;DRAW(X*256+Z[5],Game->GetCurMap()+1,S,Y*176+Z[7]);SOLI(Game->GetCurMap()+1,S);}
+		}
+	}
+
+}
+//WIPE ALL COMBO PROPERTIES
+void B(){//if(NumEWeaponsOf(31)>0){
+//for(int i=NumEWeaponsOf(31);i>=1;i--){eweapon w=LoadEWeaponOf(i);Remove(w);}}
+for(int x=0;x<=240;x+=16){for(int y=0;y<=160;y+=16){Screen->ComboS[ComboAt(x,y)]=0;Screen->ComboT[ComboAt(x,y)]=0;Screen->ComboF[ComboAt(x,y)]=0;}}}
+//ASSIGN NEW PROPERTIES
+void C(int sourcemap,int sscreen)//COMBO ASSIGN
+{if(Screen->ComboD[0]!=64000){R();}
+for(int x=0;x<=240;x+=16)
+	{
+	for(int y=0;y<=160;y+=16)
+		{int a=y+Floor(sscreen/16)*176+(Z[7]-Z[1]);int b=(sscreen%16)*256-(Z[0]-Z[5])+x;//x+8
+		//if(Z[9]==0){a+=16;}if(Z[9]==1){a-=4;}if(Z[1]<=Z[7]){a+=16;}
+		if(H()==false){b=x;}if(I()==false){a=y;}
+		if(a<=175&&a>=0&&b<=255&&b>=0)
+			{
+			//if(Game->GetComboType(sourcemap,sscreen,ComboAt(x,y))>0)
+				//{	
+				//Screen->ComboT[ComboAt(b,a)]=Game->GetComboType(sourcemap,sscreen,ComboAt(x,y));
+				//}
+			//Game->GetTileWarpScreen(0,sscreen,sourcemap);
+
+			if(Game->GetComboInherentFlag(sourcemap,sscreen,ComboAt(x,y))==98&&RectCollision(b,a,b+15,a+15,Link->X+2,Link->Y+7,Link->X+13,Link->Y+15))
+				{
+				int s=Screen->GetTileWarpScreen(0);int d=Screen->GetTileWarpDMap(0);
+				Z[0]=Floor((s%16)*256)+x;
+				Z[1]=Floor((s/16)*176)+y;
+				Link->Warp(d,0);
+				//Screen->SetTileWarp(1,sscreen,sourcemap,Screen->GetTileWarpType(1));
+				//Screen->SetTileWarp(2,sscreen,sourcemap,Screen->GetTileWarpType(2));
+				//Screen->SetTileWarp(3,sscreen,sourcemap,Screen->GetTileWarpType(3));
+				}
+			if(NumLWeaponsOf(4)>0)
+				{lweapon w=LoadLWeaponOf(4);
+				if(Game->GetComboInherentFlag(sourcemap,sscreen,ComboAt(x,y))==6)
+					{//Screen->DrawTile(7,b,a,410,1,1,6,-1,-1,0,0,0,0,true,128);
+					if(RectCollision(b,a,b+15,a+15,w->X,w->Y,w->X+15,w->Y+15))
+						{Game->PlaySound(27);Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);}
+					}
+				}
+			if(NumLWeaponsOf(5)>0)
+				{lweapon w=LoadLWeaponOf(5);
+				if(Game->GetComboInherentFlag(sourcemap,sscreen,ComboAt(x,y))==11)
+					{//Screen->DrawTile(7,b,a,410,1,1,6,-1,-1,0,0,0,0,true,128);
+					if(RectCollision(b,a,b+15,a+15,w->X,w->Y,w->X+15,w->Y+15))
+						{Game->PlaySound(27);Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);}
+					}
+				if(Z[27]==1&&RectCollision(b,a,b+15,a+15,w->X,w->Y,w->X+15,w->Y+15))
+						{Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);}
+					
+				}
+			//if(Game->GetComboInherentFlag(sourcemap,sscreen,ComboAt(x,y))==6)
+				//Item Bombable Spot Detector{Screen->DrawTile(7,b,a,410,1,1,6,-1,-1,0,0,0,0,true,128);}
+			if(Game->GetComboType(sourcemap,sscreen,ComboAt(x,y))==3&&RectCollision(b,a,b+15,a+15,Link->X+7,Link->Y+7,Link->X+8,Link->Y+8))
+				{if(Link->Action!=11||Link->Action!=6||Link->Action!=13||Link->Action!=14||Link->Action!=15||Link->Action!=20||Link->Action!=24){Link->Action=11;}}
+			if(isSolidScreen(sourcemap,sscreen,b,a))
+				{
+				if(Game->GetComboType(sourcemap,sscreen,ComboAt(x,y))!=3)
+					{
+					if(RectCollision(Link->X+2,Link->Y+5,Link->X+13,Link->Y+13,b,a,b+15,a+15)){Z[15]=1;}
+					if(RectCollision(Link->X+2,Link->Y+7,Link->X+13,Link->Y+17,b,a,b+15,a+15)){Z[16]=1;}
+					if(RectCollision(Link->X-2,Link->Y+7,Link->X+13,Link->Y+13,b,a,b+15,a+15)){Z[17]=1;}
+					if(RectCollision(Link->X+2,Link->Y+7,Link->X+17,Link->Y+13,b,a,b+15,a+15)){Z[18]=1;}
+					}
+				for(int i=Screen->NumNPCs();i>0;i--)
+					{npc NPC=Screen->LoadNPC(i);ffc FFC=Screen->LoadFFC(i+10);
+					if(RectCollision(NPC->X,NPC->Y-2,NPC->X+15,NPC->Y+15,b,a,b+15,a+15)){FFC->InitD[0]=1;}
+					if(RectCollision(NPC->X,NPC->Y,NPC->X+15,NPC->Y+17,b,a,b+15,a+15)){FFC->InitD[1]=1;}
+					if(RectCollision(NPC->X-2,NPC->Y+15,NPC->X+15,NPC->Y+15,b,a,b+15,a+15)){FFC->InitD[2]=1;}
+					if(RectCollision(NPC->X,NPC->Y,NPC->X+17,NPC->Y+15,b,a,b+15,a+15)){FFC->InitD[3]=1;}
+					}			
+				}
+			//if(Screen->ComboT[ComboAt(Link->X,Link->Y-2)]==8&&Link->InputUp&&Game->GetComboType(sourcemap,sscreen,ComboAt(x,y))==8)
+				//{	
+				//Link->X=x;Link->Y=y+16;Link->Warp(sourcemap,sscreen);
+				//}
+			if(Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))>36095&&Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))<36095+255)
+				{if(NumLWeaponsOf(1)>0)
+					{lweapon w=LoadLWeaponOf(1);
+					if(CircleCollision(w->X+8,w->Y+8,Z[34],b+8,a+8,8))
+						{Z[35]=Z[34];
+						int n=20+Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))-36096;
+						ffc FFC=Screen->LoadFFC(Screen->NumNPCs()+11);
+						FFC->X=b;FFC->Y=a;CreateNPCAt(n,b,a);
+						Game->PlaySound(44);Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);
+						}
+					}
+				}
+			if(Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))>36351&&Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))<36351+255)
+				{if(b<224&&b>16&&a>16&&a<144)
+					{
+					int n=Game->GetComboData(sourcemap,sscreen,ComboAt(x,y))-36352;
+					item ITEM=CreateItemAt(n,b,a);ITEM->Pickup=IP_HOLDUP;
+					Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);
+					}
+				}
+			//WCCOL(sourcemap,sscreen,x,y);
+			
+			}	
+		}
+	}
+}
+
+//DRAW TO SCREEN AND SOLIDITY FUNCTION
+void F()
+{B();
+int B=Floor(Z[0]/256);
+int A=Floor(Z[1]/176);
+for(int X=B-1;X<=B+1;X++)
+	{
+	for(int Y=A-1;Y<=A+1;Y++)
+		{if(X==-1){X=0;}if(Y==-1){Y=0;}
+		if(Z[0]>=256*(X-1)+Z[5]&&Z[0]<=(X+1)*256+Z[5]&&Z[1]>=176*(Y-1)+Z[7]&&Z[1]<=(Y+1)*176+Z[7])
+			{int S=X+Y*16;
+			DRAW(X*256+Z[5],Game->GetCurMap()+1,S,Y*176+Z[7]);C(Game->GetCurMap()+1,S);}
+		}
+	}
+
+}//
+
+//RETURNS TRUE IF LINK IS WITHIN THE INSIDE Xs,Ys OF A SCROLLING MAP, FALSE IF HE IS ON THE BOARDER SCREEN AND THE SCREEN ISN'T SCROLLING ANYMORE.
+bool H(){if(Z[0]>=Z[5]&&Z[0]<=Z[6]){return true;}if(Z[0]<120||Z[0]>Z[6]){return false;}}
+bool I(){if(Z[1]>=Z[7]&&Z[1]<=Z[8]){return true;}if(Z[1]<Z[7]||Z[1]>Z[8]){return false;}}
+bool P(int x,int y,int X,int Y,int u,int d,int l,int r)
+	{if(X+16+r<=x||X-l>=x||Y+16+d<=y||Y-u>=y){return false;}
+	if(X+16+r>x&&X-l<x&&Y+16+d>y&&Y-u<y){return true;}}
+
+void K()
+{if(Z[23]==1||Z[24]==1||Link->Action==4||Link->Action==5||Link->Action==7||Link->Action==3||(Link->Action==2&&Z[38]==0)){return;}
+if(H()==true){Link->X=120;}//<=632 for 9x9 box
+if(I()==true&&Z[51]==0){Link->Y=80;}
+if(Link->InputUp&&Z[15]==0&&I()==true&&Z[51]==0){Z[1]-=2;}if(Link->InputUp&&Z[15]==1&&I()==false&&Z[51]==0){Link->Y+=2;}
+if(Link->InputDown&&Z[16]==0&&I()==true&&Z[51]==0){Z[1]+=2;}if(Link->InputDown&&Z[16]==1&&I()==false&&Z[51]==0){Link->Y-=2;}
+if(Link->InputLeft&&Z[17]==0&&H()==true){Z[0]-=2;}if(Link->InputLeft&&Z[17]==1&&H()==false){Link->X+=2;}
+if(Link->InputRight&&Z[18]==0&&H()==true){Z[0]+=2;}if(Link->InputRight&&Z[18]==1&&H()==false){Link->X-=2;}
+if(Z[16]==1&&I()==true&&Z[51]==1){Z[1]-=2;Z[16]=0;}
+if(Z[51]==1&&Link->Y<80){Z[1]-=Z[29];Link->Y=80;}
+if(Z[51]==1&&Link->Y>80&&Z[1]<Z[8]){Z[1]+=Z[29];Link->Y=80;}
+if(Z[0]%2>0)Z[0]++;Z[15]=0;Z[16]=0;Z[17]=0;Z[18]=0;
+if(Z[51]!=1&&Z[1]%2>0)Z[1]++;
+}
+//SCROLLING SCREEN COLLISION AND OTHER MODIFICATION
+void D()
+{	if(Link->X>Z[5]&&Z[0]<Z[5]){Z[0]=Link->X;}
+	if(Link->X<120&&Z[0]>=Z[6]){Z[0]=Z[6]-(120-Link->X);}
+	//if(Z[0]>Z[6]){Z[0]=Z[6];}
+	if(Z[51]==0&&Link->Y>Z[7]&&Z[1]<Z[7]){Z[1]=Link->Y;}
+	//if(Z[1]>Z[8]){Z[1]=Z[8];}
+	if(Z[51]==0&&Link->Y<80&&Z[1]>=Z[8]){Z[1]=Z[8]-(80-Link->Y);}
+	//if(H()==true&&(Screen->ComboS[ComboAt(Link->X-3,Link->Y)]>0||Screen->ComboS[ComboAt(Link->X-3,Link->Y+15)]>0)&&Screen->ComboT[ComboAt(Link->X-6,Link->Y+7)]!=3&&Screen->ComboF[ComboAt(Link->X+-3,Link->Y+7)]!=105){Z[0]+=2;}
+	//if(H()==true&&(Screen->ComboS[ComboAt(Link->X+18,Link->Y+15)]>0||Screen->ComboS[ComboAt(Link->X+18,Link->Y)]>0)&&Screen->ComboT[ComboAt(Link->X+18,Link->Y+7)]!=3&&Screen->ComboF[ComboAt(Link->X+18,Link->Y+7)]!=105){Z[0]-=2;}
+	//if(I()==true&&(Screen->ComboS[ComboAt(Link->X+8,Link->Y-3)]>0||Screen->ComboS[ComboAt(Link->X+15,Link->Y-3)]>0)&&Screen->ComboT[ComboAt(Link->X+7,Link->Y-3)]!=3&&Screen->ComboF[ComboAt(Link->X+7,Link->Y-3)]!=105){Z[1]+=2;}
+	//if(I()==true&&(Screen->ComboS[ComboAt(Link->X+8,Link->Y+17)]>0||Screen->ComboS[ComboAt(Link->X+15,Link->Y+17)]>0)&&Screen->ComboT[ComboAt(Link->X+7,Link->Y+18)]!=3&&Screen->ComboF[ComboAt(Link->X+7,Link->Y+18)]!=105){Z[1]-=2;}
+	//if(Z[51]==1){Z[1]=0;}
+	if(Link->Action==12)
+		{
+		if(Link->Dir==0){Z[1]--;}
+		if(Link->Dir==1){Z[1]++;}
+		if(Link->Dir==2){Z[0]--;}
+		if(Link->Dir==3){Z[0]++;}
+		}
+	//if(Link->Action==11)
+		//{int a=1;if(Z[12]==15||Z[11]==15){a=2;}if(Z[11]==15&&Link->PressB){a=4;}
+		//if(Link->Dir==0&&Link->InputUp){Z[1]=Z[1]-a;}
+		//if(Link->Dir==1&&Link->InputDown){Z[1]=Z[1]+a;}
+		//if(Link->Dir==2&&Link->InputLeft){Z[0]=Z[0]-a;}
+		//if(Link->Dir==3&&Link->InputRight){Z[0]=Z[0]+a;}
+		//}
+	E(Z[11],Z[12]);
+}
+//GENERIC NOT REALLY FULLY FUNCTIONAL CORRIDOR MOVER
+void E(int a,int b){
+if(a>0){a--;NoAction();
+if(b==0){Z[1]-=2;}
+if(b==1){Z[1]+=2;}
+if(b==2){Z[0]-=2;}
+if(b==3){Z[0]+=2;}
+return;}
+if(a==0){a=24;}
+if(Screen->ComboF[ComboAt(Link->X+7,Link->Y-2)]==102&&Z[9]==0){a=24;b=0;}
+if(Screen->ComboF[ComboAt(Link->X+7,Link->Y+17)]==102&&Z[9]==1){a=24;b=1;}
+if(Screen->ComboF[ComboAt(Link->X-2,Link->Y+7)]==102&&Z[10]==2){a=24;b=2;}
+if(Screen->ComboF[ComboAt(Link->X+17,Link->Y+7)]==102&&Z[10]==3){a=24;b=3;}
+}
+
+//MOB ADJUSTMENTS
+void G(npc NPC,ffc FFC,int q)
+{
+if(N[89+q]!=NPC->HP){NPC->Misc[3]=1;}
+if(Screen->NumNPCs()!=NPCLAST){FFC->X=NPC->X;FFC->Y=NPC->Y;}
+if(I()==true&&Z[1]>Z[3]){FFC->Y=FFC->Y-2;}
+if(I()==true&&Z[3]>Z[1]){FFC->Y=FFC->Y+2;}
+if(H()==true&&Z[2]>Z[0]){FFC->X=FFC->X+2;}
+if(H()==true&&Z[0]>Z[2]){FFC->X=FFC->X-2;}
+FFC->Data=1;
+if(NPC->Dir==2){FFC->Vx=-NPC->Misc[4];FFC->Vy=0;}
+if(NPC->Dir==3){FFC->Vx=NPC->Misc[4];FFC->Vy=0;}
+if(NPC->Dir==0){FFC->Vy=-NPC->Misc[4];FFC->Vx=0;}
+if(NPC->Dir==1){FFC->Vy=NPC->Misc[4];FFC->Vx=0;}
+if(NPC->Dir==4){FFC->Vy=-NPC->Misc[4];FFC->Vx=-NPC->Misc[4];}
+if(NPC->Dir==5){FFC->Vy=-NPC->Misc[4];FFC->Vx=NPC->Misc[4];}
+if(NPC->Dir==6){FFC->Vx=-NPC->Misc[4];FFC->Vy=NPC->Misc[4];}
+if(NPC->Dir==7){FFC->Vx=NPC->Misc[4];FFC->Vy=NPC->Misc[4];}
+NPC->X=FFC->X;if(Z[51]!=1){NPC->Y=FFC->Y;}
+if(Z[51]==1){return;}
+float ang=AnglePos(NPC->X,NPC->Y,Link->X,Link->Y);
+if(NPC->Misc[3]==3){
+if(ang>=337.5||ang<22.5){NPC->Dir=0;}
+if(ang>=22.5&&ang<67.5){NPC->Dir=5;}
+if(ang>=67.5&&ang<112.5){NPC->Dir=3;}//circles Link
+if(ang>=112.5&&ang<157.5){NPC->Dir=7;}
+if(ang>=157.5&&ang<202.5){NPC->Dir=1;}
+if(ang>=202.5&&ang<247.5){NPC->Dir=6;}
+if(ang>=247.5&&ang<292.5){NPC->Dir=2;}
+if(ang>=292.5&&ang<337.5){NPC->Dir=4;}}
+if(NPC->Misc[3]==2)
+{if(ang>=337.5||ang<22.5){NPC->Dir=2;}//Goes Away from Link
+if(ang>=22.5&&ang<67.5){NPC->Dir=4;}
+if(ang>=67.5&&ang<112.5){NPC->Dir=0;}
+if(ang>=112.5&&ang<157.5){NPC->Dir=5;}
+if(ang>=157.5&&ang<202.5){NPC->Dir=3;}
+if(ang>=202.5&&ang<247.5){NPC->Dir=7;}
+if(ang>=247.5&&ang<292.5){NPC->Dir=1;}
+if(ang>=292.5&&ang<337.5){NPC->Dir=6;}}
+if(NPC->Misc[3]==1)
+{if(ang>=337.5||ang<22.5){NPC->Dir=3;}//Goes Towards Link
+if(ang>=22.5&&ang<67.5){NPC->Dir=7;}
+if(ang>=67.5&&ang<112.5){NPC->Dir=1;}
+if(ang>=112.5&&ang<157.5){NPC->Dir=6;}
+if(ang>=157.5&&ang<202.5){NPC->Dir=2;}
+if(ang>=202.5&&ang<247.5){NPC->Dir=4;}
+if(ang>=247.5&&ang<292.5){NPC->Dir=0;}
+if(ang>=292.5&&ang<337.5){NPC->Dir=5;}}
+
+//for(int i=Screen->NumNPCs();i>=1;i--){npc guy=Screen->LoadNPC(i);guy->Misc[3]=1;if(i>Z[25]){guy->Misc[3]=0;}}
+if(NPC->HP<16){NPC->Misc[3]=2;}
+
+
+}
+//_____ ON SCREEN X,Y MOD
+void J()
+{
+if(Screen->NumItems()>0){for(int z=1;z<=Screen->NumItems();z++){item i=(Screen->LoadItem(z));if(I()==true&&Z[1]>Z[3]){i->Y=i->Y-Z[4];}if(I()==true&&Z[3]>Z[1]){i->Y=i->Y+Z[4];}if(H()==true&&Z[2]>Z[0]){i->X=i->X+Z[4];}if(H()==true&&Z[0]>Z[2]){i->X=i->X-Z[4];}}}
+if(Screen->NumLWeapons()>0){for(int l=1;l<=Screen->NumLWeapons();l++){lweapon L=Screen->LoadLWeapon(l);if(I()==true&&Z[1]>Z[3]){L->Y=L->Y-Z[4];}if(I()==true&&Z[3]>Z[1]){L->Y=L->Y+Z[4];}if(H()==true&&Z[2]>Z[0]){L->X=L->X+Z[4];}if(H()==true&&Z[0]>Z[2]){L->X=L->X-Z[4];}}}
+if(Screen->NumEWeapons()>0){for(int e=1;e<=Screen->NumEWeapons();e++){eweapon F=Screen->LoadEWeapon(e);if(I()==true&&Z[1]>Z[3]){F->Y=F->Y-Z[4];}if(I()==true&&Z[3]>Z[1]){F->Y=F->Y+Z[4];}if(H()==true&&Z[2]>Z[0]){F->X=F->X+Z[4];}if(H()==true&&Z[0]>Z[2]){F->X=F->X-Z[4];}}}
+if(Screen->NumNPCs()>0)
+	{for(int n=1;n<=Screen->NumNPCs();n++)
+		{
+		ffc D=Screen->LoadFFC(n+10);
+		if(D->InitD[0]==1&&Z[51]==0){D->Vy=1;;D->InitD[0]=0;}
+		if(D->InitD[1]==1&&Z[51]==0){D->Vy=-1;D->InitD[1]=0;}
+		if(D->InitD[2]==1){D->Vx=1;D->InitD[2]=0;}
+		if(D->InitD[3]==1){D->Vx=-1;D->InitD[3]=0;}
+		if(Z[51]==2)
+			{
+			if(D->X<32){D->Vx=1;}if(D->X>224){D->Vx=-1;}
+			if(D->Y<32){D->Vy=1;}if(D->Y>144){D->Vy=-1;}
+			}
+		}
+	}
+}
+void R(){for(int z=0;z<=175;z++){Screen->ComboD[z]=64000+z;}}
+//GLOBAL SCRIPT EXCLUSIVE FUNCTIONS END
+
+float AnglePos(int x,int y,int x2,int y2)
+{
+float a=ArcTan(x2-x,y2-y)*57.2958;
+if(a<0){a+=360;}
+return a;
+}
+void E()
+{
+	if(Screen->NumNPCs()>0&&Z[23]==0&&Z[24]==0)
+			{for(int i=Screen->NumNPCs();i>=1;i--)
+				{npc NPC=Screen->LoadNPC(i);
+				if(NPC->ID==20){NPC->Misc[4]=.5;}
+				if(NPC->ID==21){NPC->Misc[4]=1.25;}
+				if(NPC->ID==28){NPC->Misc[4]=.75;}
+				if(NPC->ID==28){NPC->Misc[4]=.75;}//Misc[4] is Enemy acceleration.
+				if(NPC->ID==29){NPC->Misc[4]=1.5;}
+				if(NPC->ID==58){NPC->Misc[4]=1;}
+				if(NPC->ID==49){NPC->Misc[4]=.75;}
+				if(NPC->ID==50){NPC->Misc[4]=1;}
+				G(Screen->LoadNPC(i),Screen->LoadFFC(i+10),i);}}
+}
+bool isSolidScreen(int m,int s,int c,int d) {
+int x=c-((s%16)*256)-(Z[5]-Z[0]);
+int y=d-(Floor(s/16)*176)-(Z[7]-Z[1]);
+if(H()==false){x=c;}if(I()==false){y=d;}
+    if(x<0 || x>255 || y<0 || y>175) return false;
+    int mask=1111b;
+     
+    if(x % 16 < 8)
+      mask &= 0011b;
+    else
+      mask &= 1100b;
+   
+    if(y % 16 < 8)
+      mask &= 0101b;
+    else
+      mask &= 1010b;
+   
+    int ret = Game->GetComboSolid(m,s,ComboAt(x,y)) & mask;
+    return (ret!=0);
+ 
+  }
+//GLOBAL SCRIPT END
+}
+void E(int a,int b,int c,int d,int x,int y,int z,int w,int e,int f)//(Z[0],npc ID,spawn@x,y,if less than w)
+	{
+	if(Z[0]>=a&&Z[0]<=b&&Z[1]>=c&&Z[1]<=d&&Screen->NumNPCs()<w&&ET[e]<f)
+		{ffc FFC=Screen->LoadFFC(Screen->NumNPCs()+11);npc et=CreateNPCAt(x,y,z);FFC->X=et->X;FFC->Y=et->Y;ET[e]=ET[e]+1;}
+	}
+void E(int r,int e,int d)//(x,y,and enemy ID) predetermined by a combo placed on the screen in ZQ.
+	{
+	CreateNPCAt(r,e,d);
+	}
+void IM()
+	{if(UseBoo>0){return;}	if(!Link->InputR){Z[24]=0;}if(!Link->InputL){Z[23]=0;}
+		if(!Link->InputR&&!Link->InputL){return;}
+		int a;int b;int c;int d;
+		if(Link->X<120){Z[21]=Link->X+8;}
+		if(Link->X>=120){Z[21]=Link->X-88;}
+		if(Link->Y<80){Z[22]=Link->Y+8;}
+		if(Link->Y>=80){Z[22]=Link->Y-88;}
+		for(int i=24;i>=0;i--)
+			{
+			if(Z[20]==i){a=Z[21]+8+(i%5)*16;b=Z[22]+8+Floor(i/5)*16;}
+			if(Z[19]==i){c=Z[21]+8+(i%5)*16;d=Z[22]+8+Floor(i/5)*16;}
+			}
+		if(Z[20]==0){a=Z[21]+8;b=Z[22]+8;}if(Z[20]==1){a=Z[21]+24;b=Z[22]+8;}if(Z[20]==2){a=Z[21]+40;b=Z[22]+8;}
+		if(Z[20]==3){a=Z[21]+56;b=Z[22]+8;}if(Z[20]==4){a=Z[21]+72;b=Z[22]+8;}
+		if(Z[20]==5){a=Z[21]+8;b=Z[22]+24;}if(Z[20]==6){a=Z[21]+24;b=Z[22]+24;}if(Z[20]==7){a=Z[21]+40;b=Z[22]+24;}
+		if(Z[20]==8){a=Z[21]+56;b=Z[22]+24;}if(Z[20]==9){a=Z[21]+72;b=Z[22]+24;}
+		if(Z[20]==10){a=Z[21]+8;b=Z[22]+40;}if(Z[20]==11){a=Z[21]+24;b=Z[22]+40;}if(Z[20]==12){a=Z[21]+40;b=Z[22]+40;}
+		if(Z[20]==13){a=Z[21]+56;b=Z[22]+40;}if(Z[20]==14){a=Z[21]+72;b=Z[22]+40;}
+		if(Z[20]==15){a=Z[21]+8;b=Z[22]+56;}if(Z[20]==13){a=Z[21]+24;b=Z[22]+56;}if(Z[20]==17){a=Z[21]+40;b=Z[22]+56;}
+		if(Z[20]==18){a=Z[21]+56;b=Z[22]+56;}if(Z[20]==19){a=Z[21]+72;b=Z[22]+56;}
+		if(Z[20]==20){a=Z[21]+8;b=Z[22]+72;}if(Z[20]==21){a=Z[21]+24;b=Z[22]+72;}if(Z[20]==22){a=Z[21]+40;b=Z[22]+72;}
+		if(Z[20]==23){a=Z[21]+56;b=Z[22]+72;}if(Z[20]==24){a=Z[21]+72;b=Z[22]+72;}
+		
+		if(Z[19]==0){c=Z[21]+8;d=Z[22]+8;}if(Z[19]==1){c=Z[21]+24;d=Z[22]+8;}if(Z[19]==2){c=Z[21]+40;d=Z[22]+8;}
+		if(Z[19]==3){c=Z[21]+56;d=Z[22]+8;}if(Z[19]==4){c=Z[21]+72;d=Z[22]+8;}
+		if(Z[19]==5){c=Z[21]+8;d=Z[22]+24;}if(Z[19]==6){c=Z[21]+24;d=Z[22]+24;}if(Z[19]==7){c=Z[21]+40;d=Z[22]+24;}
+		if(Z[19]==8){c=Z[21]+56;d=Z[22]+24;}if(Z[19]==9){c=Z[21]+72;d=Z[22]+24;}
+		if(Z[19]==10){c=Z[21]+8;d=Z[22]+40;}if(Z[19]==11){c=Z[21]+24;d=Z[22]+40;}if(Z[19]==12){c=Z[21]+40;d=Z[22]+40;}
+		if(Z[19]==13){c=Z[21]+56;d=Z[22]+40;}if(Z[19]==14){c=Z[21]+72;d=Z[22]+40;}
+		if(Z[19]==15){c=Z[21]+8;d=Z[22]+56;}if(Z[19]==13){c=Z[21]+24;d=Z[22]+56;}if(Z[19]==17){c=Z[21]+40;d=Z[22]+56;}
+		if(Z[19]==18){c=Z[21]+56;d=Z[22]+56;}if(Z[19]==19){c=Z[21]+72;d=Z[22]+56;}
+		if(Z[19]==20){c=Z[21]+8;d=Z[22]+72;}if(Z[19]==21){c=Z[21]+24;d=Z[22]+72;}if(Z[19]==22){c=Z[21]+40;d=Z[22]+72;}
+		if(Z[19]==23){c=Z[21]+56;d=Z[22]+72;}if(Z[19]==24){c=Z[21]+72;d=Z[22]+72;}
+
+		if(Link->InputR)
+			{Z[23];
+			Screen->Rectangle(7,Z[21],Z[22],Z[21]+96,Z[22]+96,6,1,0,0,0,true,64);
+			Screen->Rectangle(7,Z[21]-1,Z[22]-1,Z[21]+97,Z[22]+97,15,1,0,0,0,true,64);
+			ItemDisplay();
+			Screen->DrawTile(7,Z[21]+8,Z[22]-8,11180,1,1,6,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,a,b,65215,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(GetEquipmentA()==5||GetEquipmentA()==6||GetEquipmentA()==7||GetEquipmentA()==36||GetEquipmentA()==143||GetEquipmentA()==144||GetEquipmentA()==146||GetEquipmentA()==147||GetEquipmentA()==148||GetEquipmentA()==149){Z[20]=0;}//Swords
+			if(GetEquipmentA()==3){Z[20]=1;}
+			if(GetEquipmentA()==15||GetEquipmentA()==68){Z[20]=2;}
+			if(GetEquipmentA()==10){Z[20]=3;}
+			if(GetEquipmentA()==64){Z[20]=4;}
+			if(GetEquipmentA()==9||GetEquipmentA()==38||GetEquipmentA()==37){Z[20]=5;}
+			if(GetEquipmentA()==16){Z[20]=6;}
+			if(GetEquipmentA()==29||GetEquipmentA()==30||GetEquipmentA()==12||GetEquipmentA()==90){Z[20]=7;}
+			if(GetEquipmentA()==91){Z[20]=8;}
+			if(GetEquipmentA()==65){Z[20]=9;}
+			if(GetEquipmentA()==52||GetEquipmentA()==89){Z[20]=10;}
+			if(GetEquipmentA()==48){Z[20]=11;}
+			if(GetEquipmentA()==53){Z[20]=12;}
+			if(GetEquipmentA()==54){Z[20]=13;}
+			if(GetEquipmentA()==66){Z[20]=14;}
+			if(GetEquipmentA()==51){Z[20]=15;}
+			if(GetEquipmentA()==88){Z[20]=16;}
+			if(GetEquipmentA()==145){Z[20]=17;}
+			if(GetEquipmentA()==123){Z[20]=18;}
+			if(GetEquipmentA()==23||GetEquipmentA()==24||GetEquipmentA()==35){Z[20]=19;}//Boomerangs
+			if(GetEquipmentA()==121){Z[20]=20;}
+			if(GetEquipmentA()==125){Z[20]=21;}
+			if(GetEquipmentA()==150){Z[20]=22;}
+			if(GetEquipmentA()==50){Z[20]=23;}
+			if(GetEquipmentA()==31){Z[20]=24;}
+			if(Link->PressRight){Link->SelectAWeapon(3);}
+			if(Link->PressLeft){Link->SelectAWeapon(2);}
+			if(Link->PressUp){Link->SelectAWeapon(0);}
+			if(Link->PressDown){Link->SelectAWeapon(1);}
+			//Screen->DrawTile(7,64,120,65160+Z[20]%10,1,1,6,-1,-1,0,0,0,0,true,128);
+			//Screen->DrawTile(7,56,120,65160+(Z[20]%100-Z[20]%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+			NoAction();
+			}
+		if(Link->InputL)
+			{Z[24];
+			Screen->Rectangle(7,Z[21]-1,Z[22]-1,Z[21]+97,Z[22]+97,15,1,0,0,0,true,64);
+			Screen->Rectangle(7,Z[21],Z[22],Z[21]+96,Z[22]+96,6,1,0,0,0,true,64);
+			Screen->DrawTile(7,Z[21]+8,Z[22]-8,11181,1,1,6,-1,-1,0,0,0,0,true,128);
+			ItemDisplay();
+			Screen->DrawTile(7,c,d,65215,1,1,0,-1,-1,0,0,0,0,true,128);
+			if(GetEquipmentB()==5||GetEquipmentB()==6||GetEquipmentB()==7||GetEquipmentB()==36||GetEquipmentB()==143||GetEquipmentB()==144||GetEquipmentB()==146||GetEquipmentB()==147||GetEquipmentB()==148||GetEquipmentB()==149){Z[19]=0;}//Swords
+			if(GetEquipmentB()==3){Z[19]=1;}
+			if(GetEquipmentB()==15||GetEquipmentB()==68){Z[19]=2;}//Bows
+			if(GetEquipmentB()==10){Z[19]=3;}//Candles
+			if(GetEquipmentB()==64){Z[19]=4;}//Din Fire
+			if(GetEquipmentB()==93||GetEquipmentB()==8||GetEquipmentB()==37){Z[19]=5;}//Shields
+			if(GetEquipmentB()==16){Z[19]=6;}//Meat Bait
+			if(GetEquipmentB()==29||GetEquipmentB()==30||GetEquipmentB()==12||GetEquipmentB()==90){Z[19]=7;}//Potions/Letters
+			if(GetEquipmentB()==91){Z[19]=8;}//Jump Boots
+			if(GetEquipmentB()==65){Z[19]=9;}//Farore Wind
+			if(GetEquipmentB()==52||GetEquipmentB()==89){Z[19]=10;}//Hookshots
+			if(GetEquipmentB()==48){Z[19]=11;}//SuperBomb
+			if(GetEquipmentB()==53){Z[19]=12;}//Lens
+			if(GetEquipmentB()==54){Z[19]=13;}//Hammers
+			if(GetEquipmentB()==66){Z[19]=14;}//Nayru Love
+			if(GetEquipmentB()==51){Z[19]=15;}//Flippers
+			if(GetEquipmentB()==88){Z[19]=16;}//Byrna Cane
+			if(GetEquipmentB()==145){Z[19]=17;}//Missile
+			if(GetEquipmentB()==123){Z[19]=18;}//Scroll
+			if(GetEquipmentB()==23||GetEquipmentB()==24||GetEquipmentB()==35){Z[19]=19;}//Boomerangs
+			if(GetEquipmentB()==121){Z[19]=20;}//Peril Ring
+			if(GetEquipmentB()==125){Z[19]=21;}//Skate
+			if(GetEquipmentB()==150){Z[19]=22;}//Mushroom
+			if(GetEquipmentB()==50){Z[19]=23;}//Amulet
+			if(GetEquipmentB()==31){Z[19]=24;}//Whistle
+			if(Link->PressRight){Link->SelectBWeapon(3);}
+			if(Link->PressLeft){Link->SelectBWeapon(2);}
+			if(Link->PressUp){Link->SelectBWeapon(0);}
+			if(Link->PressDown){Link->SelectBWeapon(1);}
+			NoAction();
+			}
+	}
+void ItemDisplay()
+	{	//Boomerangs
+		if(Link->Item[5]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+8,12080,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 0 Wood Sword
+		if(Link->Item[6]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+8,12081,1,1,7,-1,-1,0,0,0,0,true,128);}//POS 0 White Sword
+		if(Link->Item[7]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+8,12082,1,1,8,-1,-1,0,0,0,0,true,128);}//POS 0 Magic Sword
+		if(Link->Item[36]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+8,12083,1,1,7,-1,-1,0,0,0,0,true,128);}//POS 0 Master
+		if(Link->Item[143]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+8,12084,1,1,8,-1,-1,0,0,0,0,true,128);}//POS 0 BroadSword
+		if(Link->Item[144]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+8,12085,1,1,11,-1,-1,0,0,0,0,true,128);}//POS 0 Claymore
+		if(Link->Item[149]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+8,12086,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 0 Magic Stick
+		if(Link->Item[146]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+8,12087,1,1,11,-1,-1,0,0,0,0,true,128);}//POS 0 Mystic Dagger
+		if(Link->Item[147]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+8,12088,1,1,7,-1,-1,0,0,0,0,true,128);}//POS 0 Jack Knife
+		if(Link->Item[148]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+8,12089,1,1,7,-1,-1,0,0,0,0,true,128);}//POS 0 Katana
+		if(Link->Item[3]==true){Screen->DrawTile(7,Z[21]+24,Z[22]+8,410,1,1,7,-1,-1,0,0,0,0,true,128);}//POS 1 bomb
+		if(Link->Item[15]==true){Screen->DrawTile(7,Z[21]+40,Z[22]+8,489,1,1,8,-1,-1,0,0,0,0,true,128);}//POS 2 arrows
+		if(Link->Item[10]==true){Screen->DrawTile(7,Z[21]+56,Z[22]+8,600,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 3 blue candle
+		if(Link->Item[11]==true){Screen->DrawTile(7,Z[21]+56,Z[22]+8,620,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 3 red candle
+		if(Link->Item[64]==true){Screen->DrawTile(7,Z[21]+72,Z[22]+8,1135,1,1,11,-1,-1,0,0,0,0,true,128);}//POS 4 din fire
+		if(Link->Item[93]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+24,456,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 5 Shield
+		if(Link->Item[16]==true){Screen->DrawTile(7,Z[21]+24,Z[22]+24,699,1,1,8,-1,-1,0,0,0,0,true,128);}//POS 6 meat
+		if(Link->Item[29]==true){Screen->DrawTile(7,Z[21]+40,Z[22]+24,404,1,1,8,-1,-1,0,0,0,0,true,128);}//POS 7 mystery multi item Letters and Potions
+		if(Link->Item[91]==true){Screen->DrawTile(7,Z[21]+56,Z[22]+24,40,1,1,7,-1,-1,0,0,0,0,true,128);}//POS 8 Jump Boots
+		if(Link->Item[65]==true){Screen->DrawTile(7,Z[21]+72,Z[22]+24,1136,1,1,7,-1,-1,0,0,0,0,true,128);}///POS 9 farore
+		if(Link->Item[52]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+40,520,1,1,8,-1,-1,0,0,0,0,true,128);}//POS 10 hookshot
+		if(Link->Item[48]==true){Screen->DrawTile(7,Z[21]+24,Z[22]+40,429,1,1,8,-1,-1,0,0,0,0,true,128);}//POS 11 Superbomb?
+		if(Link->Item[53]==true){Screen->DrawTile(7,Z[21]+40,Z[22]+40,630,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 12 lens
+		if(Link->Item[54]==true){Screen->DrawTile(7,Z[21]+56,Z[22]+40,560,1,1,7,-1,-1,0,0,0,0,true,128);}//POS 13 hammer
+		if(Link->Item[66]==true){Screen->DrawTile(7,Z[21]+72,Z[22]+40,1137,1,1,8,-1,-1,0,0,0,0,true,128);}//POS 14naryu love
+		if(Link->Item[51]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+56,607,1,1,9,-1,-1,0,0,0,0,true,128);}//POS 15 Flippers
+		if(Link->Item[88]==true){Screen->DrawTile(7,Z[21]+24,Z[22]+56,510,1,1,8,-1,-1,0,0,0,0,true,128);}//POS 16 Skateboard
+		if(Link->Item[145]==true){Screen->DrawTile(7,Z[21]+40,Z[22]+56,65120,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 17 missile
+		if(Link->Item[123]==true){Screen->DrawTile(7,Z[21]+56,Z[22]+56,5,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 18 scroll
+		if(Link->Item[23]==true){Screen->DrawTile(7,Z[21]+72,Z[22]+56,964,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 0 boomerang
+		if(Link->Item[24]==true){Screen->DrawTile(7,Z[21]+72,Z[22]+56,926,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 0 magic boomerang
+		if(Link->Item[35]==true){Screen->DrawTile(7,Z[21]+72,Z[22]+56,465,1,1,8,-1,-1,0,0,0,0,true,128);}//POS 0 fire boomerang
+		if(Link->Item[121]==true){Screen->DrawTile(7,Z[21]+6,Z[22]+72,952,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 20 Hart Ring
+		if(Link->Item[125]==true){Screen->DrawTile(7,Z[21]+24,Z[22]+72,65032,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 21 skate
+		if(Link->Item[150]==true){Screen->DrawTile(7,Z[21]+40,Z[22]+72,14160,1,1,2,-1,-1,0,0,0,0,true,128);}//POS 22 mushroom
+		if(Link->Item[50]==true){Screen->DrawTile(7,Z[21]+56,Z[22]+72,1119,1,1,6,-1,-1,0,0,0,0,true,128);}//POS 23 Amulet
+		if(Link->Item[31]==true){Screen->DrawTile(7,Z[21]+72,Z[22]+72,623,1,1,7,-1,-1,0,0,0,0,true,128);}//POS 24 whistle
+		
+	}
+
+
+ffc script Door
+{
+void run(int a,int b,ffc c,int d,int e,int h,int i,int j)
+	{int g=0;
+	while(true)
+		{
+		if(Screen->NumNPCs()>0)
+			{this->Data=b;this->Flags[0]=false;c->Flags[0]=false;
+			if(a==0){if(LinkFFCProxi(16,7,16,1,this)){Link->Y=this->Y+16;}c->Data=b+1;c->X=this->X+16;c->Y=this->Y;}
+			if(a==1){if(LinkFFCProxi(16,7,16,17,this)){Link->Y=this->Y-16;;}c->Data=b+1;c->X=this->X+16;c->Y=this->Y;}
+			if(a==2){if(LinkFFCProxi(1,16,7,16,this)){Link->X=this->X+16;}c->Data=b+4;c->X=this->X;c->Y=this->Y+16;}
+			if(a==3){if(LinkFFCProxi(16,15,7,16,this)){Link->X=this->X-16;}c->Data=b+4;c->X=this->X;c->Y=this->Y+16;}
+			this->CSet=j;c->CSet=j;
+			}
+		if(g<18)
+			{
+			if(Screen->NumNPCs()!=0){g=0;}
+			if(Screen->NumNPCs()==0)
+				{g++;
+				this->Data=d;
+				if(a==0){c->Data=d+1;c->X=this->X+16;c->Y=this->Y;}if(a==1){c->Data=d+1;c->X=this->X+16;c->Y=this->Y;}
+				if(a==2){c->Data=d+4;c->X=this->X;c->Y=this->Y+16;}if(a==3){c->Data=d+4;c->X=this->X;c->Y=this->Y+16;}
+				this->CSet=j;c->CSet=j;this->Flags[0]=true;c->Flags[0]=true;}
+			}
+		if(g==18)
+			{this->Data=e;c->Data=e;this->CSet=j;c->CSet=j;this->Flags[0]=true;c->Flags[0]=true;}
+		if(i>0){Screen->DrawCombo(0,this->X,this->Y+16,this->Data,1,1,j,-1,-1,0,0,0,0,2,true,64);
+				Screen->DrawCombo(0,c->X,c->Y+16,c->Data,1,1,j,-1,-1,0,0,0,0,2,true,64);}
+		Waitframe();
+		}
+	}
+}
+ffc script KeyDoor
+{
+void run(int a,int b,ffc c,int d,int e,int h,int i,int j)
+	{int g=0;int usedkey=0;
+	while(true)
+		{
+		if(usedkey==0)
+			{this->Data=b;this->Flags[0]=false;c->Flags[0]=false;
+			if(a==0){if(LinkFFCProxi(16,7,16,1,this)){Link->Y=this->Y+16;if(Link->Item[h]==true&&Link->PressR){usedkey=1;}}c->Data=b+1;c->X=this->X+16;c->Y=this->Y;}
+			if(a==1){if(LinkFFCProxi(16,7,16,17,this)){Link->Y=this->Y-16;if(Link->Item[h]==true&&Link->PressR){usedkey=1;}}c->Data=b+1;c->X=this->X+16;c->Y=this->Y;}
+			if(a==2){if(LinkFFCProxi(1,16,7,16,this)){Link->X=this->X+16;if(Link->Item[h]==true&&Link->PressR){usedkey=1;}}c->Data=b+4;c->X=this->X;c->Y=this->Y+16;}
+			if(a==3){if(LinkFFCProxi(16,15,7,16,this)){Link->X=this->X-16;if(Link->Item[h]==true&&Link->PressR){usedkey=1;}}c->Data=b+4;c->X=this->X;c->Y=this->Y+16;}
+			this->CSet=j;c->CSet=j;
+			}
+		if(g<14)
+			{
+			if(usedkey==0){g=0;}
+			if(usedkey!=0)
+				{g++;
+				this->Data=d;
+				if(a==0){c->Data=d+1;c->X=this->X+16;c->Y=this->Y;}if(a==1){c->Data=d+1;c->X=this->X+16;c->Y=this->Y;}
+				if(a==2){c->Data=d+4;c->X=this->X;c->Y=this->Y+16;}if(a==3){c->Data=d+4;c->X=this->X;c->Y=this->Y+16;}
+				this->CSet=j;c->CSet=j;this->Flags[0]=true;c->Flags[0]=true;}
+			}
+		if(g==14)
+			{this->Data=e;c->Data=e;this->CSet=j;c->CSet=j;this->Flags[0]=true;c->Flags[0]=true;}
+		if(i>0){Screen->DrawCombo(0,this->X,this->Y+16,this->Data,1,1,j,-1,-1,0,0,0,0,2,true,64);
+				Screen->DrawCombo(0,c->X,c->Y+16,c->Data,1,1,j,-1,-1,0,0,0,0,2,true,64);}
+		Waitframe();
+		}
+	}
+}			
+ffc script Chest
+{
+void run(int a, int b, int c, int d, int e,int f)
+	{
+	while(true)
+		{
+		if(Tr[a]==b&&Link->Item[e]==false)
+			{this->Data=c;
+			if(LinkFFCProxi(f,1,1,4,this)&&Link->PressR)
+				{item g=Screen->CreateItem(e);g->Pickup=IP_HOLDUP;g->X=Link->X;g->Y=Link->Y;Game->PlaySound(20);Tr[a]=b+1;}
+			}
+		if(Tr[a]!=b){this->Data=d;}
+		Waitframe();
+		}
+	}
+}
+void EWepWall()
+{
+if(Screen->NumEWeapons()>0)
+	{
+	for(int zer=1;zer<=Screen->NumEWeapons();zer++)
+		{eweapon dozer=Screen->LoadEWeapon(zer);
+		if(Screen->isSolid(dozer->X+7,dozer->Y+7)||Screen->isSolid(dozer->X+8,dozer->Y+7)||
+		Screen->isSolid(dozer->X+7,dozer->Y+8)||Screen->isSolid(dozer->X+8,dozer->Y+8))	
+			{
+			dozer->DeadState=WDS_DEAD;
+			}
+		}
+	}
+}
+void Spa(int a,int b,int c,int d,int x,int y,int z,int w)//(Z[0],npc ID,spawn@x,y,if less than w)
+	{
+	if(Z[0]>=a&&Z[0]<=b&&Z[1]>=c&&Z[1]<=d&&Screen->NumNPCs()<w){CreateNPCAt(x,y,z);}
+	}
+bool LinkFFCProxi(int rpixels,int lpixels,int upixels,int dpixels,ffc aA) //
+	{if(aA->X+16+rpixels<=Link->X||aA->X-lpixels>=Link->X||aA->Y+16+dpixels<=Link->Y||aA->Y-upixels>=Link->Y){return false;}
+	if(aA->X+16+rpixels>Link->X&&aA->X-lpixels<Link->X&&aA->Y+16+dpixels>Link->Y&&aA->Y-upixels<Link->Y){return true;}}
+ffc script Messageplusitem
+{
+void run(int message1,int message2,int ITEM,int pixr,int pixl,int pixu,int pixd,int frames)
+	{
+	while(true)
+		{int data=this->Data;
+		if(Link->InputA&&LinkFFCProxi(pixr,pixl,pixu,pixd,this)==true&&Link->Item[ITEM]==false)
+			{
+			Screen->Message(message1);
+			Waitframe(); 
+			item ING=Screen->CreateItem(ITEM);
+			ING->X=Link->X;ING->Y=Link->Y;
+			this->Data=1;
+			}
+		if(Link->InputA&&LinkFFCProxi(pixr,pixl,pixu,pixd,this)==true&&Link->Item[ITEM]==true)
+			{
+			Screen->Message(message2);
+			}
+		Waitframes(frames);this->Data=data;
+		}
+	}
+}
+ffc script Messageplusitemcounter
+{
+void run(int message1,int message2,int ITEM,int pixr,int pixl,int pixu,int pixd,int frames)
+	{
+	while(true)
+		{int data=this->Data;
+		if(Link->InputA&&LinkFFCProxi(pixr,pixl,pixu,pixd,this)==true&&Game->Counter[7]<999)
+			{
+			Screen->Message(message1);
+			Waitframe(); 
+			item ING=Screen->CreateItem(ITEM);
+			ING->X=Link->X;ING->Y=Link->Y;
+			this->Data=1;
+			}
+		if(Link->InputA&&LinkFFCProxi(pixr,pixl,pixu,pixd,this)==true&&Game->Counter[7]==999)
+			{
+			Screen->Message(message2);
+			}
+Waitframes(frames);this->Data=data;
+		}
+	}
+}
+ffc script SideviewPlatform
+	{
+	void run(int x,int vx,int y,int vy)
+		{int X=x;int Y=y;ffc Zelda=Screen->LoadFFC(32);ffc Board=Screen->LoadFFC(27);
+		while(true)
+			{X--;Y--;
+			if(X>=0){this->Vx=vx;}
+			if(X<0){this->Vx=-vx;}
+			if(Y>=0){this->Vy=vy;}
+			if(Y<0){this->Vy=-vy;}
+			if(X==-x){X=x;}
+			if(Y==-y){Y=y;}
+			if(LinkFFCProxi(1,8,16,2,this)==true){Link->Jump=0;}
+			Waitframe();
+			}
+		}
+	}
+ffc script Blox
+	{
+	void run(int v,int w,int x,int y,ffc z)
+		{
+		while(true)
+			{
+			if(LinkFFCProxi(0,v,8,8,z)==true&&Link->InputRight){this->X++;}
+			if(LinkFFCProxi(w,0,8,8,z)==true&&Link->InputLeft){this->X--;}
+			if(LinkFFCProxi(8,8,x,0,z)==true&&Link->InputDown){this->Y++;}
+			if(LinkFFCProxi(8,8,0,y,z)==true&&Link->InputUp){this->Y--;}
+			Waitframe();
+			}
+		}
+	}
+int kiB;
+ffc script ScreenVisitationSpawn
+	{
+	void run(int x,int y,int z)
+		{
+		if(kiB<z){kiB++;}//amount of times Link has to visit the screen before the enemy appears.
+		if(Screen->NumNPCs()<10&&kiB==y){CreateNPCAt(x,this->X,this->Y);kiB=0;}
+		}
+	}
+ffc script OrbitingScript
+{
+    void run(int speed, int orbitr, int a, int speedb, int b,int sped, int spd)
+    {	
+	bool happen=false;
+	bool happenb=false;
+	int timetick=0;
+	int timetickb=0;
+	int x; int y;
+	int fly_x_dir;
+	int fly_y_dir;
+	int counter= Rand(360);
+       while(true)
+		{//check if ffc is within range of Link to start orbit, and that it has not already orbited Link.
+    	 if((this->X>=Link->X+8+orbitr || this->X<=Link->X+8-orbitr || this->Y>=Link->Y+8+orbitr || this->Y<=Link->Y+8-orbitr)
+		&& timetick==0 && happen==false)
+   		{//if too far away then go towards Link.
+			fly_x_dir=(Link->X-this->X)/Sqrt((this->X+Link->X)*(this->X+Link->X)+(this->Y+Link->Y)*(this->Y+Link->Y));
+        	fly_y_dir=(Link->Y-this->Y)/Sqrt((this->X+Link->X)*(this->X+Link->X)+(this->Y+Link->Y)*(this->Y+Link->Y));
+        	this->X+=fly_x_dir*speed;
+        	this->Y+=fly_y_dir*speed;
+			}
+	//check if the ffc is within range to start orbit/ be orbiting.
+         if((this->X<=Link->X+16+orbitr && this->X>=Link->X-8-orbitr && this->Y<=Link->Y+16+orbitr && this->Y>=Link->Y-orbitr-8)
+				&& timetick !=a && happen==false)
+			{//if yes, start circular motion pattern.
+			timetick += 1; 
+        		for(int i=0;i<5;i++)
+				{
+				x = Link->X; y = Link->Y;
+				this->X = x + Cos(counter)*(orbitr*(i+1)/5);
+                this->Y = y + Sin(counter)*(orbitr*(i+1)/5);
+				}
+				counter = (counter+3)%360;
+			}
+		if(timetick==a && happen==false)
+			{
+			fly_x_dir=(Link->X-this->X)/Sqrt((this->X+Link->X)*(this->X+Link->X)+(this->Y+Link->Y)*(this->Y+Link->Y));
+        	fly_y_dir=(Link->Y-this->Y)/Sqrt((this->X+Link->X)*(this->X+Link->X)+(this->Y+Link->Y)*(this->Y+Link->Y));
+        	this->X+=fly_x_dir*speedb;
+        	this->Y+=fly_y_dir*speedb;
+			timetickb+=1;
+			if(timetickb==b)
+				{happen=true;}
+			}
+		if(happen==true)
+			{
+			timetick=0;
+			timetickb=0;
+			fly_x_dir=(xx-this->X)/Sqrt((this->X+xx)*(this->X+xx)+(this->Y+xy)*(this->Y+xy));
+        	fly_y_dir=(xy-this->Y)/Sqrt((this->X+xx)*(this->X+xx)+(this->Y+xy)*(this->Y+xy));
+        	this->X+=fly_x_dir*spd;
+        	this->Y+=fly_y_dir*spd;
+			}
+	Waitframe();
+       }
+    }
+	
+}
+//speed is now argument D1
+//orbitr is the radius from link to determine the distance in pixels for detection of proximity and the orbit's size.
+//a is the time in tics the object will orbit Link before it 'charges' at him.
+//speedb is the speed at which the object will charge at link after the orbit.
+//b is the time in tics for the object to be charging at/stay on Link's location after initial
+//orbit of Link.
+ffc script BossDude
+{
+	void run()
+	{
+	int tiki=0; int set=0;
+	while(true)
+		{
+		xx=this->X; xy=this->Y;
+		if(tiki<120 && set==0)
+			{this->X+=1;tiki+=1;}
+		if(tiki==120)
+			{set=1;}
+		if(set==1 && tiki>0)
+			{this->X-=1;tiki-=1;}
+		if(tiki==0 && set==1)
+			{set=0;}
+		Waitframe();
+		}
+	}
+}
+item script ItemGetXD{void run(int z,int x){Game->Counter[z]+=x;}}
+item script LockBom
+{
+void run()
+    {
+	if(UseBoo<=0&&Screen->NumNPCs()>0&&Game->Counter[12]>0)
+		{UseBoo=1;dr=Screen->NumNPCs();triga=0;trigb=0;trigc=0;trigd=0;
+		if(LS==1){dr=1;}//Locks on to the #1 slot enemy if LS==1
+		}
+	}
+}
+	void M()
+	{ffc wolf=Screen->LoadFFC(32);ffc thi=Screen->LoadFFC(19);thi->Flags[0]=true;
+	if(CO!=5&&WOLFLINK==0&&Mario==0){return;}
+	if(CO==5&&Link->Item[160]==false)
+	{
+	wolf->Flags[3]=true;wolf->Flags[6]=true;
+	if(Link->PressEx3&&WOLFLINK==false&&Mario==false&&Link->Item[158]==true&&Link->Action!=11){WOLFLINK=true;EqA=GetEquipmentA();EqB=GetEquipmentB();Link->SelectAWeapon(50);Link->SelectBWeapon(50);LHP=Link->HP;LMP=Link->MP;Game->Counter[27]=Link->MaxHP;Game->Counter[28]=Link->MaxMP;Link->MaxHP=Game->Counter[29];Link->MaxMP=Game->Counter[30];Link->HP=GHP;Link->MP=GMP;return;}
+	if(Link->PressEx4&&Link->Item[159]==true&&WOLFLINK==false&&Mario==false&&Link->Action!=11){EqA=GetEquipmentA();EqB=GetEquipmentB();Link->SelectAWeapon(50);Link->SelectBWeapon(50);Mario=true;wolf->X=Link->X;wolf->Y=Link->Y;Link->MaxHP=Game->Counter[10];Link->MaxMP=Game->Counter[11];Link->MP=ZMP;Link->HP=ZHP;WOLFLINK=false;return;}
+	if(Link->PressEx4&&Mario==true&&Link->Item[159]==true){Link->Invisible=false;Mario=false;Link->SelectAWeapon(EqA);Link->SelectBWeapon(EqB);Link->MaxHP=Game->Counter[27];Link->MaxMP=Game->Counter[28];Link->HP=LHP;Link->MP=LMP;return;}
+	if(Link->PressEx3&&WOLFLINK==true&&Link->Item[158]==true){Link->Invisible=false;WOLFLINK=false;Link->Item[SWORD]==true;Link->MaxHP=Game->Counter[27];Link->MaxMP=Game->Counter[28];Link->HP=LHP;Link->MP=LMP;return;}
+	}
+	if(WOLFLINK==false&&Mario==false){LHP=Link->HP;LMP=Link->MP;Game->Counter[27]=Link->MaxHP;Game->Counter[28]=Link->MaxMP;}
+	if(WOLFLINK==true){GHP=Link->HP;GMP=Link->MP;Game->Counter[29]=Link->MaxHP;Game->Counter[30]=Link->MaxMP;}
+	if(Mario==true)
+		{Link->Invisible=true;Game->Counter[10]=Link->MaxHP;Game->Counter[11]=Link->MaxMP;ZHP=Link->HP;ZMP=Link->MP;
+		//if(IsSideview()==true&&!Screen->isSolid(CenterLinkX(),Link->Y+16)&&wolf->Vy<3.2){wolf->Ay=.16;}
+		//if(IsSideview()==true&&Screen->isSolid(CenterLinkX(),Link->Y+16)&&wolf->Vy<3.2){wolf->Ay=0;wolf->Vy=0;}
+
+		if(xDMAP!=DMAP||xSCN!=SCN)
+			{wolf->X=Link->X;wolf->Y=Link->Y;
+			if(Link->X<=0){Link->X=1;wolf->X=Link->X;}if(Link->Y<=0){Link->Y=1;wolf->Y=Link->Y;}
+			if(Link->X>=240){Link->X=239;wolf->X=Link->X;}if(Link->Y>=160){Link->Y=159;wolf->Y=Link->Y;}
+			}
+		wolf->TileHeight=1;wolf->TileWidth=1;wolf->Data=276+Link->Dir;
+		if(Link->InputUp||Link->InputDown||Link->InputLeft||Link->InputRight){wolf->Data=276+Link->Dir+4;}
+		if(!Link->InputRight&&!Link->InputLeft&&wolf->Vx>0){wolf->Vx-=.25;}
+		if(!Link->InputRight&&!Link->InputLeft&&wolf->Vx<0){wolf->Vx+=.25;}
+		if(Link->InputRight&&!Link->InputLeft&&wolf->Vx<3){wolf->Vx+=.25;
+		if(Link->InputB&&wolf->Vx<5){wolf->Vx+=.5;}}
+		if(Link->InputLeft&&!Link->InputRight&&wolf->Vx>3*(-1)){wolf->Vx-=.25;
+		if(Link->InputB&&wolf->Vx>5*(-1)){wolf->Vx-=.5;}}
+		if(!Link->InputDown&&wolf->Vy>0){wolf->Vy-=.25;}
+		if(!Link->InputUp&&wolf->Vy<0){wolf->Vy+=.25;}
+		if(Link->Jump>0){wolf->Ay-=Link->Jump/10;}//Zelda doesn't jump in this game, she has hovering magic though.
+		if(Link->Jump==0){wolf->Ay=0;}
+		if(IsSideview()==false&&!Link->InputDown&&Link->InputUp&&wolf->Vy>3*(-1)){wolf->Vy-=.25;
+		if(IsSideview()==false&&Link->InputB&&wolf->Vy>5*(-1)){wolf->Vy-=.5;}}
+		if(IsSideview()==false&&Link->InputDown&&!Link->InputUp&&wolf->Vy<3){wolf->Vy+=.25;
+		if(IsSideview()==false&&Link->InputB&&wolf->Vy<5){wolf->Vy+=.5;}}
+		if((Screen->isSolid(Link->X-1,Link->Y)||Screen->isSolid(Link->X-1,Link->Y+15)||Screen->ComboT[ComboAt(Link->X-1,Link->Y+15)]==3||Screen->ComboT[ComboAt(Link->X-1,Link->Y)]==3)&&wolf->Vx<0){wolf->Vx=wolf->Vx*(-1);}
+		if((Screen->isSolid(Link->X+16,Link->Y)||Screen->isSolid(Link->X+16,Link->Y+15)||Screen->ComboT[ComboAt(Link->X+16,Link->Y+15)]==3||Screen->ComboT[ComboAt(Link->X+16,Link->Y)]==3)&&wolf->Vx>0){wolf->Vx=wolf->Vx*(-1);}
+		if((Screen->isSolid(Link->X,Link->Y-1)||Screen->isSolid(Link->X+15,Link->Y-1)||Screen->ComboT[ComboAt(Link->X+15,Link->Y-1)]==3||Screen->ComboT[ComboAt(Link->X,Link->Y-1)]==3)&&wolf->Vy<0){wolf->Vy=wolf->Vy*(-1);}
+		if((Screen->isSolid(Link->X,Link->Y+16)||Screen->isSolid(Link->X+15,Link->Y+16)||Screen->ComboT[ComboAt(Link->X+15,Link->Y+16)]==3||Screen->ComboT[ComboAt(Link->X+15,Link->Y+16)]==3)&&wolf->Vy>0){wolf->Vy=wolf->Vy*(-1);}
+		Link->X=wolf->X;Link->Y=wolf->Y;
+		//if(xDMAP!=DMAP||xSCN!=SCN)
+			//{
+			//if(Link->X<=0){Link->X=1;wolf->X=Link->X;}if(Link->Y<=0){Link->Y=1;wolf->Y=Link->Y;}
+			//if(Link->X>=240){Link->X=239;wolf->X=Link->X;}if(Link->Y>=160){Link->Y=159;wolf->Y=Link->Y;}
+			//}
+		if(MARIOMOD==1){wolf->Data+8;}
+		if(IsSideview()==true&&MarioJump==0&&Slope==0&&wolf->Vy<0){wolf->Vy=0;}
+		if(IsSideview()==true&&!Screen->isSolid(wolf->X+8,wolf->Y+16)&&wolf->Vy<3.2){wolf->Vy+=.16;}
+		if(IsSideview()==true&&Screen->isSolid(wolf->X+8,wolf->Y+16)&&wolf->Vy>0){wolf->Vy=0;}
+		//PLATFORM(Screen->LoadFFC(4),wolf);Jump(wolf);CloudsS(wolf,thi,0,0,0);
+		}
+    if(WOLFLINK==true)
+        {lweapon BITE=Bitey();
+		Link->Invisible=true;wolf->Data=260+Link->Dir;wolf->X=Link->X-8;wolf->Y=Link->Y-8;wolf->TileHeight=2;wolf->TileWidth=2;
+		Link->HitXOffset=8;Link->HitYOffset=8;
+		if(Link->InputUp||Link->InputDown||Link->InputLeft||Link->InputRight){wolf->Data=260+Link->Dir+4;}
+        if(WOLFMOD==1){wolf->Data+8;}
+        if(Link->InputA&&!Link->InputB&&UseBite==0){UseBite+=1;}
+        if(Link->InputB&&!Link->InputA&&UseLunge==0){linkx=Link->X;linky=Link->Y;UseLunge+=1;}
+        if(UseBite==1)
+            {if(Link->Dir==0){Link->Y-=LUNGE_DIST;rebound=0;}                                        
+            if(Link->Dir==1){Link->Y+=LUNGE_DIST;rebound=1;}
+            if(Link->Dir==2){Link->X-=LUNGE_DIST;rebound=2;}
+            if(Link->Dir==3){Link->X+=LUNGE_DIST;rebound=3;}
+			
+            }
+        Attack(rebound,BITE);Lunge();
+		if(Link->Dir==0&&(Screen->ComboT[ComboAt(Link->X+15,Link->Y-1)]==3||Screen->ComboT[ComboAt(Link->X,Link->Y-1)]==3)){Link->Y=Link->Y+2;}
+		if(Link->Dir==1&&(Screen->ComboT[ComboAt(Link->X+15,Link->Y+16)]==3||Screen->ComboT[ComboAt(Link->X+15,Link->Y+16)]==3)){Link->Y=Link->Y-2;}
+		if(Link->Dir==2&&(Screen->ComboT[ComboAt(Link->X-7,Link->Y)]==3||Screen->ComboT[ComboAt(Link->X-7,Link->Y+15)]==3)&&wolf->Vy<0){Link->X=Link->X+2;}
+		if(Link->Dir==3&&(Screen->ComboT[ComboAt(Link->X+23,Link->Y)]==3||Screen->ComboT[ComboAt(Link->X+23,Link->Y+15)]==3)&&wolf->Vy>0){Link->X=Link->X-2;}
+		
+        }
+	if(WOLFLINK!=true&&Mario!=true&&Simon!=true&&dztic==45){wolf->Data=2;wolf->TileHeight=1;wolf->TileWidth=1;}
+	}
+	void HPUPCLouD(ffc thi)
+	{int z;
+	if(Link->InputEx3&&Link->PressB&&Mario==true&&HPUP==0){HPUP=1;}
+	if(HPUP==1)
+		{
+		if(Link->Dir==0){HPUP=2;thi->X=Link->X-8;thi->Y=Link->Y-30;z=Rand(14);}
+		if(Link->Dir==1){HPUP=2;thi->X=Link->X-8;thi->Y=Link->Y+17;z=Rand(14);}
+		if(Link->Dir==2){HPUP=2;thi->X=Link->X-30;thi->Y=Link->Y-8;z=Rand(14);}
+		if(Link->Dir==3){HPUP=2;thi->X=Link->X+14;thi->Y=Link->Y-8;z=Rand(14);}
+		}			
+	if(HPUP==2){Screen->DrawTile(7,thi->X,thi->Y,22370,2,2,z,-1,-1,0,0,0,0,true,128);}
+	if(LinkFFCProxi(16,0,0,16,thi)==true&&HPUP==2){Link->HP+=Game->Counter[12];HPUP=0;}
+	}
+	void CloudsS(ffc Zelda,ffc thi,int x,int y,int z)
+	{
+	if(IsSideview()==true&&Link->InputEx4)
+		{
+		if(Link->Dir==0&&Link->PressR){thi->X=Link->X-8;thi->Y=Link->Y-30;z=Rand(14);}
+		if(Link->Dir==1&&Link->PressR){thi->X=Link->X-8;thi->Y=Link->Y+17;z=Rand(14);}
+		if(Link->Dir==2&&Link->PressR){thi->X=Link->X-30;thi->Y=Link->Y-8;z=Rand(14);}
+		if(Link->Dir==3&&Link->PressR){thi->X=Link->X+14;thi->Y=Link->Y-8;z=Rand(14);}			
+		Screen->DrawTile(7,thi->X,thi->Y,22370,2,2,z,-1,-1,0,0,0,0,true,128);
+		if(FFCFFCProxi(0,0,16,2,thi,Zelda)==true&&Mario==true)
+				{
+				Zelda->Y=thi->Y-16;
+				if(!Link->InputRight&&!Link->InputLeft)
+					{
+					Zelda->Vx=thi->Vx;
+					if(thi->Vx>0){thi->Vx-=0.25;}
+					if(thi->Vx<0){thi->Vx+=0.25;}
+					}
+				}
+			//if(FFCFFCProxi(a,8,16,2,thi,Board)==true&&UseBoard==1)
+				//{
+				//Board->Y=thi->Y-16;Link->Y=Board->Y;
+				//if(!Link->InputRight&&!Link->InputLeft)Board->Vx=this->Vx;
+				//}
+		}
+	}
+
+	void Jump(ffc his)
+	{if(IsSideview()==false){his->Ay=0;}
+	if(IsSideview()==true&&Link->InputA&&Link->MP>0&&MarioJump<32&&!Screen->isSolid(his->X+8,his->Y-1)){Game->PlaySound(43);Link->MP--;MarioJump+=1;Link->Y=his->Y;if(his->Ay<2)his->Ay=-.25*2;}
+	if(IsSideview()==true&&(!Link->InputA||Link->MP==0||MarioJump==32)){MarioJump=0;if(his->Vy<0){his->Vy+.1;}if(his->Ay<0){his->Ay+=.9;if(his->Ay>0){his->Ay=0;}}}
+	if(IsSideview()==true&&Screen->isSolid(his->X+8,his->Y-1)){his->Y++;his->Vy=0;his->Ay=0;}
+	}
+	lweapon Bitey()
+   	{lweapon f;
+		if(Screen->NumLWeapons()>0)
+			{for(int i=1;i<=Screen->NumLWeapons();i++)
+				{f=Screen->LoadLWeapon(i);if(f->ID==LW_SCRIPT1)return f;}
+			}
+		if(Link->PressR){V[50]=1;f=Screen->CreateLWeapon(LW_SCRIPT1);f->Damage=8;f->UseSprite(100);return f;}
+		if(!Link->PressR){V[50]=0;Remove(f);}
+		}        
+	void Attack(int r, lweapon F)
+	{
+	while(UseBite==0){return;}
+        if(UseBite>=1&&UseBite<LUNGE_DIST+1)
+		{UseBite+=1;
+		if(Link->Dir==0&&F->isValid()){F->X=Link->X;F->Y=Link->Y-1;}
+		if(Link->Dir==1&&F->isValid()){F->X=Link->X;F->Y=Link->Y+8;}
+		if(Link->Dir==2&&F->isValid()){F->X=Link->X-1;F->Y=Link->Y;}
+		if(Link->Dir==3&&F->isValid()){F->X=Link->X+8;F->Y=Link->Y;}
+		if(Link->Dir==4&&F->isValid()){F->X=Link->X-1;F->Y=Link->Y-1;}
+		if(Link->Dir==5&&F->isValid()){F->X=Link->X+8;F->Y=Link->Y-1;}
+		if(Link->Dir==6&&F->isValid()){F->X=Link->X-1;F->Y=Link->Y+8;}
+		if(Link->Dir==7&&F->isValid()){F->X=Link->X+8;F->Y=Link->Y+8;}
+		if(UseBite==LUNGE_DIST+1)
+			{if(r==0){Link->Y+=LUNGE_DIST;rebound=-1;UseBite=0;}if(r==1){Link->Y-=LUNGE_DIST;rebound=-1;UseBite=0;}    
+			if(r==2){Link->X+=LUNGE_DIST;rebound=-1;UseBite=0;}if(r==3){Link->X-=LUNGE_DIST;rebound=-1;UseBite=0;}}
+		}
+	}
+void Lunge()
+	{
+	if(UseLunge==0){return;}
+	if(UseLunge>0)
+		{
+		if(Screen->NumNPCs()==0){UseLunge=0;return;}
+		if(ruff<1){ruff=1;}
+		ffc TT=Screen->LoadFFC(31);ffc SS=Screen->LoadFFC(31);
+		SS->Data=1;npc AA=Screen->LoadNPC(ruff);TT->Flags[0]=true;
+		while(tick>0){tick-=1;return;}
+		if(Link->InputB&&triA==0)
+			{Link->X=linkx;Link->Y=linky;
+			TT->Data=65272;TT->X=AA->X;TT->Y=AA->Y;
+			if(Link->InputL){ruff-=1;tick=5;if(ruff==0){ruff=Screen->NumNPCs();}return;}
+			if(Link->InputR){ruff+=1;tick=5;if(ruff==Screen->NumNPCs()+1){ruff=1;}return;}
+			}
+		if(!AA->isValid()&&ruff>1){ruff-=1;}
+		if(!AA->isValid()&&triA==1){TT->Data=1;triA=0;UseLunge=0;}
+		if(!Link->InputB && triA==0){triA=1;TT->Data=1;SS->X=Link->X;SS->Y=Link->Y;}
+		if(triA==1)
+			{
+			if(Collision(SS,AA)==false)
+				{WOLFMOD=1;Link->HP=HPLAST;
+				SS->Vx=(AA->X-SS->X)/Distance(AA->X,SS->X,AA->Y,SS->Y)*LUNGE_SPEED;
+				SS->Vy=(AA->Y-SS->Y)/Distance(AA->X,SS->X,AA->Y,SS->Y)*LUNGE_SPEED;
+				Link->X=SS->X;Link->Y=SS->Y;
+				if(SS->Vx>0&&(Screen->isSolid(Link->X+16,Link->Y)||Screen->isSolid(Link->X+16,Link->Y+15))){triA=2;}
+				if(SS->Vx<0&&(Screen->isSolid(Link->X-1,Link->Y)||Screen->isSolid(Link->X-1,Link->Y+15))){triA=2;}
+				if(SS->Vy>0&&(Screen->isSolid(Link->X,Link->Y+16)||Screen->isSolid(Link->X+15,Link->Y+16))){triA=2;}
+				if(SS->Vy<0&&(Screen->isSolid(Link->X,Link->Y-1)||Screen->isSolid(Link->X+15,Link->Y-1))){triA=2;}
+				}
+			if(Collision(SS,AA)==true)
+				{Link->HP=HPLAST;WOLFMOD=0;Game->PlaySound(100);tick+=2;triA=2;
+				}
+			}
+        if(triA==2){TT->Data=0;UseLunge=0;triA=0;}
+		}
+	}
+	void LB(ffc d1, ffc d2, ffc d3)
+	{npc tA;npc tB;npc tC;int NO=65120;
+	ffc t4=Screen->LoadFFC(26);t4->Flags[3]=true;
+	ffc t2=Screen->LoadFFC(25);t2->Flags[3]=true;
+	ffc t3=Screen->LoadFFC(24);t3->Flags[3]=true;
+	ffc T=Screen->LoadFFC(23);T->Flags[0]=true;T->Flags[3]=true;
+	if(UseBoo==-1||WOLFLINK==true){T->Data=2;triga=0;trigb=0;trigc=0;trigd=0;trigA=0;trigB=0;trigC=0;dznpcA=0;dznpcB=0;dznpcC=0;t2->Data=2;t3->Data=2;t4->Data=2;return;}
+	t4->Flags[0]=true;t4->Flags[0]=true;t3->Flags[0]=true;t2->Flags[0]=true;
+	if(dznpcA>Screen->NumNPCs()||dznpcA<1){dznpcA=Screen->NumNPCs();if(LS==1)dznpcA=1;}
+	if(dznpcB>Screen->NumNPCs()||dznpcB<1){dznpcB=Screen->NumNPCs();if(LS==1)dznpcB=1;}
+	if(dznpcC>Screen->NumNPCs()||dznpcC<1){dznpcC=Screen->NumNPCs();if(LS==1)dznpcC=1;}
+    if(Screen->NumNPCs()>0)tA=Screen->LoadNPC(dznpcA);t4->X=tA->X;t4->Y=tA->Y;
+	if(Screen->NumNPCs()>0)tB=Screen->LoadNPC(dznpcB);t2->X=tB->X;t2->Y=tB->Y;
+	if(Screen->NumNPCs()>0)tC=Screen->LoadNPC(dznpcC);t3->X=tC->X;t3->Y=tC->Y;
+	if(tA->HP==0){dznpcA==Screen->NumNPCs();}
+	if(tB->HP==0){dznpcB==Screen->NumNPCs();}
+	if(tC->HP==0){dznpcC==Screen->NumNPCs();}
+	t4->CSet=6;t3->CSet=6;t2->CSet=6;npc oot=Screen->LoadNPC(dr);int h;
+	if(XF(10)<6)h=0;if(XF(10)>5)h=8;
+	if(UseBoo>=1)
+    {
+    if(trigC==0)
+        {
+        if(Link->InputB)
+            {V[50]=1;
+			for(int b=0;b<=175;b++)
+				{
+				if(Screen->ComboF[b]==6){t4->X=ComboX(b);t4->Y=ComboY(b);}
+				}
+			if(Link->PressEx3){dr-=1;if(dr<=0){dr=Screen->NumNPCs();}}
+            if(Link->PressEx4){dr+=1;if(dr>=Screen->NumNPCs()+1){dr=1;}}
+            T->Data=204;T->X=oot->X;T->Y=oot->Y;
+		
+            if(Link->PressA&&oot->isValid()&&trigA==0&&trigB==0&&trigC==0){!Link->PressA;Game->Counter[12]-=1;T->CSet+=1;trigA=1;dznpcA=dr;t4->Data=205;return;}
+            if(Link->PressA&&oot->isValid()&&trigA==1&&trigB==0&&trigC==0&&Game->Counter[12]>0){!Link->PressA;Game->Counter[12]-=1;T->CSet+=1;trigB=1;dznpcB=dr;t2->Data=206;return;}
+            if(Link->PressA&&oot->isValid()&&trigA==1&&trigB==1&&trigC==0&&Game->Counter[12]>0){!Link->PressA;Game->Counter[12]-=1;T->X=Link->X;T->Y=Link->Y;trigC=1;dznpcC=dr;t3->Data=207;return;}
+            if(Link->InputA&&!oot->isValid()){trigA=0;trigB=0;trigC=0;dznpcA=0;dznpcB=0;dznpcC=0;dr=0;UseBoo=-1;}
+            }
+        if(!Link->InputB&&trigA==0&&trigB==0&&trigC==0){UseBoo=-1;}
+		if(!Link->InputB&&trigA==1&&trigB==0&&trigC==0)
+			{
+			if(!tA->isValid()){lweapon bom2=CreateLWeaponAt(4,d1->X,d1->Y);bom2->Damage=Game->Counter[16]*4;trigA=0;dznpcA=0;dr=0;UseBoo=-1;t4->Data=2;T->Data=2;triga=0;VM=0;}
+			if(triga==0){d1->X=Link->X;d1->Y=Link->Y;triga=1;tic=10;d1->Vx=0;d1->Vy=0;return;}
+			if(triga==1)
+				{
+				if(MTYPE==0&&VM==0)
+					{//Code block determines with Missle TYPE 0 forward velocity and spread of missles at launch.
+					if(Link->Dir==0){d1->Vy=-MV;}if(Link->Dir==1){d1->Vy=MV;}if(Link->Dir==2){d1->Vx=-MV;}
+					if(Link->Dir==3){d1->Vx=MV;}VM=1;
+					}
+				if(Collision(d1,t4)==false&&trigb==0)
+					{
+					if(MTYPE==0)
+						{Screen->DrawTile(7,d1->X,d1->Y,NO+TM(A(t4->X,t4->Y,d1->X,d1->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d1->Vx+=(t4->X-d1->X)/Distance(t4->X,d1->X,t4->Y,d1->Y)/16*MD;
+            			d1->Vy+=(t4->Y-d1->Y)/Distance(t4->X,d1->X,t4->Y,d1->Y)/16*MD;	
+						if(d1->Vx>MD){d1->Vx=MD;}
+						if(d1->Vy>MD){d1->Vy=MD;}
+						}
+					if(MTYPE==1)
+						{Screen->DrawTile(7,d1->X,d1->Y,NO+TM(A(t4->X,t4->Y,d1->X,d1->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d1->Vx=(t4->X-d1->X)/Distance(t4->X, d1->X, t4->Y, d1->Y)*MD1;
+            			d1->Vy=(t4->Y-d1->Y)/Distance(t4->X, d1->X, t4->Y, d1->Y)*MD1;
+						}
+					}
+				if(Collision(d1,t4)==true||Link->PressA){!Link->PressA;lweapon bom2=CreateLWeaponAt(4,d1->X,d1->Y);bom2->Damage=Game->Counter[16]*4;trigA=0;dznpcA=0;dr=0;UseBoo=-1;t4->Data=2;T->Data=2;triga=0;VM=0;}
+				}
+			}
+		if(!Link->InputB&&trigA==1&&trigB==1&&trigC==0)
+			{
+			if(!tA->isValid()){lweapon bom2=CreateLWeaponAt(4,d1->X,d1->Y);bom2->Damage=Game->Counter[16]*4;dznpcA=0;dr=0;UseBoo=-1;t4->Data=2;T->Data=2;triga=0;trigb=1;}
+			if(!tB->isValid()){lweapon bom2=CreateLWeaponAt(4,d1->X,d1->Y);bom2->Damage=Game->Counter[16]*4;dznpcB=0;dr=0;UseBoo=-1;t2->Data=2;T->Data=2;trigb=0;trigc=1;}
+			if(triga==0){d1->X=Link->X;d1->Y=Link->Y;d1->Vx=0;d1->Vy=0;d2->Vy=0;d2->Vx=0;d2->X=Link->X;d2->Y=Link->Y;triga=1;tic=10;return;}
+			if(triga==1)
+				{
+				if(MTYPE==0&&VM==0)
+					{//Code block determines with Missle TYPE 0 forward velocity and spread of missles at launch.
+					if(Link->Dir==0){d1->Vy=-MV;d2->Vy=-MV;d1->Vx=-MS;d2->Vx=MS;}
+					if(Link->Dir==1){d1->Vy=MV;d2->Vy=MV;d1->Vx=MS;d2->Vx=-MS;}
+					if(Link->Dir==2){d1->Vx=-MV;d2->Vx=-MV;d1->Vy=MS;d2->Vy=-MS;}
+					if(Link->Dir==3){d1->Vx=MV;d2->Vx=MV;d1->Vy=-MS;d2->Vy=MS;}
+					VM=1;
+					}
+				if(Collision(d1,t4)==false&&trigb==0)	
+					{
+					if(MTYPE==0)
+						{Screen->DrawTile(7,d1->X,d1->Y,NO+TM(A(t4->X,t4->Y,d1->X,d1->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d1->Vx+=(t4->X-d1->X)/Distance(t4->X,d1->X,t4->Y,d1->Y)/16*MD;
+            			d1->Vy+=(t4->Y-d1->Y)/Distance(t4->X,d1->X,t4->Y,d1->Y)/16*MD;	
+						if(d1->Vx>MD){d1->Vx=MD;}if(d1->Vy>MD){d1->Vy=MD;}
+						}
+					if(MTYPE==1)
+						{Screen->DrawTile(7,d1->X,d1->Y,NO+TM(A(t4->X,t4->Y,d1->X,d1->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d1->Vx=(t4->X-d1->X)/Distance(t4->X,d1->X,t4->Y,d1->Y)*MD1;
+            			d1->Vy=(t4->Y-d1->Y)/Distance(t4->X,d1->X,t4->Y,d1->Y)*MD1;
+						}
+					}
+				if(Collision(d1,t4)==true&&trigb==0){trigb=1;lweapon bom2=CreateLWeaponAt(4,d1->X,d1->Y);bom2->Damage=Game->Counter[16]*4;t4->Data=2;dznpcA=0;}
+				if(Collision(d2,t2)==false&&trigc==0)
+					{
+					if(MTYPE==0)
+						{Screen->DrawTile(7,d2->X,d2->Y,NO+TM(A(t2->X,t2->Y,d2->X,d2->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d2->Vx+=(t2->X-d2->X)/Distance(t2->X,d2->X,t2->Y,d2->Y)/16*MD;
+            			d2->Vy+=(t2->Y-d2->Y)/Distance(t2->X,d2->X,t2->Y,d2->Y)/16*MD;	
+						if(d2->Vx>MD){d2->Vx=MD;}
+						if(d2->Vy>MD){d2->Vy=MD;}
+						}
+					if(MTYPE==1)
+						{Screen->DrawTile(7,d2->X,d2->Y,NO+TM(A(t2->X,t2->Y,d2->X,d2->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d2->Vx=(t2->X-d2->X)/Distance(t2->X,d2->X,t2->Y,d2->Y)*MD1;
+            			d2->Vy=(t2->Y-d2->Y)/Distance(t2->X,d2->X,t2->Y,d2->Y)*MD1;	
+						}
+					}
+				if(Collision(d2,t2)==true&&trigc==0){trigc=1;lweapon bom3=CreateLWeaponAt(4, d2->X, d2->Y);bom3->Damage=Game->Counter[16]*4;t2->Data=2;dznpcB=0;}
+				if(trigb==1&&trigc==1){trigA=0;trigB=0;dr=0;UseBoo=-1;t4->Data=2;t2->Data=2;T->Data=2;triga=0;trigb=0;trigc=0;VM=0;}
+				if(Link->PressA)
+					{!Link->PressA;
+					if(trigb==0){trigb=1;lweapon bom2=CreateLWeaponAt(4,d1->X,d1->Y);bom2->Damage=Game->Counter[16]*4;t4->Data=2;dznpcA=0;return;}
+					if(trigc==0){trigc=1;lweapon bom3=CreateLWeaponAt(4,d2->X,d2->Y);bom3->Damage=Game->Counter[16]*4;t2->Data=2;dznpcB=0;return;}
+					}
+				}
+			}
+        }
+    if(trigC==1)
+        {
+			if(!tA->isValid()){lweapon bom2=CreateLWeaponAt(4,d1->X,d1->Y);bom2->Damage=Game->Counter[16]*4;dznpcA=0;dr=0;UseBoo=-1;t4->Data=2;T->Data=2;triga=0;trigb=1;}
+			if(!tB->isValid()){lweapon bom3=CreateLWeaponAt(4,d2->X,d2->Y);bom3->Damage=Game->Counter[16]*4;dznpcB=0;dr=0;UseBoo=-1;t2->Data=2;T->Data=2;trigb=0;trigc=1;}
+			if(!tC->isValid()){lweapon bom4=CreateLWeaponAt(4,d3->X,d3->Y);bom4->Damage=Game->Counter[16]*4;dznpcC=0;dr=0;UseBoo=-1;t3->Data=2;T->Data=2;trigc=0;trigd=1;}
+
+		if(Link->InputB&&triga==0)
+            {t4->CSet=6;t2->CSet=6;t3->CSet=6;T->X=Link->X;T->Y=Link->Y;T->Data=65275;T->CSet=9;}
+        if(!Link->InputB)
+            {
+			lweapon bom2;lweapon bom3;lweapon bom4;
+			if(triga==0){d1->X=Link->X;d1->Y=Link->Y;d2->X=Link->X;d2->Y=Link->Y;d3->X=Link->X;d3->Y=Link->Y;d1->Vx=0;d1->Vy=0;d2->Vy=0;d2->Vx=0;d3->Vy=0;d3->Vx=0;triga=1;tic=10;return;}
+			if(triga==1)
+				{
+				if(MTYPE==0&&VM==0)
+					{//Code block determines with Missle TYPE 0 forward velocity and spread of missles at launch.
+					if(Link->Dir==0){d1->Vy=-MV;d2->Vy=-MV;d3->Vy=-MV;d1->Vx=-MS;d3->Vx=MS;}
+					if(Link->Dir==1){d1->Vy=MV;d2->Vy=MV;d3->Vy=MV;d1->Vx=MS; d3->Vx=-MS;}
+					if(Link->Dir==2){d1->Vx=-MV;d2->Vx=-MV;d3->Vx=-MV;d1->Vy=MS; d3->Vy=-MS;}
+					if(Link->Dir==3){d1->Vx=MV;d2->Vx=MV;d3->Vx=MV;d1->Vy=-MS; d3->Vy=MS;}
+					VM=1;}
+				if(Collision(d1,t4)==false && trigb==0)	
+					{
+					if(MTYPE==0)
+						{Screen->DrawTile(7,d1->X,d1->Y,NO+TM(A(t4->X,t4->Y,d1->X,d1->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d1->Vx+=(t4->X-d1->X)/Distance(t4->X,d1->X,t4->Y,d1->Y)/16*MD;
+            			d1->Vy+=(t4->Y-d1->Y)/Distance(t4->X,d1->X,t4->Y,d1->Y)/16*MD;	
+						if(d1->Vx>MD){d1->Vx=MD;}
+						if(d1->Vy>MD){d1->Vy=MD;}}
+					if(MTYPE==1)
+						{Screen->DrawTile(7,d1->X,d1->Y,NO+TM(A(t4->X,t4->Y,d1->X,d1->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d1->Vx=(t4->X-d1->X)/Distance(t4->X,d1->X,t4->Y,d1->Y)*MD1;
+            			d1->Vy=(t4->Y-d1->Y)/Distance(t4->X,d1->X,t4->Y,d1->Y)*MD1;}
+					}
+					if(Collision(d1,t4)==true && trigb==0)
+           			{trigb=1;lweapon bom2=CreateLWeaponAt(4,d1->X,d1->Y);bom2->Damage=Game->Counter[16]*4;t4->Data=2;dznpcA=0;}
+				if(Collision(d2,t2)==false&&trigc==0)
+					{
+					if(MTYPE==0)
+						{Screen->DrawTile(7,d2->X,d2->Y,NO+TM(A(t2->X,t2->Y,d2->X,d2->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d2->Vx+=(t2->X-d2->X)/Distance(t2->X,d2->X,t2->Y,d2->Y)/16*MD;
+            			d2->Vy+=(t2->Y-d2->Y)/Distance(t2->X,d2->X,t2->Y,d2->Y)/16*MD;	
+						if(d2->Vx>MD){d2->Vx=MD;}
+						if(d2->Vy>MD){d2->Vy=MD;}}
+					if(MTYPE==1)
+						{Screen->DrawTile(7, d2->X, d2->Y, NO+TM(A(t2->X,t2->Y,d2->X,d2->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d2->Vx=(t2->X-d2->X)/Distance(t2->X,d2->X,t2->Y,d2->Y)*MD1;
+            			d2->Vy=(t2->Y-d2->Y)/Distance(t2->X,d2->X,t2->Y,d2->Y)*MD1;}
+					}
+				if(Collision(d2,t2)==true  && trigc==0)
+           			{trigc=1;lweapon bom3=CreateLWeaponAt(4,d2->X,d2->Y);bom3->Damage=Game->Counter[16]*4; t2->Data=2; dznpcB=0;}
+				if(Collision(d3,t3)==false && trigd==0)
+					{
+					if(MTYPE==0)
+						{Screen->DrawTile(7,d3->X,d3->Y,NO+TM(A(t3->X,t3->Y,d3->X,d3->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d3->Vx+=(t3->X-d3->X)/Distance(t3->X,d3->X,t3->Y,d3->Y)/16*MD;
+            			d3->Vy+=(t3->Y-d3->Y)/Distance(t3->X,d3->X,t3->Y,d3->Y)/16*MD;
+						if(d3->Vx>MD){d2->Vx=MD;}
+						if(d3->Vy>MD){d2->Vy=MD;}}
+					if(MTYPE==1)
+						{Screen->DrawTile(7,d3->X,d3->Y,NO+TM(A(t3->X,t3->Y,d3->X,d3->Y)+h),1,1,6,-1,-1,0,0,0,0,true,128);
+						d3->Vx=(t3->X-d3->X)/Distance(t3->X,d3->X,t3->Y,d3->Y)*MD1;
+            			d3->Vy=(t3->Y-d3->Y)/Distance(t3->X,d3->X,t3->Y,d3->Y)*MD1;}
+					}
+				if(Collision(d3,t3)==true && trigd==0){trigd=1;lweapon bom4=CreateLWeaponAt(4, d3->X, d3->Y);bom4->Damage=Game->Counter[16]*4;dznpcC=0;}
+				if(trigb==1&&trigc==1&&trigd==1){trigA=0;trigB=0;trigC=0; dr=0;UseBoo=-1;t4->Data=2;t2->Data=2;t3->Data=2;T->Data=2;triga=0;trigb=0;trigc=0;trigd=0;VM=0;}
+				if(Link->PressA)
+					{!Link->PressA;
+					if(trigb==0){trigb=1;lweapon bom2=CreateLWeaponAt(4,d1->X,d1->Y);bom2->Damage=Game->Counter[16]*4;t4->Data=2;dznpcA=0;return;}
+					if(trigc==0){trigc=1;lweapon bom3=CreateLWeaponAt(4,d2->X,d2->Y);bom3->Damage=Game->Counter[16]*4;t2->Data=2;dznpcB=0;return;}
+					if(trigd==0){trigd=1;lweapon bom4=CreateLWeaponAt(4,d3->X,d3->Y);bom4->Damage=Game->Counter[16]*4;dznpcC=0;return;}}
+				}
+				//hitcheck(bom2,bom3,bom4,d1,d2,d3);
+			}
+		}
+	}
+    if(UseBoo<=0)
+    {return;}       
+    }
+
+void LP()//shows Link's HP and MP in numerical value, Link->HP over Link->MAXHP and Link->MP over Link->MAXMP
+	{
+	if(V[0]==1){return;}
+	//Screen->DrawTile(7,180,-56,784,4,2,6,-1,-1,0,0,0,0,true,128);
+	Screen->DrawTile(7,182,-47,65020,2,1,6,-1,-1,0,0,0,0,true,128);
+	Screen->DrawTile(7,230,-54,65160+Link->HP%10,1,1,Store7,-1,-1,0,0,0,0,true,128);
+	if(Link->HP>=10)Screen->DrawTile(7,222,-54,65160+(Link->HP%100-Link->HP%10)/10,1,1,Store7,-1,-1,0,0,0,0,true,128);
+	if(Link->HP>=100)Screen->DrawTile(7,214,-54,65160+(Link->HP%1000-Link->HP%100)/100,1,1,Store7,-1,-1,0,0,0,0,true,128);
+	if(Link->HP>=1000)Screen->DrawTile(7,206,-54,65160+(Link->HP%10000-Link->HP%1000)/1000,1,1,Store7,-1,-1,0,0,0,0,true,128);
+	if(Link->HP>=10000)Screen->DrawTile(7,198,-54,65160+(Link->HP%100000-Link->HP%10000)/10000,1,1,Store7,-1,-1,0,0,0,0,true,128);
+	Screen->DrawTile(7,240,-40,65160+Link->MaxHP%10,1,1,Store6,-1,-1,0,0,0,0,true,128);
+	if(Link->MaxHP>=10)Screen->DrawTile(7,232,-40,65160+(Link->MaxHP%100-Link->MaxHP%10)/10,1,1,Store6,-1,-1,0,0,0,0,true,128);
+	if(Link->MaxHP>=100)Screen->DrawTile(7,224,-40,65160+(Link->MaxHP%1000-Link->MaxHP%100)/100,1,1,Store6,-1,-1,0,0,0,0,true,128);
+	if(Link->MaxHP>=1000)Screen->DrawTile(7,216,-40,65160+(Link->MaxHP%10000-Link->MaxHP%1000)/1000,1,1,Store6,-1,-1,0,0,0,0,true,128);
+	if(Link->MaxHP>=10000)Screen->DrawTile(7,208,-40,65160+(Link->MaxHP%100000-Link->MaxHP%10000)/10000,1,1,Store6,-1,-1,0,0,0,0,true,128);
+	Screen->DrawTile(7,182,-24,65022,2,1,6,-1,-1,0,0,0,0,true,128);
+	Screen->DrawTile(7,230,-26,65180+Link->MP%10,1,1,Store5,-1,-1,0,0,0,0,true,128);
+	if(Link->MP>=10)Screen->DrawTile(7,222,-26,65180+(Link->MP%100-Link->MP%10)/10,1,1,Store5,-1,-1,0,0,0,0,true,128);
+	if(Link->MP>=100)Screen->DrawTile(7,214,-26,65180+(Link->MP%1000-Link->MP%100)/100,1,1,Store5,-1,-1,0,0,0,0,true,128);
+	if(Link->MP>=1000)Screen->DrawTile(7,206,-26,65180+(Link->MP%10000-Link->MP%1000)/1000,1,1,Store5,-1,-1,0,0,0,0,true,128);
+	if(Link->MP>=10000)Screen->DrawTile(7,198,-26,65180+(Link->MP%100000-Link->MP%10000)/10000,1,1,Store5,-1,-1,0,0,0,0,true,128);
+	Screen->DrawTile(7,240,-14,65180+Link->MaxMP%10,1,1,Store4,-1,-1,0,0,0,0,true,128);
+	if(Link->MaxMP>=10)Screen->DrawTile(7,232,-14,65180+(Link->MaxMP%100-Link->MaxMP%10)/10,1,1,Store4,-1,-1,0,0,0,0,true,128);
+	if(Link->MaxMP>=100)Screen->DrawTile(7,224,-14,65180+(Link->MaxMP%1000-Link->MaxMP%100)/100,1,1,Store4,-1,-1,0,0,0,0,true,128);
+	if(Link->MaxMP>=1000)Screen->DrawTile(7,216,-14,65180+(Link->MaxMP%10000-Link->MaxMP%1000)/1000,1,1,Store4,-1,-1,0,0,0,0,true,128);
+	if(Link->MaxMP>=10000)Screen->DrawTile(7,208,-14,65180+(Link->MaxMP%100000-Link->MaxMP%10000)/10000,1,1,Store4,-1,-1,0,0,0,0,true,128);
+	}
+void T()
+	{
+	Link->HP=10;Link->MaxHP=10;
+	if(T==1){Game->PlayEnhancedMusic(GT,1);T++;V[99]=Rand(6);V[98]=Rand(5);V[97]=Rand(5);V[96]=Rand(6);V[95]=Rand(5);}
+	if(T==108001){return;}
+	if(T==108000){Link->CollDetection=true;!Link->Invisible;T++;Z[97]=0;}
+	if(T<108000)//3 minutes.
+		{
+		if(T<2300){NoAction();}
+		if(T>=0&&T<550)
+			{T++;
+			Screen->DrawTile(7,-15,-56,64740,17,9,3,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,-15,80,64900,17,1,3,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,-15,96,64900,17,1,3,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,-15,112,64900,17,1,3,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,-15,128,64900,17,1,3,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,-15,144,64900,17,1,3,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,-15,160,64900,17,1,3,-1,-1,0,0,0,0,true,128);
+			int a=0;int b=0;
+			if(264-T>80&&V[99]==0)Screen->DrawString(7,124,264-T,23,15,1,1,SCR1a,OP_OPAQUE);
+			if(264-T>80&&V[99]==1)Screen->DrawString(7,124,264-T,23,15,1,1,SCR1b,OP_OPAQUE);
+			if(264-T>80&&V[99]==2)Screen->DrawString(7,124,264-T,23,15,1,1,SCR1c,OP_OPAQUE);
+			if(264-T>80&&V[99]==3)Screen->DrawString(7,124,264-T,23,15,1,1,SCR1d,OP_OPAQUE);
+			if(264-T>80&&V[99]==4)Screen->DrawString(7,124,264-T,23,15,1,1,SCR1e,OP_OPAQUE);
+			if(264-T>80&&V[99]==5)Screen->DrawString(7,124,264-T,23,15,1,1,SCR1f,OP_OPAQUE);
+			if(264-T>80&&V[99]==6)Screen->DrawString(7,124,264-T,23,15,1,1,SCR1g,OP_OPAQUE);
+			a+=16;b=264+a-T;
+			if(b>80&&V[98]==0)Screen->DrawString(7,124,b,23,15,1,1,SCR2a,OP_OPAQUE);
+			if(b>80&&V[98]==1)Screen->DrawString(7,124,b,23,15,1,1,SCR2b,OP_OPAQUE);
+			if(b>80&&V[98]==2)Screen->DrawString(7,124,b,23,15,1,1,SCR2c,OP_OPAQUE);
+			if(b>80&&V[98]==3)Screen->DrawString(7,124,b,23,15,1,1,SCR2d,OP_OPAQUE);
+			if(b>80&&V[98]==4)Screen->DrawString(7,124,b,23,15,1,1,SCR2e,OP_OPAQUE);
+			a+=16;b=264+a-T;
+			if(b>80&&V[97]==0)Screen->DrawString(7,124,b,23,15,1,1,SCR3a,OP_OPAQUE);
+			if(b>80&&V[97]==1)Screen->DrawString(7,124,b,23,15,1,1,SCR3b,OP_OPAQUE);
+			if(b>80&&V[97]==2)Screen->DrawString(7,124,b,23,15,1,1,SCR3c,OP_OPAQUE);
+			if(b>80&&V[97]==3)Screen->DrawString(7,124,b,23,15,1,1,SCR3d,OP_OPAQUE);
+			if(b>80&&V[97]==4)Screen->DrawString(7,124,b,23,15,1,1,SCR3e,OP_OPAQUE);
+			a+=16;b=264+a-T;
+			if(b>80&&V[96]==0)Screen->DrawString(7,124,b,23,15,1,1,SCR4a,OP_OPAQUE);
+			if(b>80&&V[96]==1)Screen->DrawString(7,124,b,23,15,1,1,SCR4b,OP_OPAQUE);
+			if(b>80&&V[96]==2)Screen->DrawString(7,124,b,23,15,1,1,SCR4c,OP_OPAQUE);
+			if(b>80&&V[96]==3)Screen->DrawString(7,124,b,23,15,1,1,SCR4d,OP_OPAQUE);
+			if(b>80&&V[96]==4)Screen->DrawString(7,124,b,23,15,1,1,SCR4e,OP_OPAQUE);
+			if(b>80&&V[96]==5)Screen->DrawString(7,124,b,23,15,1,1,SCR4f,OP_OPAQUE);
+			if(b>80&&V[96]==6)Screen->DrawString(7,124,b,23,15,1,1,SCR4g,OP_OPAQUE);
+			if(b>80&&V[95]==0)Screen->DrawString(7,124,b,23,15,1,1,SCR5a,OP_OPAQUE);
+			a+=16;b=264+a-T;
+			if(b>80&&V[95]==1)Screen->DrawString(7,124,b,23,15,1,1,SCR5b,OP_OPAQUE);
+			if(b>80&&V[95]==2)Screen->DrawString(7,124,b,23,15,1,1,SCR5c,OP_OPAQUE);
+			if(b>80&&V[95]==3)Screen->DrawString(7,124,b,23,15,1,1,SCR5d,OP_OPAQUE);
+			if(b>80&&V[95]==4)Screen->DrawString(7,124,b,23,15,1,1,SCR5e,OP_OPAQUE);
+			if(b>80&&V[95]==5)Screen->DrawString(7,124,b,23,15,1,1,SCR5f,OP_OPAQUE);
+			}
+		if(T>=550&&T<1100)
+			{Screen->DrawTile(7,0,-56,64220,14,14,3,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,224,-56,64233,1,14,3,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,240,-56,64233,1,14,3,-1,-1,0,0,0,0,true,128);
+			int ZT[]="The Hero of Time.";
+			Screen->DrawString(7,180,48,23,15,1,1,ZT,OP_OPAQUE);
+			T++;}
+		if(T>=1100&&T<1200){int ZT[]="LINK'S HOUSE";Screen->DrawString(7,140,16,25,13,15,1,ZT,OP_TRANS);CO=5;Link->Dir=1;Z[98]=0;Z[99]=0;T++;}
+		if(T>=1200&&T<1400){Z[98]=2;Z[99]=6;T++;}
+		if(T>=1400&&T<1430){Link->InputDown=true;Z[98]=0;Z[99]=0;if(T%20==0){Z[99]=0;}if(T%40==0){Z[99]=2;}if(T%80==0){Z[99]=Rand(8);}int ZT[]="What a beautiful day!";Screen->DrawString(7,140,132,25,13,15,1,ZT,OP_TRANS);T++;}
+		if(T>=1430&&T<1530){Z[98]=3;Z[99]=4;T++;}
+		if(T>=1530&&T<1560){Z[98]=8;Z[99]=1;int ZT[]="Oooooo!";Screen->DrawString(7,140,132,25,13,15,1,ZT,OP_TRANS);T++;}
+		if(T>=1560&&T<1600){Z[98]=0;Z[99]=4;if(T%9==0){Z[99]=0;}if(T%14==0){Z[99]=2;}if(T%18==0){Z[99]=Rand(8);}int ZT[]="I have to get going!";Screen->DrawString(7,124,132,25,13,15,1,ZT,OP_OPAQUE);T++;}
+		if(T>=1600&&T<1640){Z[98]=0;Z[99]=0;Link->InputLeft=true;;T++;}
+		if(T>=1640&&T<1680){Link->InputRight=true;T++;}
+		if(T>=1680&&T<1720){Link->InputLeft=true;;T++;}
+		if(T>=1720&&T<1760){Z[98]=5;Link->InputRight=true;T++;}
+		if(T>=1760&&T<1800){Z[98]=7;Z[97]=0;T++;}
+		if(T==1800){T++;}
+		if(T==1801){Link->Dir=2;T++;}
+		if(T>=1802&&T<2000){Z[98]=5;Z[99]=7;Z[98]=0;Z[99]=4;if(T%9==0){Z[99]=0;}if(T%14==0){Z[99]=2;}if(T%18==0){Z[99]=Rand(8);}int ZT[]="What to do today?!";Screen->DrawString(7,140,132,25,13,15,1,ZT,OP_TRANS);T++;}
+		if(T>=2000&&T<2300){Z[98]=5;Z[99]=7;if(T%9==0){Z[99]=0;}if(T%14==0){Z[99]=2;}if(T%18==0){Z[99]=Rand(8);}int ZT[]="I'm going to adventure!";Screen->DrawString(7,140,132,25,13,15,1,ZT,OP_TRANS);T++;}
+		}
+			//UNSLASH TO SHOW T COUNTER ON SCREEN FOR CUT SCENE EXACTING.
+			//Screen->DrawTile(7,64,16,65160+T%10,1,1,3,-1,-1,0,0,0,0,true,128);
+			//Screen->DrawTile(7,56,16,65160+(T%100-T%10)/10,1,1,3,-1,-1,0,0,0,0,true,128);
+			//Screen->DrawTile(7,48,16,65160+(T%1000-T%100)/100,1,1,3,-1,-1,0,0,0,0,true,128);
+			//Screen->DrawTile(7,40,16,65160+(T%10000-T%1000)/1000,1,1,3,-1,-1,0,0,0,0,true,128);
+			
+	}//if(T%9==0){Z[99]=0;}if(T%14==0){Z[99]=2;}if(T%18==0){Z[99]=Rand(8);}//Jabber Script
+//98==LINK'S FACE EXPRESSION.0 SERIOUS,1 INNOCENT,2 HAPPY,3 SHOCKED,4 CONCERN,5 ATTENTIVE,6 WHATEV,7 ANGERED
+//99==LINK'S MOUTH MOVEMENTS.0 STRAIGHT LINE,1 SMALL DOT,2 OPEN,3 FROWN,4 OPEN WIDER,5 TEETH,6 GRIN,7 DUR,8 MEGADURRR
+
+void EE()//Enemy HP Damaged counter function and display.
+	{
+	if(Screen->NumNPCs()==0||Screen->NumEWeapons()==0){return;}
+	npc zid;eweapon eb;
+	if(HPTIC==0)
+		{
+		for(int zy=1;zy<=Screen->NumNPCs();zy++)
+			{zid=Screen->LoadNPC(zy);
+			for(int ew=1;ew<=Screen->NumEWeapons();ew++)
+				{eb=Screen->LoadEWeapon(ew);
+				if(Screen->NumEWeapons()>0)
+					{
+					if(Collision(eb,zid))
+						{if(zid->HP<0){zid->HP=0;}
+						if(Screen->NumNPCs()>=1){if(zid==Screen->LoadNPC(1)&&N[90]!=zid->HP){eX=zid->X;eY=zid->Y;HP=N[90]-zid->HP;HPTIC+=60;}}
+						if(Screen->NumNPCs()>=2){if(zid==Screen->LoadNPC(2)&&N[91]!=zid->HP){eX=zid->X;eY=zid->Y;HP=N[91]-zid->HP;HPTIC+=60;}}
+						if(Screen->NumNPCs()>=3){if(zid==Screen->LoadNPC(3)&&N[92]!=zid->HP){eX=zid->X;eY=zid->Y;HP=N[92]-zid->HP;HPTIC+=60;}}			
+						if(Screen->NumNPCs()>=4){if(zid==Screen->LoadNPC(4)&&N[93]!=zid->HP){eX=zid->X;eY=zid->Y;HP=N[93]-zid->HP;HPTIC+=60;}}
+						if(Screen->NumNPCs()>=5){if(zid==Screen->LoadNPC(5)&&N[94]!=zid->HP){eX=zid->X;eY=zid->Y;HP=N[94]-zid->HP;HPTIC+=60;}}
+						if(Screen->NumNPCs()>=6){if(zid==Screen->LoadNPC(6)&&N[95]!=zid->HP){eX=zid->X;eY=zid->Y;HP=N[95]-zid->HP;HPTIC+=60;}}
+						if(Screen->NumNPCs()>=7){if(zid==Screen->LoadNPC(7)&&N[96]!=zid->HP){eX=zid->X;eY=zid->Y;HP=N[96]-zid->HP;HPTIC+=60;}}
+						if(Screen->NumNPCs()>=8){if(zid==Screen->LoadNPC(8)&&N[97]!=zid->HP){eX=zid->X;eY=zid->Y;HP=N[97]-zid->HP;HPTIC+=60;}}
+						if(Screen->NumNPCs()>=9){if(zid==Screen->LoadNPC(9)&&N[98]!=zid->HP){eX=zid->X;eY=zid->Y;HP=N[98]-zid->HP;HPTIC+=60;}}
+						if(Screen->NumNPCs()>=10){if(zid==Screen->LoadNPC(10)&&N[99]!=zid->HP){eX=zid->X;eY=zid->Y;HP=N[99]-zid->HP;HPTIC+=60;}}
+						}
+					}
+
+				}
+			
+			}
+		}
+	}
+void EL()//Enemy HP Damaged counter function and display.
+	{
+	if(Screen->NumNPCs()==0||Screen->NumLWeapons()==0){return;}
+	npc z;lweapon s;
+	if(HPTIC==0)
+		{
+		for(int i=1;i<=Screen->NumNPCs();i++)
+			{z=Screen->LoadNPC(i);
+			for(int w=1;w<=Screen->NumLWeapons();w++)
+				{
+				s=Screen->LoadLWeapon(w);
+				if(Collision(s,z))
+					{if(z->HP<0){z->HP=0;}
+					if(N[89+i]!=z->HP){eX=z->X;eY=z->Y;HP=N[89+i]-z->HP;HPTIC+=30;}
+					}
+				}
+			
+			}
+		}
+	}
+void ED()	
+	{if(HPTIC>0)
+		{HPTIC=HPTIC-2;
+		Screen->DrawTile(7,eX+16,eY+(-16+Round(HPTIC/2)),65060+HP%10,1,1,6,-1,-1,0,0,0,0,true,128);
+		if(HP>=10){Screen->DrawTile(7,eX+8,eY+(-16+Round(HPTIC/2)),65060+(HP%100-HP%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);}
+		if(HP>=100){Screen->DrawTile(7,eX,eY+(-16+Round(HPTIC/2)),65060+(HP%1000-HP%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);}
+		if(HP>=1000){Screen->DrawTile(7,eX-8,eY+(-16+Round(HPTIC/2)),65060+(HP%10000-HP%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);}
+		if(HP>=10000){Screen->DrawTile(7,eX-8,eY+(-16+Round(HPTIC/2)),65060+(HP%100000-HP%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);}
+		}
+	return;
+	}
+	void ME()//Link HP damage display and function/Also a HP/MPs up display too now.
+	{if(Link->HP<HPLAST){HP=HPLAST-Link->HP;TIC=60;Store9=6;}
+	if(Link->HP>HPLAST){HP=Link->HP-HPLAST;TIC=60;Store9=5;}
+	if(Link->MP>MPLAST){HP=Link->MP-MPLAST;TIC=60;Store9=6;}
+	if(TIC>0&&CO!=5)
+		{
+		TIC--;
+		if(HP<=9){Screen->DrawTile(7,Link->X+4,Link->Y+(-16+Round(TIC/2)),65060+HP%10,1,1,Store9,-1,-1,0,0,0,0,true,128);}
+		if(HP<=99&&HP>=10)
+			{Screen->DrawTile(7,Link->X+8,Link->Y+(-16+Round(TIC/2)),65060+HP%10,1,1,Store9,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,Link->X,Link->Y+(-16+Round(TIC/2)),65060+(HP%100-HP%10)/10,1,1,Store9,-1,-1,0,0,0,0,true,128);}
+		if(HP<=999&&HP>=100)
+			{Screen->DrawTile(7,Link->X+12,Link->Y+(-16+Round(TIC/2)),65060+HP%10,1,1,Store9,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,Link->X+4,Link->Y+(-16+Round(TIC/2)),65060+(HP%100-HP%10)/10,1,1,Store9,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,Link->X-4,Link->Y+(-16+Round(TIC/2)),65060+(HP%1000-HP%100)/100,1,1,Store9,-1,-1,0,0,0,0,true,128);}
+		if(HP<=9999&&HP>=1000)
+			{Screen->DrawTile(7,Link->X+12,Link->Y+(-16+Round(TIC/2)),65060+HP%10,1,1,Store9,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,Link->X+4,Link->Y+(-16+Round(TIC/2)),65060+(HP%100-HP%10)/10,1,1,Store9,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,Link->X-4,Link->Y+(-16+Round(TIC/2)),65060+(HP%1000-HP%100)/100,1,1,Store9,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,Link->X-12,Link->Y+(-16+Round(TIC/2)),65060+(HP%10000-HP%1000)/1000,1,1,Store9,-1,-1,0,0,0,0,true,128);}
+		if(HP>=10000){Screen->DrawTile(7,Link->X-16,Link->Y+(-16+Round(TIC/2)),65060+(HP%100000-HP%10000)/10000,1,1,Store9,0,0,0,0,0,0,true,128);}
+		}
+	return;
+	}
+
+void U()
+	{if(kiK>0){kiK--;return;}
+		if(Screen->NumNPCs()>0&&NumLWeaponsOf(1)>0)
+			{lweapon rd;rd=LoadLWeaponOf(1);
+			for(int ene=1;ene<=Screen->NumNPCs();ene++)
+				{
+				npc zd=Screen->LoadNPC(ene);zd->Misc[2]=zd->Attributes[10];
+				if(Collision(rd,zd)==true&&kiK==0)
+					{kiK=15;zd->HP-=Game->Counter[13];
+					if(S==0){zd->HP-=Game->Counter[17];}
+					if(S==1){zd->HP-=Game->Counter[18];zd->Misc[1]=zd->Misc[1]-1;}
+					if(S==2){zd->HP-=Game->Counter[19];zd->Misc[1]=zd->Misc[1]-2;}
+					if(S==3){zd->HP-=Game->Counter[20];zd->Misc[1]=zd->Misc[1]-3;}
+					if(S==4){zd->HP-=Game->Counter[21];}
+					if(S==5){zd->HP-=Game->Counter[22];}
+					if(S==6){zd->HP-=Game->Counter[23];}
+					if(S==7){zd->HP-=Game->Counter[24];}
+					if(S==8){zd->HP-=Game->Counter[25];}
+					if(S==9){zd->HP-=Game->Counter[26];}
+					if(zd->ID==106)
+						{
+						if(S==0){zd->HP-=rd->Damage+Game->Counter[17];;return;}
+						if(S==1){zd->HP+=(rd->Damage+Game->Counter[18])*2;return;}
+						if(S==2){zd->HP-=rd->Damage+Game->Counter[19];;return;}
+						if(S==3){zd->HP+=(rd->Damage+Game->Counter[20])*4;return;}
+						}
+					if(zd->ID==178)
+						{
+						if(S==0){zd->HP-=rd->Damage*4;}
+						if(S==1){zd->HP-=rd->Damage;}
+						if(S==2){zd->HP-=rd->Damage*2;}
+						if(S==3){return;}
+						}
+					if(zd->ID==179)
+						{
+						if(S==0){zd->HP-=rd->Damage*2;}
+						if(S==1){return;}
+						if(S==2){zd->HP-=rd->Damage/2;}
+						if(S==3){zd->HP-=rd->Damage*4;}
+						}
+					if(S==4&&zd->Misc[10]==4){rd->Damage=rd->Damage*4;}
+					if(S==5&&zd->Misc[10]==5){rd->Damage=rd->Damage*4;}
+					if(S==6&&zd->Misc[10]==6){rd->Damage=rd->Damage*4;}
+					if(S==7&&zd->Misc[10]==7){rd->Damage=rd->Damage*4;}
+					if(S==8&&zd->Attributes[11]==9){rd->Damage=rd->Damage*4*(-1);}
+					if(S==9&&zd->Misc[11]==9){rd->Damage=rd->Damage*4*(-1);}
+					if(LinkProxi(zd->X,zd->Y,1,1,1,1)==true)
+						{zd->Damage=zd->Damage-Game->Counter[14];}
+					}
+
+				}
+			}
+		if(Screen->NumEWeapons()>0&&NumLWeaponsOf(31)>0)
+			{
+			for(int ne=1;ne<=Screen->NumEWeapons();ne++)
+				{lweapon l;l=LoadLWeaponOf(31);
+				eweapon e=Screen->LoadEWeapon(ne);
+				if(Collision(e,l)&&Game->Counter[14]>e->Damage)
+					{e->DeadState=WDS_DEAD;if(Game->Counter[14]>e->Damage)Link->HP+=Game->Counter[14]-e->Damage;}
+				}
+			}
+	}
+
+void X()
+	{
+	if(NumLWeaponsOf(1)>0)
+		{
+		lweapon word;word=LoadLWeaponOf(1);
+		if(word->isValid()){BP=word->Damage+Game->Counter[13];}
+		if(S==0){BP=BP+Game->Counter[17];}
+		if(S==1){BP=BP+Game->Counter[18];}
+		if(S==2){BP=BP+Game->Counter[19];}
+		if(S==3){BP=BP+Game->Counter[20];}
+		if(S==4){BP=BP+Game->Counter[21];}
+		if(S==5){BP=BP+Game->Counter[22];}
+		if(S==6){BP=BP+Game->Counter[23];}
+		if(S==7){BP=BP+Game->Counter[24];}
+		if(S==8){BP=BP+Game->Counter[25];}
+		if(S==9){BP=BP+Game->Counter[26];}
+		Screen->DrawTile(7,140,-42,65084,1,1,6,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,152,-32,65180+BP%10,1,1,6,-1,-1,0,0,0,0,true,128);
+		if(BP>9)Screen->DrawTile(7,145,-32,65180+(BP%100-BP%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+		if(BP>99)Screen->DrawTile(7,138,-32,65180+(BP%1000-BP%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);	
+		if(BP>999)Screen->DrawTile(7,131,-32,65180+(BP%10000-BP%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);	
+		if(BP>9999)Screen->DrawTile(7,124,-32,65180+(BP%100000-BP%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);	
+		}
+	}
+	void C()
+	{if(Link->PressEx1&&C==0){CO-=1;C+=10;}
+	if(Link->PressEx2&&C==0){CO+=1;C+=10;}
+	if(C>=5){C--;cx+=1;cy-=.5;}
+	if(C>0 && C<5){C--;cx-=.1;cy+=.5;}
+	if(CO>9){CO=1;}if(CO<1){CO=9;}if(C==0){cx=0; cy=-32;}
+	if(CO==1){Z();CX=cx;CY=cy;C2X=cx+3;C2Y=cy-3;C3X=cx+3;C3Y=cy;}
+	if(CO==2){S();CX=cx;CY=cy;C2X=cx;C2Y=cy;C3X=cx+15;C3Y=cy-15;}
+	if(CO==3){L();CX=cx+18;CY=cy-18;C2X=cx;C2Y=cy;C3X=cx+12;C3Y=cy-12;}
+	if(CO==4){W();CX=cx+15;CY=cy-15;C2X=cx+18;C2Y=cy-18;C3X=cx+9;C3Y=cy-9;}
+	if(CO==5){Y();
+		//if(Link->PressEx3&&WOLFLINK==false){WOLFLINK=true;Mario=false;}
+		//if(Link->PressEx3&&WOLFLINK==true){WOLFLINK=false;Mario=false;}
+		//if(Link->PressEx4&&Mario==false){Mario=true;WOLFLINK=false;}
+		//if(Link->PressEx4&&Mario==true){Mario=false;WOLFLINK=false;}
+		CX=cx+12;CY=cy-12;C2X=cx+15;C2Y=cy-15;C3X=cx+6;C3Y=cy-6;}
+	if(CO==6){Ik();CX=cx+9;CY=cy-9;C2X=cx+12;C2Y=cy-12;C3X=cx+3;C3Y=cy-3;}
+	if(CO==7){CX=cx+6;CY=cy-6;C2X=cx+9;C2Y=cy-9;C3X=cx;C3Y=cy;}
+	if(CO==8){CX=cx+3;CY=cy-3;C2X=cx+6;C2Y=cy-6;C3X=cx+21;C3Y=cy-21;}
+	if(CO==9){CX=cx+0;CY=cy-30;C2X=cx+3;C2Y=cy-3;C3X=cx+21;C3Y=cy-21;}
+	return;
+	}
+	void Z()//Sword Switching Window and Function
+	{Screen->DrawTile(7,C3X,C3Y,65236,4,2,6,-1,-1,0,0,0,0,true,128);
+	if(S==0){Z[34]=8;Ni=6;oiK=7;oiM=8;oiB=7;}
+	if(S==1){Z[34]=12;Ni=6;oiK=7;oiM=8;oiB=7;}
+	if(S==2){Z[34]=16;Ni=6;oiK=7;oiM=8;oiB=7;}
+	if(S==3){Z[34]=64;Ni=6;oiK=7;oiM=8;oiB=7;}
+	if(S==4){Z[34]=64;Ni=7;oiK=8;oiM=7;oiB=8;}
+	if(S==5){Z[34]=64;Ni=8;oiK=7;oiM=8;oiB=11;}
+	if(S==6){Z[34]=128;Ni=7;oiK=8;oiM=11;oiB=6;}
+	if(S==7){Z[34]=128;Ni=8;oiK=11;oiM=6;oiB=11;}
+	if(S==8){Z[34]=128;Ni=11;oiK=6;oiM=11;oiB=7;}
+	if(S==9){Z[34]=128;Ni=6;oiK=11;oiM=7;oiB=7;}
+	if(CO!=1){return;}
+	if(CO==1)
+	{
+	if(Link->PressEx3){S-=1;}if(Link->PressEx4){S+=1;}
+	if(Link->PressEx3){Game->Generic[2];}if(Link->PressEx4){!Game->Generic[2];}
+	if(S==SM+1){S=0;}
+	if(S<0){S=SM;}//SM IS THE SWORD MAXIMUM-SET TO TRIGGER IF PLAYER HAS SWORD.
+	int P=0;if(S>3){P=S-3;}
+	if(S==0&&SM>=0&&(Link->PressEx3||Link->PressEx4||kiM==-1)){Ni=6;oiK=7;oiM=8;oiB=7;Link->Item[5]=true;Link->Item[148]=false;Link->Item[6]=false;if(kiM==-1)kiM=0;}
+	if(S==1&&SM>=1&&(Link->PressEx3||Link->PressEx4||kiM==-1)){Ni=6;oiK=7;oiM=8;oiB=7;Link->Item[6]=true;Link->Item[5]=false;Link->Item[7]=false;if(kiM==-1)kiM=0;}
+	if(S==2&&SM>=2&&(Link->PressEx3||Link->PressEx4||kiM==-1)){Ni=6;oiK=7;oiM=8;oiB=7;Link->Item[7]=true;Link->Item[6]=false;Link->Item[36]=false;if(kiM==-1)kiM=0;}
+	if(S==3&&SM>=3&&(Link->PressEx3||Link->PressEx4||kiM==-1)){Ni=6;oiK=7;oiM=8;oiB=7;Link->Item[36]=true;Link->Item[7]=false;Link->Item[143]=false;if(kiM==-1)kiM=0;}
+	if(S==4&&SM>=4&&(Link->PressEx3||Link->PressEx4||kiM==-1)){Ni=7;oiK=8;oiM=7;oiB=8;Link->Item[143]=true;Link->Item[36]=false;Link->Item[144]=false;if(kiM==-1)kiM=0;}
+	if(S==5&&SM>=5&&(Link->PressEx3||Link->PressEx4||kiM==-1)){Ni=8;oiK=7;oiM=8;oiB=11;Link->Item[144]=true;Link->Item[143]=false;Link->Item[149]=false;if(kiM==-1)kiM=0;}
+	if(S==6&&SM>=6&&(Link->PressEx3||Link->PressEx4||kiM==-1)){Ni=7;oiK=8;oiM=11;oiB=6;Link->Item[149]=true;Link->Item[144]=false;Link->Item[146]=false;if(kiM==-1)kiM=0;}
+	if(S==7&&SM>=7&&(Link->PressEx3||Link->PressEx4||kiM==-1)){Ni=8;oiK=11;oiM=6;oiB=11;Link->Item[146]=true;Link->Item[149]=false;Link->Item[147]=false;if(kiM==-1)kiM=0;}
+	if(S==8&&SM>=8&&(Link->PressEx3||Link->PressEx4||kiM==-1)){Ni=11;oiK=6;oiM=11;oiB=7;Link->Item[147]=true;Link->Item[146]=false;Link->Item[148]=false;if(kiM==-1)kiM=0;}
+	if(S==9&&SM==9&&(Link->PressEx3||Link->PressEx4||kiM==-1)){Ni=6;oiK=11;oiM=7;oiB=7;Link->Item[148]=true;Link->Item[147]=false;Link->Item[5]=false;if(kiM==-1)kiM=0;}
+	int s=S*16;if(s>48)s=48;
+	Screen->DrawTile(7,C3X+2+s,C3Y+13,65215,1,1,6,-1,-1,0,0,0,0,true,128);
+	if(SM>=0)Screen->DrawTile(7,C3X+2,C3Y+13,12080+P,1,1,Ni,-1,-1,0,0,0,0,true,128);
+	if(SM>=1)Screen->DrawTile(7,C3X+18,C3Y+13,12081+P,1,1,oiK,-1,-1,0,0,0,0,true,128);
+	if(SM>=2)Screen->DrawTile(7,C3X+34,C3Y+13,12082+P,1,1,oiM,-1,-1,0,0,0,0,true,128);
+	if(SM>=3)Screen->DrawTile(7,C3X+50,C3Y+13,12083+P,1,1,oiB,-1,-1,0,0,0,0,true,128);
+	return;
+	}
+	}
+	void S()//Submissions counter (enemies defeated amount)
+	{
+	Screen->DrawTile(7,CX,CY,65196,4,2,6,-1,-1,0,0,0,0,true,128);
+	if(CO!=2){return;}
+	if(CO==2)
+		{Screen->DrawTile(7,CX+40,CY+13,65160+K%10,1,1,Store2,-1,-1,0,0,0,0,true,128);
+		if(K>=10)Screen->DrawTile(7,CX+32,CY+13,65160+(K%100-K%10)/10,1,1,Store2,-1,-1,0,0,0,0,true,128);
+		if(K>=100)Screen->DrawTile(7,CX+24,CY+13,65160+(K%1000-K%100)/100,1,1,Store2,-1,-1,0,0,0,0,true,128);
+		if(K>=1000)Screen->DrawTile(7,CX+16,CY+13,65160+(K%10000-K%1000)/1000,1,1,Store2,-1,-1,0,0,0,0,true,128);
+		if(K>=10000)Screen->DrawTile(7,CX+8,CY+13,65160+(K%100000-K%10000)/10000,1,1,Store2,-1,-1,0,0,0,0,true,128);
+		}
+	return;
+	}
+	
+void LE(npc ZM)//Adds the enemy exp amount to counter
+		{ZM->Misc[1]=ZM->Attributes[11];
+		if(eo>0){eo--;return;}
+		if(ZM->isValid()&&ZM->HP<=0){ME-=ZM->Misc[1]+(Rand(EXPMOD)*ZM->Misc[1]);eo=15;if(ME<0)ME=0;}
+	//EXPMOD GIVES ADDITIONAL EXPERIENCE AT RANDOM.
+		}
+void L() //displays the Battle Points counter and cost to next level
+	{
+	if(CO!=3){return;}
+	if(CO==3)
+		{
+		if(Link->PressEx3){biB-=1;}if(Link->PressEx4){biB+=1;}
+		if(biB<0){biB=2;}if(biB>2){biB=0;}
+		if(biB==0)
+			{
+			Screen->DrawTile(7,cx+6,cy-20,6,1,1,4,-1,-1,0,0,0,0,true,128);
+			check(0,Ceiling(Game->Counter[8]*1.5),cx+28,cy-19);
+			Screen->DrawTile(7,cx+6,cy-10,7,1,1,4,-1,-1,0,0,0,0,true,128);
+			check(0,Ceiling(Game->Counter[9]*1.5),cx+28,cy-9);
+			}
+		if(biB==1)
+			{Screen->DrawTile(7,cx+6,cy-20,8,1,1,6,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+20,cy-20,12081,1,1,7,8,8,0,0,0,0,true,128);
+			check(0,Game->Counter[13],cx+28,cy-19);//attack counter
+			Screen->DrawTile(7,cx+20,cy-10,457,1,1,6,8,8,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+6,cy-10,9,1,1,6,-1,-1,0,0,0,0,true,128);
+			check(0,Game->Counter[14],cx+28,cy-9);}//defense counter
+		if(biB==2)
+			{
+			Screen->DrawTile(7,cx+20,cy-20,12081,1,1,7,8,8,0,0,0,0,true,128);
+			}
+		Screen->DrawTile(7,C2X,C2Y,65076,4,2,Store8,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,C2X+40,C2Y+13,65160+ME%10,1,1,Store8,-1,-1,0,0,0,0,true,128);
+		if(ME>=10){Screen->DrawTile(7,C2X+32,C2Y+13,65160+(ME%100-ME%10)/10,1,1,Store8,-1,-1,0,0,0,0,true,128);}
+		if(ME>=100){Screen->DrawTile(7,C2X+24,C2Y+13,65160+(ME%1000-ME%100)/100,1,1,Store8,-1,-1,0,0,0,0,true,128);}
+		if(ME>=1000){Screen->DrawTile(7,C2X+16,C2Y+13,65160+(ME%10000-ME%1000)/1000,1,1,Store8,-1,-1,0,0,0,0,true,128);}
+		if(ME>=10000){Screen->DrawTile(7,C2X+8,C2Y+13,65160+(ME%100000-ME%10000)/10000,1,1,Store8,-1,-1,0,0,0,0,true,128);}
+		
+		}
+	}
+void W()
+	{
+	if(CO!=4){return;}
+	if(CO==4)
+		{
+		kiN=oiT*16;if(kiN>48){kiN=48;}
+		Screen->DrawTile(7,cx+4,cy,65080,4,2,6,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,cx+4,cy-16,11,2,1,11,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,cx+4+kiN,cy+16,65215,1,1,6,-1,-1,0,0,0,0,true,128);
+		if(oiT<=4&&Link->PressEx4){oiT+=1;}
+		if(oiT>=0&&Link->PressEx3){oiT-=1;}
+		if(oiT<0){oiT=3;}if(oiT>4){oiT=0;}
+		if(oiT==0)
+			{int x=Ceiling(Game->Counter[8]*1.5);
+			Screen->DrawTile(7,cx+67,cy-16,65180+x%10,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(x>9)Screen->DrawTile(7,cx+60,cy-16,65180+(x%100-x%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(x>99)Screen->DrawTile(7,cx+53,cy-16,65180+(x%1000-x%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(x>999)Screen->DrawTile(7,cx+46,cy-16,65180+(x%10000-x%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(x>9999)Screen->DrawTile(7,cx+39,cy-16,65180+(x%100000-x%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			}
+		if(oiT==1)
+			{int x=Ceiling(Game->Counter[9]*1.5);
+			Screen->DrawTile(7,cx+67,cy-16,65180+x%10,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(x>9)Screen->DrawTile(7,cx+60,cy-16,65180+(x%100-x%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(x>99)Screen->DrawTile(7,cx+53,cy-16,65180+(x%1000-x%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(x>999)Screen->DrawTile(7,cx+46,cy-16,65180+(x%10000-x%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(x>9999)Screen->DrawTile(7,cx+39,cy-16,65180+(x%100000-x%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			}
+		if(oiT==2)
+			{int x;int z; int m;
+			if(S==0){x=Game->Counter[17];z=300*Ceiling(Game->Counter[17]*2.5);}
+			if(S==1){x=Game->Counter[18];z=200*Ceiling(Game->Counter[18]*1.5);}
+			if(S==2){x=Game->Counter[19];z=400*Ceiling(Game->Counter[19]*.75);}
+			if(S==3){x=Game->Counter[20];z=100*Ceiling(Game->Counter[20]*50);}
+			if(S==4){x=Game->Counter[21];z=400*Ceiling(Game->Counter[21]*2.25);}
+			if(S==5){x=Game->Counter[22];z=500*Ceiling(Game->Counter[22]*2.75);}
+			if(S==6){x=Game->Counter[23];z=200*Ceiling(Game->Counter[23]*1);}
+			if(S==7){x=Game->Counter[24];z=150*Ceiling(Game->Counter[24]*2.75);}
+			if(S==8){x=Game->Counter[25];z=100*Ceiling(Game->Counter[25]*.5);}
+			if(S==9){x=Game->Counter[26];z=250*Ceiling(Game->Counter[26]*.25);}
+			if(ME>=z&&(Link->PressA||Link->PressB))
+				{ME-=z;if(Link->Item[160]==false)m=0;if(Link->Item[160]==true)m=5;Link->Item[160]=false;
+				if(S==0){Game->Counter[17]+=1+m;}if(S==1){Game->Counter[18]+=1+m;}if(S==2){Game->Counter[19]+=1+m;}if(S==3){Game->Counter[20]+=1+m;}if(S==4){Game->Counter[21]+=1+m;}
+				if(S==5){Game->Counter[22]+=1+m;}if(S==6){Game->Counter[23]+=1+m;}if(S==7){Game->Counter[24]+=1+m;}if(S==8){Game->Counter[25]+=1+m;}if(S==9){Game->Counter[26]+=1+m;}		
+				}
+			if(S==0)Screen->DrawTile(7,cx+4+kiN,cy+8,12080+S,1,1,Ni,-1,-1,0,0,0,0,true,128);
+			if(S==1)Screen->DrawTile(7,cx+4+kiN,cy+8,12080+S,1,1,oiK,-1,-1,0,0,0,0,true,128);
+			if(S==2)Screen->DrawTile(7,cx+4+kiN,cy+8,12080+S,1,1,oiM,-1,-1,0,0,0,0,true,128);
+			if(S>=3)Screen->DrawTile(7,cx+4+kiN,cy+8,12080+S,1,1,oiB,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+67,cy-6,65180+x%10,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(x>9)Screen->DrawTile(7,cx+60,cy-6,65180+(x%100-x%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(x>99)Screen->DrawTile(7,cx+53,cy-6,65180+(x%1000-x%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(x>999)Screen->DrawTile(7,cx+46,cy-6,65180+(x%10000-x%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(x>9999)Screen->DrawTile(7,cx+39,cy-6,65180+(x%100000-x%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			Screen->DrawTile(7,cx+67,cy-16,65180+z%10,1,1,6,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+60,cy-16,65180+(z%100-z%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+53,cy-16,65180+(z%1000-z%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(z>999)Screen->DrawTile(7,cx+46,cy-16,65180+(z%10000-z%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(z>9999)Screen->DrawTile(7,cx+39,cy-16,65180+(z%100000-z%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			}
+		if(oiT==3)
+			{int x=Ceiling(Game->Counter[13]);
+			Screen->DrawTile(7,cx+4+kiN,cy+4,8,1,1,N[0],-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+67,cy-16,65180+x%10,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(x>9)Screen->DrawTile(7,cx+60,cy-16,65180+(x%100-x%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(x>99)Screen->DrawTile(7,cx+53,cy-16,65180+(x%1000-x%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(x>999)Screen->DrawTile(7,cx+46,cy-16,65180+(x%10000-x%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(x>9999)Screen->DrawTile(7,cx+38,cy-16,65180+(x%100000-x%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			Screen->DrawTile(7,cx+46,cy-6,13,1,1,11,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+53,cy-6,65181,1,1,6,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+60,cy-6,65180,1,1,6,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+67,cy-6,65180,1,1,6,-1,-1,0,0,0,0,true,128);
+			}
+		if(oiT==4)
+			{int x=Ceiling(Game->Counter[14]);
+			Screen->DrawTile(7,cx+4+kiN,cy+4,9,1,1,N[0],-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+4+kiN,cy+16,457,1,1,6,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+67,cy-16,65180+x%10,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(x>9)Screen->DrawTile(7,cx+60,cy-16,65180+(x%100-x%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+			if(x>99)Screen->DrawTile(7,cx+53,cy-16,65180+(x%1000-x%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(x>999)Screen->DrawTile(7,cx+46,cy-16,65180+(x%10000-x%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);	
+			if(x>9999)Screen->DrawTile(7,cx+39,cy-16,65180+(x%100000-x%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+46,cy-6,13,1,1,11,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+53,cy-6,65181,1,1,6,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+60,cy-6,65180,1,1,6,-1,-1,0,0,0,0,true,128);
+			Screen->DrawTile(7,cx+67,cy-6,65180,1,1,6,-1,-1,0,0,0,0,true,128);
+			}
+		if(ME>=Ceiling(Game->Counter[8]*1.5)&&oiT==0&&(Link->PressA||Link->PressB)){ME-=Ceiling(Game->Counter[8]*1.5);Link->MaxHP+=10;Link->HP+=10;Game->Counter[8]=Game->Counter[8]+Game->Counter[8]*1.5;}
+		if(ME>=Ceiling(Game->Counter[9]*1.5)&&oiT==1&&(Link->PressA||Link->PressB)){ME-=Ceiling(Game->Counter[9]*1.5);Link->MaxMP+=10;Link->MP+=10;Game->Counter[9]=Game->Counter[9]+Game->Counter[9]*1.5;}
+		if(ME>=Game->Counter[13]*100&&oiT==3&&(Link->PressA||Link->PressB)){ME-=Game->Counter[13]*100;Game->Counter[13]+=1;}
+		if(ME>=Game->Counter[14]*100&&oiT==4&&(Link->PressA||Link->PressB)){ME-=Game->Counter[14]*100;Game->Counter[14]+=1;}
+		}
+	}
+void EX()
+{
+Screen->DrawTile(7,cx+16,cy-10,59900+Z[98]*2,2,2,6,-1,-1,0,0,0,0,true,128);//Link's Eyes
+Screen->DrawTile(7,cx+16,cy+22,59880+Z[99]*2,2,1,6,-1,-1,0,0,0,0,true,128);//Link's Mouth
+if(Z[97]>0){return;}
+if(Z[98]==0&&Z[99]==0&&(Link->Action==7||Link->Action==13)){Z[98]=Choose(3,4,7);Z[99]=Choose(4,6,8);}//Link got hit.
+if(Z[98]==0&&Z[99]==0&&(Link->Action==4||Link->Action==5||Link->Action==14||Link->Action==15)){Z[98]=Choose(2,5,4);Z[99]=Choose(6,1,4);}//Link got something.
+if(Z[98]==0&&Z[99]==0&&(Link->Action==2||Link->Action==22)){Z[98]=Choose(7,0,7);Z[99]=Choose(5,6,0);}//Link sword swipe.
+if(Z[98]==0&&Z[99]==0&&(Link->Action==23||Link->Action==16)){Z[98]=Choose(2,0,7);Z[99]=Choose(7,6,7);}//Link sword spin.
+if(Z[98]==0&&Z[99]==0&&(Link->Action==19||Link->Action==20)){Z[98]=Choose(3,5,6);Z[99]=Choose(4,7,8);}//Link dies.
+if((Z[98]>0||Z[99]>0)&&Link->Action==0){Z[98]=0;Z[99]=0;}
+Screen->DrawTile(7,cx+16,cy-10,59900+Z[98]*2,2,2,6,-1,-1,0,0,0,0,true,128);//Link's Eyes
+Screen->DrawTile(7,cx+16,cy+22,59880+Z[99]*2,2,1,6,-1,-1,0,0,0,0,true,128);//Link's Mouth
+}
+//98==0 SERIOUS,1 INNOCENT,2 HAPPY,3 SHOCKED,4 CONCERN,5 ATTENTIVE,6 WHATEV,7 ANGERED
+//99==0 STRAIGHT LINE,1 SMALL DOT,2 OPEN,3 FROWN,4 OPEN WIDER,5 TEETH,6 GRIN,7 DUR,8 MEGADURRR
+
+void Y() //Character Portraits by Ian.
+	{
+	if(CO!=5){return;}
+	if(CO==5)
+		{
+		if(WOLFLINK==false&&Mario==false){Screen->DrawTile(7,cx,cy-26,59800,4,4,6,64,64,0,0,0,0,true,128);}
+		if(WOLFLINK==true){Screen->DrawTile(7,cx,cy-26,12488,4,4,6,64,64,0,0,0,0,true,128);}
+		if(Mario==true){Screen->DrawTile(7,cx,cy-26,12667,4,4,6,64,64,0,0,0,0,true,128);}
+		Screen->DrawTile(7,cx,cy-26,12496,4,4,3,-1,-1,0,0,0,0,true,128);
+		EX();
+		}
+	return;
+	}
+void Ik()
+	{
+	if(CO!=6){return;}
+	if(CO==6)
+		{
+		if(Link->PressEx3){biT-=1;}if(Link->PressEx4){biT+=1;}
+		if(biT<0){biT=2;}if(biT>2){biT=0;}
+		if(biT==0)
+			{Screen->DrawTile(7,cx+2,cy-16,14160,1,1,Store2,-1,-1,0,0,0,0,true,128);
+			check(7,0,cx+18,cy-14);
+			Screen->DrawTile(7,cx+2,cy-4,65144,1,1,Store2,-1,-1,0,0,0,0,true,128);
+			check(12,0,cx+18,cy-2);
+			Screen->DrawTile(7,cx+2,cy+8,369,1,1,Store2,-1,-1,0,0,0,0,true,128);
+			check(1,0,cx+18,cy+10);
+			}
+		if(biT==1)
+			{Screen->DrawTile(7,cx+2,cy-16,410,1,1,7,-1,-1,0,0,0,0,true,128);
+			check(2,0,cx+18,cy+-14);
+			Screen->DrawTile(7,cx+2,cy-4,850,1,1,6,-1,-1,0,0,0,0,true,128);
+			check(3,0,cx+18,cy-2);
+			Screen->DrawTile(7,cx+2,cy+8,355,1,1,4,-1,-1,0,0,0,0,true,128);
+			check(5,0,cx+18,cy+10);}
+		if(biT==2)
+			{
+			}
+		}
+	}
+void KL()
+	{Klock();
+
+	if(CO!=7){return;}
+	if(CO==7)
+		{
+		if(Link->PressR)TimeSig=0;if(Link->PressL)TimeSig=1;
+		if(Link->PressEx3)zmT-=1;if(Link->PressEx4)zmT+=1;
+		KlockD(12,-30);
+		}
+	}	
+void SHOWEID()
+	{if(CO!=8||Screen->NumNPCs()==0){return;}
+	if(CO==8&&Link->Item[157]==true)
+		{
+		if(xDMAP!=DMAP||xSCN!=SCN){dz=1;}
+		if(dz<1){dz=1;}if(dz>Screen->NumNPCs()){dz=Screen->NumNPCs();}
+		if(Link->PressEx3){dz-=1;}
+		if(Link->PressEx4){dz+=1;}
+		if(dz>Screen->NumNPCs()){dz=1;}
+		if(dz==0){dz=Screen->NumNPCs();}
+		npc ff=Screen->LoadNPC(dz);int NPCNAME[]="ff->GetName()";ff->GetName(NPCNAME);
+		Screen->DrawTile(7,ff->X,ff->Y,65215,1,1,9,-1,-1,0,0,0,0,true,64);
+		if(ff->HP<0){Screen->DrawTile(7,6,cy,65171,1,1,S,-1,-1,0,0,0,0,true,128);}
+		int flip;if(ff->HP>=0){flip=1;}if(ff->HP<0){flip=-1;}
+		Screen->DrawTile(7,6,cy+2,65002,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,50,cy+2,65160+ff->HP%10*flip,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(ff->HP>=10)Screen->DrawTile(7,42,cy+2,65160+(ff->HP%100-ff->HP%10)/10*flip,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(ff->HP>=100)Screen->DrawTile(7,34,cy+2,65160+(ff->HP%1000-ff->HP%100)/100*flip,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(ff->HP>=1000)Screen->DrawTile(7,26,cy+2,65160+(ff->HP%10000-ff->HP%1000)/1000*flip,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(ff->HP>=10000)Screen->DrawTile(7,18,cy+2,65160+(ff->HP%100000-ff->HP%10000)/10000*flip,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,6,cy-12,65227,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,50,cy-12,65160+ff->ID%10,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(ff->ID>9)Screen->DrawTile(7,42,cy-12,65160+(ff->ID%100-ff->ID%10)/10,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(ff->ID>99)Screen->DrawTile(7,34,cy-12,65160+(ff->ID%1000-ff->ID%100)/100,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,6,cy+16,65007,2,1,Store3,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,50,cy+16,65160+(ff->Misc[1]%10)*(-1),1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(ff->Misc[1]*(-1)>9)Screen->DrawTile(7,42,cy+16,65160+((ff->Misc[1]%100-ff->Misc[1]%10)/10)*(-1),1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(ff->Misc[1]*(-1)>99)Screen->DrawTile(7,34,cy+16,65160+((ff->Misc[1]%1000-ff->Misc[1]%100)/100)*(-1),1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(ff->Misc[1]*(-1)>999)Screen->DrawTile(7,26,cy+16,65160+((ff->Misc[1]%10000-ff->Misc[1]%1000)/1000)*(-1),1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(ff->Misc[1]*(-1)>9999)Screen->DrawTile(7,18,cy+16,65160+((ff->Misc[1]%100000-ff->Misc[1]%10000)/10000)*(-1),1,1,Store3,-1,-1,0,0,0,0,true,128);
+		if(Screen->NumNPCs()>1)
+		{Screen->DrawTile(7,60,cy+16,65009,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,76,cy+16,65040+Screen->NumNPCs()%10,1,1,Store3,-1,-1,0,0,0,0,true,128);}
+		if(Screen->NumNPCs()==10)Screen->DrawTile(7,68,cy+16,65040+(Screen->NumNPCs()%100-Screen->NumNPCs()%10)/10,1,1,Store3,-1,-1,0,0,0,0,true,128);
+		Screen->DrawTile(7,66,cy-12,ff->Tile,1,1,ff->CSet,-1,-1,0,0,0,0,true,128);
+		if(ff->ID==58||ff->ID==93||ff->ID==135||ff->ID==66||ff->ID==67||ff->ID==181||ff->ID==78||ff->ID==94){Screen->DrawTile(7,60,cy-20,ff->Tile,2,2,ff->CSet,-1,-1,0,0,0,0,true,128);}
+		Screen->DrawString(7,0,cy-24,0,1,0,0,NPCNAME,OP_OPAQUE);
+		}
+	}
+void GRASSSTEPS()
+{
+if(Screen->ComboD[ComboAt(Link->X+14,Link->Y+15)]==5&&Link->Z==0)
+{
+int RAND=Rand(3);
+if(RAND==0)Screen->ComboD[ComboAt(Link->X+14,Link->Y+15)]=8247;
+if(RAND==1)Screen->ComboD[ComboAt(Link->X+14,Link->Y+15)]=8248;
+if(RAND==2)Screen->ComboD[ComboAt(Link->X+14,Link->Y+15)]=8251;
+if(RAND==3)Screen->ComboD[ComboAt(Link->X+14,Link->Y+15)]=8252;
+}
+if(Screen->ComboD[ComboAt(Link->X+2,Link->Y+15)]==5&&Link->Z==0)
+{
+int RAND=Rand(3);
+if(RAND==0)Screen->ComboD[ComboAt(Link->X+2,Link->Y+15)]=8247;
+if(RAND==1)Screen->ComboD[ComboAt(Link->X+2,Link->Y+15)]=8248;
+if(RAND==2)Screen->ComboD[ComboAt(Link->X+2,Link->Y+15)]=8251;
+if(RAND==3)Screen->ComboD[ComboAt(Link->X+2,Link->Y+15)]=8252;
+}
+}
+item script RupeeScore
+{
+void run(int minrupees,int maxrupees)
+{
+int rupees=minrupees+Rand(maxrupees);if(rupees>maxrupees)rupees=maxrupees;
+int percentage=Choose(1,2,3);
+if(percentage==1||percentage==2)
+	{
+	int mindiv=Rand(4);if(mindiv==0)mindiv=1;int split=Ceiling(maxrupees/5)/mindiv;
+	Game->Counter[1]+=Ceiling(split);
+	}
+if(percentage==3)
+	{
+	percentage=Choose(1,2,3);
+	if(percentage==1)
+		{
+		int mindiv=Rand(4);if(mindiv==0)mindiv=1;int split=Ceiling(maxrupees/5)/mindiv;
+		if(split<minrupees)split=minrupees;
+		Game->Counter[1]+=Ceiling(split);
+		}		
+	if(percentage==2)
+		{
+		int mindiv=Rand(2);if(mindiv==0)mindiv=1;int split=Ceiling(maxrupees/2)/mindiv;
+		if(split<minrupees)split=minrupees;
+		Game->Counter[1]+=Ceiling(split);
+		}
+	if(percentage==3)	
+		{
+		percentage=Choose(1,2,3);
+		if(percentage==1)
+			{
+			int mindiv=Rand(5);if(mindiv==0)mindiv=1;int split=Ceiling(rupees/mindiv);
+			if(split<minrupees)split=minrupees;
+			Game->Counter[1]+=Ceiling(split);
+			}		
+		if(percentage==2)
+			{
+			int mindiv=Rand(10);if(mindiv==0)mindiv=1;int split=Ceiling(rupees/mindiv);
+			if(split<minrupees)split=minrupees;
+			Game->Counter[1]+=Ceiling(split);
+			}
+		if(percentage==3)	
+			{
+			int mindiv=Rand(10);int split=Ceiling(rupees/mindiv);
+			if(split<minrupees)split=minrupees;
+			if(rupees!=maxrupees){Game->Counter[1]+=Ceiling(split);}
+			if(rupees==maxrupees){Game->Counter[1]+=maxrupees;}
+			}
+		}
+	}
+}
+}
+
+ffc script FlagFind
+{
+void run()
+	{
+	while(true)
+		{
+		for(int n=0;n<=100;n++)
+			{if(Screen->Flags[n]>0)
+				{int z=Screen->Flags[n];
+				Screen->DrawTile(7,16,16,65180+n%10,1,1,1,-1,-1,0,0,0,0,true,128);		
+				Screen->DrawTile(7,8,16,65180+(n%100-n%10)/10,1,1,1,-1,-1,0,0,0,0,true,128);
+				Screen->DrawTile(7,32,32,65180+z%10,1,1,1,-1,-1,0,0,0,0,true,128);		
+				Screen->DrawTile(7,24,32,65180+(z%100-z%10)/10,1,1,1,-1,-1,0,0,0,0,true,128);
+				Screen->DrawTile(7,16,32,65180+(z%1000-z%100)/100,1,1,1,-1,-1,0,0,0,0,true,128);		
+				Screen->DrawTile(7,8,32,65180+(z%10000-z%1000)/1000,1,1,1,-1,-1,0,0,0,0,true,128);
+				}
+			}
+		Waitframe();
+		}
+	}
+}
+
+ffc script IceReflection
+{
+void run()
+	{
+	while(true)
+		{
+		if(Screen->NumNPCs()>0)
+			{for(int e=1;e<=Screen->NumNPCs();e++)
+				{npc w=Screen->LoadNPC(e);
+				Screen->DrawTile(0,w->X,w->Y+16,w->Tile,1,1,1,-1,-1,0,0,0,2,true,128);
+				}
+			}
+		if(Screen->NumLWeapons()>0)
+			{for(int l=1;l<=7;l++)
+				{
+				lweapon s=Screen->LoadLWeapon(l);
+				if(s->Dir==0&&s!=Screen->LoadLWeapon(7)){Screen->DrawTile(0,s->X,s->Y+16+s->Z,s->Tile,1,1,1,-1,-1,0,0,0,0,true,128);}
+				if(s->Dir==1&&s!=Screen->LoadLWeapon(7)){Screen->DrawTile(0,s->X,s->Y+16+s->Z,s->Tile,1,1,1,-1,-1,0,0,0,3,true,128);}
+				if(s->Dir==2&&s!=Screen->LoadLWeapon(7)){Screen->DrawTile(0,s->X,s->Y+16+s->Z,s->Tile,1,1,1,-1,-1,0,0,0,3,true,128);}
+				if(s->Dir==3&&s!=Screen->LoadLWeapon(7)){Screen->DrawTile(0,s->X,s->Y+16+s->Z,s->Tile,1,1,1,-1,-1,0,0,0,2,true,128);}		
+				if(s==Screen->LoadLWeapon(7)){Screen->DrawTile(0,s->X,s->Y+16+s->Z,s->Tile,1,1,1,-1,-1,0,0,0,2,true,128);}		
+				}
+			}
+		if(Screen->NumEWeapons()>0)
+			{for(int e=1;e<=Screen->NumEWeapons();e++)
+				{eweapon m=Screen->LoadEWeapon(e);
+				if(m->Dir==0){Screen->DrawTile(0,m->X,m->Y+16+m->Z,m->Tile,1,1,1,-1,-1,0,0,0,0,true,128);}
+				if(m->Dir==1){Screen->DrawTile(0,m->X,m->Y+16+m->Z,m->Tile,1,1,1,-1,-1,0,0,0,3,true,128);}
+				if(m->Dir==2){Screen->DrawTile(0,m->X,m->Y+16+m->Z,m->Tile,1,1,1,-1,-1,0,0,0,3,true,128);}
+				if(m->Dir==3){Screen->DrawTile(0,m->X,m->Y+16+m->Z,m->Tile,1,1,1,-1,-1,0,0,0,2,true,128);}		
+				}
+			}
+		if(Link->Dir==0){Screen->DrawTile(0,Link->X,Link->Y+16+Link->Z,Link->Tile,1,1,1,-1,-1,0,0,0,2,true,128);}
+		if(Link->Dir==2){Screen->DrawTile(0,Link->X,Link->Y+16+Link->Z,Link->Tile,1,1,1,-1,-1,0,0,0,2,true,128);}
+		if(Link->Dir==1||Link->Dir==3){Screen->DrawTile(0,Link->X,Link->Y+16+Link->Z,Link->Tile,1,1,1,-1,-1,0,0,0,2,true,128);}		
+		Screen->DrawLayer(0,1,0,0,0,0,0,64);Waitframe();
+		}
+	}
+}
+ffc script Gleeok
+{
+void run(int a, int b, int c, int d, int e, int f, int g)
+	{
+	ffc eyes=Screen->LoadFFC(a);//arg a, D0, is ffc # of eyes.
+	ffc jaw=Screen->LoadFFC(b);// arg b, D1, is ffc # of jaw.
+	npc GLEEOK;int bite;bite=0;
+	int EYECOM=eyes->Data;//Runs once to keep the original data of combo of eyes.
+	int JAWCOM=jaw->Data;//Runs once to store original Jaw combo #.
+	while(true)
+		{
+		if(Screen->NumNPCs()>0)
+			{
+			if(GLEEOK->HP==0){this->Data=0;eyes->Data=0;Quit();}
+			GLEEOK=Screen->LoadNPC(1);
+			if(GLEEOK->HP<100){eyes->Data+4;}
+			}
+		
+		eyes->X=this->X+16;
+		eyes->Y=this->Y+16;
+		jaw->X=this->X+16;
+		if(bite<5){jaw->Y=this->Y+40;}
+		if(Link->Y<this->Y&&Link->X<this->X+96&&Link->X>this->X-32){eyes->Data=EYECOM;}//Looking up @ Link
+		if(Link->Y>this->Y&&Link->X<this->X+96&&Link->X>this->X-32){eyes->Data=EYECOM+1;}//Looking down @ Link
+		if(Link->X<=this->X-32){eyes->Data=EYECOM+2;}//Looking left @ Link
+		if(Link->X>=this->X+96){eyes->Data=EYECOM+3;}//Looking right @ Link
+		
+		
+		
+		Waitframe();
+		}
+	}
+}
+		
+
+ffc script PoshShop
+{
+void run()
+	{
+	while(true)
+		{
+		if(V[99]==-3&&Link->PressR){V[99]=-2;return;}
+		Posh();
+		Waitframe();
+		}
+	}
+}
+void Posh()
+{
+if(Game->Counter[1]<20&&V[98]==-2)
+			{int Posh[]="You do not have sufficient rupees for my services.";
+			Screen->Rectangle(7,16,100,216,148,9,1.1,0,0,0,true,128);//Message Box
+			Screen->Rectangle(7,16,100,216,148,10,0,0,0,0,true,64);//Message Box
+			Screen->DrawString(7,32,132,1,10,-1,1,Posh,OP_OPAQUE);
+			if(Link->PressR){V[98]=-3;}
+			}
+if(Game->Counter[1]>=20&&(V[98]==-2||V[98]==-1))
+			{int Posh1[]="Would you like to change your Tunic?.";
+			int Posh2[]="Yes, please.";int Posh3[]="No thank you.";
+			Screen->Rectangle(7,16,100,216,148,9,1.2,0,0,0,true,128);//Message Box
+			Screen->Rectangle(7,16,100,216,148,10,0,0,0,0,true,64);//Message Box
+			Screen->DrawString(7,32,100,1,15,-1,0,Posh1,OP_OPAQUE);
+			Screen->DrawString(7,64,116,1,15,-1,0,Posh2,OP_OPAQUE);
+			Screen->DrawString(7,64,132,1,15,-1,0,Posh3,OP_OPAQUE);
+			if(V[98]==-2){Screen->DrawTile(7,32,116,47542,1,1,1,-1,-1,0,0,0,0,true,128);}
+			if(V[98]==-1){Screen->DrawTile(7,32,132,47542,1,1,1,-1,-1,0,0,0,0,true,128);}
+			if(V[98]==-2&&Link->PressDown){V[98]=-1;}
+			if(V[98]==-1&&Link->PressUp){V[98]=-2;}
+			if(V[98]==-2&&Link->PressR){V[98]=1;Game->Counter[1]-=20;return;}
+			if(V[98]==-1&&Link->PressR){V[98]=-3;return;}
+			}	
+if(V[98]>=1)
+			{
+			int Posh4[]="Please select your new Tunic Color.";
+			Screen->DrawString(7,32,148,1,15,-1,0,Posh4,OP_OPAQUE);
+			Screen->Rectangle(7,16,100,216,140,10,0,0,0,0,true,64);//Message Box
+			Screen->Rectangle(7,30,22,70,72,18,14,0,0,0,false,128);
+			Screen->DrawTile(7,40,32,10,1,1,0,8,8,0,0,0,0,true,128);
+			Screen->DrawTile(7,50,32,10,1,1,1,8,8,0,0,0,0,true,128);
+			Screen->DrawTile(7,60,32,10,1,1,2,8,8,0,0,0,0,true,128);
+			Screen->DrawTile(7,40,42,10,1,1,3,8,8,0,0,0,0,true,128);
+			Screen->DrawTile(7,50,42,10,1,1,4,8,8,0,0,0,0,true,128);
+			Screen->DrawTile(7,60,42,10,1,1,5,8,8,0,0,0,0,true,128);
+			Screen->DrawTile(7,40,52,10,1,1,6,8,8,0,0,0,0,true,128);
+			Screen->DrawTile(7,50,52,10,1,1,7,8,8,0,0,0,0,true,128);
+			Screen->DrawTile(7,60,52,10,1,1,8,8,8,0,0,0,0,true,128);
+			Screen->DrawTile(7,50,62,10,1,1,9,8,8,0,0,0,0,true,128);
+			if(V[98]==1)
+				{
+				Screen->DrawTile(7,26,32,47542,1,1,0,-1,-1,0,0,0,0,true,128);
+				if(Link->PressRight){V[98]=2;return;}
+				if(Link->PressDown){V[98]=4;return;}
+				if(Link->PressR){V[99]=0;V[98]=-3;return;}
+				}
+			if(V[98]==2)
+				{
+				Screen->DrawTile(7,36,32,47542,1,1,1,-1,-1,0,0,0,0,true,128);
+				if(Link->PressRight){V[98]=3;return;}
+				if(Link->PressLeft){V[98]=1;return;}
+				if(Link->PressDown){V[98]=5;return;}
+				if(Link->PressR){V[99]=1;V[98]=-3;return;}
+				}
+			if(V[98]==3)
+				{
+				Screen->DrawTile(7,46,32,47542,1,1,2,-1,-1,0,0,0,0,true,128);
+				if(Link->PressLeft){V[98]=2;return;}
+				if(Link->PressDown){V[98]=6;return;}
+				if(Link->PressR){V[99]=2;V[98]=-3;return;}
+				}
+			if(V[98]==4)
+				{
+				Screen->DrawTile(7,26,42,47542,1,1,3,-1,-1,0,0,0,0,true,128);
+				if(Link->PressUp){V[98]=1;return;}
+				if(Link->PressRight){V[98]=5;return;}
+				if(Link->PressDown){V[98]=7;return;}
+				if(Link->PressR){V[99]=3;V[98]=-3;return;}
+				}
+			if(V[98]==5)
+				{
+				Screen->DrawTile(7,36,42,47542,1,1,4,-1,-1,0,0,0,0,true,128);
+				if(Link->PressUp){V[98]=2;return;}
+				if(Link->PressRight){V[98]=6;return;}
+				if(Link->PressLeft){V[98]=4;return;}
+				if(Link->PressDown){V[98]=8;return;}
+				if(Link->PressR){V[99]=4;V[98]=-3;return;}
+				}
+			if(V[98]==6)
+				{
+				Screen->DrawTile(7,46,42,47542,1,1,5,-1,-1,0,0,0,0,true,128);
+				if(Link->PressUp){V[98]=3;return;}
+				if(Link->PressLeft){V[98]=5;return;}
+				if(Link->PressDown){V[98]=9;return;}
+				if(Link->PressR){V[99]=5;V[98]=-3;return;}
+				}
+			if(V[98]==7)
+				{
+				Screen->DrawTile(7,26,52,47542,1,1,6,-1,-1,0,0,0,0,true,128);
+				if(Link->PressUp){V[98]=4;return;}
+				if(Link->PressRight){V[98]=8;return;}
+				if(Link->PressR){V[99]=6;V[98]=-3;return;}
+				}
+			if(V[98]==8)
+				{
+				Screen->DrawTile(7,36,52,47542,1,1,7,-1,-1,0,0,0,0,true,128);
+				if(Link->PressUp){V[98]=5;return;}
+				if(Link->PressRight){V[98]=9;return;}
+				if(Link->PressLeft){V[98]=7;return;}
+				if(Link->PressDown){V[98]=10;return;}
+				if(Link->PressR){V[99]=7;V[98]=-3;return;}
+				}
+			if(V[98]==9)
+				{
+				Screen->DrawTile(7,46,52,47542,1,1,8,-1,-1,0,0,0,0,true,128);
+				if(Link->PressUp){V[98]=6;return;}
+				if(Link->PressLeft){V[98]=8;return;}
+				if(Link->PressR){V[99]=8;V[98]=-3;return;}
+				}
+			if(V[98]==10)
+				{
+				Screen->DrawTile(7,36,62,47542,1,1,9,-1,-1,0,0,0,0,true,128);
+				if(Link->PressUp){V[98]=8;return;}
+				if(Link->PressR){V[99]=9;V[98]=-3;return;}
+				}
+			}
+if(V[98]>-3){NoAction();}
+}
+void CLOUDS()
+{
+if(CLOUD[24]<1000){CLOUD[24]++;}if(CLOUD[24]==1000){CLOUD[24]=0;CLOUD[2]=Choose(1,2,0);CLOUD[3]=Choose(1,2,0);}
+if(inside==1){return;}
+if(xSCN-SCN==1){CLOUD[0]+=240;}//to the east
+if(xSCN-SCN==-1){CLOUD[0]-=240;}// to the west
+if(xSCN-SCN==16){CLOUD[1]-=160;}//went south
+if(xSCN-SCN==-16){CLOUD[1]+=160;}//went north
+
+if(CLOUD[2]==1){CLOUD[1]--;if(CLOUD[1]==-241){CLOUD[1]=260;}}
+if(CLOUD[2]==2){CLOUD[1]++;if(CLOUD[1]==261){CLOUD[1]=-240;}}
+if(CLOUD[3]==1){CLOUD[0]--;if(CLOUD[0]==-161){CLOUD[0]=400;}}
+if(CLOUD[3]==2){CLOUD[0]++;if(CLOUD[0]==401){CLOUD[0]=-160;}}
+
+Screen->DrawLayer(7,8,1,0,CLOUD[0]*1.5,CLOUD[1]*1.5,0,OP_TRANS);
+Screen->DrawLayer(7,8,1,0,CLOUD[0]+32,CLOUD[1]+32,0,OP_TRANS);
+Screen->DrawLayer(7,8,1,0,CLOUD[0]+48,CLOUD[1]+96,0,OP_TRANS);
+Screen->DrawLayer(7,8,1,0,CLOUD[0]-64,CLOUD[1]-96,0,OP_TRANS);
+Screen->DrawLayer(7,8,1,0,CLOUD[0]-32,CLOUD[1]-148,0,OP_TRANS);
+Screen->DrawLayer(7,8,1,0,CLOUD[0]-48,CLOUD[1]-10,0,OP_TRANS);
+Screen->DrawLayer(7,8,1,0,CLOUD[0]-10,CLOUD[1]+14,0,OP_TRANS);
+Screen->DrawLayer(7,8,1,0,CLOUD[0]-72,CLOUD[1]-100,0,OP_TRANS);
+Screen->DrawLayer(7,8,1,0,CLOUD[0]+72,CLOUD[1]-14,0,OP_TRANS);
+if(Link->InputEx4&&Link->PressUp){CLOUD[2]=1;NoAction();}if(Link->InputEx4&&Link->PressDown){CLOUD[2]=2;NoAction();}
+if(Link->InputEx4&&Link->PressLeft){CLOUD[3]=1;NoAction();}if(Link->InputEx4&&Link->PressRight){CLOUD[3]=2;NoAction();}
+if(Link->InputEx3){CLOUD[2]=0;CLOUD[3]=0;}
+
+
+	//Screen->DrawTile(7,152,32,65180+CLOUD[0]%10,1,1,6,-1,-1,0,0,0,0,true,128);
+	//if(CLOUD[0]>9)Screen->DrawTile(7,145,32,65180+(CLOUD[0]%100-CLOUD[0]%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+	//if(CLOUD[0]>99)Screen->DrawTile(7,138,32,65180+(CLOUD[0]%1000-CLOUD[0]%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);	
+	//if(CLOUD[0]>999)Screen->DrawTile(7,131,32,65180+(CLOUD[0]%10000-CLOUD[0]%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);	
+	//if(CLOUD[0]>9999)Screen->DrawTile(7,124,32,65180+(CLOUD[0]%100000-CLOUD[0]%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);
+	
+//	Screen->DrawTile(7,152,64,65180+CLOUD[1]%10,1,1,6,-1,-1,0,0,0,0,true,128);
+//	if(CLOUD[1]>9)Screen->DrawTile(7,145,64,65180+(CLOUD[1]%100-CLOUD[1]%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+//	if(CLOUD[1]>99)Screen->DrawTile(7,138,64,65180+(CLOUD[1]%1000-CLOUD[1]%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);	
+//	if(CLOUD[1]>999)Screen->DrawTile(7,131,64,65180+(CLOUD[1]%10000-CLOUD[1]%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);	
+//	if(CLOUD[1]>9999)Screen->DrawTile(7,124,64,65180+(CLOUD[1]%100000-CLOUD[1]%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);
+
+//	Screen->DrawTile(7,152,80,65180+CLOUD[3]%10,1,1,6,-1,-1,0,0,0,0,true,128);
+	
+
+//YMILEDIS(0);
+}
+int TM(float D)//8-way Directional tile modifier, set to Dir_Up tile first, clockwise.
+	{int tm;
+	if(D<=-157.5){tm=7;}
+	else if(D<-112.5){tm=8;}
+	else if(D<=-67.5){tm=0;}
+	else if(D<-22.5){tm=1;}
+	else if(D<=22.5){tm=2;}
+	else if(D<67.5){tm=3;}
+	else if(D<=112.5){tm=4;}
+	else if(D<157.5){tm=5;}
+	else{tm=6;}
+	return tm;
+	}
+	float A(int aX,int aY,int bX,int bY)
+	{float A;
+	int DeltaX=aX-bX;
+    int DeltaY=aY-bY;
+    A=RadtoDeg(ArcTan(DeltaX, DeltaY));
+	return A;
+	}
+//Dividing Button
+	int AdB(int n,int d)
+	{int e;
+	e=n/d; // The numerator a over denominator b equals e.
+	return e;
+	}
+
+//Multiplying Button
+	int AxB(int a,int b)
+	{int e;
+	e=a*b; // a multiplied by b equals e.
+	return e;
+	}
+
+//Addition Button
+	int ApB(int a,int b)
+	{int e;
+	e=a+b; // the sum of a plus b equals e.
+	return e;
+	}
+//Subtraction Button
+	int AmB(int a,int b)
+	{int e;
+	e=a-b; // the product of a minus b equals e.
+	return e;
+	}
+//for timing purposes, runs a loop of (n) frames
+	int XF(int n)
+	{int x;
+	if(x<n){x++;}
+	if(x==n){x=0;}
+	return x;
+	}
+
+ffc script Board
+{
+void run()
+	{
+	while(true)
+		{if(Link->Item[125]==false){this->Data=192;}
+		if(Link->Item[125]==false&&Link->X<=this->X+8&&Link->X>=this->X-8&&Link->Y>=this->Y-8&&Link->Y<=this->Y+8)
+			{item BOARD=CreateItemAt(125,Link->X,Link->Y);
+			BOARD->Pickup=IP_HOLDUP;HaveBoard=1;}
+		if(Link->Item[125]==true||HaveBoard==1||UseBoard==1){this->Data=0;}
+		Waitframe();
+		}
+	}
+}
+bool MP(int tX,int tY,int upixels,int dpixels,int lpixels,int rpixels)
+	{if(tX+16+rpixels<=mX||tX-lpixels>=mX||tY+16+dpixels<=mY||tY-upixels>=mY){return false;}
+	if(tX+16+rpixels>mX&&tX-lpixels<mX&&tY+16+dpixels>mY&&tY-upixels<mY){return true;}}
+bool LinkProxi(int tX,int tY,int upixels,int dpixels,int lpixels,int rpixels)
+	{if(tX+16+rpixels<=mX||tX-lpixels>=mX||tY+16+dpixels<=mY||tY-upixels>=mY){return false;}
+	if(tX+16+rpixels>mX&&tX-lpixels<mX&&tY+16+dpixels>mY&&tY-upixels<mY){return true;}}
+//Mouse to Link Proximity.
+bool LMProxi(int rpixels,int lpixels,int upixels,int dpixels) //
+	{if(mX+16+rpixels<=Link->X||mX-lpixels>=Link->X||mY+16+dpixels<=Link->Y||mY-upixels>=Link->Y){return false;}
+	if(mX+16+rpixels>Link->X&&mX-lpixels<Link->X&&mY+16+dpixels>Link->Y&&mY-upixels<Link->Y){return true;}}
+//Pixel proxi compares two points by an adjustable parameter by pixels to set ranges.
+bool FFCFFCProxi(int rpixels,int lpixels,int upixels,int dpixels,ffc aA,ffc aB) //
+	{if(aA->X+16+rpixels<=aB->X||aA->X-lpixels>=aB->X&&aA->Y+16+dpixels<=aB->Y||aA->Y-upixels>=aB->Y){return false;}
+	if(aA->X+16+rpixels>=aB->X&&aA->X-lpixels<=aB->X&&aA->Y+16+dpixels>=aB->Y&&aA->Y-upixels<=aB->Y){return true;}}
+//LinkFFCProxy determines by pixel per direction a range of closeness between link and an ffc
+//bool LinkFFCProxi(int rpixels,int lpixels,int upixels,int dpixels,ffc aA) //
+	//{if(aA->X+16+rpixels<=Link->X||aA->X-lpixels>=Link->X||aA->Y+16+dpixels<=Link->Y||aA->Y-upixels>=Link->Y){return false;}
+	//if(aA->X+16+rpixels>Link->X&&aA->X-lpixels<Link->X&&aA->Y+16+dpixels>Link->Y&&aA->Y-upixels<Link->Y){return true;}}
+bool LinkNPCProxi(int rpixels,int lpixels,int upixels,int dpixels,npc aA) //
+	{if(aA->X+16+rpixels<=Link->X||aA->X-lpixels>=Link->X||aA->Y+16+dpixels<=Link->Y||aA->Y-upixels>=Link->Y){return false;}
+	if(aA->X+16+rpixels>Link->X&&aA->X-lpixels<Link->X&&aA->Y+16+dpixels>Link->Y && aA->Y-upixels<Link->Y){return true;}}
+bool NPCNPCProxi(int rpixels,int lpixels,int upixels,int dpixels,npc aA,npc aB) //
+	{if(aA->X+16+rpixels<=aB->X||aA->X-lpixels>=aB->X&&aA->Y+16+dpixels<=aB->Y||aA->Y-upixels>=aB->Y){return false;}
+	if(aA->X+16+rpixels>=aB->X&&aA->X-lpixels<=aB->X&&aA->Y+16+dpixels>=aB->Y&&aA->Y-upixels<=aB->Y){return true;}}
+bool FFCNPCProxi(int rpixels,int lpixels,int upixels,int dpixels,ffc aA,npc aB) //
+	{if(aA->X+16+rpixels<=aB->X||aA->X-lpixels>=aB->X&&aA->Y+16+dpixels<=aB->Y||aA->Y-upixels>=aB->Y){return false;}
+	if(aA->X+16+rpixels>=aB->X&&aA->X-lpixels<=aB->X&&aA->Y+16+dpixels>=aB->Y&&aA->Y-upixels<=aB->Y){return true;}}
+bool WProxi(int sX,int sY,int tX,int tY,int upixels,int dpixels,int lpixels,int rpixels)
+	{if(tX+16+rpixels<=sX||tX-lpixels>=sX||tY+16+dpixels<=sY||tY-upixels>=sY){return false;}
+	if(tX+16+rpixels>sX&&tX-lpixels<sX&&tY+16+dpixels>sY&&tY-upixels<sY){return true;}}
+
+void Klock()
+	{
+	if(zmN<=59){if(TimeSig==0){zmN++;}if(TimeSig==1){if(zmN!=0&&zmN!=30){zmN=30;}zmN+=30;}}//frames to seconds
+	if(zmN==60){zmN=0;zmK+=1;}//seconds 
+	if(zmK==10){zmK=0;zmM+=1;}//tens of seconds
+	if(zmM==6){zmM=0;zmB+=1;}//minutes
+	if(zmB==10){zmB=0;zmT+=1;}//tens of minutes
+	if(zmT==6){zmT=0;zbN+=1;}//hours
+	if(zbN==10){zbN=0;zbK+=1;}//tens of hours
+	if(zbK==1&&zbN==2&&zmT==0&&zmB==0&&zmM==0&&zmK==0&&zmN==0&&zam==1){zam=0;zmN+=30;}
+	if(zbK==1&&zbN==2&&zmT==0&&zmB==0&&zmM==0&&zmK==0&&zmN==0&&zam==0){zam=1;zmN+=30;zbM+=1;}//AM/PM 12 hour conversion and Days Counter++;
+	if(zbK==1&&zbN==3){zbN=1;zbK=0;}//Hour conversion to standard time.
+	}
+void KlockD(int x,int y){
+if(zam==1){Screen->DrawTile(7,x+28,y+16,65028,1,1,6,-1,-1,0,0,0,0,true,128);}
+if(zam==0){Screen->DrawTile(7,x+28,y+16,65029,1,1,6,-1,-1,0,0,0,0,true,128);}
+Screen->DrawTile(7,x+49,y,65180+zmK,1,1,6,-1,-1,0,0,0,0,true,128);
+Screen->DrawTile(7,x+42,y,65180+zmM,1,1,6,-1,-1,0,0,0,0,true,128);
+Screen->DrawTile(7,x+35,y,65001,1,1,6,-1,-1,0,0,0,0,true,128);
+Screen->DrawTile(7,x+28,y,65180+zmB,1,1,6,-1,-1,0,0,0,0,true,128);
+Screen->DrawTile(7,x+21,y,65180+zmT,1,1,6,-1,-1,0,0,0,0,true,128);
+Screen->DrawTile(7,x+14,y,65001,1,1,6,-1,-1,0,0,0,0,true,128);
+Screen->DrawTile(7,x+7,y,65180+zbN,1,1,6,-1,-1,0,0,0,0,true,128);
+if(zbK>0){Screen->DrawTile(7,x,y,65180+zbK,1,1,6,-1,-1,0,0,0,0,true,128);}
+Screen->DrawTile(7,x+16,y-24,65026,1,1,6,-1,-1,0,0,0,0,true,128);
+Screen->DrawTile(7,x+32,y-24,65161+zbM,1,1,6,-1,-1,0,0,0,0,true,128);
+}
+void ItemSpawn()
+	{int x=Rand(156);int y=Rand(156);int z=Rand(156);
+	int a=Rand(239);int b=Rand(159);int c=Rand(239);int d=Rand(159);int e=Rand(239);int f=Rand(159);
+	if(Link->Item[x]==true){x=Rand(156);if(Link->Item[x]==true){x=Rand(156);if(Link->Item[x]==true){x=Rand(156);if(Link->Item[x]==true){x=Rand(156);if(Link->Item[x]==true){x=Rand(156);if(Link->Item[x]==true){x=Rand(156);}}}}}}
+	if(Link->Item[y]==true){y=Rand(156);if(Link->Item[y]==true){y=Rand(156);if(Link->Item[y]==true){y=Rand(156);if(Link->Item[y]==true){y=Rand(156);if(Link->Item[y]==true){y=Rand(156);if(Link->Item[y]==true){y=Rand(156);}}}}}}
+	if(Link->Item[z]==true){z=Rand(156);if(Link->Item[z]==true){z=Rand(156);if(Link->Item[z]==true){z=Rand(156);if(Link->Item[z]==true){z=Rand(156);if(Link->Item[z]==true){z=Rand(156);if(Link->Item[z]==true){z=Rand(156);}}}}}}
+	item g=Screen->CreateItem(x);g->Pickup=IP_HOLDUP;g->X=a;g->Y=b;
+	item h=Screen->CreateItem(y);h->Pickup=IP_HOLDUP;h->X=c;h->Y=d;
+	item i=Screen->CreateItem(z);i->Pickup=IP_HOLDUP;i->X=e;i->Y=f;		
+	}
+void ItemSpawnplusBan()
+	{int x=Rand(156);int y=Rand(156);int z=Rand(156);
+	int a=Rand(239);int b=Rand(159);int c=Rand(239);int d=Rand(159);int e=Rand(239);int f=Rand(159);
+	if(Link->Item[x]==true){x=Rand(156);if(Link->Item[x]==true){x=Rand(156);if(Link->Item[x]==true){x=Rand(156);if(Link->Item[x]==true){x=Rand(156);if(Link->Item[x]==true){x=Rand(156);if(Link->Item[x]==true){x=Rand(156);}}}}}}
+	if(Link->Item[y]==true){y=Rand(156);if(Link->Item[y]==true){y=Rand(156);if(Link->Item[y]==true){y=Rand(156);if(Link->Item[y]==true){y=Rand(156);if(Link->Item[y]==true){y=Rand(156);if(Link->Item[y]==true){y=Rand(156);}}}}}}
+	if(Link->Item[z]==true){z=Rand(156);if(Link->Item[z]==true){z=Rand(156);if(Link->Item[z]==true){z=Rand(156);if(Link->Item[z]==true){z=Rand(156);if(Link->Item[z]==true){z=Rand(156);if(Link->Item[z]==true){z=Rand(156);}}}}}}
+	if(x==22||x==21||x==90||x==50||x==63||x==16||x==4||x==55||x==68||x==48||x==14||x==27||x==46||x==47||x==24||x==35||x==19||x==56||x==11||x==102||x==125||x==42||x==64||x==43||x==65||x==51||x==54||x==52||x==89||x==92||x==97||x==84||x==33||x==9||x==27||x==10||x==8||x==53||x==12||x==90||x==32||x==116||x==117||x==118||x==21||x==46||x==47||x==66||x==75||x==76||x==105||x==26||x==18||x==61||x==45||x==85||x==8||x==37||x==119||x==5||x==67||x==36||x==143||x==144||x==145||x==146||x==147||x==148||x==149||x==42||x==104||x==110||x==111||x==122||x==99||x==100||x==31){x=Choose(2,49);}
+	if(y==22||y==21||y==90||y==50||y==63||y==16||y==4||y==55||y==68||y==48||y==14||y==27||y==46||y==47||y==24||y==35||y==19||y==56||y==11||y==102||y==125||y==42||y==64||y==43||y==65||y==51||y==54||y==52||y==89||y==92||y==97||y==84||y==33||y==9||y==27||y==10||y==8||y==53||y==12||y==90||y==32||y==116||y==117||y==118||y==21||y==46||y==47||y==66||y==75||y==76||y==105||y==26||y==18||y==61||y==45||y==85||y==8||y==37||y==119||y==5||y==67||y==36||y==143||y==144||y==145||y==146||y==147||y==148||y==149||y==42||y==104||y==110||y==111||y==122||y==99||y==100||y==31){y=Choose(79,72);}
+	if(z==22||z==21||z==90||z==50||z==63||z==16||z==4||z==55||z==68||z==48||z==14||z==27||z==46||z==47||z==24||z==35||z==19||z==56||z==11||z==102||z==125||z==42||z==64||z==43||z==65||z==51||z==54||z==52||z==89||z==92||z==97||z==84||z==33||z==9||z==27||z==10||z==8||z==53||z==12||z==90||z==32||z==116||z==117||z==118||z==21||z==46||z==47||z==66||z==75||z==76||z==105||z==26||z==18||z==61||z==45||z==85||z==8||z==37||z==119||z==5||z==67||z==36||z==143||z==144||z==145||z==146||z==147||z==148||z==149||z==42||z==104||z==110||z==111||z==122||z==99||z==100||z==31){z=Choose(154,155,156);}
+	item g=Screen->CreateItem(x);g->Pickup=IP_HOLDUP;g->X=a;g->Y=b;
+	item h=Screen->CreateItem(y);h->Pickup=IP_HOLDUP;h->X=c;h->Y=d;
+	item i=Screen->CreateItem(z);i->Pickup=IP_HOLDUP;i->X=e;i->Y=f;		
+	}
+void ItemSpawnHearts()
+	{int x=Choose(2,2,49);int y=Choose(2,2,49);int z=Choose(2,2,49);
+	int a=Link->X;int b=Link->Y-32;int c=Link->X-32;int d=Link->Y+16;int e=Link->X+48;int f=Link->Y+16;
+	if(a==49&&b==49&&b==49&&Link->Item[112]==false){a=112;b=112;c=112;}
+	if(a==49&&b==49&&b==49&&Link->Item[112]==true&&Link->Item[113]==false){a=113;b=113;c=113;}
+	if(a==49&&b==49&&b==49&&Link->Item[112]==true&&Link->Item[113]==true){a=114;b=114;c=114;}
+	item g=Screen->CreateItem(x);g->Pickup=IP_HOLDUP;g->X=a;g->Y=b;
+	item h=Screen->CreateItem(y);h->Pickup=IP_HOLDUP;h->X=c;h->Y=d;
+	item i=Screen->CreateItem(z);i->Pickup=IP_HOLDUP;i->X=e;i->Y=f;		
+	}
+
+ffc script ItemTime
+{
+void run(int a,int b)
+		{b=a;
+		while(true)
+			{
+			if(a==b&&LinkFFCProxi(4,4,4,4,this)&&Link->PressR){ItemSpawnplusBan();b=a+1;}
+			Waitframe();
+			}
+		}
+}
+ffc script ItemHearts
+{
+void run(int a,int b)
+		{b=a;
+		while(true)
+			{
+			if(a==b&&LinkFFCProxi(4,4,4,4,this)&&Link->PressR){ItemSpawnHearts();b=a+1;}
+			Waitframe();
+			}
+		}
+}
+void check(int z,int x,int a,int b)
+{int zx;
+		if(z>0)zx=Game->Counter[z];
+		if(x>0)zx=x;
+		Screen->DrawTile(7,a+28,b,65180+zx%10,1,1,6,-1,-1,0,0,0,0,true,128);
+		if(zx>9)Screen->DrawTile(7,a+21,b,65180+(zx%100-zx%10)/10,1,1,6,-1,-1,0,0,0,0,true,128);
+		if(zx>99)Screen->DrawTile(7,a+14,b,65180+(zx%1000-zx%100)/100,1,1,6,-1,-1,0,0,0,0,true,128);	
+		if(zx>999)Screen->DrawTile(7,a+7,b,65180+(zx%10000-zx%1000)/1000,1,1,6,-1,-1,0,0,0,0,true,128);	
+		if(zx>9999)Screen->DrawTile(7,a,b,65180+(zx%100000-zx%10000)/10000,1,1,6,-1,-1,0,0,0,0,true,128);	
+}
+ffc script SpawnerR
+	{
+	void run(int y,int z)
+		{
+		while(true)
+			{int x=Rand(176);if(x<10){x=106;}
+			if(kiB<360){kiB+=1;}
+			if(kiB==y&&(x==93||x==58||x==118||x==119||x==117||x==81||x==82||x==51||x==101||x==66||x==67||x==68||x==69||x==70||x==71||x==60||x==114||x==115||x==85||x==102||x==78||x==173||x==62||x==109||x==63||x==110||x==64||x==111||x==65||x==112||x==72||x==73||x==121||x==122||x==174||x==175||x==84||x==74||x==75||x==61||x==94||x==76||x==104||x==105||x==103||x==77||x==34||x==83||x==158||x==159||x==154||x==155||x==156||x==157||x==166||x==167||x==47||x==142||x==146||x==147||x==150||x==151||x==148||x==149||x==143||x==97||x==95||x==144||x==145||x==98||x==96||x==116||x==48||x==33||x==128||x==128||x==134||x==133||x==132||x==131||x==130||x==129)){kiB=0;return;}
+			if(Screen->NumNPCs()<z&&kiB==y){CreateNPCAt(x,this->X,this->Y);kiB=y-10;}
+			if(kiB==360){kiB=0;}
+			Waitframe();
+			}
+		}
+	}
+
+
+ffc script Gate
+	{
+	void run(int y)
+		{
+		while(true)
+			{
+			Screen->Triangle(7,this->X,this->Y-16,this->X-16,this->Y+16,this->X+32,this->Y+16,Store7,Store8,0,0,10,13);
+			Screen->Arc(7,this->X,this->Y,48,270,90,17,1,0,0,0,true,true,OP_TRANS);
+			Waitframe();
+			}
+		}
+	}
+void Lantern(int r)
+	{
+	//Screen->Rectangle(7,0,0,240,0,0,160,240,160,10,true,128);
+	if(Link->Dir==0)
+		{Screen->Arc(7,Link->X+7,Link->Y+7,r,290,70,15,1,Link->X+7,Link->Y+7,270,true,true,OP_TRANS);}
+	if(Link->Dir==1)
+		{Screen->Arc(7,Link->X+7,Link->Y+7,r,290,70,15,1,Link->X+7,Link->Y+7,90,true,true,OP_TRANS);}
+	if(Link->Dir==2)
+		{Screen->Arc(7,Link->X+7,Link->Y+7,r,290,70,15,1,Link->X+7,Link->Y+7,180,true,true,OP_TRANS);}
+	if(Link->Dir==3)
+		{Screen->Arc(7,Link->X+7,Link->Y+7,r,290,70,15,1,Link->X+7,Link->Y+7,0,true,true,OP_TRANS);}
+	}
+void MShield()
+	{
+	Screen->Circle(7,Link->X+7,Link->Y+7,33,4,1,Link->X,Link->Y,0,false,64);
+	Screen->Circle(7,Link->X+7,Link->Y+7,32,3,1,Link->X,Link->Y,0,true,64);
+	if(Screen->NumNPCs()>0)
+		{ffc Enemy=Screen->LoadFFC(20);ffc Shield=Screen->LoadFFC(21);
+		for(int qw=1;qw<=Screen->NumNPCs();qw++)
+			{
+			npc QW=Screen->LoadNPC(qw);Enemy->X=QW->X;Enemy->Y=QW->Y;Shield->X=Link->X;Shield->Y=Link->Y;
+			if(Collision(Enemy,10,Shield,48)==true)
+				{
+				if(Link->Dir==0&&Enemy->Y<Shield->Y&&(!Screen->isSolid(Enemy->X,Enemy->Y-1)||!Screen->isSolid(Enemy->X+15,Enemy->Y-1)))Enemy->Y--;QW->Y=Enemy->Y;Screen->Arc(7,Shield->X,Shield->Y,32,0,180,17,1,0,0,0,true,true,OP_TRANS);	
+				if(Link->Dir==1&&Enemy->Y>Shield->Y&&(!Screen->isSolid(Enemy->X,Enemy->Y+17)||!Screen->isSolid(Enemy->X+15,Enemy->Y+17)))Enemy->Y++;QW->Y=Enemy->Y;Screen->Arc(7,Shield->X,Shield->Y,32,180,0,17,1,0,0,0,true,true,OP_TRANS);
+				if(Link->Dir==2&&Enemy->X<Shield->X&&(!Screen->isSolid(Enemy->X-1,Enemy->Y)||!Screen->isSolid(Enemy->X-1,Enemy->Y+15)))Enemy->X--;QW->X=Enemy->X;Screen->Arc(7,Shield->X,Shield->Y,32,90,270,17,1,0,0,0,true,true,OP_TRANS);	
+				if(Link->Dir==3&&Enemy->X>Shield->X&&(!Screen->isSolid(Enemy->X+17,Enemy->Y)||!Screen->isSolid(Enemy->X+17,Enemy->Y+15)))Enemy->X++;QW->X=Enemy->X;Screen->Arc(7,Shield->X,Shield->Y,32,270,90,17,1,0,0,0,true,true,OP_TRANS);	
+				}
+			
+			}
+		}
+	}
+void AutoMShield()
+	{
+	Screen->Circle(7,Link->X+7,Link->Y+7,33,7,2,Link->X+7,Link->Y,0,false,64);
+	Screen->Circle(7,Link->X+7,Link->Y+7,32,8,1,Link->X+7,Link->Y,0,true,64);
+	if(Screen->NumNPCs()>0)
+		{ffc Enemy=Screen->LoadFFC(20);ffc Shield=Screen->LoadFFC(21);
+		for(int qw=1;qw<=Screen->NumNPCs();qw++)
+			{
+			npc QW=Screen->LoadNPC(qw);Enemy->X=QW->X;Enemy->Y=QW->Y;Shield->X=Link->X+7;Shield->Y=Link->Y+7;
+			if(Collision(Enemy,10,Shield,48)==true)
+				{Screen->Circle(7,Enemy->X+7,Enemy->Y+7,16,4,1,Link->X,Link->Y,0,false,64);	
+				if(Enemy->Y<Shield->Y&&(!Screen->isSolid(Enemy->X,Enemy->Y-1)||!Screen->isSolid(Enemy->X+15,Enemy->Y-1)))Enemy->Y--;QW->Y=Enemy->Y;Screen->Arc(7,Shield->X,Shield->Y,32,0,180,17,1,0,0,0,true,true,OP_TRANS);
+				if(Enemy->Y>Shield->Y&&(!Screen->isSolid(Enemy->X,Enemy->Y+17)||!Screen->isSolid(Enemy->X+15,Enemy->Y+17)))Enemy->Y++;QW->Y=Enemy->Y;Screen->Arc(7,Shield->X,Shield->Y,32,180,0,17,1,0,0,0,true,true,OP_TRANS);
+				if(Enemy->X<Shield->X&&(!Screen->isSolid(Enemy->X-1,Enemy->Y)||!Screen->isSolid(Enemy->X-1,Enemy->Y+15)))Enemy->X--;QW->X=Enemy->X;Screen->Arc(7,Shield->X,Shield->Y,32,90,270,17,1,0,0,0,true,true,OP_TRANS);	
+				if(Enemy->X>Shield->X&&(!Screen->isSolid(Enemy->X+17,Enemy->Y)||!Screen->isSolid(Enemy->X+17,Enemy->Y+15)))Enemy->X++;QW->X=Enemy->X;Screen->Arc(7,Shield->X,Shield->Y,32,270,90,17,1,0,0,0,true,true,OP_TRANS);	
+				}
+			
+			}
+		}
+	}
+void WShield()
+	{
+	Screen->Circle(7,Link->X+7,Link->Y+7,33,14,2,Link->X,Link->Y,0,false,64);
+	Screen->Circle(7,Link->X+7,Link->Y+7,32,13,2,Link->X,Link->Y,0,true,64);
+	if(Screen->NumEWeapons()>0)
+		{ffc enemy=Screen->LoadFFC(22);ffc Shield=Screen->LoadFFC(21);
+		for(int qx=1;qx<=Screen->NumEWeapons();qx++)
+			{
+			eweapon QX=Screen->LoadEWeapon(qx);enemy->X=QX->X;enemy->Y=QX->Y;Shield->X=Link->X+7;Shield->Y=Link->Y+7;
+			if(Collision(enemy,10,Shield,48)==true)
+				{
+				if(Link->Dir==0&&enemy->Y<Shield->Y&&(!Screen->isSolid(enemy->X,enemy->Y-1)||!Screen->isSolid(enemy->X+15,enemy->Y-1)))enemy->Y--;QX->Y=enemy->Y;Screen->Arc(7,Shield->X,Shield->Y,32,0,180,17,1,0,0,0,true,true,OP_TRANS);	
+				if(Link->Dir==1&&enemy->Y>Shield->Y&&(!Screen->isSolid(enemy->X,enemy->Y+17)||!Screen->isSolid(enemy->X+15,enemy->Y+17)))enemy->Y++;QX->Y=enemy->Y;Screen->Arc(7,Shield->X,Shield->Y,32,180,0,17,1,0,0,0,true,true,OP_TRANS);
+				if(Link->Dir==2&&enemy->X<Shield->X&&(!Screen->isSolid(enemy->X-1,enemy->Y)||!Screen->isSolid(enemy->X-1,enemy->Y+15)))enemy->X--;QX->X=enemy->X;Screen->Arc(7,Shield->X,Shield->Y,32,90,270,17,1,0,0,0,true,true,OP_TRANS);	
+				if(Link->Dir==3&&enemy->X>Shield->X&&(!Screen->isSolid(enemy->X+17,enemy->Y)||!Screen->isSolid(enemy->X+17,enemy->Y+15)))enemy->X++;QX->X=enemy->X;Screen->Arc(7,Shield->X,Shield->Y,32,270,90,17,1,0,0,0,true,true,OP_TRANS);	
+				}
+			
+			}
+		}
+	}
+void AutoWShield()
+	{
+	Screen->Circle(7,Link->X+7,Link->Y+7,33,4,2,Link->X,Link->Y,0,false,64);
+	Screen->Circle(7,Link->X+7,Link->Y+7,32,3,2,Link->X,Link->Y,0,true,64);
+	if(Screen->NumEWeapons()>0)
+		{ffc enemy=Screen->LoadFFC(22);ffc Shield=Screen->LoadFFC(21);
+		for(int qx=1;qx<=Screen->NumEWeapons();qx++)
+			{
+			eweapon QX=Screen->LoadEWeapon(qx);enemy->X=QX->X;enemy->Y=QX->Y;Shield->X=Link->X+7;Shield->Y=Link->Y+7;
+			if(Collision(enemy,10,Shield,48)==true)
+				{
+				if(enemy->Y<Shield->Y&&(!Screen->isSolid(enemy->X,enemy->Y-1)||!Screen->isSolid(enemy->X+15,enemy->Y-1)))enemy->Y--;QX->Y=enemy->Y;Screen->Arc(7,Shield->X,Shield->Y,32,0,180,17,1,0,0,0,true,true,OP_TRANS);	
+				if(enemy->Y>Shield->Y&&(!Screen->isSolid(enemy->X,enemy->Y+17)||!Screen->isSolid(enemy->X+15,enemy->Y+17)))enemy->Y++;QX->Y=enemy->Y;Screen->Arc(7,Shield->X,Shield->Y,32,180,0,17,1,0,0,0,true,true,OP_TRANS);
+				if(enemy->X<Shield->X&&(!Screen->isSolid(enemy->X-1,enemy->Y)||!Screen->isSolid(enemy->X-1,enemy->Y+15)))enemy->X--;QX->X=enemy->X;Screen->Arc(7,Shield->X,Shield->Y,32,90,270,17,1,0,0,0,true,true,OP_TRANS);	
+				if(enemy->X>Shield->X&&(!Screen->isSolid(enemy->X+17,enemy->Y)||!Screen->isSolid(enemy->X+17,enemy->Y+15)))enemy->X++;QX->X=enemy->X;Screen->Arc(7,Shield->X,Shield->Y,32,270,90,17,1,0,0,0,true,true,OP_TRANS);	
+				}
+			
+			}
+		}
+	}
+item script SORD
+{
+void run(int SwordNum)
+	{CO==1;S=SwordNum;SM=SwordNum;kiM=-1;}
+}
+void Event1()
+{if(zam==1&&zbN==8&&zmT==2&&EVENT==0)
+			{EVENT=-1;}
+if(zam==1&&zbN==8&&zmT==2&&zmB==0&&zmM==0&&zmK>5&&(EVENT==3||EVENT==4))
+			{EVENT=5;}
+if(zam==1&&zbN==8&&zmT==2&&zmB==0&&zmM==0&&zmK>5&&EVENT==2)
+			{EVENT=-2;}
+if(EVENT>=5||EVENT==-1||EVENT==-2){return;}	
+if(DMAP==8&&SCN==104&&zam==1&&zbN==8&&zmT==1&&EVENT<=3)
+			{ffc Merm=Screen->LoadFFC(10);
+			Merm->Data=34477;Merm->TileHeight=2;
+			if(EVENT==0){Merm->X=100;Merm->Y=159;EVENT=1;return;}
+			if(EVENT==1&&Merm->Y>100){Merm->Vy=-1;return;}
+			if(EVENT==1&&Merm->Y<=100){Merm->Vy=0;EVENT=2;}
+			if(EVENT==2||EVENT==3)
+				{Merm->X=100;Merm->Y=100;
+				if(LinkFFCProxi(1,1,1,1,Merm)==true&&Link->PressR)
+					{if(Link->Item[5]==false)
+						{
+						Screen->Message(15);item Woody=CreateItemAt(5,Link->X,Link->Y);
+						EVENT=3;Woody->Pickup=IP_HOLDUP;
+						}
+					if(Link->Item[5]==true)
+						{Screen->Message(26);}
+					}
+				}
+			}
+		if(DMAP==8&&SCN==104&&zam==1&&zbN==8&&zmT==2&&zmB==0&&zmM==0&&zmK<=5)
+			{ffc Merm=Screen->LoadFFC(10);Merm->Data=34477;Merm->TileHeight=2;
+			if(EVENT<4){Merm->X=100;Merm->Y=100;EVENT=4;}
+			if(EVENT==4){Merm->Vy=1;}
+			if(Merm->Y>=159){EVENT=5;}
+			if(LinkFFCProxi(1,1,1,1,Merm)==true&&Link->PressR)
+				{Screen->Message(16);}
+			}
+}
+ffc script MessageSign
+{
+void run(int M,int pixr,int pixl,int pixu,int pixd)
+	{
+	while(true)
+		{
+		if(Link->InputA&&LinkFFCProxi(pixr,pixl,pixu,pixd,this)==true)
+			{
+			INITD(this,EVENT,0,0,20);INITD(this,EVENT,1,0,21);INITD(this,EVENT,2,0,28);
+			INITD(this,EVENT,3,0,22);INITD(this,EVENT,4,0,29);INITD(this,EVENT,5,0,23);
+			INITD(this,EVENT,6,0,30);INITD(this,EVENT,-1,0,24);INITD(this,EVENT,-2,0,27);
+			Screen->Message(M);
+			Waitframe(); 
+			}
+		Waitframe();
+		}
+	}
+}
+void INITD(ffc z,int a,int b,int c,int d)//ffc assign, condition A==condition b, init D[c]=d.
+{
+if(a==b){z->InitD[c]=d;}
+}
+
+ffc script Sign
+{
+void run(int message1,int pixr,int pixl,int pixu,int pixd,int e,int d,int f)
+	{
+	while(true)
+		{if(EVENT!=e){return;}
+		if(Link->InputA&&LinkFFCProxi(pixr,pixl,pixu,pixd,this)==true)
+			{
+			Screen->Message(message1);
+			Waitframe(); 
+			if(f>0){EVENT=f;}
+			}
+		Waitframe();
+		}
+	}
+}
+item script SKATE
+{
+void run()
+	{if(HaveBoard==1&&bail==0)
+		{UseBoard=1;}
+	}
+}
+ffc script Messageplusitemrupees
+{
+void run(int message1,int message2,int ITEM,int pixr,int pixl,int pixu,int pixd,int rupees)
+	{
+	while(true)
+		{
+		if(Link->InputA&&LinkFFCProxi(pixr,pixl,pixu,pixd,this)==true&&Game->Counter[1]>=rupees)
+			{
+			Screen->Message(message1); 
+			item ING=Screen->CreateItem(ITEM);
+			ING->X=Link->X;ING->Y=Link->Y;
+			Game->Counter[1]-=rupees;
+			}
+		if(Link->InputA&&LinkFFCProxi(pixr,pixl,pixu,pixd,this)==true&&(Game->Counter[1]<rupees||Link->Item[ITEM]==true))
+			{
+			Screen->Message(message2);
+			}
+		Waitframe();
+		}
+	}
+}
+ffc script MessageOnce
+{
+void run(int message1,int a)
+	{
+	int b=0;
+	while(true)
+		{b++;
+		if(b==a)
+		{Screen->Message(message1); 
+		Quit();}
+		Waitframe();
+		}
+	}
+}
+ffc script CharacterSwitch
+{
+void run(int a)
+	{
+	while(true)
+		{
+		if(a==0){WOLFLINK=false;Mario=false;}
+		if(a==1){WOLFLINK=true;Mario=false;}
+		if(a==2){WOLFLINK=false;Mario=true;}
+		Waitframe();
+		}
+	}
+}
+ffc script CharacterBan
+{
+void run(int a)
+	{
+	while(true)
+		{
+		if(LinkFFCProxi(16,16,16,16,this)==true)
+		{
+		if(a==0){Link->Item[158]=true;Link->Item[159]=true;}
+		if(a==1){Link->Item[158]=true;Link->Item[159]=false;}
+		if(a==2){Link->Item[158]=false;Link->Item[159]=true;}
+		if(a==3){Link->Item[160]=false;}
+		if(a==4){Link->Item[160]=true;}
+		}
+		Waitframe();
+		}
+	}
+}
+ffc script EventWarp
+{
+void run(int a,int b,int c)
+	{
+	while(true)
+		{
+		if(EVENT==a){Link->Warp(b,c);}
+		Waitframe();
+		}
+	}
+}
+void EVENT()
+{int e=EVENT;
+if(EVENT<0){e=e*(-1);Screen->DrawTile(7,216,144,65171,1,1,9,-1,-1,0,0,0,0,true,128);}
+
+Screen->DrawTile(7,237,144,65160+e%10,1,1,9,-1,-1,0,0,0,0,true,128);
+if(e>9)Screen->DrawTile(7,230,144,65160+(e%10-e%100)/10,1,1,9,-1,-1,0,0,0,0,true,128);
+if(e>99)Screen->DrawTile(7,223,144,65160+(e%100-e%1000)/100,1,1,9,-1,-1,0,0,0,0,true,128);
+}
+
+void EDAMAGERS()
+{
+if(Screen->NumEWeapons()>0)
+	{
+	for(int zer=1;zer<=Screen->NumEWeapons();zer++)
+		{eweapon dozer=Screen->LoadEWeapon(zer);
+		if(Screen->NumNPCs()>0)
+			{
+			for(int zir=1;zir<=Screen->NumNPCs();zir++)
+				{npc Zir=Screen->LoadNPC(zir);
+				if(Collision(dozer,Zir)==true)
+					{Zir->HP-=dozer->Damage;}
+				}
+			}	
+		}
+	}
+}
+void REGCOL()
+{
+for(int b=0;b<=240;b+=16)
+	{
+	for(int a=0;a<=160;a+=16)
+		{
+		if(Screen->isSolid(b,a))
+			{
+			for(int i=Screen->NumNPCs();i>0;i--)
+				{npc NPC=Screen->LoadNPC(i);ffc FFC=Screen->LoadFFC(i+10);
+				if(RectCollision(NPC->X,NPC->Y-2,NPC->X+15,NPC->Y+15,b,a,b+15,a+15)){FFC->InitD[0]=1;}
+				if(RectCollision(NPC->X,NPC->Y,NPC->X+15,NPC->Y+17,b,a,b+15,a+15)){FFC->InitD[1]=1;}
+				if(RectCollision(NPC->X-2,NPC->Y+15,NPC->X+15,NPC->Y+15,b,a,b+15,a+15)){FFC->InitD[2]=1;}
+				if(RectCollision(NPC->X,NPC->Y,NPC->X+17,NPC->Y+15,b,a,b+15,a+15)){FFC->InitD[3]=1;}
+				}			
+			}
+		}
+	}
+}
+void MAPSCAN()
+{int B=Floor(Z[0]/256);
+int A=Floor(Z[1]/176);
+for(int X=B-2;X<=B+2;X++)
+	{
+	for(int Y=A-2;Y<=A+2;Y++)
+		{if(X<0){X=0;}if(Y<0){Y=0;}
+
+		for(int x=0;x<=240;x+=16)
+			{
+			for(int y=0;y<=160;y+=16)
+				{int S=X+Y*16;
+				if(Game->GetComboInherentFlag(Game->GetCurDMap()+1,S,ComboAt(x,y))==11||Game->GetComboInherentFlag(Game->GetCurDMap()+1,S,ComboAt(x,y))==6||Game->GetComboData(Game->GetCurDMap()+1,S,ComboAt(x,y))==9||(Game->GetComboData(Game->GetCurDMap()+1,S,ComboAt(x,y))>=36352&&Game->GetComboData(Game->GetCurDMap()+1,S,ComboAt(x,y))<=36352+255)||(Game->GetComboData(Game->GetCurDMap()+1,S,ComboAt(x,y))>=36096&&Game->GetComboData(Game->GetCurDMap()+1,S,ComboAt(x,y))<=36096+255))
+					{int a=Floor(S/16)*176+y;int b=(S%16)*256+x;
+					int C=Distance(b,a,Z[0],Z[1]);int D=Distance(Z[30],Z[31],Z[0],Z[1]);
+		
+			if(C<D){Z[30]=(S%16)*256+x;Z[31]=Floor(S/16)*176+y;}
+					//Z[30]=(S%16)*256+x;Z[31]=Floor(S/16)*176+y;
+					}
+				}
+			}
+		}
+	}
+Z[33]=60;
+}//
+void SWORDLIGHT(int a)
+{if(Z[35]==0){return;}
+Z[35]-=1;
+Screen->Circle(7,Link->X+8,Link->Y+8,Z[35],13,1,0,0,0,true,64);
+}
+void BoxIn(){if(Link->X<16){Link->Y=16;}if(Link->X>224){Link->X=124;}if(Link->Y<16){Link->Y=16;}if(Link->Y>144){Link->Y=144;}}

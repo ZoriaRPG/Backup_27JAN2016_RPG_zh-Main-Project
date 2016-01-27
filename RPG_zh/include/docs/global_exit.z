@@ -1,0 +1,3 @@
+//Global Script Functions- Exit
+
+ClearXtalSwitches()//Clears array.

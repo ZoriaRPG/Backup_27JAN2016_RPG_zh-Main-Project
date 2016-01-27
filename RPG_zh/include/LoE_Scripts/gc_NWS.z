@@ -1,0 +1,427 @@
+import "std.zh"
+import "ffcscript.zh"
+import "stdExtra.zh"
+//import "stdArguments_v6.9.8.zh"
+import "ghost.zh"
+
+int currentDamage; 
+int beamMultiplier = 0.5;
+bool WSpierce = false;
+const int CR_LEVEL = 13; //Script 7
+int NPC_SCRIPT_DEFENSE[1000];
+bool WeaponCreated[40];
+
+item script rollDiceIISword {
+    void run (int dice, int dieType) {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        itemdamage = ( rollDiceII(dice,dieType) );
+        //int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage + levelDamage;
+        //itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+    }
+}
+
+//Swords Args
+
+//D0: diceToRoll, number of dice to roll for base damage.
+//D1: dieType, the base Die Type for weapon.
+
+//D2: byLevel, add scaling damage per level.
+//D3: useHalfLevel, use 1/2 level, instead of full level, for scaling damage.
+//D4: levelDie, die type to roll per level for scaling damage.
+//D5: dieCap, if rolling by level, the maximum number of additional dice to roll.
+
+//D6: pierce, 0 not piercing, 1 piercing.
+//D7: 
+
+
+
+
+item script rollDiceIISword_Scaling {
+    void run (int diceToRoll, int dieType, int byLevel, int useHalfLevel, int levelDie, int dieCap, int pierce) {
+        
+    
+        int currLevel = Game->Counter[CR_LEVEL];
+        
+        int baseDamage;
+        int scaleDamage;
+        int itemdamage;
+        int modifier = 0;
+        int scaleDice = 0;
+        
+        modifier = ( Game->Counter[CR_STAT_MUSC] * 0.5 );
+        
+        if ( dieCap > 0 && currLevel > dieCap ) {
+            currLevel = dieCap;
+        }
+        int halfLevel = ( currLevel * 0.5 );
+        
+        if ( byLevel > 0 && useHalfLevel == 0 ) {
+            scaleDice = currLevel;
+        }
+        if ( byLevel > 0 && useHalfLevel > 0 ) {
+            scaleDice = halfLevel;
+        }
+        
+        
+        baseDamage = ( rollDiceII(diceToRoll,dieType) );
+        scaleDamage = ( rollDiceII(scaleDice,levelDie) );
+        itemdamage = ( baseDamage + scaleDamage + modifier );
+        
+        
+        //int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage + levelDamage;
+        //itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+    }
+}
+
+
+
+
+
+ffc script FFC_Enemy_Script_Defenses{
+    void run(int enemyID, int hp, int defenceItem, int defenceType){
+        npc ffcEnemy = CreateNPCAt(enemyID, this->X, this->Y); //Create enemyReplace at the FFC position.
+        ffcEnemy->HP = hp;
+        ffcEnemy->X = this->X;
+        ffcEnemy->Y = this->Y;
+        
+        SET_SCRIPT_DEFENSE(defenceItem, enemyID, defenceType);
+        while (true){
+
+        Waitframe();
+        }
+    }
+}
+
+/////////////////////////
+/// Arrow Projectile ////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+/// D0: MP cost per use.                                          ///
+/// D1: Speed that Subweapon Travels across screen; suggest 240.  ///
+/// D2: Amount of Damage that Subweapon Deals to Enemies.         ///
+/// D3: Sprite used by Subweapon; select from:                    ///
+///            Quest->Graphics->Sprites->WeaponsMisc.             ///   
+/// D4: Maximum number of projectiles allowed at once.            ///
+/// D5: Error Sound Effects.                                      ///
+/// D6: Item Sound Effects.  Select sounds from:                  ///
+///            Quest->Audio->SFX Data                             ///   
+/// D7: Delay before Link can use item again.                     ///     
+/////////////////////////////////////////////////////////////////////
+
+
+item script arrowProjectile
+{
+    void run(int magicCost, int speed, int power, int spriteUsed, int maxProjectiles, int SXF_ERROR, int SFX_ITEM, int multiply)
+    {
+    if (Game->Counter[CR_ARROWS] >= magicCost && NumLWeaponsOf(LW_MAGIC) < maxProjectiles) //Fill in the numbers for magic consumption and number of projectiles allowed on screen
+        {
+        Game->Counter[CR_ARROWS] -= magicCost; //fill in the magic consumption here as well
+        lweapon magic = Screen->CreateLWeapon(LW_ARROW);
+        magic->UseSprite(spriteUsed); // the number of the sprite used for the projectile. Use two tiles, the first for up/down, the second for left/right
+        magic->X = Link->X; //Find Link's Position X
+        magic->Y = Link->Y; //Find Link's Position Y
+        magic->Dir = Link->Dir; //Find the Direction that Link is facing.
+        magic->Step = speed; // the speed the projectile travels
+        currentDamage = ( rollDie(power) * multiply );
+        magic->Damage = currentDamage; //the damage the projectile will do
+        Game->PlaySound(SFX_ITEM); // the sound effect for the weapon
+		//Link->ItemJinx = (nouse * 1); //Set delay between firing. Change multiplier if desired, but set base in argument D7.
+        if(Link->Dir == DIR_DOWN) //If Link is facing down...
+            {
+            magic->Flip = 2; //Change direction of spriteUsed to down.
+            }
+        if(Link->Dir == DIR_RIGHT) //If Link is facing right.
+            {
+            magic->Tile += 1; //Use next tile as well.
+            }
+        if(Link->Dir == DIR_LEFT)
+            {
+            magic->Tile += 1; //If Link is facing left.
+            magic->Flip = 1; //Flip spriteUsed tile and use next tile as well.
+            }
+		
+        }
+        
+		else{
+    Game->PlaySound(SFX_ERROR); //If out of MP, play ERROR SOund Effects.
+    }
+    }
+}
+
+item script NightFallRolled {
+    void run () {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        int baseItemDamage = ( rollDie(10) + rollDie(10) + rollDie(10) );
+        int levelDamage = diePerLevel(4,0);
+        int totalItemDamage = baseItemDamage + levelDamage;
+        itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+        int baseLifeCost = rollDie(10);
+        int lifeCost = rollDie(10) + rollDie(10) + rollDie(10);
+        int lifeCostByLevel = halfLevel * lifeCost;
+        int lifeDrainAmount = baseLifeCost + lifeCostByLevel;
+        bool enoughLife;
+        bool enoughMagic;
+        
+        int baseMagicCost = rollDie(10);
+        int magicCost = rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10);
+        int magicCostByLevel = halfLevel * magicCost;
+        int magicDrainAmount = baseMagicCost + magicCostByLevel;
+        if ( magicDrainAmount < Game->Counter[CR_MAGIC] ) {
+        enoughMagic = true;
+        }
+        if ( lifeDrainAmount < Game->Counter[CR_LIFE] ) {
+        enoughLife = true;
+        }
+        if ( enoughLife== true && enoughMagic == true ) {
+        Game->Counter[CR_MAGIC] -= magicDrainAmount;
+        Game->Counter[CR_LIFE] -= lifeDrainAmount;
+        //Set this to -= magicDrainAmount when I am able to repace sword damage.
+        }
+        else {
+        Game->PlaySound(SFX_ERROR);
+        Game->Counter[CR_MAGIC] = 0;
+        Game->Counter[CR_LIFE] = 0;
+        }
+    }
+}
+
+
+
+
+
+global script active { 
+    void run() {
+        while(true) {
+        UpdateEWeapons();
+            CleanUpGhostFFCs(); // Only needed if __GH_USE_DRAWCOMBO is 0
+
+			//UpdateLWeapons();
+			//UpdateLastItem();
+			//if (Link->PressB) {Las
+            Waitdraw();
+            
+            Set_Weapon_Damage(1);
+            //This function includes the argument (int index). What value should be passed here? I'm using (1) as a placeholder.
+            doenemyhit(1);
+            
+            //digiVolveEnemies();
+            //XP();
+            AutoGhost();
+            DrawGhostFFCs();
+            Waitframe();
+            }
+        }
+    }
+}
+
+
+void SET_SCRIPT_DEFENSE(int lw, int npcid, int value){		//ARGUMENTS: Script weapon number, ID of the NPC with the defense, NPC defense type (Use the NPCD_ constants from std.zh)
+	for(int i; i< Screen->NumNPCs(); i++){
+		npc e = Screen->LoadNPC(i);
+		if(e->ID == npcid){
+			NPC_SCRIPT_DEFENSE[(i*10) + lw] = value;
+		}
+	}
+}
+void CLEAR_SCRIPT_DEFENSE(int line){					//Use Screen->LoadNPC with this. Clears the defenses associated with that NPC.
+	for(int i; i<10; i++){
+		NPC_SCRIPT_DEFENSE[(line*10) + i] = 0;
+	}
+}
+
+void doenemyhit(int m){
+	float defensemodifier[] = {
+		1, .5, .25, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 9999
+	};
+	for(int i = 1; i <= Screen->NumNPCs(); i++){
+		npc e = Screen->LoadNPC(i);
+		
+		for(int j = 1; j <= Screen->NumLWeapons(); j++){
+			lweapon l = Screen->LoadLWeapon(j);
+			TraceB(Collision(l, e));
+			if(Collision(l, e)){
+				
+				if(l->ID == LW_ARROW){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_ARROW]]);
+                    if ( WSpierce == true ){
+                    l->DeadState = WDS_ALIVE;
+                    }
+                    else {
+					l->DeadState = WDS_DEAD;
+                    }
+				}
+				if(l->ID == LW_BEAM){
+					e->HP -= (currentDamage * beamMultiplier * defensemodifier[e->Defense[NPCD_BEAM]]);
+                    if ( WSpierce == true ){
+                    l->DeadState = WDS_ALIVE;
+                    }
+                    else {
+					l->DeadState = WDS_DEAD;
+                    }
+				}
+				if(l->ID == LW_BRANG){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_BRANG]]);
+					l->DeadState = WDS_BOUNCE;
+				}
+				if(l->ID == LW_BOMBBLAST){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_BOMB]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_CANEOFBYRNA){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_BYRNA]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_FIRE || l->ID == LW_SPARKLE){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_FIRE]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_HAMMER){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_HAMMER]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_HOOKSHOT){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_HOOKSHOT]]);
+					l->DeadState = WDS_BOUNCE;
+				}
+				if(l->ID == LW_MAGIC){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_MAGIC]]);
+                    if ( WSpierce == true ){
+                    l->DeadState = WDS_ALIVE;
+                    }
+                    else {
+					l->DeadState = WDS_DEAD;
+                    }
+				}
+				if(l->ID == LW_REFBEAM){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_REFBEAM]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_REFMAGIC){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_REFMAGIC]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_REFFIREBALL){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_REFFIREBALL]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_REFROCK){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_REFROCK]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_SBOMBBLAST){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_SBOMB]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_CANEOFBYRNA){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_BYRNA]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID >= LW_SCRIPT1 && l->ID <= LW_SCRIPT10){
+					e->HP -= (l->Misc[m] * NPC_SCRIPT_DEFENSE[(i*10) + (l->ID - 30)]);
+                    if ( WSpierce == true ){
+                    l->DeadState = WDS_ALIVE;
+                    }
+                    else {
+					l->DeadState = WDS_DEAD;
+                    }
+				}
+//				if(l->ID == LW_STOMP){
+//					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_STOMP]]);
+//					l->DeadState = WDS_DEAD;
+//LW_STOMP does not exist, and there is no constant for this LW class. Does this class exist, or is this handled by the Link class?
+//				}
+				if(l->ID == LW_SWORD){
+                    int applyDamage;
+                    int NPCD_sum = e->Defense[NPCD_SWORD];
+                    applyDamage = NPCD_sum * currentDamage;
+					l->Damage = applyDamage;
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_WAND){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_WAND]]);
+					l->DeadState = WDS_DEAD;
+				}
+			}
+		}
+	}
+}
+
+void Set_Weapon_Damage(int index){
+ for(int i = 1; i<=40; i++){
+  if(WeaponCreated[i]){
+   for(int j = 1; j <= Screen->NumLWeapons(); j++){
+    lweapon l = Screen->LoadLWeapon(j);
+    Trace(l->Misc[1]);
+    if(l->ID == i && l->Misc[index] > 0){
+     l->Misc[index] = currentDamage;
+     Trace(l->Misc[1]);
+    }
+   }
+  }
+ }
+}
+
+int rollDie(int type){
+    int n = Rand(1, type);
+    return n;
+}
+
+int diePerLevel(int dieType, int dieCap){
+	int diceTotal = 0;
+    int level = Game->Counter[CR_LEVEL];
+    int rollLevels = 0;
+    if ( dieCap > 0 ) {
+        rollLevels = dieCap;
+    }
+    else { 
+        rollLevels = level;
+    }
+    
+	for (int dice = 1; dice <= rollLevels; dice++){
+		int roll = Rand(1, dieType);
+		diceTotal = diceTotal+roll;
+	}
+	return diceTotal;
+}
+
+int rollDiceII(int dice, int dietype) {
+    int total = 0;
+    for(; dice>0; dice--){
+        total+=Rand(1, dietype);
+    }
+        return total;
+}
+    
+int rollDice(int rollNumber, int dieType) {
+	int diceTotal = 0;
+	for (int dice = 1; dice <= rollNumber; dice++){
+		int roll = Rand(1, dieType);
+		diceTotal = diceTotal+roll;
+	}
+	return diceTotal;
+}
+
+
+    
+    
+
+
+

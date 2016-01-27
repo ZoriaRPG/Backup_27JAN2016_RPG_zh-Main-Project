@@ -1,0 +1,163 @@
+//Item Rental v 0.1
+//Extension to RPG_Itms.zlib for RPG.zh v0.97.3
+
+float TimedItems[512]; //Arbitrary value, at least 256. The standard ZC items are 0 to 255, but it 
+			//is *technically possible* to exceed that with tricks, so you may use a larger array if needed.
+			//The array index saize must be **TWICE** the number of items in a game. The latter half
+			//of the array is used to store if a timer is running.
+			
+const int MAX_INVENTORY_ITEMS = 255; //This is based on an array, so the value is 0 to 255, for the standard 256 items.
+const int T_INVENTORY_RUNNING = 256; //The value for a running timer is offset by this many index positions. 
+
+
+const int RENTAL_TIME = 1800; //5 minutes = 5 * 50 (seconds) * 60 (frames)
+const int STR_RENTAL_EXPIRED = 1; //The default message to show when a rental expires. 
+const int SFX_RENTAL_EXPIRED = 63; //The default sound to play when a rental expires. 
+
+
+//Running the timers...
+
+//Call every frame before Waitdraw()
+void RunItemTimers(){
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q+T_INVENTORY_RUNNING] > 0 ) {
+			TimedItems[q]--;
+		}
+	}
+}
+
+//Pause item timers, until resumed. This is an **IMPORTANT** courtesy function. You want to call this in 
+//scripts that create lengthy dialogue.
+void SuspendItemTimers(){
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q+T_INVENTORY_RUNNING] > 0 ) {
+			TimedItems[q+T_INVENTORY_RUNNING] = 0;
+		}
+	}
+}
+
+//This resumes item timers that are suspended. 
+void ResumeItemTimers(){
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q+T_INVENTORY_RUNNING] <= 0 ) {
+			TimedItems[q+T_INVENTORY_RUNNING] = 1;
+		}
+	}
+}
+
+
+
+//Function to disable items, and handle alerting the player ( RentalTimerExpired().
+//Run every frame after RunItemTimers() and before Waitdraw().
+//use only one of the two variations of this, not both. 
+
+//Use this version if you do not want to display a message when a timer expires. 
+//It will play a sound by default, set by constant SFX_RENTAL_EXPIRED.
+//The message, and sound will play only once per frame, even if the player loses more than one item at 
+//precisely the same moment. 
+void RentalTimeExpired(){
+	bool playedSound = false;
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q+T_INVENTORY_RUNNING] > 0 && TimedItems[q] < 1 ) {
+			if ( Link->Item[q] ){
+				if ( ! playSound ) {
+					playedSound = true;
+					Game->PlaySound(SFX_RENTAL_EXPIRED);
+				}
+				Link->Item[q] = false;
+			}
+			TimedItems[q] = 0;
+			TimedItems[q+T_INVENTORY_RUNNING] = 0;
+		}
+	}
+	
+}
+
+
+//Use this version if you **DO** want to display a message when a timer expires. 
+//If you wish to use a default message, set by constant STR_RENTAL_EXPIRED, set arg msg to '0'
+//Otherwise, specify a string manually. It will play a sound by default, set by constant SFX_RENTAL_EXPIRED.
+//The message, and sound will play only once per frame, even if the player loses more than one item at 
+//precisely the same moment. 
+void RentalTimeExpired(int msg){
+	bool playedSound = false;
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q+T_INVENTORY_RUNNING] > 0 && TimedItems[q] < 1 ) {
+			if ( Link->Item[q] ){
+				if ( ! playSound ) {
+					playedSound = true;
+					Game->PlaySound(SFX_RENTAL_EXPIRED);
+				}
+				if ( msg ) {
+					Screen->Message(msg); //Play a string with a value greater than 0.
+				}
+				if ( ! msg ) {
+					Screen->Message(STR_RENTAL_EXPIRED); //if you feel lazy, use a constant. 
+				}
+				Link->Item[q] = false;
+			}
+			TimedItems[q] = 0;
+			TimedItems[q+T_INVENTORY_RUNNING] = 0;
+		}
+	}
+	
+}
+
+//Functions to set rental timers.
+
+
+//Sets a timer for one item specified by arg it, to the amount of the constant RENTAL_TIME (defaults as 5 mins)
+	//and starts timer. 
+void SetTimedItemTimer(int it){
+	TimedItems[it] = RENTAL_TIME;
+	TimedItems[it+T_INVENTORY_RUNNING] = 1;
+}
+
+//Sets a timer for one item specified by arg it for duration specified by arg rentalTime; and starts timer.
+void SetTimedItemTimer(int it, int rentalTime){
+	TimedItems[it] = rentalTime;
+	TimedItems[it+T_INVENTORY_RUNNING] = 1;
+}
+
+//Arguments
+// D0: The item number of the item given.
+// D1: The amount of time that the player should keep the item.
+	//If '0', the constant RENTAL_TIME is used as a default. 
+// D2: A message to display. Must be a string greater than '0'.
+// D3: A sound to play. 
+// D4: Set to a value of '1' to hold the item up with one hand. Set to a value of '2' to hold up with BOTH hands.
+item script PickupRentalItem{
+	void run(int it, int time, int message, int sound, int holdup){
+		if ( message ) {
+			Screen->Message(message);
+		}
+		if ( sound ) {
+			Game->PlaySound(sound);
+		{
+		if ( time ) {
+			SetTimedItemTimer(it, time);
+		}
+		if ( !time ) {
+			SetTimedItemTimer(it);
+		}
+		if ( holdup == 1 ) {
+			Link->Action = LA_HOLD1LAND;
+			Link->HeldItem = it;
+		}
+		if ( holdup == 2 ) {
+			Link->Action = LA_HOLD2LAND;
+			Link->HeldItem = it;
+		}
+	}
+}
+	
+global script activeExample {
+	void run(){
+		while(true){
+			RunItemTimers();
+			RentalTimeExpired();
+			Waitdraw();
+			Waitframe();
+		}
+	}
+}

@@ -1,0 +1,29 @@
+ffc script rec_MovingPlatform
+    // You can pair this with any walkable FFC you want, and it will act as a platform that
+    // moves Link with it while he's standing on it, rather than the silly method of having
+    // to walk in time with it. :D Should work with any speeds in any directions, even diagonal!
+    // The D arguments aren't even needed. ^_^
+{
+    void run()
+    {
+        int StoredX;    // these variables hold the X,Y coordinates of the FFC one frame ago
+        int StoredY;    //
+
+        while(true)
+        {
+            // compare the X,Y coordinates of the FFC with Link's at the START of its movement
+            if(RectCollision(CenterLinkX(), (CenterLinkY() + 4), CenterLinkX(), (CenterLinkY() + 4), Floor(this->X), Floor(this->Y), (Floor(this->X) + this->EffectWidth), (Floor(this->Y) + this->EffectHeight)))
+            {
+                // if Link is standing on it, adjust his X,Y coordinates the same amount
+                // as this FFC moved from the last frame to the next
+                Link->X += (this->X - StoredX);
+                Link->Y += (this->Y - StoredY);
+            }
+            // store the X,Y coordinates of the FFC at the END of its movement frame
+            StoredX = Floor(this->X);
+            StoredY = Floor(this->Y);
+
+            Waitframe();    // we don't want to forget this! XD
+        }
+    }
+}

@@ -1,0 +1,421 @@
+import "std.zh"
+
+
+
+//Various Boolians to determine Proximity of objects and players
+
+
+int LinkX;int LinkY;//Link's place of where he is, actual coordinates on screen..
+int N[100];
+int Z[100];
+//INT Z[100]; INTEGERS FOR FUNCTIONS, scrolling, quick equipment menu, various other things
+//0==MAP X AXIS COORDINATE
+//1==MAP Y AXIS COORDINATE
+//2==MAP X AXIS COORDINATE LAST FRAME
+//3==MAP Y AXIS COORDINATE LAST FRAME
+//4==LINK MOVEMENT SPEED IN PIXELS PER FRAME
+//5==MINIMUM X FOR CURRENT BLOCK OF SCREENS
+//6==MAXIMUM X FOR CURRENT BLOCK OF SCREENS
+//7==MINIMUM Y FOR CURRENT BLOCK OF SCREENS
+//8==MAXIMUM Y FOR CURRENT BLOCK OF SCREENS
+//9==0 IF UP PRESSED LAST, 1 IF DOWN PRESSED LAST
+//10==2 IF LEFT PRESSED LAST, 3 IF RIGHT
+//13==AMOUNT OF SCREENS TO THE EAST OF TOP-LEFT SCREEN ON THE CURRENT MAP FOR WHICH DMAP SCREEN LINK STARTS ON OR WARPS TO
+//14==AMOUNT OF SCREENS TO THE SOUTH OF THE TOP-LEFT SCREEN ON THE CURRENT MAP FOR WHICH DMAP SCREEN LINK STARTS ON OR WARPS TO
+//15==IS PRESSING UP AND COLLISION W/SOLID
+//16==IS PRESSING DOWN AND COLLISION W/SOLID
+//17==IS PRESSING LEFT AND COLLISION W/SOLID
+//18==IS PRESSING RIGHT AND COLLISION W/SOLID
+
+//29==Y AXIS SCROLLING SPEED.
+
+////////MUST CLEAN THIS UP/////
+
+
+int LX;int LY;//Link->X and Link->Y coordinates.
+int NPCLAST;
+
+
+
+global script Z
+{
+void run()
+	{
+
+//WHILE LOOP OF GLOBAL SCRIPT START
+
+//Initiates array numbers all to 0, then sets a few of them.
+	for(int z=99;z>=0;z--){Z[z]=0;}Z[4]=2;
+	Z[51]=2;
+	Z[38]=0;
+//
+	while(true)
+		{
+		//Adjustment for the fact that Link moves forward one pixel per frame.
+		//This would be unnecessary if NoAction() or another method of making Link
+		//not move at all upon direction presses would be implemented,
+		//but then a redraw of his graphics while walking would be necessary,
+		//and that's just too much work for me right now, even though in the amount
+		//of time that it took me to write this explanation it would probably
+		//already be done! :)
+		//It'd be worth it to do so, the extra space he walks also offsets his
+		//+2 pixel per frame walking speed and allows for him to get semi-stuck
+		//in the walls.
+		//I'll adjust my own game later on, but here's how it is as of now,
+		//I would recommend overriding the way that he moves with a 
+		//if(Link->Action==1)
+		//	{NoAction();
+		//	if(Link->Dir==0){Combo'd or DrawTile, maybe even FFC, walking animation of Up Dir.} 
+		//	if(Link->Dir==1){Combo'd or DrawTile, maybe even FFC, walking animation of Down Dir.}
+		//	if(Link->Dir==2){Combo'd or DrawTile, maybe even FFC, walking animation of Left Dir.}
+		//	if(Link->Dir==3){Combo'd or DrawTile, maybe even FFC, walking animation of Right Dir.}
+		//	}
+		//That would TOTALLY fix that problem.
+		
+
+		//Anyway, here's the adjustment anyway.
+		if(Link->Dir==0&&Z[1]%2==1){Z[1]-=1;}
+		if(Link->Dir==1&&Z[1]%2==1){Z[1]+=1;}
+		if(Link->Dir==2&&Z[0]%2==1){Z[0]-=1;}
+		if(Link->Dir==3&&Z[0]%2==1){Z[0]+=1;}
+		
+
+		//These are not used in this quest file, but they are for some reason still here.
+		//These integers check for which direction pressed last and set 9 and 10 Z[] array.
+		if(Link->PressUp&&!Link->PressDown){Z[9]=0;}
+		if(!Link->PressUp&&Link->PressDown){Z[9]=1;}
+		if(Link->PressLeft&&!Link->PressRight){Z[10]=2;}
+		if(!Link->PressLeft&&Link->PressRight){Z[10]=3;}
+
+		//ACTUAL DRAW OF MAP(S) PER WHICH MAP LINK IS ACTUALLY ON
+		
+		//This is the IMPORTANT part,
+		//Link is NOT on the map that is drawn to the screen, he is always on the DMAP
+		//Below it.
+		//So if Link is on the DMAP 0, DMAP 1 is being drawn to the screen.
+		//The layering is setup, although SLASHED OUT at this point in the draw function
+		//But the layering is automatically drawn from the screen that is the screen
+		//that is being drawn, not the one he's actually on.
+		//So if Link is on DMAP 0, in this instance, DMAP 1 is being drawn, and DMAP 1's 
+		//Layer Data would be being used subsequenctially.
+		
+		if(Game->GetCurDMap()==0)
+			{//This first line, R() resets all combo data of the screen Link is on to 0,
+			//then L(n,z) sets the amount of screens on the scrolling grid,
+			//where n is the screens on the X axis to the right of the starting screen,
+			//and z is the screens to the south on the Y axis of the starting screen.
+			//It is just like the combo and X,Y coordinate grid in the regard that
+			//the starting screen is 0, so for a 3x4 grid it would read L(2,3).
+			//M(x,y) is the 'Warp' data for the grid.  It is the starting location in this
+			//case.  Whenever Z[0], Z[1], or both, are set with a Z[0] or Z[1]= N,
+			//the consequence is just like a instant pit warp.
+			//That is IMPORTANT information for using this script.
+			//Whenever you want a warp, SET Z[0] and Z[1] to something else by some method.
+			
+			if(Screen->ComboD[0]!=64000){R();L(10,7);M(Z[5]+360,Z[7]+360);Z[51]=0;Z[38]=1;
+			}
+			F();D();K();J();}
+			//F() is the function that figures out which screens to draw and interact with
+			//from ZQuest in ZC for scrolling.  It calculates from the Z[0] and Z[1]
+			//integers the 8 screens around the one that Link would be centered on.
+			//D() only the display of the coordinates of Z[0] and Z[1] that Link is at in ZC
+			//while playing, that is for debugging and mapping so you could get rid of that
+			//or turn it off and it won't effect functionality.
+			//Depending on your personal math prowess, you may or may not feel like using it.
+			//K() is where the movement and collision magic happens, in conjunction
+			//with C(), which is buried and called in F().
+			//C() is the function that cross-references by an equation formula
+			//the actual ZQuest coordinates of combos with where they will be in ZC
+			//while playing, and the collision function examples there show how
+			//while running in ZC the game will detect collision during gameplay and
+			//set combo data accordingly.
+			//K() handles the movement data AFTER C() sets the collision data for it to check
+			//for, and so on.
+		Z[3]=Z[1];Z[2]=Z[0];
+		//Z[3] and Z[2] are the "last known coordinates" of Link of the last frame,
+		//these are not used in this script but have obvious reasons for being here,
+		//because if someone were to need that information after new Z[0] and Z[1] are
+		//set again but before the waitframe, there they are.
+		//Useful for calculating angles of Link's movements, etc.
+
+		Waitframe();
+		}//WHILE LOOP END
+	}//VOID RUN END
+//GLOBAL SCRIPT EXCLUSIVE FUNCTIONS START
+
+//As previously explained, L(a,b) sets the scrolling grid size.
+//Z[5] is the minimum X (Z[0]) that the screen will scroll at, it stops scrolling and 
+//booleon H() becomes false when Z[0] is less than Z[5].
+//Likewise, H() becomes false when Z[0] is greater than Z[6], which is the max X (Z[0])
+//for the scrolling grid to scroll.
+//Z[7] is min Y, Z[8] is max Y, bool I() is false if Link's Z[1] is out of Z[7] and Z[8]'s
+//parameters.
+void L(int a,int b)
+{
+Z[5]=Floor((Game->GetCurScreen()%16)*256)+120;Z[6]=Z[5]+256*a;
+Z[7]=Floor((Game->GetCurScreen()/16)*176)+80;Z[8]=Z[7]+176*b;
+Z[13]=a;
+Z[14]=b;
+Z[19]=Game->GetCurScreen()%16;
+Z[20]=Floor(Game->GetCurScreen()/16);
+}
+
+//M(a,b) sets the Z[0] and Z[1] coordinates, rudimentary scrolling warp.
+//In the example in the global it is set in relation to Z[5] and Z[7]
+//for no real reason, other than the starting screen doesn't necessarily have to be 0,0 like
+//this example, so setting them for the first time it is sort of more convienient to do it 
+//that way, to make sure that Link is actually on the grid.
+
+void M(int a,int b){Z[0]=a;Z[1]=b;}
+
+
+
+//H() and I() RETURN TRUE IF LINK IS WITHIN THE INSIDE Xs,Ys OF A SCROLLING MAP,
+//FALSE IF HE IS ON THE BOARDER SCREEN AND THE SCREEN ISN'T SCROLLING ANYMORE.
+bool H(){if(Z[0]>=Z[5]&&Z[0]<=Z[6]){return true;}if(Z[0]<Z[5]||Z[0]>Z[6]){return false;}}
+bool I(){if(Z[1]>=Z[7]&&Z[1]<=Z[8]){return true;}if(Z[1]<Z[7]||Z[1]>Z[8]){return false;}}
+
+
+//This is just a coordinate readout, disable once you get the idea.
+void D()
+{
+//DRAWS Z[0], overall X coordinate
+Screen->FastTile(2,32,16,6+Z[0]%10,2,128);
+Screen->FastTile(2,24,16,6+(Z[0]%100-Z[0]%10)/10,2,128);
+Screen->FastTile(2,16,16,6+(Z[0]%1000-Z[0]%100)/100,2,128);
+Screen->FastTile(2,8,16,6+(Z[0]%10000-Z[0]%1000)/1000,2,128);
+//DRAWS Z[1], overall Y coordinate
+Screen->FastTile(2,32,48,6+Z[1]%10,2,128);
+Screen->FastTile(2,24,48,6+(Z[1]%100-Z[1]%10)/10,2,128);
+Screen->FastTile(2,16,48,6+(Z[1]%1000-Z[1]%100)/100,2,128);
+Screen->FastTile(2,8,48,6+(Z[1]%10000-Z[1]%1000)/1000,2,128);	
+}
+
+
+//Function J adjusts the on-screen coordinates of Items, Weapons.
+//NPC adjustment can be the same as these three,
+//they just undergo a slight graphical malfunction that is easily overridden.
+void J()
+{
+if(Screen->NumItems()>0){for(int z=1;z<=Screen->NumItems();z++){item i=(Screen->LoadItem(z));if(I()==true&&Z[1]>Z[3]){i->Y=i->Y-Z[4];}if(I()==true&&Z[3]>Z[1]){i->Y=i->Y+Z[4];}if(H()==true&&Z[2]>Z[0]){i->X=i->X+Z[4];}if(H()==true&&Z[0]>Z[2]){i->X=i->X-Z[4];}}}
+if(Screen->NumLWeapons()>0){for(int l=1;l<=Screen->NumLWeapons();l++){lweapon L=Screen->LoadLWeapon(l);if(I()==true&&Z[1]>Z[3]){L->Y=L->Y-Z[4];}if(I()==true&&Z[3]>Z[1]){L->Y=L->Y+Z[4];}if(H()==true&&Z[2]>Z[0]){L->X=L->X+Z[4];}if(H()==true&&Z[0]>Z[2]){L->X=L->X-Z[4];}}}
+if(Screen->NumEWeapons()>0){for(int e=1;e<=Screen->NumEWeapons();e++){eweapon F=Screen->LoadEWeapon(e);if(I()==true&&Z[1]>Z[3]){F->Y=F->Y-Z[4];}if(I()==true&&Z[3]>Z[1]){F->Y=F->Y+Z[4];}if(H()==true&&Z[2]>Z[0]){F->X=F->X+Z[4];}if(H()==true&&Z[0]>Z[2]){F->X=F->X-Z[4];}}}
+}
+
+
+//K() makes for movement, where Z[4] is the pixels per frame.
+//The rest of the stuff is automatically adjusted accordingly for collision and stuff,
+//So I suppose a range of Z[4]=1, 2, or 3 would all be usable.
+//Anything more than 3 you would need to adjust the collision in C() for solidity collision,
+//but it would be doable.  As is in this script they are set like Link's whole hitbox.
+
+
+void K()
+{
+if(Z[23]==1||Z[24]==1||Link->Action==4||Link->Action==5||Link->Action==7||Link->Action==3||(Link->Action==2&&Z[38]==0)){return;}
+
+//Up, Down, Left, Right, movement allowance, equivalent of CanMove
+if(Link->InputUp&&Z[15]==0&&I()==true&&Z[51]==0){Z[1]-=Z[4];}
+if(Link->InputDown&&Z[16]==0&&I()==true&&Z[51]==0){Z[1]+=Z[4];}
+if(Link->InputLeft&&Z[17]==0&&H()==true){Z[0]-=Z[4];}
+if(Link->InputRight&&Z[18]==0&&H()==true){Z[0]+=Z[4];}
+
+if(Z[15]==1&&I()==false&&Z[51]==0){Link->Y+=Z[4]+1;}
+if(Z[16]==1&&I()==false&&Z[51]==0){Link->Y-=Z[4]+1;}
+if(Z[17]==1&&H()==false){Link->X+=Z[4]+1;}
+if(Z[18]==1&&H()==false){Link->X-=Z[4]+1;}
+
+
+if(Link->Action==7)
+{if(Link->Dir==0)Z[1]+=Z[4];if(Link->Dir==1)Z[1]-=Z[4];if(Link->Dir==2)Z[0]-=Z[4];if(Link->Dir==3)Z[0]+=Z[4];}
+
+//This portion makes sure Link is kept out of Solids.
+if(Z[51]==1&&Z[15]==1&&I()==true){Z[1]+=Z[4];}
+if(Z[51]==1&&Z[16]==1&&I()==true){Z[1]-=Z[4];}
+if(Z[51]==1&&Z[17]==1&&I()==true){Z[0]+=Z[4];}
+if(Z[51]==1&&Z[18]==1&&I()==true){Z[0]-=Z[4];}
+
+//Resets the collision identifiers to 0, having done their job for the frame.
+Z[15]=0;Z[16]=0;Z[17]=0;Z[18]=0;
+
+//These next four lines are in the case that the screen is NOT scrolling,
+//and adjust the Z[0] and Z[1] coordinates according to Link's location on screen.
+	if(H()==false&&Z[0]<Z[5]){Z[0]=Z[5]-(120-Link->X);}
+	if(H()==false&&Z[0]>Z[6]){Z[0]=Z[6]-(120-Link->X);}
+	if(Z[51]==0&&I()==false&&Z[1]<=Z[7]){Z[1]=Z[7]-(80-Link->Y);}
+	if(Z[51]==0&&I()==false&&Z[1]>=Z[8]){Z[1]=Z[8]-(80-Link->Y);}
+	
+	if(H()==true){Link->X=120;}//<=632 for 9x9 box
+	if(I()==true&&Z[51]==0){Link->Y=80;}
+}
+
+//SCROLLING SCREEN COLLISION AND OTHER MODIFICATION
+
+
+
+//Function F() finds the screens to draw and calls the draw and interaction functions.
+void F()
+{
+int B=Floor((Z[0])/256);
+int A=Floor((Z[1])/176);
+//These fors and formula prevent the need to draw all screens and all layers all at once, 
+//which would cause massive slowdown.
+//This math eliminates the calling of all screens except for the one Link would be 
+//on in relation to Z[0], Z[1], and the 8 screens around it, for a 9x9 grid of screens.
+for(int X=B-1;X<=B+1;X++)
+	{
+	for(int Y=A-1;Y<=A+1;Y++)
+		{
+		if(X!=-1&&Y!=-1&&X<=Z[19]+Z[13]&&Y<=Z[20]+Z[14]&&Z[0]>=256*(X-1)+Z[5]&&Z[0]<=(X+1)*256+Z[5]&&Z[1]>=176*(Y-1)+Z[7]&&Z[1]<=(Y+1)*176+Z[7])
+			{int S=X+Y*16;
+			DRAW(X*256+Z[5],Game->GetCurMap()+1,S,Y*176+Z[7]);C(Game->GetCurMap()+1,S);}//
+		}
+	}
+
+}//
+
+
+
+//DRAW SCREEN LAYERS
+void DRAW(int x,int a,int b,int y)
+{
+//Prevent the drawing of out of bounds screens.
+if(x<Z[5]){x=Z[5];}if(y<Z[7]){y=Z[7];}
+if(x>Z[6]){x=Z[6];}if(y>Z[8]){y=Z[8];}
+
+//args x and y are the actual coordinates of the screens in pixel format,
+//so X=x-Z[0] puts them on the screen on the X axis at the right place.
+//if H() or I() is false the screen doesn't scroll, so X or Y become 0.
+int X=x-Z[0];int Y=y-Z[1];if(H()==false){X=0;}if(I()==false){Y=0;}
+//Screen->DrawLayer(2,a,b,2,X,Y,0,128);
+///Screen->DrawLayer(3,a,b,3,X,Y,0,128);
+Screen->DrawLayer(0,a,b,0,X,Y,0,128);
+//Screen->DrawLayer(1,a,b,1,X,Y,0,128);
+//Screen->DrawLayer(4,a,b,4,X,Y,0,128);
+//Screen->DrawLayer(5,a,b,5,X,Y,0,128);
+//Screen->DrawLayer(6,a,b,6,X,Y,0,64);
+}
+
+
+//Collision Detection, Combo interaction, and Set new Combo Data per interaction.
+void C(int sourcemap,int sscreen)//COMBO ASSIGN
+{
+if(Screen->ComboD[0]!=64000){R();}
+for(int x=0;x<=240;x+=16)
+	{
+	for(int y=0;y<=160;y+=16)
+		{int a=y+Floor(sscreen/16)*176+(Z[7]-Z[1]);int b=(sscreen%16)*256-(Z[0]-Z[5])+x;
+		//if(Z[9]==0){a+=16;}if(Z[9]==1){a-=4;}if(Z[1]<=Z[7]){a+=16;}
+		if(H()==false){b=x;}if(I()==false){a=y;}
+		if(a<=175&&a>=0&&b<=255&&b>=0)
+			{//COLLISION DETECTION
+			if(isSolidScreen(sourcemap,sscreen,b,a))//Regular Collision
+				{
+				if(Game->GetComboType(sourcemap,sscreen,ComboAt(x,y))!=3)
+					{
+					if(Link->InputUp&&RectCollision(Link->X+1,Link->Y+8,Link->X+14,Link->Y+14,b,a,b+15,a+15)){Z[15]=1;}
+					if(Link->InputDown&&RectCollision(Link->X+1,Link->Y+9,Link->X+14,Link->Y+15,b,a,b+15,a+15)){Z[16]=1;}
+					if(Link->InputLeft&&RectCollision(Link->X,Link->Y+9,Link->X+14,Link->Y+14,b,a,b+15,a+15)){Z[17]=1;}
+					if(Link->InputRight&&RectCollision(Link->X+1,Link->Y+9,Link->X+15,Link->Y+14,b,a,b+15,a+15)){Z[18]=1;}
+					}			
+				}
+			//IF BOMB ON SCREEN AND BOMB TOUCH BOMBABLE COMBO, COMBO GO BYEBYE.
+			//CURRENTLY SET TO TO 0 INSTEAD OF UNDERCOMBO. SET AS DESIRED.
+			if(NumLWeaponsOf(4)>0)//Bomb Stuff
+				{lweapon w=LoadLWeaponOf(4);
+				if(Game->GetComboInherentFlag(sourcemap,sscreen,ComboAt(x,y))==6)
+					{//Screen->DrawTile(7,b,a,410,1,1,6,-1,-1,0,0,0,0,true,128);
+					if(RectCollision(b,a,b+15,a+15,w->X,w->Y,w->X+15,w->Y+15))
+						{Game->PlaySound(27);Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);}
+					}
+				}
+			//SAME THING SUPER BOMB.
+			if(NumLWeaponsOf(5)>0)//Super Bomb stuff
+				{lweapon w=LoadLWeaponOf(5);
+				if(Game->GetComboInherentFlag(sourcemap,sscreen,ComboAt(x,y))==11)
+					{//Screen->DrawTile(7,b,a,410,1,1,6,-1,-1,0,0,0,0,true,128);
+					if(RectCollision(b,a,b+15,a+15,w->X,w->Y,w->X+15,w->Y+15))
+						{Game->PlaySound(27);Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);}
+					}
+				if(Z[27]==1&&RectCollision(b,a,b+15,a+15,w->X,w->Y,w->X+15,w->Y+15))
+						{Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);}
+					
+				}
+			//THIS IS FOR BURNING BUSH, IF FIRE ON SCREEN TOUCHES BURNABLE,
+			//PLAY SOUND BURN BUSH.
+			if(Game->GetComboInherentFlag(sourcemap,sscreen,ComboAt(x,y))==4)
+				{if(NumLWeaponsOf(9)>0)
+					{lweapon w=LoadLWeaponOf(9);
+					if(RectCollision(w->X,w->Y,w->X+15,w->Y+15,b,a,b+15,a+15))
+						{
+						Game->PlaySound(27);Game->SetComboData(sourcemap,sscreen,ComboAt(x,y),0);
+						}
+					}
+				}
+
+			//PLACE MORE INTERACTION COMBO STUFF HERE.
+			//I HAVE A BIGGER LIST OF THIS STUFF BUT IT'S ALL PRETTY SELF EXPLANITORY
+			//AT THIS POINT, JUST DO THE SAME THING I DID WITH THESE EXAMPLES,
+			//EVERY SINGLE INTERACTION THAT CAN BE DONE WITHOUT SCROLLING CAN BE DONE
+			//WITH SCROLLING IN THIS FASION.
+
+			//THIS IS ALSO WHERE INSTANT PIT WARPS HAPPEN.
+			//I ALREADY DID THIS TOO, BUT IT WOULD BE BETTER PRACTICE FOR YOU TO DO IT
+			//YOURSELF.
+			//MAKE A COMBO THAT WARPS TO A DIFFERENT DMAP,
+			//ON THAT DMAP MAKE A COMBO OR FFC WITH A DUMMY SCRIPT FLAG ON IT
+			//MAKE Z[0] AND Z[1] CORELATE WITH THAT POSITION OR RIGHT IN FRONT OF IT
+			//FOR A DOOR OR SOMETHING UPON WARPING THERE.
+
+			
+			}	
+		}
+	}
+}
+
+
+//THANKS TO SAFFITH FOR THIS, IT'S THE SAME AS THE isSolid() MASK FUNCTION,
+//EXCEPT FOR THAT IT DOES THE CROSS-REFERENCING FOR SCROLLING ALSO.
+//THIS IS WHAT I WAS TALKING ABOUT FOR A ghost.z WITH SCROLLING,
+//IN THEORY IT WORKS SIMPLY BY REPLACING isSolid() WITH THIS ONE INSTEAD,
+//AND PLUGGING ALL THAT IN TOGETHER WITH THE OTHER FUNCTIONS.
+bool isSolidScreen(int m,int s,int c,int d) {
+int x=c-((s%16)*256)-(Z[5]-Z[0]);
+int y=d-(Floor(s/16)*176)-(Z[7]-Z[1]);
+if(H()==false){x=c;}if(I()==false){y=d;}
+    if(x<0 || x>255 || y<0 || y>175) return false;
+    int mask=1111b;
+     
+    if(x % 16 < 8)
+      mask &= 0011b;
+    else
+      mask &= 1100b;
+   
+    if(y % 16 < 8)
+      mask &= 0101b;
+    else
+      mask &= 1010b;
+   
+    int ret = Game->GetComboSolid(m,s,ComboAt(x,y)) & mask;
+    return (ret!=0);
+ 
+  }
+
+
+//Reallocates all combos on screen to combo data of 64000
+//THIS ISN'T REALLY NECESSARY, AND TO USE THE SCROLLING STUFF PROPERLY,
+//A DIFFERENT METHOD OF SETTING THE DATA OF L() EVERY TIME LINK CHANGES DMAPS IS GOING TO 
+//BE NEEDED.  WETHER IT IS AN FFC SCRIPT OR PART OF A GLOBAL THAT DOES IT IS UP TO YOU.
+void R(){for(int z=0;z<=175;z++){Screen->ComboD[z]=64000;}}//ComboD[z]=64000+z for every combo consecutively
+
+
+//GLOBAL SCRIPT END
+}
+
+
+
+//THIS JUST MAKES SURE LINK DOESN'T ACTUALLY GO OUT OF THE BOUNDS OF THE SCREEN FOR SOME REASON.
+//NOT IMPLEMENTED.
+void BoxIn(){if(Link->X<16){Link->Y=16;}if(Link->X>224){Link->X=124;}if(Link->Y<16){Link->Y=16;}if(Link->Y>144){Link->Y=144;}}
+
+

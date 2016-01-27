@@ -1,0 +1,163 @@
+//FFC Scripts for Items
+
+//D0- If a message is to be shown, what message.
+//D1- How much Super Bombs are increased.
+
+BombPickupFFC
+	void run (int showMessage, int SBombMaxPlus)
+	
+//D0- Message to show, if any.
+	
+DelayedItemMessage{
+	void run (int showMessage)
+
+//D0- Fire rate
+//D1- Sprite to use.
+//D2- Sound to use, if any.
+//D3- Item id.
+	
+AutofireBowFFC {
+    void run(int fireRate, int sprite, int usesound, int itemID)
+	
+//D0- Sprite to use.
+//D1- Chance of damage. To Link or Enemy?
+//D2- Sound to make.
+//D3- I don't know.
+//D4- I'm guessing this is damage taken from beams above.
+//D5- Triggers this activates?
+	
+bugNet
+	void run( int sprites, int dicedamage, int sounds, int beams, int beamdamage, int triggers)
+	
+bugMenu//Launches menu associated with bug net.
+
+//this ffc script adds the flashing functionality for the spell "Thunder".
+//D0- Color of effect.
+//D1- Duration of effect.
+
+Thunder_Functionality{
+    void run(int color, int duration)
+	
+//this ffc script adds the flashing functionality for the spell "Thunder".
+//This seems to be the same as the one above.
+Calmen_Functionality{
+    void run(int color, int duration){
+	
+/// Item Pick-Up ///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// This script creates an FFC, that gives Link a key, and clears the FFC if the FFC is touched by the      ///
+/// boomerang, or the hookshot. This is useful if you want the boomerang/hookshot to pick up keys as in Z3, ///
+/// without also allowing them to pick up other special items (per quest rules for Z3 boomerang.            ///
+///                                                                                                         ///
+/// Note: The pick-up is instantaneous, and does not need to wait for Link to touch the item.               ///
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// D0 : Item Class (Positive Number), or Item Number (negative Number) of primary trigger.                ///
+/// Standard value is 1 (IC_BRANG).                                                                        ///
+/// D1 : Item Class (positive Number), or Item Number (negative Number) of secondary trigger.              ///
+/// Standard value is 21 (IC_HOOKSHOT).                                                                    ///
+/// D2: Set to 0 to give a normal key, or 1 to give a key specific to the level that the player is inside. ///
+/// Set to a negative number to give a specific item, other than a key, or a level key.                    ///
+/// D3: Set this to the Sound Effect to play on giving the player the item, from Quest->Audio->SFX Data.   ///
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Z3_Key_Pickup {
+    void run(int trigger, int trigger2, int level, int SFX) {
+
+//D0- Combo to use.
+//D1- Number of flames to create.
+//D2- Speed of flames
+//D3- Radius of attack
+//D4- Number of explosions.
+//D5- How long explosions occur.
+//D6- How much damage explosions do.
+	
+Bombos_Action{
+    void run(int comboNum, int flameNum, float speed, float radius, int explosionNum, int explosionSpread, int explosionDamage){
+
+//D0- Power of light arrow.
+//D1- How long it takes to charge.
+//D2- Sprite to use.
+//D3- Speed of arrow.
+	
+lightArrowFFC{
+    void run(int power, int chargeTime, int arrowSprite, int speed)
+
+//More powerful version of above.
+	
+superLightArrowFFC{
+    void run(int power, int chargeTime, int arrowSprite, int speed)
+
+//Magic Container Pieces
+////D0:Is the fake item you pick up
+////D1:Is the item that will disapear
+////D2:Is the amount of Max MP gained
+////D3:Is the amount of MP refill
+////D4:Is item given if D0 is not in inventory.
+
+
+MCP4{
+    void run(int i, int j, int k, int mg, int mx)
+
+////  SCRIPTED SWORD
+//
+//D0:
+//  ###**.**** - Sword`s tabbing sprite.
+//  ***##.#*** - Sword`s slashing sprite.
+//  *****.*### - Sword beam sprite. Must be facing right.
+//D1:
+//  *##**.**** - Number of dice that determines base damage.
+//  ***##.**** - Maximum number on base dice.
+//  *****.##** - Maximum number on dice per level.
+//  *****.**## - Number of dice applied to damage per level.
+//D2:
+//  *###*.**** - Sword attack SFX.
+//  ****#.##** - Sword beam launch SFX.
+//  *****.**#* - Set to 1 -> Allow Slash.
+//D3:
+//  #****.**** - Set to 1 -> Beam Hearts is precentile.
+//  *###*.**** - Hearts required to shoot sword beams.
+//  ****#.**** - Set to 1 -> Beam Penetrates enemies.
+//  *****.*### - Beam shard particle sprite.
+//D4:
+//  #****.**** - Set to 1 -> Beam damage is precentile from sword damage.
+//  *###*.**** - Damage from Sword beam.
+//  ****#.**** - Set to 1 -> Use only half of the Link`s current XP level to scale damage from Sword beams
+//  *****.*### - Amount of damage to apply to sword beams for each effective level.
+//D5:
+//  *###*.**** - Main Sword trigger flag. Hit it with this sword directly to trigger secrets.
+//  ****#.##** - Sword Beam trigger flag. Hitting it with Sword Beams from this sword triggers secrets.
+//
+////
+
+RPGSword{ //Slot 53
+	void run( int sprites, int dicedamage, int sounds, int beams, int beamdamage, int triggers){
+
+//D0- Sprite to use.
+//D1- Damage to do.
+//D2- Whether it penetrates.
+//D3- Direction of beam.
+//D4- Trigger activated by this.
+//D5- Beam shard sprite.
+	
+SwordBeam{
+	void run(int beamsprite, int bdamage, int pen, int bdir, int btrigger, int shardsprite)
+
+//D0- Power
+//D1- Charge time.
+//D2- Sprite to use.
+//D3- Speed of projectile.
+//D4- Damage it does.
+	
+stazerFFC{
+    void run(int power, int chargeTime, int arrowSprite, int speed, int stzdmg)
+
+//Same as above, but more powerful?	
+	
+superStazerFFC{
+    void run(int power, int chargeTime, int arrowSprite, int speed, int stzdmg)
+
+//I'm not sure about these arguments.
+	
+WhipFFC2{
+    void run(int hearts_pain, int hurt_stun, int tile_cset, int FFCSlot1_FFCSlot2, int lType_nouse, int sfx_errorFX, int itemnumber_eFlashFFC)
+    

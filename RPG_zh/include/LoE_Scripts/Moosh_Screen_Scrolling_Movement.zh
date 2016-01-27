@@ -1,0 +1,133 @@
+//Draws a section of a map to the screen using its true X and Y position on the map from the top left corner
+void DrawTrueMapPosition(int Layer, int Map, int X, int Y){
+        int MinScreen = Floor(X/256)+16*Floor(Y/176);
+        Screen->Rectangle(Layer, 0, 0, 255, 175, 0, 1, 0, 0, 0, true, 128);
+        int TLX = -(X%256);
+        int TLY = -(Y%176);
+        Screen->DrawScreen(Layer, Map, MinScreen, TLX, TLY, 0);
+        Screen->DrawScreen(Layer, Map, MinScreen+1, TLX+256, TLY, 0);
+        Screen->DrawScreen(Layer, Map, MinScreen+16, TLX, TLY+176, 0);
+        Screen->DrawScreen(Layer, Map, MinScreen+17, TLX+256, TLY+176, 0);
+}
+ 
+//Hackish method of extending how far ZC can measure distances
+float LargeDistance(int x1, int y1, int x2, int y2){
+        int c1x = (x1+x2)/2;
+        int c1y = (y1+y2)/2;
+        int c2x = (x1+c1x)/2;
+        int c2y = (y1+c1y)/2;
+        int c3x = (x1+c2x)/2;
+        int c3y = (y1+c2y)/2;
+        return Distance(x1, y1, c3x, c3y)*8;
+}
+ 
+//Glides from one screen to another for a set number of frames
+void ScreenPan(int Layer, int Map, int StartScreen, int EndScreen, int Duration){
+        int StartX = StartScreen%16*256;
+        int StartY = Floor(StartScreen/16)*176;
+        int EndX = EndScreen%16*256;
+        int EndY = Floor(EndScreen/16)*176;
+        int X = StartX;
+        int Y = StartY;
+        int Distance = LargeDistance(StartX, StartY, EndX, EndY);
+        for(int i=0; i<Duration; i++){
+                DrawTrueMapPosition(Layer, Map, X, Y);
+                X += VectorX(Distance/Duration, Angle(StartX, StartY, EndX, EndY));
+                Y += VectorY(Distance/Duration, Angle(StartX, StartY, EndX, EndY));
+                Waitframe();
+        }
+}
+ 
+//Glides from one screen to another at a set speed
+void ScreenPan2(int Layer, int Map, int StartScreen, int EndScreen, int Speed){
+        int StartX = StartScreen%16*256;
+        int StartY = Floor(StartScreen/16)*176;
+        int EndX = EndScreen%16*256;
+        int EndY = Floor(EndScreen/16)*176;
+        int X = StartX;
+        int Y = StartY;
+        int Distance = LargeDistance(StartX, StartY, EndX, EndY);
+        while(LargeDistance(X, Y, EndX, EndY)>Speed){
+                DrawTrueMapPosition(Layer, Map, X, Y);
+                X += VectorX(Speed, Angle(StartX, StartY, EndX, EndY));
+                Y += VectorY(Speed, Angle(StartX, StartY, EndX, EndY));
+                Waitframe();
+        }
+}
+ 
+//Draws a stationary map position for a set number of frames
+void ScreenHold(int Layer, int Map, int Screen, int Duration){
+        int X = Screen%16*256;
+        int Y = Floor(Screen/16)*176;
+        for(int i=0; i<Duration; i++){
+                DrawTrueMapPosition(Layer, Map, X, Y);
+                Waitframe();
+        }
+}
+
+//Draws a section of a map to the screen using its true X and Y position on the map from the top left corner
+void DrawTrueMapPosition(int Layer, int Map, int X, int Y){
+	int MinScreen = Floor(X/256)+16*Floor(Y/176);
+	Screen->Rectangle(Layer, 0, 0, 255, 175, 0, 1, 0, 0, 0, true, 128);
+	int TLX = -(X%256);
+	int TLY = -(Y%176);
+	Screen->DrawScreen(Layer, Map, MinScreen, TLX, TLY, 0);
+	Screen->DrawScreen(Layer, Map, MinScreen+1, TLX+256, TLY, 0);
+	Screen->DrawScreen(Layer, Map, MinScreen+16, TLX, TLY+176, 0);
+	Screen->DrawScreen(Layer, Map, MinScreen+17, TLX+256, TLY+176, 0);
+}
+
+//Hackish method of extending how far ZC can measure distances
+float LargeDistance(int x1, int y1, int x2, int y2){
+	int c1x = (x1+x2)/2;
+	int c1y = (y1+y2)/2;
+	int c2x = (x1+c1x)/2;
+	int c2y = (y1+c1y)/2;
+	int c3x = (x1+c2x)/2;
+	int c3y = (y1+c2y)/2;
+	return Distance(x1, y1, c3x, c3y)*8;
+}
+
+//Glides from one screen to another for a set number of frames
+void ScreenPan(int Layer, int Map, int StartScreen, int EndScreen, int Duration){
+	int StartX = StartScreen%16*256;
+	int StartY = Floor(StartScreen/16)*176;
+	int EndX = EndScreen%16*256;
+	int EndY = Floor(EndScreen/16)*176;
+	int X = StartX;
+	int Y = StartY;
+	int Distance = LargeDistance(StartX, StartY, EndX, EndY);
+	for(int i=0; i<Duration; i++){
+		DrawTrueMapPosition(Layer, Map, X, Y);
+		X += VectorX(Distance/Duration, Angle(StartX, StartY, EndX, EndY));
+		Y += VectorY(Distance/Duration, Angle(StartX, StartY, EndX, EndY));
+		Waitframe();
+	}
+}
+
+//Glides from one screen to another at a set speed
+void ScreenPan2(int Layer, int Map, int StartScreen, int EndScreen, int Speed){
+	int StartX = StartScreen%16*256;
+	int StartY = Floor(StartScreen/16)*176;
+	int EndX = EndScreen%16*256;
+	int EndY = Floor(EndScreen/16)*176;
+	int X = StartX;
+	int Y = StartY;
+	int Distance = LargeDistance(StartX, StartY, EndX, EndY);
+	while(LargeDistance(X, Y, EndX, EndY)>Speed){
+		DrawTrueMapPosition(Layer, Map, X, Y);
+		X += VectorX(Speed, Angle(StartX, StartY, EndX, EndY));
+		Y += VectorY(Speed, Angle(StartX, StartY, EndX, EndY));
+		Waitframe();
+	}
+}
+
+//Draws a stationary map position for a set number of frames
+void ScreenHold(int Layer, int Map, int Screen, int Duration){
+	int X = Screen%16*256;
+	int Y = Floor(Screen/16)*176;
+	for(int i=0; i<Duration; i++){
+		DrawTrueMapPosition(Layer, Map, X, Y);
+		Waitframe();
+	}
+}

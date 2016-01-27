@@ -1,0 +1,101 @@
+item script bombodositem
+{        
+   void run(int power)
+   {
+   bombs = 0;
+   slower = 0;
+   slowera = 0;
+   Val(RAD,0);
+   usebombodo = 1;
+   npc enemys;
+   currentDamage = diePerLevel(4,0);
+   for(int i = 1; i<=Screen->NumNPCs(); i++)
+         {
+         enemys = Screen->LoadNPC(i);
+         enemys->HP-= currentDamage;
+         }
+   }
+}
+
+//Now for the item. Simply create a Custom Item Class item and attach the Bombos_Item script to the active slot. Then set up your attributes like so.
+
+//D0 Bombos_Action Script Slot
+//D1 The comboID of the combo to replace Link with.
+//D2 The number of flames that comprise the ring, 1-16
+//D3 the revolution speed of the flames.
+//D4 The radius of the flame circle before it starts closing in on Link.
+//D5 Number of Explosions.
+//D6 Number of frames between each explosion.
+//D7 Explosion Damage
+
+item script Bombos_Item{
+    void run(int ffcScriptNum, int comboNum, int flameNum, float speed, float radius, int explosionNum, int explosionSpread, int explosionDamage){
+        float args[8] = {comboNum, flameNum, speed, radius, explosionNum, explosionSpread, explosionDamage};
+        RunFFCScript(ffcScriptNum, args);
+    }
+}
+
+ffc script Bombos_Action{
+    void run(int comboNum, int flameNum, float speed, float radius, int explosionNum, int explosionSpread, int explosionDamage){
+        Link->CollDetection = false;
+        Link->Invisible = true;
+        this->X = Link->X - 16;
+        this->Y = Link->Y - 16;
+        this->TileWidth = 3;
+        this->TileHeight = 3;
+        this->CSet = 6;
+        this->Data = comboNum;
+        //Wait till the animation finishes before starting
+        while(this->Data == comboNum){
+            WaitNoAction();
+        }
+        lweapon flame[16];
+        float angle[16];
+        float radiusInternal = radius;
+        for(int i; i < flameNum; i++){
+            flame[i] = Screen->CreateLWeapon(LW_EFFECT);
+            angle[i] = (360/flameNum)*i;
+            flame[i]->UseSprite(12);
+            flame[i]->CollDetection = false;
+            flame[i]->X = Link->X + radiusInternal*Cos(angle[i]*speed);
+            flame[i]->Y = Link->Y + radiusInternal*Sin(angle[i]*speed);
+        }
+        int timer = 120;
+        while(timer > 0){
+            for(int i; i < flameNum; i++){
+                flame[i]->X = Link->X + radiusInternal*Cos(angle[i]*speed);
+                flame[i]->Y = Link->Y + radiusInternal*Sin(angle[i]*speed);
+                angle[i] %= 360;
+                angle[i]++;
+            }
+            timer--;
+            radiusInternal = radius*(timer/120);
+            WaitNoAction();
+        }
+        for(int i; i < flameNum; i++) flame[i]->DeadState = WDS_DEAD;
+        while(explosionNum > 0){
+            explosionNum--;
+            int x;
+            int y;
+            while(true){
+                x = Rand(Link->X - radius, Link->X + radius);
+                y = Rand(Link->Y - radius, Link->Y + radius);
+                if(Distance(Link->X, Link->Y, x, y) <= radius) break;
+            }
+            lweapon l = CreateLWeaponAt(LW_BOMBBLAST, x, y);
+            l->Damage = explosionDamage;
+            Game->PlaySound(SFX_BOMB);
+            WaitNoAction(explosionSpread);
+        }
+        this->Data = 0;
+        timer = 16;
+        while(timer > 0){
+           timer--;
+           WaitNoAction();
+        }
+        this->TileWidth = 1;
+        this->TileHeight = 1;
+        Link->CollDetection = false;
+        Link->Invisible = false;
+    }
+}

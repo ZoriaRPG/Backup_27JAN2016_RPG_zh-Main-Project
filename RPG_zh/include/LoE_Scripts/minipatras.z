@@ -1,0 +1,35 @@
+ffc script MiniPatras
+{
+    void run()
+    {
+        npc MiniPatra;
+        npc MainPatra;
+        float angle;
+        float phase;
+
+        MainPatra = Screen->LoadNPC(1); // The Patra core goes in enemy slot 1.
+        
+        for (int i = 0; i < 4; i++)
+        {
+            MiniPatra = Screen->CreateNPC(89); // MiniPatra ID goes in here. This loop creates 4 of them.
+        }
+        
+        while (true)
+        {
+            phase = 0;
+            for (int i = 1; i <= Screen->NumNPCs(); i++)
+            {
+                MiniPatra = Screen->LoadNPC(i);
+                if (MiniPatra->ID == 89) // MiniPatra ID again. Change to whatever you actually want to use.
+                {
+                    MiniPatra->X = MainPatra->X + (32 * Cos(angle + phase);
+                    MiniPatra->Y = MainPatra->Y + (32 * Sin(angle + phase);
+                    phase += 90; // This is only valid for 4 MiniPatras. An arbitrary number needs slightly more clever math.
+                }
+            }
+            angle = (angle + 4) % 360; // The speed they rotate. This speed will complete a full circle in 90 frames, or 1.5 seconds. The "% 360" makes it reset to 0 at 360 degrees.
+            
+            Waitframe();
+        }
+    }
+}

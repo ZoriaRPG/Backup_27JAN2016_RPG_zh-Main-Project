@@ -1,0 +1,188 @@
+bool DebugMenu()
+{
+    //SetUpWindow(WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32, SIZE_LARGE);
+    //int spellFormat[]="@choice(%d)Spell %d";
+    int lineBreak[]="@26";
+    int menuEnd[]="@domenu(1)@suspend()";
+    //int spellIce[]="@choice(%d)Water/Ice";
+    //int spellFire[]="@choice(%d)Fire/Heat";
+    
+    //for(int i=1; i<9; i++)
+    //{
+    //    int buffer[40];
+    //    sprintf(buffer, spellFormat, i, i);
+    //    Tango_AppendString(WINDOW_SLOT_2, buffer);
+    //    if(i<7)
+    //        Tango_AppendString(WINDOW_SLOT_2, lineBreak);
+    //}
+    
+    int line1[]="@choice(1)Report Screen@26";
+	//int line2[]="@choice(4)Enable Cheat@26";
+	int line3[]="@choice(3)Toggle Cheat@26";
+	int line2[]="@choice(4)Print Cheat@26";
+	int line4[]="@choice(5)Full Equip.@26";
+	int line5[]="@choice(6)Max HP & MP@26";
+	int line6[]="@choice(7)Max Counters@26";
+	int line7[]="@choice(8)god Mode@26";
+    int line8[]="@26@choice(2)Cancel";
+    
+    //@choice(2)Light@domenu(1)@suspend()
+    
+    SetUpWindow(WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32, SIZE_LARGE);
+        Tango_LoadString(WINDOW_SLOT_2, line1);
+        Tango_AppendString(WINDOW_SLOT_2, line2);
+	Tango_AppendString(WINDOW_SLOT_2, line3);
+	Tango_AppendString(WINDOW_SLOT_2, line4);
+	Tango_AppendString(WINDOW_SLOT_2, line5);
+	Tango_AppendString(WINDOW_SLOT_2, line6);
+	//Tango_AppendString(WINDOW_SLOT_2, line7);
+	Tango_AppendString(WINDOW_SLOT_2, line8);
+        Tango_AppendString(WINDOW_SLOT_2, menuEnd);
+        Tango_ActivateSlot(WINDOW_SLOT_2);
+    
+    
+    //Tango_AppendString(WINDOW_SLOT_2, menuEnd);
+    //Tango_ActivateSlot(WINDOW_SLOT_2);
+    
+    while(!Tango_MenuIsActive()){
+        
+        Waitframe();
+    }
+    
+    // Save the state again...
+    int slotState[274];
+    int menuState[60];
+    int cursorPos;
+    Tango_SaveSlotState(WINDOW_SLOT_2, slotState);
+    Tango_SaveMenuState(menuState);
+    
+    int done=0;
+    int choice;
+    while(true)
+    {
+    
+        while(Tango_MenuIsActive())
+        {
+            
+            cursorPos=Tango_GetMenuCursorPosition();
+          
+            Waitframe();
+        }
+        
+        choice=Tango_GetLastMenuChoice();
+        if(choice==0) // Canceled
+            done=2;
+            
+        else if(choice == 1) 
+        {
+            done=1;
+            Debug();
+            int text[]="Report saved to Allegro.log";
+            Tango_ClearSlot(3);
+            ShowString(text, WINDOW_SLOT_5, WINDOW_STYLE_2, 48, 48);
+		menuArg=choice;
+        }
+        
+        else if(choice == 2) 
+        {
+	
+           done = 1;
+		menuArg = choice;
+        }
+	
+	else if(choice == 3) 
+        {
+	
+           done = 1;
+		if ( Game->Cheat > 0 ) {
+			Game->Cheat = 0;
+		}
+		else if ( Game-> Cheat == 0 ) {
+			Game->Cheat = 4;
+		}
+		int cheatNow = Game->Cheat;
+		int text[]="Current Cheat is:";
+		TraceS(text);
+		Trace(cheatNow);
+        }
+	
+	else if(choice == 4) 
+        {
+	
+           done = 1;
+		//Game->Cheat = 4;
+		int cheatNow = Game->Cheat;
+		int text[]="Current Cheat is:";
+		TraceS(text);
+		Trace(cheatNow);
+        }
+        
+	else if(choice == 5) 
+        {
+	
+           done = 1;
+		//Game->Cheat = 4;
+		CheatEquipment(true);
+		int text[]="Enabled All Equipment";
+		TraceS(text);
+        }
+        else if(choice == 6) 
+        {
+	
+           done = 1;
+		//Game->Cheat = 4;
+		Link->MaxHP = 9999;
+		Link->MaxMP = 9999;
+		Link->HP = 9999;
+		Link->MP = 9999;
+		int text[]="Enabled Max HP & MP";
+		TraceS(text);
+        }
+	else if(choice == 7) 
+        {
+	
+           done = 1;
+		//Game->Cheat = 4;
+		MaxCounters();
+		int text[]="Counters Maximised";
+		TraceS(text);
+        }
+	else if(choice == 8) 
+        {
+	
+           done = 1;
+		//Game->Cheat = 4;
+		godMode(true);
+		int text[]="godMode Enabled";
+		TraceS(text);
+        }
+
+            
+        else if (Link->PressEx1){
+                done = 2;
+        }
+        else
+            done=2;
+
+        
+
+        
+        if(done>0){
+            
+            break;
+        }
+        else
+        {
+            Tango_RestoreSlotState(WINDOW_SLOT_2, slotState);
+            Tango_RestoreMenuState(menuState);
+            Tango_SetMenuCursorPosition(cursorPos);
+        }
+    }
+    
+    Tango_ClearSlot(WINDOW_SLOT_2);
+    
+    if(done==1)
+        return true; // Tell parent menu to close
+    else
+        return false; // Tell parent not to close
+}

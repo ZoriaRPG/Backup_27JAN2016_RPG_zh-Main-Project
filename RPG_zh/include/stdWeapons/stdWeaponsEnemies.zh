@@ -1,0 +1,249 @@
+// Determines enemy defense used against given Lweapon
+int GetEnemyDefense( lweapon l){
+	if (l->ID==LW_ARROW) return NPCD_ARROW;
+	else if (l->ID==LW_SWORD) return NPCD_SWORD;
+	else if(l->ID==LW_BEAM) return NPCD_BEAM;
+	else if(l->ID==LW_BRANG) return NPCD_BRANG;
+	else if(l->ID==LW_BOMBBLAST) return NPCD_BOMB;
+	else if(l->ID==LW_CANEOFBYRNA) return NPCD_BYRNA;
+	else if(l->ID==LW_FIRE) return NPCD_FIRE;
+	else if(l->ID==LW_HAMMER) return NPCD_HAMMER;
+	else if(l->ID==LW_HOOKSHOT) return NPCD_HOOKSHOT;
+	else if(l->ID==LW_MAGIC) return NPCD_MAGIC;
+	else if(l->ID==LW_REFBEAM) return NPCD_REFBEAM;
+	else if(l->ID==LW_REFMAGIC) return NPCD_REFMAGIC;
+	else if(l->ID==LW_REFFIREBALL) return NPCD_REFFIREBALL;
+	else if(l->ID==LW_REFROCK) return NPCD_REFROCK;
+	else if(l->ID==LW_MAGIC) return NPCD_MAGIC;
+	else if(l->ID==LW_BOMBBLAST) return NPCD_SBOMB;
+	else if(l->ID==LW_WAND) return NPCD_WAND;
+	else if(l->ID==LW_FIRESPARKLE) return NPCD_FIRE;
+	else if(l->ID==LW_CANDLE) return NPCD_FIRE;
+	else if((l->ID>=31)&&(l->ID<=40)) return NPCD_SCRIPT;
+	else return -1;
+}
+
+//Returns true if Lweapon is blocked by enemy`s defenses
+bool BlockedByDefense(lweapon l, npc n){
+	if (!(l->CollDetection)) return false;
+	if (!Collision(l,n)) return false;
+	int def = GetEnemyDefense(l);
+	if (def==-1) return false;
+	if ((n->Defense[def]==NPCDT_BLOCK1)&&(l->Damage<1)) return true;
+	if ((n->Defense[def]==NPCDT_BLOCK2)&&(l->Damage<2)) return true;
+	if ((n->Defense[def]==NPCDT_BLOCK4)&&(l->Damage<4)) return true;
+	if ((n->Defense[def]==NPCDT_BLOCK6)&&(l->Damage<6)) return true;
+	if ((n->Defense[def]==NPCDT_BLOCK8)&&(l->Damage<8)) return true;
+	if (n->Defense[def]==NPCDT_BLOCK) return true;
+	return false;
+}
+
+//Returns TRUE if Lweapon has collided with enemy of specific ID.
+bool EnemyTypeCollision(lweapon l, int type){
+	npc coll;
+	for (int i = 1; i<= Screen->NumNPCs(); i++){
+		coll = Screen->LoadNPC(i);
+		if (coll->ID==type){
+			if (Collision(coll, l)) return true;
+		}
+	}
+	return false;
+}
+
+//Same as above function, but checks trough all NPC`s on the screen.
+bool BlockedByDefense( lweapon l){
+	for (int i=1; i<= Screen->NumNPCs(); i++){
+		npc blocker = Screen->LoadNPC(i);
+		if (BlockedByDefense(l, blocker)) return true;
+	}
+	return false;
+}
+
+int CCWDir8Way(int dir){
+	if (dir == DIR_UP) return DIR_LEFTUP;
+	if (dir == DIR_LEFTUP) return DIR_LEFT;
+	if (dir == DIR_LEFT) return DIR_LEFTDOWN;
+	if (dir == DIR_LEFTDOWN) return DIR_DOWN;
+	if (dir == DIR_DOWN) return DIR_RIGHTDOWN;
+	if (dir == DIR_RIGHTDOWN) return DIR_RIGHT;
+	if (dir == DIR_RIGHT) return DIR_RIGHTUP;
+	if (dir == DIR_RIGHTUP) return DIR_UP;
+	return -1;
+}
+
+int CWDir8Way(int dir){
+	if (dir == DIR_UP) return DIR_RIGHTUP;
+	if (dir == DIR_RIGHTUP) return DIR_RIGHT;
+	if (dir == DIR_RIGHT) return DIR_RIGHTDOWN;
+	if (dir == DIR_RIGHTDOWN) return DIR_DOWN;
+	if (dir == DIR_DOWN) return DIR_LEFTDOWN;
+	if (dir == DIR_LEFTDOWN) return DIR_LEFT;
+	if (dir == DIR_LEFT) return DIR_LEFTUP;
+	if (dir == DIR_LEFTUP) return DIR_UP;
+	return -1;
+}
+
+//Gets next cardinal counter-clockwise direction for the given one.
+int CCWDir4Way (int dir){
+	if (dir == DIR_UP) return DIR_LEFT;
+	if (dir == DIR_LEFT) return DIR_DOWN;
+	if (dir == DIR_DOWN) return DIR_RIGHT;
+	if (dir == DIR_RIGHT) return DIR_UP;
+	else return -1;
+}
+
+//Gets next cardinal clockwise direction for the given one.
+int CWDir4way (int dir){
+	if (dir == DIR_UP) return DIR_RIGHT;
+	if (dir == DIR_RIGHT) return DIR_DOWN;
+	if (dir == DIR_DOWN) return DIR_LEFT;
+	if (dir == DIR_LEFT) return DIR_UP;
+	else return -1;
+}
+
+//Returns TRUE if lweapon is blocked by NPC`s shielding.
+bool BlockedByShield(lweapon l, npc n){
+	if (!(l->CollDetection)) return false;
+	if (!Collision(l,n)) return false;
+	if (GetNPCMiscFlag(n, 0x0200)){
+		if (l->Dir== OppositeDir(n->Dir)) return true;
+	}
+	else if (GetNPCMiscFlag(n, 0x1000)){
+		if (l->Dir == n->Dir) return true;
+	}
+	else if (GetNPCMiscFlag(n, 0x0400)){
+		if (l->Dir== CCWDir4Way(n->Dir)) return true;
+	}
+	else if (GetNPCMiscFlag(n, 0x0800)){
+		if (l->Dir==CWDir4way(n->Dir)) return true;
+	}
+	return false;
+}
+
+//Same as above, but checks trough all enemies on the screen.
+bool BlockedByShteld( lweapon l){
+	for (int i=1; i<= Screen->NumNPCs(); i++){
+		npc blocker = Screen->LoadNPC(i);
+		if (BlockedByShield(l, blocker)) return true;
+	}
+	return false;
+}
+
+//Returns TRUE if Enemy has managed to block this Lweapon.
+bool BlockedByEnemy (lweapon l, npc n){
+	if (BlockedByShield(l, n)) return true;
+	if (BlockedByDefense(l, n)) return true;
+	return false;
+}
+
+//Same as above but checks trough all NPC`s on the screen.
+bool BlockedByEnemy( lweapon l){
+	for (int i=1; i<= Screen->NumNPCs(); i++){
+		npc blocker = Screen->LoadNPC(i);
+		if (BlockedByShield(l, blocker)) return true;
+		if (BlockedByDefense(l, blocker)) return true;
+	}
+	return false;
+}
+
+//Causes lweapon to one-hit-kill any enemy of specific kind (like DK`s).
+void OneHitKillEnemySpecific (lweapon l, int enemyid, int sound){
+	npc en;
+	for (int i=1; i<= Screen->NumNPCs(); i++){
+		en = Screen->LoadNPC(i);
+		if (en->ID == enemyid){
+			if (Collision(en, l)){
+				if (en->HP != 0){
+					Game->PlaySound(sound);
+					en->HP=0;
+				}
+			}
+		}
+	}
+}
+
+//Transforms any enemy of specific kind, that has been hit bu this Lweapon, into another one.
+//Example: Gibdo(L1) turns into Stalfos(L1).
+void TransformEnemyOnCollision (lweapon l, int enemyid, int newenemyID, bool retainHP){
+	npc en;
+	for (int i=1; i<= Screen->NumNPCs(); i++){
+		en = Screen->LoadNPC(i);
+		if (en->ID == enemyid){
+			if (Collision(en, l)){
+			int enx = en->X;
+			int eny = en->Y;
+			int enHP = en->HP;
+			Remove(en);
+			en = Screen->CreateNPC(newenemyID);
+			en->X = enx;
+			en->Y = eny;
+			if (retainHP) en->HP = enHP;
+			}
+		}
+	}
+}
+
+//Destroys any Eweapon that has collided with the current Lweapon
+void DestroyEweapons (lweapon l, int sound, int effectsprite){
+	eweapon dw;
+	for (int i =1; i<= Screen->NumEWeapons(); i++){
+		dw = Screen->LoadEWeapon(i);
+		if (Collision(l,dw)){
+			if ((dw->ID==EW_WIND)&&(Link->Action == LA_FROZEN)) break;
+			int ewx = dw->X;
+			int ewy = dw->Y;
+			Game->PlaySound(sound);
+			dw->DeadState=0;
+			if (effectsprite>0){
+				lweapon ef = Screen->CreateLWeapon(LW_SCRIPT10);
+				ef->X = ewx;
+				ef->Y = ewy;
+				ef->CollDetection = false;
+				ef->UseSprite(effectsprite);
+				int dur = (ef->ASpeed)*(ef->NumFrames);
+				ef->DeadState = dur;
+			}
+		}
+	}
+}
+
+//Changes damage dealt by Lweapon when hitting specific enemies. Returns original damage value.
+int DamageModifierEnemySpecific( lweapon l, int npcid, float modifier){
+	npc en;
+	int origdam = l->Damage;
+	bool origcoll = l->CollDetection;
+	for (int i=1; i<= Screen->NumNPCs(); i++){
+		en = Screen->LoadNPC(i);
+		if (en->ID == npcid){
+			if (Collision(en, l)){
+				l->Damage = origdam*modifier;
+				if (modifier == 0) l->CollDetection=false;
+				return origdam;
+			}
+			else{
+				l->CollDetection = origcoll;
+				l->Damage= origdam;
+			}
+		}
+		else{
+			l->CollDetection = origcoll;
+			l->Damage= origdam;
+		}
+	}
+}
+
+//Makes the current LW_SCRIPT lweapon to check against different enemy defenses.
+//!!Make sure no other scripts that works with LW_SCRIPT# lweapons should coexist with
+//!!the scripts that use this function or enemies will react weirdly when hit by script Lweapons. 
+void UseEnemyDefense(lweapon l, int npcid, int defense){
+	npc en;
+	for (int i=1; i<= Screen->NumNPCs(); i++){
+		en = Screen->LoadNPC(i);
+		if ((npcid == 0)||((en->ID)==npcid)){
+			int origdefense = en->Defense[NPCD_SCRIPT];
+			if (Collision(l,en)){
+			en->Defense[NPCD_SCRIPT] = en->Defense[defense];
+			}
+		}
+	}
+}

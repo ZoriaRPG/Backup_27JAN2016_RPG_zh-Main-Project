@@ -1,0 +1,357 @@
+//Random Monsters, Monster Summoning, Removal, Lists, and Checks
+//v0.3
+
+int monsterTable[100]={0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0};
+                    
+int MonstersLandOnly[100];
+int MonstersWaterOnly[30];
+int MonstersFlyingOnly[50]
+
+const int MONSTER_ONE = 0;
+const int MONSTER_TWO = 1;
+const int MONSTER_THREE = 2;
+const int MONSTER_FOUR = 3;
+const int MONSTER_FIVE = 4;
+const int MONSTER_SIX = 5;
+const int MONSTER_SEVEN = 6;
+const int MONSTER_EIGHT = 7;
+const int MONSTER_NINE = 8;
+const int MONSTER_TEN = 9;
+
+const itn MONSTER_LEVEL = 10;
+
+void SummonMonster(int level){
+    int monsterLevel = level * MONSTER_LEVEL;
+    int monsterSummoned = (Rand(10) + monsterLevel);
+    Screen->CreateNPC(monsterSummoned);
+}
+
+void SummonMonster(int level, int mX, int mY){
+    int monsterLevel = level * MONSTER_LEVEL;
+    int monsterSummoned = (Rand(10) + monsterLevel);
+    Screen->CreateNPC(monsterSummoned);
+    monsterSummoned->X = mx;
+    monsterSummoned->Y = mY;
+}
+
+int ReturnMonster(int level){
+    int monsterLevel = level * MONSTER_LEVEL;
+    int monsterSummoned = (Rand(10) + monsterLevel);
+    return monsterSummoned;
+}
+
+void RandomMonster(){
+    int creatureID_Max = SizeOfArray(monsterTable);
+    for (i = 0; i < creatureID_Max; I++) {
+        //
+    }
+}
+
+void SetMonsterPosition(){
+    int monsterPositionsX[16]={0,16,32,48,6
+                                4,80,96,112,
+                                128,144,160,176,
+                                192,208,224,240};
+    int monsterPositionsY[11]={0,16,32,48,6
+                                4,80,96,112,
+                                128,144,160};
+    int randX = Rand(16);
+    int randY = Rand(11);
+    int monsterX = monsterPositionsX[randX];
+    int monsterY = monsterPositionsY[randY];
+    int monsterLevel = Game->Counter[CR_LEVEL];
+    summonMonster(monsterLevel, int monsterX, int monsterY);
+}
+
+void SetMonsterPosition(bool grid){
+    int monsterPositionsX[16]={0,16,32,48,6
+                                4,80,96,112,
+                                128,144,160,176,
+                                192,208,224,240};
+    int monsterPositionsY[11]={0,16,32,48,6
+                                4,80,96,112,
+                                128,144,160};
+    int randX = Rand(16);
+    int randY = Rand(11);
+    if ( grid == true ) {
+        int monsterX = CenterX(monsterPositionsX[randX]);
+        int monsterY = CenterY(monsterPositionsY[randY]);
+    }
+    else if ( grid == false ) {
+        int monsterX = monsterPositionsX[randX];
+        int monsterY = monsterPositionsY[randY];
+    }
+    int monsterLevel = Game->Counter[CR_LEVEL];
+    summonMonster(monsterLevel, int monsterX, int monsterY);
+}
+    
+    
+void SetMonsterPosition(bool grid, bool nonSolid){
+    int monsterPositionsX[16]={0,16,32,48,
+                                64,80,96,112,
+                                128,144,160,176,
+                                192,208,224,240};
+    int monsterPositionsY[11]={0,16,32,48,
+                                64,80,96,112,
+                                128,144,160};
+                                
+    int monsterSquareX[16] = {0,1,2,3,4,5,6,7,8
+                            9,10,11,12,13,14,15};
+                            
+    int monsterSquareY[11] = {0,1,2,3,4,5,6,7,8
+                            9,10,11};
+                            
+    int monsterSquareColumn;
+    int monsterSquareRow;
+    
+    int monsterSquarePosition = monsterSquareColumn + ( monsterSquareRow * 16 );
+
+    
+    
+			//sELECT A RANDOM x/y COMBO POSITION...
+			    //! No, just select Rand(176)
+			    //Check if the combo is solid
+			    //or a type that we can't use.
+			    //or has a no enemies flag
+			    //If so, recheck.
+			    //If not, store if it is land, or water, then put the monster there.
+			    //if water, read the water monsters list, and select one.
+			    //otherwise, read the land monsters list.
+			    //If the combo is empty air, we also need to do this for flying-only npcs.
+    int randX = Rand(16);
+    int randY = Rand(11);
+    int linkPosX = Link->X;
+    int linkPosY = Link->Y;
+    if ( grid == true ) {
+        int monsterX;
+        int monsterY;
+        int monsterSpace;
+        bool solidCombos[176]={};
+        if ( nonSolid == true ){
+            for ( i = 0; 0 <  176; i ++ ) {
+                //Check combo solidity for each combo.
+                //Store solidity true/false in array solidCombos[]
+                //Randomly select a location to place the monster.
+                //Check that the location is not the same as the player.
+                //Divine ComboD location, compared to monsterX and Y locations...
+                //Using above arryas and formulas.   
+                    //If the spot selected doesn;t have a solid combo...
+                    //and if the spot is not the location of the player
+                    //Place a monster.
+                    //Otherwise, locate a new position.                    
+                                
+        int monsterX = CenterX(monsterPositionsX[randX]);
+        int monsterY = CenterY(monsterPositionsY[randY]);
+        monsterSpace = monsterX + ( 1 * 
+    }
+    else if ( grid == false ) {
+        int monsterX = monsterPositionsX[randX];
+        int monsterY = monsterPositionsY[randY];
+    }
+    int monsterLevel = Game->Counter[CR_LEVEL];
+    summonMonster(monsterLevel, int monsterX, int monsterY);
+}
+
+
+void RandomScreenMonster(int ffcScript){
+    //run FFC script to summon monsters, based on global conditions, and timers.
+}
+    
+    
+    
+int EnemyList[100] = {	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, //Populate with enemy IDs.
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0, 0, 0, 0; }
+
+//Ten DMaps, with 10 Monsters each.
+
+//Name constants that will better suit your DMap names. 
+const int DMAP_A = 0;
+const int DMAP_B = 10;
+const int DMAP_C = 20;
+const int DMAP_D = 30;
+const int DMAP_E = 40;
+const int DMAP_F = 50;
+const int DMAP_G = 60;
+const int DMAP_H = 70;
+const int DMAP_I = 80;
+const int DMAP_J = 90;
+			
+void SummonMonsters(int dmap, int number_of_monsters, int flagLayer){
+	int npc_index; 
+	int pass = 37; //Combo Flag CF_ENEMY0
+	
+	for ( int q = 0; q <= number_of_monsters; q++ ) {
+		npc_index = Rand(0,9) + dmap;
+		int npc_id = EnemyList[npc_index];
+		for ( int w = 0; w < 176, w++ ) { //Find a tile with a combo flag...
+			int cmb = GetLayerComboF(flagLayer,q);
+			if ( cmb == pass ) {
+				pass++;
+				npc n = Screen->CreateNPC(npc_id);
+				npc->X = GridX ( ComboX(q) );
+				npc->Y = GridY ( ComboY(q) );
+			}
+		}
+	}
+}
+	 
+
+//Reduces the number of NPCs on the screen to the amount defined as 'limit', 
+//ignoring guys, faeries, and other types.
+
+//Run before Waitdraw. Note that in 2.50.0, using Remove() on some segemented enemies
+//(e.g. lanmolas) will cause ZC to crash. This is fixed in 2.50.1
+
+
+void ReduceNPCs(int limit) { 
+	if ( Screen->NumNPCs > limit ){
+		int diff = Screen->NumNPCs = limit;
+		for ( int q = 1; q <= limit; q++ ) {
+			npc n = Screen->LoadNPC(q);
+			if ( n->Type != NPCT_GUY && n->Type != NPCT_FAIRY && n->Type != NPCT_TRAP 
+				&& n->Type != NPCT_ROCK && n->Type != NPCT_PROJECTILE ) Remove(n);
+		}
+	}
+}
+
+
+//Update the GuyCount so that enemies don'll all vanish when you leave the screen...
+
+void UpdateGuycount(){
+	int numOfEnemies;
+	int lanmolas;
+	int lanmola_segments;
+	int moldorms;
+	int moldorm_segments;
+	int manhandlas;
+	int manhandla_hands;
+	int gleeoks;
+	int gleeok_heads;
+	int patras;
+	int patra_orbiters_outer;
+	int patra_orbiters_inner;
+	int ganons; //That's just obscene. :p
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(q);
+		if ( 		n->Type != NPCT_GUY 		&& n->Type != NPCT_FAIRY 
+				&& n->Type != NPCT_TRAP 	&& n->Type != NPCT_ROCK 
+				&& n->Type != NPCT_PROJECTILE 	&& n->Type != NPCT_LANMOLA 
+				&& n->Type != NPCT_MOLDORM 	&& n->Type != NPCT_MANHANDLA 
+				&& n->Type != NPCT_GLEEOK 	&& n->Type != NPCT_PATRA 
+				&& n->Type != NPCT_GANON ) numOfEnemies++;
+		if ( n->Type == NPCT_LANMOLA ) {
+			lanmola_segments += n->Attributes[0] + 1; //Read the number of segments from the editor.
+								 //and store them. We use a best guess at the end.
+			lanmolas++;				 //Store the total number of lanmolas. 
+		}
+		if ( n->Type == NPCT_MOLDORM ) {
+			moldorm_segments += n->Attributes[0] + 1; //Read the number of segments from the editor.
+								 //and store them. We use a best guess at the end.
+			moldorms++;				 //Store the total number of lanmolas. 
+		}
+		
+		if ( n->Type == NPCT_MANHANDLA ) {
+			//mandandla_hands += n->Attributes[0] + 1; These seem to be a specific component of the type,
+								 //not something we can store. 
+			manhandlas++;
+		}
+		
+		if ( n=>Type == NPCT_GLEEOK ) { //Do Gleeok neck segments count as npcs!?
+						//Do their heads read as Gleeoks, as lanmola segs?
+			gleeok_heads += n->Attributes[0] + 1; //Store the number of heads, +1 for the core?
+			gleeoks++;
+		}
+		
+		if ( n->Type == NPCT_PATRA ) { //We need to check if we can use the same maths here...
+			patra_orbiters_outer += n->Attributes[0];	//These should be right, but need
+			patra_orbiters_inner += n->Attributes[1];	//verification.
+			patras++;
+		}
+		
+		if ( n->Type == NPCT_GANON ) ganons++; //I never thought I would see this in code. 
+			
+		if ( lanmolas && lanmola_segments ) numOfEnemies += lanmolas / lanmola_segments; 
+									//Fix adding lanmolas so that
+									//each segment does not count as
+									//a full enemy. 
+		if ( moldorms && moldorm_segments ) numOfEnemies += moldorms / moldorm_segments; 
+									//Fix adding moldorms so that
+									//each segment does not count as
+									//a full enemy. 
+		if ( manhandlas ) numofEnemies += manhandlas;
+		
+		if ( gleeoks && gleeok_heads ) numOfEnemies += gleeoks / gleeok_heads;
+		
+		if ( patras ) {
+			int net_patra_orbiters = patra_orbiters_inner + patra_orbiters_outer;
+			if ( net_patra_orbiters ) numOfEnemies += patras / net_patra_orbiters; 
+				//This may make two enemies, if the maths are wrong. 
+				//We may need: if ( net_patra_orbiters ) numOfEnemies += (patras / net_patra_orbiters) -1 ; 
+			
+			if ( !net_patra_orbiters && patras ) numOfEnemies += patras; //if there are no orbiting eyes, but the core remains, still count it.
+		}
+		
+		if ( ganons ) numOfEnemies += ganons; //I still have problems with this expression. I think I need some whiskey. 
+		
+			
+	}
+	GuyCount[Game->GetCurScreen()] = numOfEnemies; //Won't segmented enemies corrupt this?
+							//Let's fix that!
+}
+	 
+//Returns true if the npc 'n' is a type to ignore. 
+bool IgnoreEnemyTypes(npc n){
+	n->Type == NPCT_GUY || n->Type == NPCT_FAIRY || n->Type == NPCT_TRAP 
+				|| n->Type == NPCT_ROCK || n->Type == NPCT_PROJECTILE ) return true;
+	return false;
+}
+
+//Returns true if the npc 'n' is segmented.
+//!? Do Manhandlas run as a segmwnted enemy, for the purpose of counting Screen->NumNPCs() ?
+bool EnemySegmented(npc n){
+	if ( 		n->Type == NPCT_LANMOLA 
+		|| 	n->Type == NPCT_MOLDORM || n->Type == NPCT_MANHANDLA 
+		|| 	n->Type == NPCT_GLEEOK 	|| n->Type == NPCT_PATRA 
+	) return true;
+	return false;
+}
+
+//Returns true if the enemy is a stock ZC boss.
+//Set bool full to true, if you wish to include Moldorms, Dodongos, and Lanmolas
+bool EnemyIsBossType(npc n, bool full) {
+	if ( ( !full ) && 	( 		
+					n->Type == NPCT_MANHANDLA 	|| 	n->Type == NPCT_DIGDOGGER 	||
+					n->Type == NPCT_AQUAMENTUS 	|| 	n->Type == NPCT_GOHMA		||		
+					n->Type == NPCT_GLEEOK 		|| 	n->Type == NPCT_PATRA 		||
+					n->Type == NPCT_GANON 
+				)
+	) return true;
+		
+	}
+	if ( ( full ) && 	(	n->Type == NPCT_MANHANDLA 	|| 	n->Type == NPCT_DIGDOGGER 	||
+					n->Type == NPCT_AQUAMENTUS 	||	n->Type == NPCT_DODONGO 	||
+					n->Type == NPCT_GOHMA		|| 	n->Type == NPCT_GLEEOK 		||
+					n->Type == NPCT_LANMOLA		||	n->Type == NPCT_MOLDORM		||
+					n->Type == NPCT_PATRA 		|| 	n->Type == NPCT_GANON 
+				)
+	) return true;
+	return false;
+}
+		

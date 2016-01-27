@@ -1,0 +1,770 @@
+import "std.zh"
+//New LoE_Main_Alpha
+//Continued from Golden_Cenotaph212.z
+
+/////////////////////////////////////////////////
+//Import mandatory script headers and packages.//
+/////////////////////////////////////////////////
+
+import "ffcscript.zh"
+import "string.zh"
+import "ghost.zh"
+import "stdArguments_v6.9.8.zh"
+import "gc_std_extra_MM.zh" //MoscowModder's std.zh-extensions.
+//import "stdZoria.zh"
+import "RPG_v0.88.zh"
+import "Timers_v1.5.zh"
+
+///NEW WEAPON SYSTEM HEADERS
+import "stdWeapons.zh"
+import "stdCombos.zh"
+import "stdWeaponsExtra.zh"
+import "particles.zh"
+
+/////////////
+/// MENUS ///
+/////////////
+
+bool noMenu = false;
+import "gc_tango/tango.zh"
+import "gc_tango/tango/font/Matrix.zh"
+import "gc_tango/styles.zh"
+import "gc_tango/gc_menus.z"
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////
+//Set up environment, Base Ints, Consts, Floats, Bools, Vars, etc.//
+////////////////////////////////////////////////////////////////////
+
+
+
+bool LinkSeen;
+int DROP_ENEMY_ID = 0;
+int Drinks_Left;
+const int SFX_DRINK = 52;
+const int ThunderSFX = 73;
+const int NPC_SPECIALENEMY = 1; //The ID of your special enemy
+const int LW_EFFECT = 31;
+const int SFX_ERROR = 65; //In case you want an error SFX
+const int SFX_MAGICCHARGE = 62;
+const int SFX_LIGHTARROW = 1;
+const int SFX_GUN = 77; //Set to a bang SFX as desired.
+const int SFX_RELOAD = 84; //Set to a reload SFX as desired.
+const int lightColor = 134; //Color of the charging ring: CSet# * 16 + color# (from 0 to 15)
+const int WPS_NONE = 101; //Weapon sprite with an empty tile (for superlight arrow)
+const float ORBIT_SPEED = 2.5;
+const float ORBIT_RADIUS = 48;
+int f1 = 0;
+int f2 = 0;
+int rad = 0;
+int slower = 0;
+int bombs = 0;
+int r1 = 0;
+int r2 = 0;
+int slowera = 0;
+int ffcslot = 1;
+int usebombodo = 0;
+int ringTimer;	
+int byrnaTimer;
+int bootsTimer;
+bool ownStaff;
+bool ownNightfall;
+bool ownSwordOfLight;
+bool cigarPickup;
+//const int ringShadowTile = 0; //Shadow tile for invisble Link
+//const int ringShadowCSet = 7; //CSet of this tile
+const int ringTimePerMP = 30; //How many frames 1 unit of MP lasts with the One Ring or Cape at 60F/s
+bool ringOn;
+const int byrnaTimePerMP = 60; //How many frames 1 unit of MP lasts with the Cane of Byrna at 60F/s
+bool byrnaOn;
+const int bootsTimePerMP = 100; //How many frames 1 unit of MP lasts with the Boots at 60F/s
+bool bootsOn;
+bool gogglesOn;
+int gogglesTimer;
+const int TIME_PER_MP = 15; //How many frames 1 unit of MP lasts items.
+int timerItem = 0;
+int timerValue = 0;
+
+
+// The id of the item used to create an lweapon.
+const int MISC_LWEAPON_ITEM = 0;
+
+
+ 
+////////////////////////////////////////////////////////////////
+//// Global Variables
+ 
+// The item id of the last item Link has used.
+int LastItemUsed = 0;
+
+////////////////////////
+/// BEGIN XP SCRIPTS ///
+////////////////////////
+
+
+//this is now in stdZoria.zh
+
+
+//////////////////////
+/// END XP SCRIPTS ///
+//////////////////////
+
+const int DRAW_OPAQUE = 128;
+const int DRAW_TRANSPARENT = 64;
+int healsfx = 39; //Sound effect to play when Link is healed
+int errorsfx = 65; //Sound effect to play when Link's HP is full or MP is empty
+const int WLS_LASERCOLOR = 181; //Color of the laser beam: [CSet# * 16] + [Color within CSet from 0 to 15]
+const int WLS_LASEROPACITY = 90; //128 = Opaque, 64 = Transparent
+const float WLS_LASERSIDEDAMAGE = 0.5; //Percent damage dealt by touching side of beam (0 = disable)
+//Dalek beam colour choices 98 - 147 - 182
+//SHOP COnstants
+const int COLOR_TEXT = 10;
+const int COLOR_BG = 00;
+
+
+
+
+
+///////////////////////////////////////////////////////
+/// Armour, Shield, and Sword Constants & Variables ///
+///////////////////////////////////////////////////////
+
+//ERROR - Unexpected Semicolon on next line.
+
+
+
+
+////////////////////
+/// Item GLobals ///
+////////////////////
+
+////////////////////////////
+///Laser Sentry Constants///
+////////////////////////////
+
+const int SFX_ALARM = 67; //Error sound or sentry alert
+const int SFX_LASER = 61; //Laser fired
+
+const int LS_ATTRIB_ROTSPEED = 0; //Misc Attr 1
+const int LS_ATTRIB_RADIUS = 1; //... 2
+const int LS_ATTRIB_DELAY = 2; //... 3
+const int LS_ATTRIB_COOLDOWN = 3; //... 4
+const int LS_ATTRIB_LASERCOLOR = 4; //... 5
+
+//////////////////////////////////////////
+//Import global, item abnd FFC scripts.///
+//////////////////////////////////////////
+
+//Scripts that have an comment with NYU are not yet used. Scripts that are just commented out are disabled and were for testing or for other people.
+
+//////////////////////
+/// Global Scripts ///
+//////////////////////
+
+import "gc_global_63_Menus.z"
+//import "gc_global_62.z"
+
+
+
+////////////////////////
+//Item and FFC Scripts//
+////////////////////////
+
+import "gc_NWS_Sword_II_Alucard.z"
+//Missing functions useenemydefense() and ccwdir8way()/
+
+import "gc_calmen_NWS.z"
+import "gc_stazer_v2_NWS.z"
+import "gc_bolt_v8_NWS.z"
+import "gc_firearms_NWS.z"
+import "gc_jhkarr_NWS.z"
+import "gc_lightarrow_NWS.z"
+import "gc_tremor_NWS.z"
+import "gc_wand_item_2A_NWS.z"
+import "gc_arrow_NWS.z"
+import "gc_bolt_ffc_NWS.z"
+//import "gc_detonate_NWS.z" //Detonate NWS may be causing a glitch with NWS currentDamage.
+import "gc_generic_projectile_lweapon_NWS.z"
+import "gc_extendLW_NWS.z"
+
+
+import "gc_timestop.z"
+import "gc_key.z"
+import "gc_healing.z"
+import "gc_restoremp.z"
+import "gc_rupeegainloss.z"
+import "gc_sernaran_pickup.z"
+import "gc_increase_counter_max.z"
+import "gc_mcp_old.z"
+
+
+
+//import "gc_lightarrow.z"
+//import "gc_tremor.z"
+import "gc_detonate.z"
+//import "gc_bolt_v8.z"
+//import "gc_calmen.z"
+//import "gc_jhkarr.z"
+//import "gc_stazer_v2.z"
+//import "gc_bolt_ffc.z"
+//import "gc_wand_item_2A.z"
+//import "gc_generic_projectile_lweapon.z"
+import "gc_whip_FFC_VII.z"
+import "gc_protonpack.z"
+//import "gc_firearms.z"
+
+import "gc_beamos.z"
+import "gc_jumpblock_v1.z"
+import "gc_trowel.z"
+import "gc_mirror_new.z"
+import "gc_grimoire.z"
+import "gc_goggles_ffc.z"
+import "gc_gogglesitem.z"
+
+
+
+
+
+
+///////////////////////
+////  THE DALEKS  /////
+///////////////////////
+
+bool dalekLanding = false;
+
+//const int WLS_LASERCOLOR = 183; //Color of the laser beam: [CSet# * 16] + [Color within CSet from 0 to 15]
+//const int WLS_LASEROPACITY = 108; //128 = Opaque, 64 = Transparent
+// Dalek Colour 182, 1, 0, 0, 0, 90 
+//Dalek beam colour choices 98 - 147 - 182 - 183
+
+//import "gc_dalek_v5.z"
+//import "gc_dalek_v6.z" // Working, but jittery Daleks - Dizzy, dizzy, dizzy Daleks.
+import "gc_dalek_v7.z"  //Diabled turning in the script -- They can't functionj without it. Reverting to v6.
+
+//////////////////////////////
+//// DALEK LASER SHIP GUN ////
+//////////////////////////////
+
+//import "gc_lasersentry.z"
+//import "gc_lasersentry_v1.z"
+//import "gc_lasersentry_v2.z"
+//import "gc_lasersentry_v3.z"
+//import "gc_lasersentry_v4.z"
+//import "gc_lasersentry_v5.z"
+import "gc_lasersentry_v6.z" 
+import "gc_spinFFC.z"
+import "gc_spinFFC2.z"
+
+////////////////////
+/// SHOP SCRIPTS ///
+////////////////////
+
+import "gc_shop.z"
+
+////////////////////
+/// FFC SOLIDIDY ///
+////////////////////
+
+//import "gc_solidify.z"
+//import "gc_solid_NPC.z"
+import "gc_solid_NPC_v3.z"
+import "gc_solid_FFC_for_enemies_only.z"
+
+//////////////////////////
+/////     BOSSES     /////
+//////////////////////////
+
+import "gc_Dragon.z"
+
+//////////////////////////
+/////  FFC TRIGGERS  /////
+//////////////////////////
+
+import "gc_itemtriggerFFC.z"
+import "gc_electricRemove.z"
+
+
+/////////////////////
+/// Enemy Scripts ///
+/////////////////////
+
+
+
+    
+
+
+item script SwordofLight_NWS {
+    void run () {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        int baseItemDamage = ( rollDie(10) + rollDie(10) + rollDie(10) );
+        int levelDamage = diePerLevel(4,0);
+        int totalItemDamage = baseItemDamage + levelDamage;
+        itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+        int baseLifeCost = rollDie(10);
+        int lifeCost = rollDie(10) + rollDie(10) + rollDie(10);
+        int lifeCostByLevel = halfLevel * lifeCost;
+        int lifeDrainAmount = baseLifeCost + lifeCostByLevel;
+        bool enoughLife;
+        bool enoughMagic;
+        
+        int baseMagicCost = rollDie(10);
+        int magicCost = rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10);
+        int magicCostByLevel = halfLevel * magicCost;
+        int magicDrainAmount = baseMagicCost + magicCostByLevel;
+        if ( magicDrainAmount < Game->Counter[CR_MAGIC] ) {
+        enoughMagic = true;
+        
+
+        }
+        if ( enoughMagic == true ) {
+        Game->Counter[CR_MAGIC] -= magicDrainAmount;
+        //Set this to -= magicDrainAmount when I am able to repace sword damage.
+        }
+        else {
+        Game->PlaySound(SFX_ERROR);
+        Game->Counter[CR_MAGIC] = 0;
+        
+        WeaponCreated[LW_SWORD] = true;
+            Trace(currentDamage);
+            
+        }
+    }
+}
+
+item script Bow_NWS {
+    void run () {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        int baseItemDamage = ( rollDie(10) + rollDie(10) + rollDie(10) );
+        int levelDamage = diePerLevel(4,0);
+        int totalItemDamage = baseItemDamage + levelDamage;
+        itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = true;
+        
+        int baseLifeCost = rollDie(10);
+        int lifeCost = rollDie(10) + rollDie(10) + rollDie(10);
+        int lifeCostByLevel = halfLevel * lifeCost;
+        int lifeDrainAmount = baseLifeCost + lifeCostByLevel;
+        bool enoughLife;
+        bool enoughMagic;
+        
+        int baseMagicCost = rollDie(10);
+        int magicCost = rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10);
+        int magicCostByLevel = halfLevel * magicCost;
+        int magicDrainAmount = baseMagicCost + magicCostByLevel;
+        if ( magicDrainAmount < Game->Counter[CR_MAGIC] ) {
+        enoughMagic = true;
+        
+
+        }
+        if ( enoughMagic == true ) {
+        Game->Counter[CR_MAGIC] -= magicDrainAmount;
+        //Set this to -= magicDrainAmount when I am able to repace sword damage.
+        }
+        else {
+        Game->PlaySound(SFX_ERROR);
+        Game->Counter[CR_MAGIC] = 0;
+        
+        WeaponCreated[LW_ARROW] = true;
+            Trace(currentDamage);
+            
+        }
+    }
+}
+
+
+item script Nightfall{
+    void run() {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int lifeCost = 15;
+        int drainAmount = currLevel * lifeCost;
+        Game->Counter[CR_LIFE] -= drainAmount;
+        }
+    }
+
+item script NightFallRolled {
+    void run () {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        int baseItemDamage = ( rollDie(10) + rollDie(10) + rollDie(10) );
+        int levelDamage = diePerLevel(4,0);
+        int totalItemDamage = baseItemDamage + levelDamage;
+        itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = true;
+        
+        int baseLifeCost = rollDie(10);
+        int lifeCost = rollDie(10) + rollDie(10) + rollDie(10);
+        int lifeCostByLevel = halfLevel * lifeCost;
+        int lifeDrainAmount = baseLifeCost + lifeCostByLevel;
+        bool enoughLife;
+        bool enoughMagic;
+        
+        int baseMagicCost = rollDie(10);
+        int magicCost = rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10);
+        int magicCostByLevel = halfLevel * magicCost;
+        int magicDrainAmount = baseMagicCost + magicCostByLevel;
+        if ( magicDrainAmount < Game->Counter[CR_MAGIC] ) {
+        enoughMagic = true;
+        }
+        if ( lifeDrainAmount < Game->Counter[CR_LIFE] ) {
+        enoughLife = true;
+        }
+        if ( enoughLife== true && enoughMagic == true ) {
+        Game->Counter[CR_MAGIC] -= magicDrainAmount;
+        Game->Counter[CR_LIFE] -= lifeDrainAmount;
+        //Set this to -= magicDrainAmount when I am able to repace sword damage.
+        }
+        else {
+        Game->PlaySound(SFX_ERROR);
+        Game->Counter[CR_MAGIC] = 0;
+        Game->Counter[CR_LIFE] = 0;
+        }
+    }
+}
+
+item script steelSwordRolled {
+    void run () {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        //int baseItemDamage = ( rollDie(100) );
+        int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage;
+        //itemdamage = totalItemDamage;
+        currentDamage = rollDie(100);
+        WSpierce = true;
+        WeaponCreated[LW_SWORD] = true;
+        //WeaponCreated[LW_BEAM] = true;
+        
+    }
+}
+
+item script roll1d6Sword {
+    void run () {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        itemdamage = ( rollDice(1,6) );
+        //int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage + levelDamage;
+        //itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+    }
+}
+
+item script rollDiceSword {
+    void run (int dice, int dieType) {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        itemdamage = ( rollDice(dice,dieType) );
+        //int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage + levelDamage;
+        //itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+    }
+}
+
+item script rollDiceIISword {
+    void run (int dice, int dieType, int pierce) {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        itemdamage = ( rollDiceII(dice,dieType) );
+        //int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage + levelDamage;
+        //itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        if ( pierce == 0 ) {
+            WSpierce = false;
+        }
+        else if ( pierce > 0 ) {
+            WSpierce = true;
+        }
+        
+    }
+}
+
+//Swords Args
+
+//D0: diceToRoll, number of dice to roll for base damage.
+//D1: dieType, the base Die Type for weapon.
+
+//D2: byLevel, add scaling damage per level.
+//D3: useHalfLevel, use 1/2 level, instead of full level, for scaling damage.
+//D4: levelDie, die type to roll per level for scaling damage.
+//D5: dieCap, if rolling by level, the maximum number of additional dice to roll.
+
+//D6: pierce, 0 not piercing, 1 piercing.
+//D7: 
+
+
+item script rollDiceIISword_Scaling {
+    void run (int diceToRoll, int dieType, int byLevel, int useHalfLevel, int levelDie, int dieCap, int pierce) {
+        
+    
+        int currLevel = Game->Counter[CR_LEVEL];
+        
+        int baseDamage;
+        int scaleDamage;
+        int itemdamage;
+        int modifier = 0;
+        int scaleDice = 0;
+        
+        modifier = ( statsArray[0] * 0.5 );
+        
+        if ( dieCap > 0 && currLevel > dieCap ) {
+            currLevel = dieCap;
+        }
+        int halfLevel = ( currLevel * 0.5 );
+        
+        if ( byLevel > 0 && useHalfLevel == 0 ) {
+            scaleDice = currLevel;
+        }
+        if ( byLevel > 0 && useHalfLevel > 0 ) {
+            scaleDice = halfLevel;
+        }
+        
+        
+        baseDamage = ( rollDiceII(diceToRoll,dieType) );
+        scaleDamage = ( rollDiceII(scaleDice,levelDie) );
+        itemdamage = ( baseDamage + scaleDamage + modifier );
+        
+        
+        //int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage + levelDamage;
+        //itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+    }
+}
+
+
+
+
+item script rollDiceDWSword {
+    void run (int dice, int dieType) {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        itemdamage = ( rollDiceDW(dice,dieType) );
+        //int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage + levelDamage;
+        //itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+    }
+}
+
+item script rollDiceAluCSword {
+    void run (int dice, int dieType) {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        itemdamage = ( RollDiceAlucard(dice,dieType) );
+        //int levelDamage = diePerLevel(4,0);
+        //int totalItemDamage = baseItemDamage + levelDamage;
+        //itemdamage = totalItemDamage + getMuscStat();
+        currentDamage = itemdamage;
+        WSpierce = false;
+        
+    }
+}
+
+//Swords Args
+
+//D0: dieType, the base Die Type for weapon.
+//D1: diceToRoll, number of dice to roll for base damage.
+//D2: byLevel, add scaling damage per level.
+//D3: useHalfLevel, use 1/2 level, instead of full level, for scaling damage.
+//D4: levelDie, die type to roll per level for scaling damage.
+//D5: dieCap, if rolling by level, the maximum number of additional dice to roll.
+//D6: pierce, 0 not piercing, 1 piercing.
+//D7: 
+
+item script NWS_SWORD_II {
+    void run (int dieType, int diceToRoll, int byLevel, int useHalfLevel, int levelDie, int dieCap, int pierce) {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        int scaleDice;
+        
+        if ( dieCap > 0 && currLevel > dieCap ) {
+        currLevel = dieCap;
+        
+        if ( diceToRoll == 0 && byLevel > 0 && useHalfLevel == 0 ) {
+        scaleDice = currLevel;
+        }
+        if ( diceToRoll == 0 && byLevel > 0 && useHalfLevel > 0 ) {
+        scaleDice = halfLevel;
+        }
+        
+        int stat = getMuscStat();
+        int modifier;
+        
+        if ( stat > 0 ) {
+        modifier = ( getMuscStat() / 2 );
+        }
+        else if ( stat == 0 ) {
+        modifier = 1;
+        }
+    
+        int baseItemDamage = ( rollDice(diceToRoll, dieType) );
+        int levelDamage = diePerLevel(levelDie,scaleDice);
+        int totalItemDamage = baseItemDamage + levelDamage;
+        itemdamage = totalItemDamage + modifier;
+        currentDamage = itemdamage;
+        
+        if ( pierce == 0 ) {
+        WSpierce = false;
+        }
+        else if ( pierce > 0 ) {
+        WSpierce = true;
+        }
+        
+        }
+    }
+}
+
+
+item script SwordofLight {
+    void run () {
+        int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int baseLifeCost = rollDie(10);
+        int lifeCost = rollDie(10) + rollDie(10) + rollDie(10);
+        int lifeCostByLevel = halfLevel * lifeCost;
+        int lifeDrainAmount = baseLifeCost + lifeCostByLevel;
+        bool enoughLife;
+        bool enoughMagic;
+        
+        int baseMagicCost = rollDie(10);
+        int magicCost = rollDie(10) + rollDie(10) + rollDie(10) + rollDie(10);
+        int magicCostByLevel = halfLevel * magicCost;
+        int magicDrainAmount = baseMagicCost + magicCostByLevel;
+        if ( magicDrainAmount < Game->Counter[CR_MAGIC] ) {
+        enoughMagic = true;
+        }
+        if ( enoughMagic == true ) {
+        Game->Counter[CR_MAGIC] -= magicDrainAmount;
+        //Set this to -= magicDrainAmount when I am able to repace sword damage.
+        }
+        else {
+        Game->PlaySound(SFX_ERROR);
+        Game->Counter[CR_MAGIC] = 0;
+        }
+    }
+}
+
+
+
+item script swordOfLightPickup {
+    void run(){
+    ownSwordOfLight = true;
+    }
+}
+
+
+item script weaponmodarrow{
+ void run(int index){
+  lweapon arrow = Screen->CreateLWeapon(LW_ARROW);
+  arrow->Misc[1] = rollDice(1,8);
+  
+  //movement stuff
+  
+ }
+}
+
+
+
+
+///////////////////
+/// GAME ENGINE ///
+///////////////////
+import "gc_titleScreen_menu.z"
+import "gc_Dragon2.z"
+import "gc_changeTerrainFFC.z"
+///ChangeTerrain Error on Line 239 Cannot cast from bool to float.
+import "gc_enemyChanger_v14.z"
+//EnemyChanger Error at Line 255.
+import "gc_brangKeyFFC_8.z"
+import "gc_regenerateHP.z"
+import "gc_sernaraniCheck.z"
+/// DigiVolve incomplete. Error at Line 25.
+//import "gc_digiVolve.z"
+
+//18th May, 2014 Additions:
+
+import "gc_rolledHP_MP_restore.z"
+import "gc_money2.z"
+
+
+//item scipt NightfallPickup {
+//    void run(){
+//    ownNightfall = true;
+//    }
+//}
+
+
+//////////////////////////
+/////  GAME CREDITS  /////
+//////////////////////////
+
+
+//CREDITS for Scripts (Aplhabetical)
+//Aevin -- SOme scripting ideas.
+//Alucard -- headers, and misc script improvements.
+//Gleeok -- For GetDigit
+//grayswandir -- For the FFC trigger script.
+//jsm116 -- General scripting assistance, and the extended (reach) LWeapon FC scripts.
+//MoscowModder -- One of the most amazing, and talented ZC Scripters out there. Aside from the obvious, he is responsible for the Daleks and other laser shootig enemies; plus the shop script, and the original XP engine. Doumo arigatou gozaimashita MM-san!
+//MasterManiac -- Contributor credits: Weapon Damage System, Scripted Subscreens, and general assistance.
+//Safith -- THis wonderful  is responsible for Ghost.zh and pretty much for getting 2.50 finished. He also gave the initial information that I needed, to properly start this project, and created Tango, on which this game is destined to rely. We all love you mate!
+//tox_von for the Bombodos script
+//ZoriaRPG for making things work, making modifications, a few custom things, and combining it all in a way that functions, plus many of the scripts, new script functions, the new XP & RPG system in general, and overall game concept, story, and proper nouns.
+//Please let me know if I'm using your scripts. I will always give credit.
+
+//CREDITS for Gametesting
+//EddyTheOliveira for bugtesting & streaming v0,57r29A (April 2014)
+//MabusTheDark for game playtesting, and bug reports.
+//Miop - Initial concept teating.
+//Ryunaker - For EXTENSIVE gametesting, suggestions, contributions and support!

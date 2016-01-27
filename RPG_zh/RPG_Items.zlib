@@ -1,0 +1,1042 @@
+/// RPG Items
+//v0.5.2 for RPG.ZH v0.97.7
+
+
+// Constants
+
+const int AmmoToLoad = 24; //Script 18
+const int GunCounter = 31; //Script 25
+
+const int DROP_ENEMY_ID = 0; //Set to the enemy to use for enemy-based dropset functions.
+
+const int ITEMS_DEADSTATES = 100; //+100 into array index to read desired deadstate.
+
+const int SFX_HOLDTOHAND = 20;
+
+const int I_DSARI1 =		0;
+const int I_DSARI5 = 		1;
+const int I_DSARI10 = 		86;
+const int I_DSARI20 = 		38;
+const int I_DSARI50 = 		39;
+const int I_DSARI100 = 		87;
+const int I_DSARI250 = 		40;
+const int I_DSARI750 = 		174;
+const int I_DSARI1000 =		175;
+const int I_DSARI5000 = 	179;
+const int I_CRYDISC_BLUE = 	177;
+const int I_CRYDISC_BLUE_LARGE = 178;
+const int I_CRYDISC_RED = 	176;
+const int I_CRYDISC_RED_LARGE = 173;
+const int I_GEM = 		194;
+const int I_LIFE_REFILL_MEDIUM = 168;
+const int I_MAGIC_REFILL_MEDIUM = 187;
+const int I_ENERGY_CANISTER = 	256;
+const int I_SCROLL_HEALING = 	180;
+const int I_SCROLL_TALYXIUX = 	197;
+const int I_SCROLL_MAGIC = 	197;
+const int I_SCROLL_TIMESTOP = 	149;
+const int I_BULLET = 		170;
+const int I_BULLET_BOX	=	171;
+const int I_BOMBAMMO10 = 	169;
+const int I_CIGAR = 		155;			
+const int I_CRYDISC = 		252;			
+const int I_CRYSHEET25 = 	181;
+const int I_CRYSHEET50 = 	182;
+const int I_CRYSHEET100 = 	183;
+const int I_CRYSHEET250 = 	191;
+const int I_CRYSHEET500 = 	192;
+const int I_CRYSHEET1000 = 	193;
+
+//Arrays
+
+// Vars
+
+// Functions
+
+/////////////////////////
+/// DROPSET FUNCTIONS ///
+/////////////////////////
+
+//void DropItems(int drop, int loc) {
+//  DropItems(drop, ComboX(loc), ComboY(loc));}
+  
+// Drop an item from a dropset.
+// int dropset: The number of a dropset.
+// int x, int y or int loc: location of the drop.
+void DropItemSet(int drop, int x, int y) {
+  npc n = CreateNPCAt(DROP_ENEMY_ID, x, y);
+  n->HP = HP_SILENT;
+  n->ItemSet = drop;
+  }
+
+  
+  // Drop an item from a dropset.
+// int dropset: The number of a dropset.
+// int x, int y or int loc: location of the drop.
+void DropItemSet(ffc this, int drop) {
+    npc n = CreateNPCAt(DROP_ENEMY_ID, this->X, this->Y);
+    n->HP = HP_SILENT;
+    n->ItemSet = drop;
+}
+
+// Drop an item from a dropset.
+// int dropset: The number of a dropset.
+// int x, int y or int loc: location of the drop.
+void DropItemExplode(ffc this, int drop) {
+    DropItemSet(this, drop);
+    eweapon explosion = CreateEWeaponAt(EW_BOMBBLAST, this->X, this->Y);
+    //explosion->CollDetection = true; //This is true by default
+    explosion->Damage = 10;
+}
+
+// Drop an item from a dropset.
+// int dropset: The number of a dropset.
+// int x, int y or int loc: location of the drop.
+void DropItemExplodeBig(ffc this, int drop) {
+    DropItemSet(this, drop);
+	// One explosion every 16 frames, 15 times
+    for(int i=0; i<15; i++)
+    {
+		eweapon explosion = CreateEWeaponAt(EW_SBOMBBLAST, this->X, this->Y);
+		//explosion->CollDetection = true; //This is true by default
+		explosion->Damage = 10;
+	}
+}
+        
+
+
+int makeItem(int itemNumber, int locX, int locY){ //Creates a specific item on a screen, at specified coordinates.
+    item dropThis = Screen->CreateItem(itemNumber);
+    dropThis->X = locX;
+    dropThis->Y = locY;
+}
+
+int makeItem(int itemNumber, int locX, int locY, int locZ){ //Creates a specific item on a screen, at specified coordinates.
+    item dropThis = Screen->CreateItem(itemNumber);
+    dropThis->X = locX;
+    dropThis->Y = locY;
+    dropThis->Z = locY;
+}
+
+/////! NEED TIMOUT ITEM VERSIONS !////
+
+void DropRandomItem(int list, int locX, int locY, bool temporary){
+	int q = SizeOfArray(list);
+	int dropItem = Rand(q);
+	if (temporary){
+		item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+		dropThis->X = locX;
+		dropThis->Y = locY;
+	}
+	else if (!temporary){
+		item dropThis = Screen->CreateItem(dropItem);
+		dropThis->X = locX;
+		dropThis->Y = locY;
+	}
+}
+
+void DropRandomItem(int list, int locX, int locY, int locZ, bool temporary){
+	int q = SizeOfArray(list);
+	int dropItem = Rand(q);
+	if (temporary){
+		item dropThis = CreateTimeoutItem(dropItem, locX, locY);
+		dropThis->X = locX;
+		dropThis->Y = locY;
+		dropThis->Z = locZ;
+	}
+	else if (!temporary){
+		item dropThis = Screen->CreateItem(dropItem);
+		dropThis->X = locX;
+		dropThis->Y = locY;
+		dropThis->Z = locZ;
+	}
+}
+
+int DropsAmazing[100]={0}; //100% chance, pupulate indixes with drop IDs. If nothing is to be dropped in a percentage block, leave those fields as '0'
+int DropsGood[100]={0};
+int DropsBasic[100]={0};
+
+void Drop(int chanceAmazing, int chanceGood, int chanceDrop, int listAmazing, int listGood, int listDrop, bool temporary, int locX, int locY){
+	int chance = Roll(100);
+	//Do we need a safeguard against creating an item with ID:0?
+	if ( chance <= chanceAmazing ){
+		int q = SizeOfArray(listAmazing);
+		int v = Roll(q);
+		int r = listAmazing[v];
+		if ( temporary ){
+			CreateTimeoutItem(v,locX,locY);
+		}
+		else {
+			item itm = Screen->CreateItem(v);
+			itm->X = locX;
+			itm->Y = locY;
+		}
+	}
+	else if ( chance <= chanceGood && chance > chanceAmazing ){
+		int q = SizeOfArray(listGood);
+		int v = Roll(q);
+		int r = listGood[v];
+		if ( temporary ){
+			CreateTimeoutItem(v,locX,locY);
+		}
+		else {
+			item itm = Screen->CreateItem(v);
+			itm->X = locX;
+			itm->Y = locY;
+		}
+	}
+	else if ( chance <= chanceDrop && chance > chanceGood ){
+		int q = SizeOfArray(listDrop);
+		int v = Roll(q);
+		int r = listDrop[v];
+		if ( temporary ){
+			CreateTimeoutItem(r,locX,locY);
+		}
+		else {
+			item itm = Screen->CreateItem(r);
+			itm->X = locX;
+			itm->Y = locY;
+		}
+	}
+}
+		
+
+const int CURRENT_DAMAGE = 1025;
+
+/// Modify Item 'Power' setting:
+void ModItemPower(int itm, int pow){
+	itemdata id = Game->LoadItemData(itm);
+	id->Power = pow;
+}
+
+void ModItemPower(int itm, int dieType, int dice){
+	itemdata id = Game->LoadItemData(itm);
+	int pow = rollDice(dieType,dice);
+	id->Power = pow;
+}
+
+//WE NEED TO ADJUST STATS TABLE SO THAT 0 IS NOTHING, AND INCREASE ITS INDEX TO SEZE '7'
+
+item script modItemPower{
+	void run(int itm, int value, int stat){
+		if ( stat == 0 ) { 
+		}
+		ModItemPower(itm, value);
+	}
+}
+
+item script modItemPowerRolled{
+	void run(int itm, int dieType, int dice){
+		int value = rollDice(dieType,dice);
+		ModItemPower(itm, value);
+	}
+}
+
+item script modItemPowerRolled_withStatModifier{
+	void run(int itm, int dieType, int dice, int stat){
+		int value = rollDice(dieType,dice) + GetModifier(stat);
+		ModItemPower(itm, value);
+	}
+}
+
+//Do we have a generic GetModifier() function?
+
+
+const int MUSC_MOD = 1040;
+const int BODY_MOD = 1041;
+const int MIND_MOD = 1042;
+const int MYST_MOD = 1043;
+const int INFL_MOD = 1044;
+const int LUCK_MOD = 1045;
+
+int GetModifier(int mod){
+	return GameDynamics[mod];
+}
+
+void UpdateModifier(int stat){ //..Call this every frame for each stat.
+	int baseMod;
+	int totalMod;
+	//if d20
+	//else do calc
+	int titalMod;
+	GameDynamics[MUSC_MOD] = totalMod;
+}
+
+//Timer Items
+void timedItem(){
+    if ( Val(TIMERITEM) > 0 ) {
+        if ( Val(TIMERVALUE) > 0 ) {
+            GameDynamics[TIMERVALUE]--;
+        }
+        else if ( Val(TIMERVALUE) <= 0 && Link->Item[Val(TIMERITEM)] ) {
+           Link->Item[Val(TIMERITEM)] = false;
+           Is(CIGARPICKUP,false);
+        }
+    }
+}
+
+//Scripts
+
+item script produceReRand{
+    void run(int min, int max, int exclude){
+        int value = reRand(min, max, exclude);
+        Trace(value);
+    }
+}
+
+//////////////
+/// Timers ///
+//////////////
+
+item script timerItem {
+    void run(int itemNumber, int time){
+        Val(TIMERITEM,itemNumber);
+	Val(TIMERVALUE,time);
+	Is(CIGARPICKUP,true);
+    }
+}
+
+
+/// v4
+/// Functions to grab, or drag keys, or items in lists back to Link; or give instantly to Link, 
+/// when touched by a hookshot, or boomerang:
+
+/// Default function uses only keys, and level keys as objects to collect with these weapons. 
+/// Other versions accept args to do any of the following:
+
+/// Return the item matching coordinates of lweapon each frame. 
+/// ( May be unsafe? Will item return to its position if Link doesn;t take it? it ...should. )
+/// Give the item directly to Link (instantaneous)
+/// Hold the item overhead (bool holdUpItem).
+/// Accept an array (int list) listing other itemd to give when a brang or hookshot touches them; obeys the same physics defined by bool instantaneous, and bool holdUpItem.
+
+
+//Drags keys back to Link, if touched by a boomerang, or hookshot.  Call every frame before Waitdraw();
+
+void BrangKey(){
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ){
+		lweapon w = Screen->LoadLWeapon(q);
+		if ( w->ID == LW_BRANG || w->ID == LW_HOOKSHOT ) {
+			for ( int e = 1; e <= Screen->NumItems(); e ++ ) {
+				item a = Screen->LoadItem(e);
+				if ( Collision (w,a) ) {
+					if ( a->ID == I_KEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						if ( a->isValid() ) {
+							if ( a->Z != 0 ) {
+								a->Z = 0;
+							}
+							a->X = w->X;
+							a->Y = w->Y; //Drag the item back to Link.
+							
+						}
+					}
+					else if ( a->ID == I_LEVELKEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						if ( a->isValid() ) {
+							if ( a->Z != 0 ) {
+								a->Z = 0;
+							}
+							a->X = w->X;
+							a->Y = w->Y; //Drag the item back to Link.
+						}
+					}
+					else { 
+						continue;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+void BrangKey(bool instantaneous){ //instantly gives Link the item.
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ){
+		lweapon w = Screen->LoadLWeapon(q);
+		if ( w->ID == LW_BRANG || w->ID == LW_HOOKSHOT ) {
+			for ( int e = 1; e <= Screen->NumItems(); e ++ ) {
+				item a = Screen->LoadItem(e);
+				if ( Collision (w,a) ) {
+					if ( a->ID == I_KEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						if ( a->isValid() ) {
+							if ( instantaneous ) {
+								if ( a->Z != Link->Z ) {
+									a->Z = Link->Z;
+								}
+								a->X = Link->X;
+								a->Y = Link->Y; //Drag the item back to Link.
+							}
+							else {
+								if ( a->Z != 0 ) {
+									a->Z = 0;
+								}
+								a->X = w->X;
+								a->Y = w->Y; //Drag the item back to Link.	
+							}
+						}
+					}
+					else if ( a->ID == I_LEVELKEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						if ( a->isValid() ) {
+							if ( instantaneous ) {
+								if ( a->Z != Link->Z ) {
+									a->Z = Link->Z;
+								}
+								a->X = Link->X;
+								a->Y = Link->Y; //Drag the item back to Link.
+							}
+							else {
+								if ( a->Z != 0 ) {
+									a->Z = 0;
+								}
+								a->X = w->X;
+								a->Y = w->Y; //Drag the item back to Link.	
+							}
+						}
+					}
+					else { 
+						continue;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+
+//Drags keys, or anything on specified array of items back to link if touched by a boomerang, or hookshot.
+void BrangKey(int list){
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ){
+		lweapon w = Screen->LoadLWeapon(q);
+		if ( w->ID == LW_BRANG || w->ID == LW_HOOKSHOT ) {
+			for ( int e = 1; e <= Screen->NumItems(); e ++ ) {
+				item a = Screen->LoadItem(e);
+				if ( Collision (w,a) ) {
+					if ( a->ID == I_KEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						if ( a->isValid() ) {
+							if ( a->Z != 0 ) {
+								a->Z = 0;
+							}
+							a->X = w->X;
+							a->Y = w->Y; //Drag the item back to Link.
+						}
+					}
+					else if ( a->ID == I_LEVELKEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						
+						if ( a->isValid() ) {
+							if ( a->Z != 0 ) {
+								a->Z = 0;
+							}
+							a->X = w->X;
+							a->Y = w->Y; //Drag the item back to Link.
+						}
+					}
+					else if ( list ) {
+						for ( int r = 0; r <= SizeOfArray(list); r++ ) {
+							if ( a->ID == list[r] ) {
+								w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+								//Bouncing must precede item movement. 
+								if ( a->isValid() ) {
+									if ( a->Z != 0 ) {
+										a->Z = 0;
+									}
+									a->X = w->X;
+									a->Y = w->Y;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+//Drags keys, or anything on specified array of items back to link if touched by a boomerang, or hookshot.
+void BrangKey(int list, bool instantaneous){
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ){
+		lweapon w = Screen->LoadLWeapon(q);
+		if ( w->ID == LW_BRANG || w->ID == LW_HOOKSHOT ) {
+			for ( int e = 1; e <= Screen->NumItems(); e ++ ) {
+				item a = Screen->LoadItem(e);
+				if ( Collision (w,a) ) {
+					if ( a->ID == I_KEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						
+						if ( a->isValid() ) {
+							if ( instantaneous ) {
+								if ( a->Z != 0 ) {
+									a->Z = 0;
+								}
+								a->X = Link->X;
+								a->Y = Link->Y; //Give the item directly to Link
+							}
+							else {
+								if ( a->Z != 0 ) {
+									a->Z = 0;
+								}
+								a->X = w->X;
+								a->Y = w->Y; //Drag the item back to Link.	
+							}
+						}
+					}
+					else if ( a->ID == I_LEVELKEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						
+						if ( a->isValid() ) {
+							if ( instantaneous ) {
+								if ( a->Z != Link->Z ) {
+									a->Z = Link->Z;
+								}
+								a->X = Link->X;
+								a->Y = Link->Y; //Give the item directly to Link
+							}
+							else {
+								if ( a->Z != 0 ) {
+									a->Z = 0;
+								}
+								a->X = w->X;
+								a->Y = w->Y; //Drag the item back to Link.	
+							}
+						}
+					}
+					else if ( list ) {
+						for ( int r = 0; r <= SizeOfArray(list); r++ ) {
+							if ( a->ID == list[r] ) {
+								w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+								//Bouncing must precede item movement. 
+								
+								if ( a->isValid() ) {
+									if ( instantaneous ) {
+										if ( a->Z != Link->Z ) {
+											a->Z = 0;
+										}
+										a->X = Link->X;
+										a->Y = Link->Y; //Give the item directly to Link
+									}
+									else {
+										if ( a->Z != 0 ) {
+											a->Z = 0;
+										}
+										a->X = w->X;
+										a->Y = w->Y; //Drag the item back to Link.	
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+void BrangKey(bool instantaneous, bool holdUpItem){ //instantly gives Link the item.
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ){
+		lweapon w = Screen->LoadLWeapon(q);
+		if ( w->ID == LW_BRANG || w->ID == LW_HOOKSHOT ) {
+			for ( int e = 1; e <= Screen->NumItems(); e ++ ) {
+				item a = Screen->LoadItem(e);
+				if ( Collision (w,a) ) {
+					if ( a->ID == I_KEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						
+						if ( a->isValid() ) {
+							if ( instantaneous ) {
+								if ( a->Z != Link->Z ) {
+									a->Z = Link->Z;
+								}
+								a->X = Link->X;
+								a->Y = Link->Y; //Give the item directly to Link
+								
+								if ( holdUpItem && LinkCollision(a) ) {
+									Link->Action = LA_HOLD1LAND; //Hold item over head.
+									Game->PlaySound(SFX_HOLDTOHAND);
+									Link->HeldItem = a->ID;
+								}
+							}
+							else {
+								if ( a->Z != 0 ) {
+									a->Z = 0;
+								}
+								a->X = w->X;
+								a->Y = w->Y; //Drag the item back to Link.	
+								
+								if ( holdUpItem && LinkCollision(a) ) {
+									Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+									Game->PlaySound(SFX_HOLDTOHAND);
+									Link->HeldItem = a->ID;
+								}
+							}
+						}
+						
+					}
+					else if ( a->ID == I_LEVELKEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						
+						if ( a->isValid() ) {
+							
+							if ( instantaneous ) {
+								if ( a->Z != Link->Z ) {
+									a->Z = Link->Z;
+								}
+								a->X = Link->X;
+								a->Y = Link->Y; //Give the item directly to Link
+								
+								if ( holdUpItem && LinkCollision(a) ) {
+									Link->Action = LA_HOLD1LAND; //Hold item over head.
+									Game->PlaySound(SFX_HOLDTOHAND);
+									Link->HeldItem = a->ID;
+								}
+							}
+							else {
+								if ( a->Z != 0 ) {
+									a->Z = 0;
+								}
+								a->X = w->X;
+								a->Y = w->Y; //Drag the item back to Link.	
+								
+								if ( holdUpItem && LinkCollision(a) ) {
+									Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+									Game->PlaySound(SFX_HOLDTOHAND);
+									Link->HeldItem = a->ID;
+								}
+							}
+						}
+						
+					}
+					else { 
+						continue;
+					}
+				}
+			}
+		}
+	}
+}
+
+
+//Drags keys, or anything on specified array of items back to link if touched by a boomerang, or hookshot.
+void BrangKey(int list, bool instantaneous, bool holdUpItem){
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ){
+		lweapon w = Screen->LoadLWeapon(q);
+		if ( w->ID == LW_BRANG || w->ID == LW_HOOKSHOT ) {
+			for ( int e = 1; e <= Screen->NumItems(); e ++ ) {
+				item a = Screen->LoadItem(e);
+				if ( Collision (w,a) ) {
+					if ( a->ID == I_KEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						
+						if ( a->isValid() ) {
+							
+							if ( instantaneous ) {
+								if ( a->Z != Link->Z ) {
+									a->Z = Link->Z;
+								}
+								a->X = Link->X;
+								a->Y = Link->Y; //Give the item directly to Link
+								
+								if ( holdUpItem && LinkCollision(a) ) {
+									Link->Action = LA_HOLD1LAND; //Hold item over head.
+									Game->PlaySound(SFX_HOLDTOHAND);
+									Link->HeldItem = a->ID;
+								}
+							}
+							else {
+								if ( a->Z != 0 ) {
+									a->Z = 0;
+								}
+								a->X = w->X;
+								a->Y = w->Y; //Drag the item back to Link.
+
+								if ( holdUpItem && LinkCollision(a) ) {
+									Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+									Game->PlaySound(SFX_HOLDTOHAND);
+									Link->HeldItem = a->ID;
+								}							
+							}
+						}
+					}
+					else if ( a->ID == I_LEVELKEY ) {
+						w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+						//Bouncing must precede item movement. 
+						
+						if ( a->isValid() ) {
+							
+							if ( instantaneous ) {
+								if ( a->Z != Link->Z ) {
+									a->Z = Link->Z;
+								}
+								a->X = Link->X;
+								a->Y = Link->Y; //Give the item directly to Link
+								
+								if ( holdUpItem && LinkCollision(a) ) {
+									Link->Action = LA_HOLD1LAND; //Hold item over head.
+									Game->PlaySound(SFX_HOLDTOHAND);
+									Link->HeldItem = a->ID;
+								}
+							}
+							else {
+								if ( a->Z != 0 ) {
+									a->Z = 0;
+								}
+								a->X = w->X;
+								a->Y = w->Y; //Drag the item back to Link.
+
+								if ( holdUpItem && LinkCollision(a) ) {
+									Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+									Game->PlaySound(SFX_HOLDTOHAND);
+									Link->HeldItem = a->ID;
+								}								
+							}
+						}
+					}
+					else if ( list ) {
+						for ( int r = 0; r <= SizeOfArray(list); r++ ) {
+							if ( a->ID == list[r] ) {
+								w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+								//Bouncing must precede item movement. 
+								
+								if ( a->isValid() ) {
+									
+									if ( instantaneous ) {
+										if ( a->Z != Link->Z ) {
+											a->Z = Link->Z;
+										}
+										a->X = Link->X;
+										a->Y = Link->Y; //Give the item directly to Link
+										
+										if ( holdUpItem && LinkCollision(a) ) {
+											Link->Action = LA_HOLD1LAND; //Hold item over head.
+											Game->PlaySound(SFX_HOLDTOHAND);
+											Link->HeldItem = a->ID;
+										}
+										
+									}
+									else {
+										if ( a->Z != 0 ) {
+											a->Z = 0;
+										}
+										a->X = w->X;
+										a->Y = w->Y; //Drag the item back to Link.	
+										
+										if ( holdUpItem && LinkCollision(a) ) {
+											Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+											Game->PlaySound(SFX_HOLDTOHAND);
+											Link->HeldItem = a->ID;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+//Populate with LTypes that can pick up items by touching them.
+int PickupWeapons[]={LW_SWORD, LW_BRANG, LW_HOOKSHOT, LW_WAND, LW_CANEOFBYRNA, 
+		LW_SCRIPT10};  //Script 10 is scripted swords.
+//We also need one by specific weapon item number.
+
+
+
+int ItemsToPickup[]={	I_ARROWAMMO1, I_ARROWAMMO5, I_ARROWAMMO10, I_ARROWAMMO30,  //Stock arrow ammo.
+			I_BOMBAMMO1, I_BOMBAMMO4, I_BOMBAMMO8, I_BOMBAMMO30, //Stock bomb ammo.
+			I_FAIRY, I_FAIRYSTILL, I_HEART, I_MAGICJAR1, I_MAGICJAR2, //Stock refills.
+			I_CLOCK, //Stock clock item.
+			I_RUPEE1, I_RUPEE5, I_RUPEE10, I_RUPEE20, I_RUPEE50, I_RUPEE100, I_RUPEE200, //Stock Rupee Items
+			I_KEY, I_LEVELKEY,  //Stock keys.
+			I_COMPASS, //Stock Dungeon Compass
+			I_MAP, //Stock dungeon map.
+			I_BOSSKEY, //Stock dungeon/level master key.
+			I_DUST_PILE, //Stock dust pile, because I can.
+			I_BRACELET1, //L1 'Glove' bracelet.
+			//Standard ZC items end here.
+	
+			I_KILLALL, //Special, kill all enemies item.
+	
+			//RPG.zh Items
+			I_DSARI1, I_DSARI5, I_DSARI10, I_DSARI20, I_DSARI50, I_DSARI100, I_DSARI250, I_DSARI750, I_DSARI1000, I_DSARI5000, //RPG Money
+			I_CRYDISC_BLUE, I_CRYDISC_RED, I_CRYDISC_BLUE_LARGE, I_CRYDISC_RED_LARGE, I_CRYDISC, //RPG Money
+			I_CRYSHEET25, I_CRYSHEET50, I_CRYSHEET100, I_CRYSHEET250, I_CRYSHEET500, I_CRYSHEET1000, I_GEM, //RPG Money
+			I_LIFE_REFILL_MEDIUM, I_MAGIC_REFILL_MEDIUM, I_CIGAR, //RPG Health and Magic
+			
+			I_SCROLL_HEALING, I_SCROLL_TALYXIUX, I_SCROLL_MAGIC, I_SCROLL_TIMESTOP, //RPG Scrolls
+			I_BULLET, I_BULLET_BOX, I_ENERGY_CANISTER, //RPG Ammo
+			I_BOMBAMMO10}; //Expanded bomb ammo.
+
+//Make a full index, plus items in 100-slot fields, so that index size can be used with a parameter modifier, to hold multiple lists as one array.
+
+//This function collects items of types stored in array itemList, with any weapon that has an LType specified in the array pickUpWith.
+void ItemRetrieval(int itemList, int pickUpWith, bool instantaneous, bool holdUpItem, bool killWeapon, bool includingBounceLWs ){
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ){
+		lweapon w = Screen->LoadLWeapon(q);
+		for ( int it = 0; it <= SizeOfArray(pickUpWith); it++ ){
+			if ( w->ID == pickUpWith[it] ) {
+				for ( int e = 1; e <= Screen->NumItems(); e ++ ) {
+					item a = Screen->LoadItem(e);
+					for ( int s = 0; s <= SizeOfArray(itemList); s ++ ) {
+						if ( a->ID == itemList[s] ) {
+							if ( Collision (w,a) ) {
+								
+								if ( w->ID == LW_BRANG || w->ID == LW_HOOKSHOT ){
+									w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+									//Bouncing must precede item movement. 
+								}
+							
+								if ( a->isValid() ) {
+									
+									if ( instantaneous ) {
+										if ( a->Z != Link->Z ) {
+											a->Z = Link->Z;
+										}
+										a->X = Link->X;
+										a->Y = Link->Y; //Give the item directly to Link
+										
+										if ( killWeapon ) {
+											if ( w->ID != LW_BRANG ||  w->ID != LW_HOOKSHOT || includingBounceLWs ){
+												w->DeadState = WDS_DEAD;
+											}
+										}
+										
+										if ( holdUpItem && LinkCollision(a) ) {
+											Link->Action = LA_HOLD1LAND; //Hold item over head.
+											Game->PlaySound(SFX_HOLDTOHAND);
+											Link->HeldItem = a->ID;
+										}
+									}
+									else if ( ( !instantaneous && w->ID == LW_BRANG ) || ( !instantaneous && w->ID == LW_HOOKSHOT ) ) {
+										if ( a->Z != 0 ) {
+											a->Z = 0;
+										}
+										a->X = w->X;
+										a->Y = w->Y; //Drag the item back to Link.
+
+										if ( holdUpItem && LinkCollision(a) ) {
+											Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+											Game->PlaySound(SFX_HOLDTOHAND);
+											Link->HeldItem = a->ID;
+										}							
+									}
+									//else if ( !instantaneous && w->ID == LW_SWORD ) {
+									//	if ( a->Z != Link->Z ) {
+									//		a->Z = Link->Z;
+									//	}
+									//	a->X = Link->X;
+									//	a->Y = Link->Y; //Drag the item back to Link.
+//
+//										if ( holdUpItem && LinkCollision(a) ) {
+//											Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+//											Game->PlaySound(SFX_HOLDTOHAND);
+//											Link->HeldItem = a->ID;
+//										}							
+//									}
+									else if ( !instantaneous && w->ID == pickUpWith[it] && w->ID != LW_SWORD && w->ID != LW_BRANG && w->ID != LW_HOOKSHOT ) {
+										if ( a->Z != Link->Z ) {
+											a->Z = Link->Z;
+										}
+										a->X = Link->X;
+										a->Y = Link->Y; //Drag the item back to Link.
+
+										if ( holdUpItem && LinkCollision(a) ) {
+											Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+											Game->PlaySound(SFX_HOLDTOHAND);
+											Link->HeldItem = a->ID;
+										}							
+									}
+									
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+void _ItemRetrieval(int itemList, int pickUpWith, bool instantaneous, bool holdUpItem, bool killWeapon, bool includingBounceLWs ){
+	for ( int q = 0; q <= Screen->NumLWeapons(); q++ ){
+		lweapon w = Screen->LoadLWeapon(q);
+		for ( int it = 0; it <= SizeOfArray(pickUpWith); it++ ){
+			if ( w->ID == pickUpWith[it] ) {
+				for ( int e = 0; e <= Screen->NumItems(); e ++ ) {
+					item a = Screen->LoadItem(e);
+					for ( int s = 0; s <= SizeOfArray(itemList); s ++ ) {
+						if ( a->ID == itemList[s] ) {
+							if ( Collision (w,a) ) {
+								
+								if ( w->ID == LW_BRANG || w->ID == LW_HOOKSHOT ){
+									w->DeadState = WDS_BOUNCE; //Starts return anim for boomerang, or hookshot.
+									//Bouncing must precede item movement. 
+								}
+							
+								if ( a->isValid() ) {
+									
+									if ( instantaneous ) {
+										if ( a->Z != Link->Z ) {
+											a->Z = Link->Z;
+										}
+										a->X = Link->X;
+										a->Y = Link->Y; //Give the item directly to Link
+										
+										if ( killWeapon ) {
+											if ( w->ID != LW_BRANG ||  w->ID != LW_HOOKSHOT || includingBounceLWs ){
+												w->DeadState = WDS_DEAD;
+											}
+										}
+										
+										if ( holdUpItem && LinkCollision(a) ) {
+											Link->Action = LA_HOLD1LAND; //Hold item over head.
+											Game->PlaySound(SFX_HOLDTOHAND);
+											Link->HeldItem = a->ID;
+										}
+									}
+									else if ( ( !instantaneous && w->ID == LW_BRANG ) || ( !instantaneous && w->ID == LW_HOOKSHOT ) ) {
+										if ( a->Z != 0 ) {
+											a->Z = 0;
+										}
+										a->X = w->X;
+										a->Y = w->Y; //Drag the item back to Link.
+
+										if ( holdUpItem && LinkCollision(a) ) {
+											Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+											Game->PlaySound(SFX_HOLDTOHAND);
+											Link->HeldItem = a->ID;
+										}							
+									}
+									else if ( !instantaneous && w->ID == LW_SWORD ) {
+										if ( a->Z != Link->Z ) {
+											a->Z = Link->Z;
+										}
+										a->X = Link->X;
+										a->Y = Link->Y; //Drag the item back to Link.
+
+										if ( holdUpItem && LinkCollision(a) ) {
+											Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+											Game->PlaySound(SFX_HOLDTOHAND);
+											Link->HeldItem = a->ID;
+										}							
+									}
+									else if ( !instantaneous && w->ID == pickUpWith[it] && w->ID != LW_SWORD && w->ID != LW_BRANG && w->ID != LW_HOOKSHOT ) {
+										if ( a->Z != Link->Z ) {
+											a->Z = Link->Z;
+										}
+										a->X = Link->X;
+										a->Y = Link->Y; //Drag the item back to Link.
+
+										if ( holdUpItem && LinkCollision(a) ) {
+											Link->Action = LA_HOLD1LAND; //Hold item over head, when it reaches Link.
+											Game->PlaySound(SFX_HOLDTOHAND);
+											Link->HeldItem = a->ID;
+										}							
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+////Update these with Successor's new functions?
+
+//Changes B to specified item
+void SetItemB(int it){
+    if (Link->Item[it] == true) {
+        //save current item to mark where we started
+        int storeB = GetEquipmentB();
+        
+        //move to next item before checking conditions
+        do Link->SelectBWeapon(DIR_RIGHT);
+        
+        //if Item B is the right item or the item we started at stop
+        while(GetEquipmentB() != it && storeB != GetEquipmentB())
+
+        //added check to confirm 
+            //return GetEquipmentB() == it;
+    }
+}
+
+void UseItemOnB(int input){
+    int EquipB = GetEquipmentB();
+    SetItemB(input);
+    Link->InputB = true;
+    Waitframe();
+    SetItemB(EquipB);
+}
+
+bool SetCheckItemB(int it){
+	SetItemB(it);
+	return GetEquipmentB() == it;
+}
+
+
+//Change A to specified item
+void SetItemA(int it){
+    if (Link->Item[it] == true) {
+        //save current item to mark where we started
+        int storeA = GetEquipmentA();
+        
+        //move to next item before checking conditions
+        do Link->SelectAWeapon(DIR_RIGHT);
+        
+        //stop if Item A is the right item or the item we started at
+        while(GetEquipmentA() != it && storeA != GetEquipmentA())
+
+        //added check to confirm 
+            //return GetEquipmentA() == it;
+    }
+}
+
+void UseItemOnA(int input){
+    int EquipA = GetEquipmentA();
+    SetItemA(input);
+    Link->InputA = true;
+    Waitframe();
+    SetItemA(EquipA);
+}
+
+bool SetCheckItemA(int it){
+	SetItemA(it);
+	return GetEquipmentA() == it;
+}
+
+void NayrusLove(int level, int durBase, int castingStat){
+	itemdata nayru = Game->LoadItemData(I_NAYRU);
+	if ( nayru->Power < ( level * durBase ) + castingStat ) {
+		ModItemPower(I_NAYRU, ( level * durBase ) + castingStat ) );
+	}
+}
+
+void ScaleItemPower(int itm, int level, int durBase, int castingStat){
+	itemdata it = Game->LoadItemData(itm);
+	if ( it->Power < ( level * durBase ) + castingStat ) {
+		ModItemPower(itm, ( level * durBase ) + castingStat ) );
+	}
+}

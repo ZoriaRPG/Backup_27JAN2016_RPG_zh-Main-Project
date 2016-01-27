@@ -1,0 +1,381 @@
+ffc script bugNet{ //Slot 53
+	void run( int sprites, int dicedamage, int sounds, int beams, int beamdamage, int triggers){
+		//I. Obtain values inputed into arguments via stdArguments.zh
+		//1. Sprites
+		int stabsprite = GetValue3Upper987(sprites);
+		int slashsprite = GetValue3Mid654(sprites);
+		int beamsprite = GetValue3Lower321(sprites);
+		//2. 
+
+		//3. SoundEffects
+		int mainsfx = GetValue3Upper876(sounds);
+		int beamsfx = GetValue3Lower543(sounds);
+		bool slash = (GetDigit(sounds, -3)>0);
+        
+		//4. 
+
+        
+		//5. 
+
+		
+		//II.Calculate current damage in this run, based on dice and Link`s level.
+		//   As well as other initialization processes
+		int swordid = this->InitD[7];
+		int sworddir = Link->Dir;
+
+		
+		//III. Create pseudo-Sword lweapon and maintain it`s state until it plays trough all
+		//3 frames of animation
+		Game->PlaySound(NET_SFX); //Sword swinging sound
+		Link->Action = LA_ATTACKING;
+		lweapon sword = LweaponInit (this, LW_REFL_ROCK, 0, stabsprite); //Create main sword lweapon
+		sword->Dir = Link->Dir;
+			sworddir = CWDir4way(sworddir);
+			SwordUpdate (sword, sworddir, stabsprite, 16); //Updates sprite and hitbox offset depending on actual sword direction, not "sword->dir".
+			for (int i=1; i<=3; i++){ 
+				if(sword->isValid()){
+			LweaponPosUpdate( this, sword); // Put lweapon at Link`s position
+			UseEnemyDefense(sword, 0, NPCD_REFL_ROCK); //Use "sword" defense entry when interacting with enemies
+            
+            if ( NPCD_REFL_ROCK = stun ) {
+            //Run grab script
+            }
+            
+			PenetratorUpdate(sword); //Prevent sword from disappearing on enemy hit.
+			Waitframe();
+				}
+			}
+			sworddir = CCWDir8Way(sworddir); //Next CCW sword direction.
+			SwordUpdate (sword, sworddir, slashsprite, 12);
+			for (int i=1; i<=3; i++){
+				if(sword->isValid()){
+			LweaponPosUpdate( this, sword);
+			TriggerUpdate (sword, swordtrigger, SFX_SECRET, true);
+			TriggerUpdate (sword, 90, SFX_SECRET, true);
+			UseEnemyDefense(sword, 0, NPCD_REFL_ROCK);
+			PenetratorUpdate(sword);
+			Waitframe();
+				}
+			}
+			sworddir = CCWDir8Way(sworddir); //Final slashing frame. 
+			SwordUpdate (sword, sworddir, stabsprite, 16);
+			for (int i=1; i<=3; i++){
+				if(sword->isValid()){
+			LweaponPosUpdate( this, sword);
+			TriggerUpdate (sword, swordtrigger, SFX_SECRET, true);
+			TriggerUpdate (sword, 90, SFX_SECRET, true);
+			UseEnemyDefense(sword, 0, NPCD_REFL_ROCK);
+			PenetratorUpdate(sword);
+			Waitframe();
+				}
+			}
+		
+		
+		
+		
+		//VII. Finita la comedia.
+		if (sword->isValid()) Remove(sword);
+		ClearFFC(this);
+		Quit();
+	}
+}
+
+
+
+//Updates sword sprite and hitbox offsets depending on it`s direction. Also determines sprite flipping. 
+void SwordUpdate (lweapon sword, int dir, int sprite, int offset){
+	sword->UseSprite(sprite);
+	if (dir == DIR_UP){
+		sword->DrawXOffset = 0;
+		sword->HitXOffset = 0;
+		sword->DrawYOffset = -offset;
+		sword->HitYOffset = -offset;
+		sword->Flip=0;
+	}
+	else if (dir == DIR_RIGHTUP){
+		sword->DrawXOffset = offset;
+		sword->HitXOffset = offset;
+		sword->DrawYOffset = -offset;
+		sword->HitYOffset = -offset;
+		sword->Flip=0;
+	}
+	else if (dir == DIR_RIGHT){
+		sword->DrawYOffset = 0;
+		sword->HitYOffset = 0;
+		sword->DrawXOffset = offset;
+		sword->HitXOffset = offset;
+		sword->DrawYOffset = 2;
+		sword->HitYOffset = 2;
+		sword->Flip = 4;
+	}
+	else if (dir == DIR_RIGHTDOWN){
+		sword->DrawXOffset = offset;
+		sword->HitXOffset = offset;
+		sword->DrawYOffset = offset;
+		sword->HitYOffset = offset;
+		sword->Flip = 2;
+	}
+	else if (dir == DIR_DOWN){
+		sword->DrawXOffset = 0;
+		sword->HitXOffset = 0;
+		sword->DrawYOffset = offset;
+		sword->HitYOffset = offset;
+		sword->Flip = 2;
+	}
+	else if (dir == DIR_LEFTDOWN){
+		sword->DrawXOffset = -offset;
+		sword->HitXOffset = -offset;
+		sword->DrawYOffset = offset;
+		sword->HitYOffset = offset;
+		sword->Flip = 3;
+	}
+	else if (dir == DIR_LEFT){
+		sword->DrawYOffset = 0;
+		sword->HitYOffset = 0;
+		sword->DrawXOffset = -offset;
+		sword->HitXOffset = -offset;
+		sword->DrawYOffset = 2;
+		sword->HitYOffset = 2;
+		sword->Flip = 7;
+	}
+	else if (dir == DIR_LEFTUP){
+		sword->DrawXOffset = -offset;
+		sword->HitXOffset = -offset;
+		sword->DrawYOffset = -offset;
+		sword->HitYOffset = -offset;
+		sword->Flip = 1;
+	}
+}
+
+//Returns TRUE if Link tries to tap solid combo with scripted sword.
+bool IsTappingSolidCombo (lweapon sword){
+	if (Screen->isSolid((Link->X + 8), (Link->Y - 1))){
+		if ((Link->InputUp)&&(sword->Dir == DIR_UP)) return true;
+	}
+	if (Screen->isSolid((Link->X + 8), (Link->Y + 17))){
+		if ((Link->InputDown)&&(sword->Dir == DIR_DOWN)) return true;
+	}
+	if (Screen->isSolid((Link->X - 1), (Link->Y + 8))){
+		if ((Link->InputLeft)&&(sword->Dir == DIR_LEFT)) return true;
+	}
+	if (Screen->isSolid((Link->X + 17), (Link->Y + 8))){
+		if ((Link->InputRight)&&(sword->Dir == DIR_RIGHT)) return true;
+	}
+	return false;
+}
+
+//Returns true if net is touching something it can gram.
+
+bool isTouchingBug (ffc, this){
+if (rectCollision, ffc, this) {
+//Run Pickup Action
+//Display Tango menu
+//If user has an empty bottle...
+//...and chooses to store the item...
+//..add item to bottle...
+//...update array.
+}
+
+const int WINDOW_SLOT_1 = 0;
+const int WINDOW_SLOT_2 = 1;
+const int WINDOW_SLOT_3 = 2;
+const int WINDOW_SLOT_4 = 3;
+const int WINDOW_SLOT_5 = 4;
+
+// There are certainly other ways to handle these...
+int menuCommand;
+int menuArg;
+
+void SetUpWindow(int slot, int style, int x, int y, int size)
+{
+    SetStyleSize(style, size);
+    Tango_ClearSlot(slot);
+    Tango_SetSlotStyle(slot, style);
+    Tango_SetSlotPosition(slot, x, y);
+}
+
+void ShowString(int string, int slot, int style, int x, int y)
+{
+    SetUpWindow(slot, style, x, y, SIZE_LARGE);
+    Tango_LoadString(slot, string);
+    Tango_ActivateSlot(slot);
+    while(Tango_SlotIsActive(slot))   
+        Waitframe();
+}
+
+ffc script bugMenu{
+    void run()
+    {
+    int typeCaught;
+    if ( typeCaught = BOTTLE_FAERIE) {
+        int line1[]="You caught a faerie!";
+        int line2[]=Do you want to keep it in a bottle?";
+    }
+    
+    if ( typeCaught = BOTTLE_BEE ) {
+            int line1[]="You caught a bee!";
+            int line2[]=Do you want to keep it in a bottle?";
+    }
+    
+    if ( typeCaught == BOTTLE_BUG ) {
+            int line1[]="You caught a bug!";
+            int line2[]=Do you want to keep it in a bottle?";
+    }
+    
+    if ( typeCaught == BOTTLE_WATER ) {
+            int line1[]="You captured some water in a bottle";
+            int line2[]=Do you want to keep it?";
+    }
+    
+    if ( typeCaught == BOTTLE_SPECIAL_WATER ) {
+            int line1[]="You captured some magical water in a bottle";
+            int line2[]=Do you want to keep it?";
+    }
+    
+    if ( typeCaught == BOTTLE_FIRE ) {
+            int line1[]="You captured some fire in a bottle";
+            int line2[]=Do you want to keep it?";
+    }
+    
+
+
+        int line3[]="@choice(1)Yes@26@26";
+        
+        int line4[]="@choice(2)No@domenu(1)@suspend()";
+
+
+        
+        
+        SetUpWindow(WINDOW_SLOT_1, WINDOW_STYLE_1, 16, 16, SIZE_LARGE);
+        Tango_LoadString(WINDOW_SLOT_1, line1);
+        Tango_AppendString(WINDOW_SLOT_1, line2);
+        Tango_AppendString(WINDOW_SLOT_1, line3);
+        Tango_AppendString(WINDOW_SLOT_1, line4);
+
+        Tango_ActivateSlot(WINDOW_SLOT_1);
+        
+        
+        while(!Tango_MenuIsActive()){
+            
+            Waitframe();
+        }
+        
+        // Save the state of the text slot and menu. The bitmap won't change,
+        // so it doesn't need saved.
+        int slotState[274];
+        int menuState[60];
+        int cursorPos;
+        Tango_SaveSlotState(WINDOW_SLOT_1, slotState);
+        Tango_SaveMenuState(menuState);
+        
+        bool done=false;
+        int choice;
+        while(true)
+        {
+        if ( Link->PressEx1 ){
+          
+            Quit();
+        }
+        
+
+            while(Tango_MenuIsActive())
+            {
+               
+                cursorPos=Tango_GetMenuCursorPosition();
+                
+                Waitframe();
+            }
+            
+            choice=Tango_GetLastMenuChoice();
+            
+            if(choice==1) // Yes
+            {
+            int useThisBottle;
+            //Find an empty bottle
+            if ( BOTTLE_1_CONTENTS == BOTTLE_EMPTY ) {
+                useThisBottle = BOTTLE_1_CONTENTS;
+                Tango_D[0] = " bottle one.";
+            }
+            else {
+                if ( BOTTLE_2_CONTENTS == BOTTLE_EMPTY ) {
+                    useThisBottle = BOTTLE_2_CONTENTS;
+                    Tango_D[0] = " bottle two.";
+                }
+                else {
+                    if ( BOTTLE_3_CONTENTS == BOTTLE_EMPTY ) {
+                        useThisBottle = BOTTLE_3_CONTENTS;
+                        Tango_D[0] = " bottle three.";
+                    }
+                    else {
+                        if ( BOTTLE_4_CONTENTS == BOTTLE_EMPTY ) {
+                            useThisBottle = BOTTLE_4_CONTENTS;
+                            Tango_D[0] = " bottle four.";
+                        }
+                        else {
+                            useThisBottle = 5;
+                            Tango_D[0] = " nowhere ";
+                        }
+                    }
+                }
+            }
+            
+            if ( useThisBottle > 5 ) {
+            //Store the contents to the array.
+            int text[]="Stowed, in@number(@d0)";
+                ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+                done=true;
+            }
+            else 
+            {
+                int text[]="Sorry, you don;t have any empty bottles...";
+                ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+                done=true;
+            }
+            
+                
+            else if (Link->PressEx1){
+              
+                Quit();
+            }
+            else{
+               
+                done=true;
+            }
+            
+            // If we need to return to the top-level menu,
+            // restore the state and loop again.
+            if(done){
+                
+                break;
+            }
+            else
+            {
+                Tango_RestoreSlotState(WINDOW_SLOT_1, slotState);
+                Tango_RestoreMenuState(menuState);
+                Tango_SetMenuCursorPosition(cursorPos);
+            }
+        }
+        
+        else if(choice==2) // No
+            {
+            done=true;
+            }
+            
+            // If we need to return to the top-level menu,
+            // restore the state and loop again.
+            if(done){
+                
+                break;
+            }
+            else
+            {
+                Tango_RestoreSlotState(WINDOW_SLOT_1, slotState);
+                Tango_RestoreMenuState(menuState);
+                Tango_SetMenuCursorPosition(cursorPos);
+            }
+        }
+        
+        Tango_ClearSlot(WINDOW_SLOT_1);
+    }
+}
+

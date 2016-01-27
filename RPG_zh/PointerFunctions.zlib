@@ -1,0 +1,7 @@
+ffc MatchScript(int script_id){
+	for ( int q = 1; q < 32; q++ ) {
+		MatchScript = Screen->LoadFFC(q);
+		if ( MatchScript->Script == script_id ) return q;
+	}
+	return 0;
+}

@@ -1,0 +1,124 @@
+const int MALLOC_FREE = 214747.9898;
+const int MALLOC_RESERVED = 214747.8989;
+
+
+//! Array memory management Utilities
+
+//marks an array index as being freed.
+void Free(int arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) arr[q] = MALLOC_FREE;
+}
+
+//marks an array index as being reserved.
+void Malloc(int arr, int startindex, int lastindex){
+	for ( int q = startindex; q < lastindex; q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+void Malloc(int arr, int index){
+	arr[index] = MALLOC_RESERVED;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindFreeArrayIndices(int arr, int numbercont) {
+	bool free;
+	int a;
+	for ( int q = SizeOfArray(arr); q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) {
+			free = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_FREE ) {
+			free = false;
+			a = 0;
+		}
+		if ( a == numbercont && free ) return q;
+	}
+	return -1;
+}
+
+//Parses an array to find a number of contiginous free indices. 
+//Returns the lowest index number, of the range that it finds. 
+//Returns -1 on failure. 
+int FindMalloc(int arr, int numbercont) {
+	bool free;
+	int a;
+	for ( int q = SizeOfArray(arr); q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) {
+			free = true;
+			++a;
+		}
+		else if ( arr[q] != MALLOC_RESERVED ) {
+			free = false;
+			a = 0;
+		}
+		if ( a == numbercont && free ) return q;
+	}
+	return -1;
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int FreeIndex(int arr){ 
+	for ( int q = SizeOfArray(arr); q > 0; q-- ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with highest numbered index. 
+int ReservedIndex(int arr){ 
+	for ( int q = SizeOfArray(arr); q > 0; q-- ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int FreeIndexLow(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		if ( arr[q] == MALLOC_FREE ) return q;
+	}
+}
+
+//Finds a single free index in an array. Starts with lowest numbered index. 
+int ReservedIndexLow(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		if ( arr[q] == MALLOC_RESERVED ) return q;
+	}
+}
+
+
+//Checks if a specific index in an array is free. 
+bool FreeIndex(int arr, int index){
+	if ( arr[index] == MALLOC_FREE ) return true;
+	return false;
+}
+
+//Checks if a specific index in an array is free. 
+bool ReservedIndex(int arr, int index){
+	if ( arr[index] == MALLOC_RESERVED ) return true;
+	return false;
+}
+
+//Inits , or Mallocs an entire array. 
+void MallocArray(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) arr[q] = MALLOC_RESERVED;
+}
+
+// Frees an entire array. 
+void FreeArray(int arr){ 
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) arr[q] = MALLOC_FREE;
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void MallocArray(int arr, onlyvalue) { 
+	for ( int q = 0; q < SizeOfArray(arr) q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_RESERVED;
+	}
+}
+
+//Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.
+void FreeArray(int arr, onlyvalue) { 
+	for ( int q = 0; q < SizeOfArray(arr) q++ ) {
+		if ( arr[q] == onlyvalue ) arr[q] = MALLOC_FREE;
+	}
+}

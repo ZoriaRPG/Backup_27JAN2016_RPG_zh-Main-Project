@@ -1,0 +1,3 @@
+// RPG.zh Settings
+
+const int ALPHA_87_XP = 0; //Set to '1' to use old Alpha 0.87 XP System

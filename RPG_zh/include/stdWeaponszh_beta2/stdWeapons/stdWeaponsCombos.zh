@@ -1,0 +1,104 @@
+//These extra functions are used for interaction between custom Lweapons and combos.
+//Requires stdCombosv3.zh
+
+//Checks for collision with trigger flags and triggers screen secrets if a collision occurs.
+//Uses screen`s undercombo for replacing triggered combo.
+//Sound - sound to play on triggering secrets.
+//Perm - Set to TRUE, and the secrets will be permanent.
+//CMB - Combo used on replacing activated triggers. Set to 0 to use screen`s undercombo, or -1 for changing to net combo in the table.
+//SCset - CSet for Combo used on replacing activated triggers. Set to -1 to use screen`s under cset.
+void TriggerUpdate (lweapon l, int flag, int sound, bool perm, int cmb, int SCSet){
+	bool Alltriggered = false;
+	while (!Alltriggered){
+		if (cmb == 0) cmb = Screen->UnderCombo;
+		if (SCSet < 0) SCSet = Screen->UnderCSet;
+		int loc = ComboAnyFlagCollision (flag, l, false, -1);
+		if (loc < 0) Alltriggered = true;
+		else{
+			Game->PlaySound(sound);
+			l->DeadState=0;
+			if (ComboFI(loc, CF_SINGLE)){
+				if (cmb== -1) Screen->ComboD[loc] ++;
+				else Screen->ComboD[loc] =cmb;
+				Screen->ComboC[loc] = SCSet;
+				Screen->ComboF[loc] = 0;
+			}
+			else if (ComboFI(loc, CF_SINGLE16)){
+				if (cmb== -1) Screen->ComboD[loc] ++;
+				else Screen->ComboD[loc] =cmb;
+				Screen->ComboC[loc] = SCSet;
+				Screen->ComboF[loc] = 0;
+				Screen->TriggerSecrets();
+			}
+			else {
+				for (int i=0; i<176; i++){
+					if (ComboFI(i, flag)) {
+						if (cmb== -1) Screen->ComboD[i] ++;
+						else if (cmb== 0) Screen->ComboD[i] = Screen->UnderCombo;
+						else Screen->ComboD[i] =cmb;
+						if (cmb==0) Screen->ComboC[i] = Screen->UnderCSet;
+						else Screen->ComboC[i] = SCSet;
+						Screen->ComboF[i] = 0;
+					} 
+				}
+				Screen->TriggerSecrets();
+				if (perm) Screen->State[ST_SECRET] = true;
+			}
+		}
+	}
+}
+
+void TriggerUpdate (lweapon l, int flag, int sound, bool perm){
+	TriggerUpdate (l, flag, sound, perm, 0, -1);
+}
+
+//Detects if lweapon hits blocker combo type
+//NP means prevent penetrating lweapons from piercing trough such combos.
+bool BlockedByCombo (lweapon l, int type, bool NP){
+	int block = ComboTypeCollision (type, l, false, -1);
+	if (block>=0){
+		if (NP) Remove(l);
+		else l->DeadState=0;
+		return true;
+	}
+	return false;
+}
+
+//Replaces any combos of specific type when touched by Lweapon
+//Sound - sound to play on combo replacement.
+void ReplaceCombosOnCollision( lweapon l, int type, int newcombo, int newcset, int sound){
+	for (int i =0; i < 176; i++) {
+		if ((Screen->ComboT[i]==type)&&(ComboCollision (i, l, false, -1))){
+		Screen->ComboD[i] = newcombo;
+		if (newcset >=0) Screen->ComboC[i] = newcset;
+		Game->PlaySound(sound);
+		}
+	}
+}
+
+//Same as above but with flags. if "retainflag" is false, the flag that triggered collision will be removed.
+void ReplaceFlaggedCombos( lweapon l, int flag, int newcombo, int newcset, int sound, bool retainflag){
+	for (int i =0; i < 176; i++){
+		if ((ComboFI(i, flag))&&(ComboCollision (i, l, false, 0))){
+		Screen->ComboD[i] = newcombo;
+		if (newcset >=0)Screen->ComboC[i] = newcset;
+		if (retainflag) Screen->ComboF[i] = 0;
+		Game->PlaySound(sound);
+		}
+	}
+}
+
+//Destroys combos on collision by replacing them with screen`s undercombo. 
+//Sound - sound to play on destruction.
+void DestroyCombosOnCollision( lweapon l, int type, int sound){
+	int cmb = Screen->UnderCombo;
+	int cset = Screen->UnderCSet;
+	ReplaceCombosOnCollision( l, type, cmb, cset, sound);
+}
+
+//Destroys combos on collision by replacing them with next combo on the List.
+//Sound - sound to play on destruction.
+void ChangeToNextOnCollision( lweapon l, int type, int newcset, int sound){
+	int cmb = type++;
+	ReplaceCombosOnCollision( l, type, cmb, newcset, sound);
+}

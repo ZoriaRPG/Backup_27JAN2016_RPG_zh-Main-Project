@@ -1,0 +1,223 @@
+/// Experimental
+
+// Constants
+
+//Constant for GameDynamics
+
+// Item Constants from 0 to 499.
+//This allows for expansion of items, by granting another 234 items (total 500).
+//New items can be added by setting them true with GameEvents, and with numeric values set in GameDynamics. 
+//This is mostly useful for buff items, boost items, spell effects, and counter items.
+
+
+const int IT_BOTTLE_1 = 256; 
+
+//Story events start at 500. Reserved through 999, allowing 500 key events.
+
+const int TRAINING = 500;
+const int HVYLAXTA = 501;
+const int BREAK_SEAL_WATER = 502;
+const int FREE_FIRE_DAEMON = 503;
+const int PACT_FIRE = 504;
+const int UNLEASH_FIRE = 505;
+
+const int FIND_CENOTAPH = 510;
+
+const int PACT_GOLD_DRAGON = 515;
+
+const int FIRST_SERNARAN = 520;
+
+const int FIRST_MONTH = 550;
+const int SECOND_MONTH = 551;
+const int THIRD_MONTH = 552;
+const int FIRST_SEASON = 553;
+const int SECOND_SEASON = 554;
+const int THIRD_SEASON = 555;
+const int FOURTH_SEASON = 556;
+
+const int SECOND_WAVE = 560;
+const int DALEKS_APPEAR = 565;
+const int DALEKS_LAND = 570;
+const int DALEK_ASSAULT = 575;
+const int EXTERMINATION = 580;
+const int STEAL_SAUCER = 585;
+const int SPACE_FLIGHT = 590;
+const int BREAK_SEAL_DARKNESS = 595;
+
+
+//Items should be at the head (forst 256 index positions_ to avoid constant duplications. Other constants should start at 300. 
+
+
+//Environmental constants start at 1000. Reserved to 1199.
+
+const int INDOORS = 1000;
+const int UNDERGROUND = 1001;
+const int OUTDOORS = 1002;
+
+// Player actions start at 1200. Reserved to 1499, to leave room for future expansion. This includes triggers *caused* by menu choices.
+
+const int TALKING = 1200;
+const int SEARCHING = 1201;
+const int LOOKING = 1202;
+const int EXAMINING = 1203;
+const int EQUIPPING = 1204;
+
+const int VISTA = 1205;
+
+//Menu-based actions (e.g. to open menus) start at 1500, reserved to 1599, although this is likely ovekill.
+const int MENU = 1300;
+
+//Spell effetcs start at 1600, reserved through 1800. 
+
+
+const int CASTING = 1600;
+
+//Player status starts at 2000, and must allow for 4x sets of these variables, to allow four characters. 
+//Each character has 100 index positions reserved, so this is reserved through 2399.
+
+const int MAIN_CHARACTER = 0; //Add this to main character when checking/setting status.
+const int SECOND_CHARACTER = 100; //Add this when checking for second character.
+const int THIRD_CHARACTER = 200; //Add this when checking for third character.
+const int FOURTH_CHARACTER = 300; //Add this when checking for fourth character.
+
+const int STATUS_STARVING = 2000;
+const int STATUS_DYING = 2001;
+const int STATUS_POISONED = 2002;
+const int STATUS_CURSED = 2003;
+const int STATUS_DEAD = 2004; //This status is important due to having multiple characters: isn't as pointless as it seems.
+const int STATUS_MARRIED = 2005;
+const int STATUS_IMPRISONED = 2006;
+const int STATUS_CAPTURED = 2007;
+const int STATUS_SEALED = 2008; //Seal player magic.
+const int STATUS_SEEN = 2009; //Line of sight puzzles.
+const int STATUS_INVISIBLE = 2010; //For invisibility items, in conjunction with STATUS_SEEN, and to pass some barriers.
+const int STATUS_ETHEREAL = 2011; //Able to walk through some barriers.
+const int STATUS_EMPEROR = 2012;
+
+const int STAT_HP = 2013;
+const int STAT_MP = 2014;
+const int STAT_MUSCLE = 2015;
+//...
+
+// Skills per character. Starting at 2500, and rserved through 2899. 
+//This leaves many wasted slots, but we need to use the same character modifier onstatnts here, so the gap between character skills must be 100. 
+//We can fill this later. 
+
+const int SKILL_LORE = 2500;
+const int SKILL_ = 2501; 
+const int MAX_LORE_ = 2510; //Sets true for each Lore skill when maximised.
+const int SKILL_LEVEL = 2599; //Used only in GameDynamics[].
+
+//Spells known per character. Again, we need a 100 space gap here. 
+//Starts at 3000, reserved through 3399.
+
+const int SPELL_FIRE_1 = 3000;
+const int SPELL_FIRE_2 = 3001;
+
+//3400 to 3499 unused.
+
+const int BTN_SLOT_A = 3400;
+const int BTN_SLOT_B = 3401;
+const int BTN_SLOT_L = 3402;
+const int BTN_SLOT_R = 3403;
+const int BTN_SLOT_START = 3404;
+const int BTN_SLOT_SELECT = 3405;
+const int BTN_SLOT_UP = 3406;
+const int BTN_SLOT_DOWN = 3407;
+const int BTN_SLOT_LEFT = 3408;
+const int BTN_SLOT_RIGHT = 3409;
+const int BTN_SLOT_EX1 = 3410;
+const int BTN_SLOT_EX2 = 3411;
+const int BTN_SLOT_EX3 = 3412;
+const int BTN_SLOT_EX4 = 3413;
+const int BTN_SLOT_MOUSE_L = 3414;
+const int BTN_SLOT_MOUSE_R = 3415;
+
+//Button Constants for Using Buttons
+const int A = 1;
+const int B = 0;
+const int L = 2;
+const int R = 3;
+const int LEFT = 4;
+
+
+//Classes known per character. Starts at 3500, reserved through 3899.
+
+const int CLASS_SORC = 3500; //Classes, learnt or adopted by player. Used for skill checks, and some events.
+const int CLASS_WIZARD = 3501;
+const int CLASS_SAGE = 3502;
+const int CLASS_SWORDMASTER = 3503;
+const int CLASS_SOLDIER = 3504;
+const int CLASS_SCIENTIST = 3505;
+const int CLASS_PSYCHIC = 3506;
+const int CLASS_BIOVIZIR = 3507;
+const int CLASS_PILOT = 3508;
+const int CLASS_TECH = 3509;
+
+//There will be large gaps here to use for other things once we know all of the values. 
+//We can interleve values for all four characters by ensuring that ach starts at the same distance from another KEY value, and ends within a valid range.
+
+//3900 to 3999 unused.
+
+//Dialogue options, and speech start at 4000. Reserved through 8000.
+//This includes QUESTIONS that the player may ask, that work with menu. 
+//Use STRCPY to copy strings from scripts to this array, and this will allow them to be read from a menu as a global variable. (This...SHOULD...work.)
+//Any script should be able to copy a hardcoded string to this array, and from that point, a menu can read what strings are present  
+//that aren't blank and display those in any speech menu via the ASK command. (?)
+
+const int AGREE = 4000;
+const int DISAGREE = 4001;
+
+//8001 through 8192 unused. 
+
+
+
+//Constants for the value held in an element.
+const int TREASURE = 50; //Array pos 50.
+const int TR_CLOSED = 0;
+const int TR_OPEN = 1;
+const int TR_LOCKED = 2;
+const int TR_BIGLOCKED = 3;
+const int TR_WIZARDLOCKED = 4;
+
+const int TR_TRAPPED =  5;
+const int TR_DISARMED = 6;
+const int TR_SPELLED = 7;
+const int TR_DISPELLED = 8;
+const int TR_ENEM = 9;
+const int TR_ENEM_DEAD = 10;
+const int TR_SEARCHED = 11;
+const int TR_ASSENSED = 12;
+const int TR_ITEM = 13;
+const int TR_ITEM_TAKEN = 14;
+const int TR_MESSAGE = 15;
+const int TR_MSG = 15;
+const int TR_SKILL_REQUIRED = 16;
+
+//Constants for the index number of elements.
+//See GameEvents constants. Thes should match.
+
+
+// Arrays
+int GameDynamics[8192] = {0}; //This array holds numeric values, and strings, used by the game. 
+bool GameEvents[8192] = {false}; //This array is used for most custom game engine dynamics as a boolean control. 
+//It works with GameDynamics[], which holds numeric values for these same things. 
+//The constants, and array index size should match when completed. 
+
+//Constants 0 to 499 reserved.
+	
+bool OwnsItems[2048]={0}; //512 items, x4 characters. Items that the player has, to allow 'Equip/Unequip'
+bool ItemEquipped[2048]={0}; //512 items, x4 characters.
+
+
+
+		
+// Vars
+	
+int presentCharacter = 1; //This needs to be integrated into gameDynamics. 
+//We also need functions that enable/dsable things by reading the present character, and manipulating array table elements based on this.
+
+
+// Functions
+
+// Scripts

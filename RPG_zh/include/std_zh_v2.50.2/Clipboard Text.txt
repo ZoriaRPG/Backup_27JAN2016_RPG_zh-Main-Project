@@ -1,0 +1,3 @@
+Please note: For all draw primitives, if the quest rule 'Subscreen Appears
+	* Above Sprites' is set,passing the layer argument as 7 will allow drawing
+	* on top of the subscreen

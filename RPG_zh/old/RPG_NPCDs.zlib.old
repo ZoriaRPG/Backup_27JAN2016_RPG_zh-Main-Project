@@ -1,0 +1,94 @@
+const int ENEMY_NPCD = 10;
+const int NPCD_SCR1 = 0;
+const int NPCD_SCR2 = 1;
+const int NPCD_SCR3 = 2;
+const int NPCD_SCR4 = 3;
+const int NPCD_SCR5 = 4;
+const int NPCD_SCR6 = 5;
+const int NPCD_SCR7 = 6;
+const int NPCD_SCR8 = 7;
+const int NPCD_SCR9 = 8;
+const int NPCD_SCR10 = 9;
+
+int ScriptTypes[10]={x};
+
+const int ENEMBASE = 0;
+const int NPCDROW = 20; //?
+
+int ScripedWeapondNPCDs[2560]={
+	0,0,0,0,0,0,0,0,0,0,
+	
+	
+	
+	const int LW_SCRIPT_BASE = -31 //Number of Ltypes before Scripy1
+	
+void SetScriptNPCDs(){
+	//Read Enemies on Screen
+	NPC enem;
+	int base = enem->ID * 10;
+		//for loop reads all lweapons
+		lweapon wpn;
+		if ( Collision(i,j){
+			for ( k = 10; k > 0; k--){
+				if ( wpn->Type == k ){
+					enem->Def(NPCD_SCRIPT) =
+						ScripedWeapondNPCDs[base + k];
+						
+						m = ScripedWeapondNPCDs - LWBASE
+						wpn->Type = LW_Script;
+				
+				
+				for ( int l = base; l < ( base +10); l++ ){
+					
+			
+		for ( i = SizeOfArray(ScripedWeapondNPCDs); i > 0; i+10){
+			
+			
+const int LW_SCRIPT_ADJUST = -17; 
+	
+	const int LW_SCRIPT1            = 31;
+const int LW_SCRIPT2            = 32;
+const int LW_SCRIPT3            = 33;
+const int LW_SCRIPT4            = 34;
+const int LW_SCRIPT5            = 35;
+const int LW_SCRIPT6            = 36;
+const int LW_SCRIPT7            = 37;
+const int LW_SCRIPT8            = 38;
+const int LW_SCRIPT9            = 39;
+const int LW_SCRIPT10           = 40;
+	
+	const int NPCD_ARROW			= 3;
+const int NPCD_BEAM				= 10;
+const int NPCD_BRANG			= 0;
+const int NPCD_BOMB				= 1;
+const int NPCD_BYRNA			= 16;
+const int NPCD_FIRE				= 4;
+const int NPCD_HAMMER			= 8;
+const int NPCD_HOOKSHOT			= 7;
+const int NPCD_MAGIC			= 6;
+const int NPCD_REFBEAM			= 11;
+const int NPCD_REFMAGIC			= 12;
+const int NPCD_REFFIREBALL		= 13;
+const int NPCD_REFROCK			= 14;
+const int NPCD_SBOMB			= 2;
+const int NPCD_SCRIPT			= 17;
+const int NPCD_STOMP			= 15;
+const int NPCD_SWORD			= 9;
+const int NPCD_WAND				= 5;
+
+//NPC Defense types. Use with npc->Defense[].
+const int NPCDT_NONE			= 0;
+const int NPCDT_HALFDAMAGE		= 1;
+const int NPCDT_QUARTERDAMAGE	= 2;
+const int NPCDT_STUN			= 3;
+const int NPCDT_STUNORBLOCK		= 4;
+const int NPCDT_STUNORIGNORE	= 5;
+const int NPCDT_BLOCK1			= 6;
+const int NPCDT_BLOCK2			= 7;
+const int NPCDT_BLOCK4			= 8;
+const int NPCDT_BLOCK6			= 9;
+const int NPCDT_BLOCK8			= 10;
+const int NPCDT_BLOCK			= 11;
+const int NPCDT_IGNORE1			= 12;
+const int NPCDT_IGNORE			= 13;
+const int NPCDT_ONEHITKILL		= 14;

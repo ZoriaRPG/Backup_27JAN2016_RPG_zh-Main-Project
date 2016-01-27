@@ -1,0 +1,19 @@
+//NPC Regeneration
+
+ffc script regenerateEnemyHP {
+void run(int enemy, int regenAmount, int regenRate){
+int regenTimer;	
+//regenRate = How many frames 1 before the enemy regains the HP amount specified. 
+
+    for(int i; i<Screen->NumNPCs(); i++){
+		npc enemy = Screen->LoadNPC(i);
+        
+        if ( enemy->HP > 0 ) {
+        regenTimer = (regenTimer+1) % regenRate;
+        enemy->HP += regenAmount;
+        }
+    }
+}
+}
+        
+        

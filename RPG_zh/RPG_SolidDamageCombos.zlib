@@ -1,0 +1,26 @@
+ffc script AntiTank{
+	void run(int dur){
+		if ( dur == 0 ) dur = 80;
+		for(int q = dur; q > 0; q--){
+			KillDPadInputs	
+		}
+	}
+}
+
+void KillDPadInputs(){
+	Link->PressRight =  false;
+	Link->PressLeft = false;
+	Link->PressUp = false;
+	Link->PressDown = false;
+	Link->InputRight =  false;
+	Link->InputLeft = false;
+	Link->InputUp = false;
+	Link->InputDown = false;
+}
+
+bool SpikeCollision(int dur){
+	if ( LinkOnCombo( list ) ) {
+		RunFFCScript(FFC_ANTITANK,dur);
+	}
+}
+

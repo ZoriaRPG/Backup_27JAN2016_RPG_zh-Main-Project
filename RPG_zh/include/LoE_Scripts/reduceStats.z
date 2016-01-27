@@ -1,0 +1,134 @@
+decrease stat must include a way in the onContinue and onExit scripts to set a stat that is at zero, back to 1.
+
+int decreaseStat(int stat, int value){
+    int currentValue;
+    if ( stat == 0 ) {
+        currentValue = getMuscStat();
+        if (value > currentValue) {
+            setMuscStat(CR_STAT_MUSC, 0);
+        }
+        else {
+            statsArray[CR_STAT_MUSC] -= value;
+        }
+    }
+
+    else if (stat == 1 ) {        
+        currentValue = getBodyStat();
+        if (value > currentValue) {
+            setMuscStat(CR_STAT_BODY, 0);
+        }
+        else {
+            statsArray[CR_STAT_BODY] -= value;
+        }
+    }
+    
+    if (stat == 2 ) {
+        currentValue = getMindStat();
+        if (value > currentValue) {
+            setMuscStat(CR_STAT_MIND, 0);
+        }
+        else {
+            statsArray[CR_STAT_MIND] -= value;
+        }
+    }
+    
+    if (stat == 3 ) {
+        currentValue = getMystStat();
+        if (value > currentValue) {
+            setMuscStat(CR_STAT_MYST, 0);
+        }
+        else {
+            statsArray[CR_STAT_MYST] -= value;
+        }
+    }
+    
+    if (stat == 4 ) {
+        currentValue = getInflStat();
+        if (value > currentValue) {
+            setMuscStat(CR_STAT_INFL, 0);
+        }
+        else {
+            statsArray[CR_STAT_INFL] -= value;
+        }
+    }
+    
+    if (stat == 5 ) {
+        currentValue = getLuckStat();
+        if (value > currentValue) {
+            setMuscStat(CR_STAT_LUCK, 0);
+        }
+        else {
+            statsArray[CR_STAT_LUCK] -= value;
+        }
+    }
+}
+
+int decreaseStatRandom(int min, int max, int stat){
+    if ( stat > 5 || stat < 0 ) {
+        stat = Rand(1,6);
+    }
+    int reduceDamage = Rand(min, max);
+    int currentValue;
+    
+    if ( stat == 0 ) {
+        currentValue = getMuscStat();
+        if (reduceDamage > currentValue) {
+            setMuscStat(CR_STAT_MUSC, 0);
+        }
+        else {
+            statsArray[CR_STAT_MUSC] -= reduceDamage;
+        }
+    }
+
+    else if (stat == 1 ) {        
+        currentValue = getBodyStat();
+        if (reduceDamage > currentValue) {
+            setMuscStat(CR_STAT_BODY, 0);
+        }
+        else {
+            statsArray[CR_STAT_BODY] -= reduceDamage;
+        }
+    }
+    
+    if (stat == 2 ) {
+        currentValue = getMindStat();
+        if (reduceDamage > currentValue) {
+            setMuscStat(CR_STAT_MIND, 0);
+        }
+        else {
+            statsArray[CR_STAT_MIND] -= reduceDamage;
+        }
+    }
+    
+    if (stat == 3 ) {
+        currentValue = getMystStat();
+        if (reduceDamage > currentValue) {
+            setMuscStat(CR_STAT_MYST, 0);
+        }
+        else {
+            statsArray[CR_STAT_MYST] -= reduceDamage;
+        }
+    }
+    
+    if (stat == 4 ) {
+        currentValue = getInflStat();
+        if (reduceDamage > currentValue) {
+            setMuscStat(CR_STAT_INFL, 0);
+        }
+        else {
+            statsArray[CR_STAT_INFL] -= reduceDamage;
+        }
+    }
+    
+    if (stat == 5 ) {
+        currentValue = getLuckStat();
+        if (reduceDamage > currentValue) {
+            setMuscStat(CR_STAT_LUCK, 0);
+        }
+        else {
+            statsArray[CR_STAT_LUCK] -= reduceDamage;
+        }
+    }
+}
+        
+

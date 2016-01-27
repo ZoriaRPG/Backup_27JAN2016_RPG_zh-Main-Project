@@ -1,0 +1,92 @@
+// Menus
+
+//Constants
+
+///////////////////////////                    
+/// Menu System Command ///
+/// Variables and Bools ///
+///////////////////////////
+
+//These bools are used to interact with menu functions.
+//When a menu function activates it sets one of these to true, and 
+//when one of these is true, a function int he main active loop runs.
+//When that function is finished, or if the player exits, it resets this to false.
+
+//This should be an array!
+
+//bool menuTalk = false; 
+//bool playerTalking = false;
+//bool playerListening = false;
+//bool playerSearching = false;
+//bool playerExamining = false;
+//bool playerDisarming = false;
+//bool playerTakingItem = false;
+//bool playerChecking = false;
+//bool playerLooking = false;
+//bool playerVista = false;
+
+//Player Actions
+//const int MENUTALK = 1035;
+//const int MENU_TALK = 1035;
+//const int PLAYERTALKING = 1036;
+//const int PLAYER_TALKING = 1036;
+//const int PLAYERSEARCHING = 1037;
+//const int PLAYER_LISTENING = 1037;
+//const int PLAYERSEARCHING = 1038;
+//const int PLAYER_SEARCHING = 1038;
+//const int PLAYEREXAMINING = 1038;
+//const int PLAYER_EXAMINING = 1038;
+//const int PLAYERDISARMING = 1039;
+//const int PLAYER_DISARMING = 1039;
+//const int PLAYERTAKINGITEM = 1040;
+//const int PLAYER_TAKING_ITEM = 1040;
+//const int PLAYERCHECKING = 1041;
+//const int PLAYER_CHECKING = 1041;
+//const int PLAYERLOOKING = 1042;
+//const int PLAYER_LOOKING = 1042;
+//const int PLAYERVISTA = 1043;
+//const int PLAYER_VISTA = 1043;
+bool playerSkillCheck[8]={false, false, false, false, false, false, false, false};
+
+//Constants for the skill array, for easy use. 
+
+const int skillLore = 0;
+const int skillArcana = 1;
+const int skillHistory = 2;
+const int skillXeno = 3;
+const int skillScience = 4;
+const int skillDiplomacy = 5;
+const int skillSword = 6;
+const int skillMarksman = 7;
+
+
+//Arrays
+
+
+//Vars
+//bool menuOpen; // Used to define if menus are active. Now GameEvents[MENU_OPEN]
+//bool equipItem = false; // Used to equip items through the menus. Now GameEvents[EQUIP_ITEM]
+
+
+//Functions
+
+// A function to equip a given item via a menu command,
+
+void equipItem(int equipThis) {
+     if ( Is(EQUIP_ITEM) ) {
+         if (Link->Item[equipThis] == false){
+             Link->Item[equipThis] = true;
+             Is(EQUIP_ITEM,false);
+         }
+         else if (Link->Item[equipThis] == true) {
+             Link->Item[equipThis] = false;
+             Is(EQUIP_ITEM,false);
+             
+         }
+     }
+}
+     
+
+
+
+//Scripts

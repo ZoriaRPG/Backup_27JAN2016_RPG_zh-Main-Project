@@ -1,0 +1,167 @@
+///////////////////////
+////  THE DALEKS  /////
+///////////////////////
+
+
+//Type: Walking Enemy
+//Weapon: NONE
+//Death Attrib 1: Angle of vision
+//Death Attrib 2: Shot step speed
+//Death Attrib 3: Cooldown between shots
+//Extra Shots: Type of weapon to use; determines if it gets blocked by walls or different shields (see the EW_ section of std_constants.zh)
+//Touch Effects: NONE
+//Effect Strength: Shot SFX
+//Misc Attrib 11: First of 4 walking combos (up, down, left, right), or -1 to use enemy editor sprite
+//Misc Attrib 12: Number of FFC script slot with this script
+
+//"Shielded in ___" flags will work
+
+//const int WLS_LASERCOLOR = 81; //Color of the laser beam: [CSet# * 16] + [Color within CSet from 0 to 15]
+//const int WLS_LASEROPACITY = 128; //128 = Opaque, 64 = Transparent
+//const float WLS_LASERSIDEDAMAGE = 0.25; //Percent damage dealt by touching side of beam (0 = disable)
+
+//const int DALEK_SFX_DURATION 
+//Durations of Dalek sounds in frames. 
+//Add +80 or thereabout to each, to allow for a second of silence between trnasitions.
+const int DALEK_SFX_DURATION1 = 240; //4 seconds.
+const int DALEK_SFX_DURATION2 = 240;
+const int DALEK_SFX_DURATION3 = 240;
+const int DALEK_SFX_DURATION4 = 240;
+const int DALEK_SFX_DURATION5 = 240;
+const int DALEK_SFX_DURATION6 = 240;
+const int DALEK_SFX_DURATION7 = 240;
+const int DALEK_SFX_DURATION8 = 240;
+const int DALEK_SFX_DURATION9 = 240;
+const int DALEK_SFX_DURATION10 = 240;
+//const int DALEK_SFX
+//Dalek sounds.
+const int DALEK_SFX1 = 63;
+const int DALEK_SFX2 = 63;
+const int DALEK_SFX3 = 63;
+const int DALEK_SFX4 = 63;
+const int DALEK_SFX5 = 63;
+const int DALEK_SFX6 = 63;
+const int DALEK_SFX7 = 63;
+const int DALEK_SFX8 = 63;
+const int DALEK_SFX9 = 63;
+const int DALEK_SFX10 = 63;
+
+const int SFX_UNDER_ATTACK = 63; //Dalek 'Under Attack Sound'
+
+ffc script walkingLaserShooter{
+    void run ( int enemyID ){
+        npc ghost = Ghost_InitAutoGhost(this, enemyID);
+        Ghost_SetFlag(GHF_NORMAL);
+        Ghost_SetFlag(GHF_4WAY);
+        
+        //Get attributes
+        int angleOfVision = ghost->Attributes[2];
+        int shotStep = ghost->Attributes[3];
+        int shotCooldownTime = ghost->Attributes[4];
+        int weaponType = ghost->Attributes[5];
+        //Attributes[4] is a drop-down box
+        int shotSFX = ghost->Attributes[7];
+        
+        int shotCooldown = shotCooldownTime;
+        int turnTimer = ghost->Rate * 10;
+        int laserStartX;
+        int laserStartY;
+        
+        eweapon beam;
+        
+        bool playingDalekSound = true;
+        
+        int dalekSounds[10] = {DALEK_SFX1, DALEK_SFX1, DALEK_SFX3, DALEK_SFX4, DALEK_SFX5, 
+                        DALEK_SFX6, DALEK_SFX7, DALEK_SFX8, DALEK_SFX9, DALEK_SFX10};
+
+        int dalekSoundDuration[10] = {DALEK_SFX_DURATION1, DALEK_SFX_DURATION2, DALEK_SFX_DURATION3, DALEK_SFX_DURATION4, DALEK_SFX_DURATION5, 
+                            DALEK_SFX_DURATION6, DALEK_SFX_DURATION7, DALEK_SFX_DURATION8, DALEK_SFX_DURATION9, DALEK_SFX_DURATION10};
+        
+        int dalekHP;
+
+        
+        while(Ghost_HP > 0){
+            dalekHP = Ghost_HP;
+            //Shooting
+            if ( shotCooldown > 0 )
+                shotCooldown--;
+            //Only one beam at a time
+            else if ( !beam->isValid() ){
+                
+                //If Link is within this angle
+                if ( LinkInAngleOfVision ( ghost, angleOfVision ) ){
+                    shotCooldown = shotCooldownTime;
+                    
+                    laserStartX = CenterX(ghost);
+                    laserStartY = CenterY(ghost);
+                    beam = FireAimedEWeapon(weaponType, laserStartX, laserStartY, 0, shotStep, ghost->WeaponDamage, 0, shotSFX, 0);
+                    beam->DrawXOffset = 999; //Draw off-screen
+                    
+                    do {
+                        int soundNumber = Rand(1,10);
+                        int soundTime = dalekSoundDuration[soundNumber];
+                        Game->PlaySound(dalekSounds[soundNumber]);
+                        for ( i = soundTime; i > 0; i--){
+                            Waitframe();
+                        }
+                    }
+                    while(playingDalekSound);
+                }
+            }
+            
+            //Draw laser beam
+            if ( beam->isValid() ){
+                Screen->Line(4, laserStartX, laserStartY, CenterX(beam), CenterY(beam), WLS_LASERCOLOR, 1, 0, 0, 0, WLS_LASEROPACITY);
+                
+                //Beam side damage
+                if ( WLS_LASERSIDEDAMAGE > 0 //If side deals damage
+                 && LinkInAngleOfVision ( ghost, angleOfVision ) //And Link is still in angle of vision
+                 && DistanceLink(ghost) <= Distance(beam->X, beam->Y, Ghost_X, Ghost_Y) //And is within beam length
+                ){
+                    //Fire invisible, unblockable, undetectable weapon at Link
+                    eweapon beamExtra = FireAimedEWeapon(EW_SCRIPT1, laserStartX, laserStartY, 0, 9999, ghost->WeaponDamage * WLS_LASERSIDEDAMAGE, 0, 0, EWF_UNBLOCKABLE);
+                    //It will leave the screen almost instantly
+					beamExtra->DrawXOffset = 999; //Draw off-screen
+                }
+            }
+        
+            //Change direction
+            turnTimer = Ghost_ConstantWalk4(turnTimer, ghost->Step, ghost->Rate*10, ghost->Homing, ghost->Hunger);
+            
+            for ( int l = 1; l < Screen->NumLWeapons(); l++ ) {
+                lweapon weap = Screen->LoadLWeapon(l);
+                if ( weap->CollDetection && Collision(l, ghost) && dalekHP > Ghost_HP ) {
+                    Game->PlaySound(SFX_UNDER_ATTACK);
+                }
+            }
+            
+            dalekHP = Ghost_HP;
+            
+            Ghost_Move(Ghost_Dir, ghost->Step/100, ghost->Rate);
+            Ghost_Waitframe(this, ghost, true, true);
+        }
+        playingDalekSound = false;
+    }
+    
+}
+
+int Dir4ToDeg(int dir){
+    if ( dir == DIR_RIGHT )
+        return 0;
+    if ( dir == DIR_DOWN )
+        return 90;
+    if ( dir == DIR_LEFT )
+        return 180;
+    if ( dir == DIR_UP )
+        return -90;
+    return -1;
+}
+
+bool LinkInAngleOfVision ( npc ghost, int angle ){
+    //Check angle to Link against angle of vision
+    int angleToLink = Angle(CenterX(ghost), CenterY(ghost), CenterLinkX(), CenterLinkY());
+    int facingAngle = Dir4ToDeg(Ghost_Dir);
+    int difference = Abs(angleToLink - facingAngle);
+    
+    return (difference <= angle/2);
+}

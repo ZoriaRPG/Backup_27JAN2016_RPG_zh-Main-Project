@@ -1,0 +1,493 @@
+//Version 0.5.6 for RPG.zh 0.9.6.1
+//Backup Arrays
+
+const int GAMESAVESTATED = 498;
+
+bool GameSaveStated(){
+	return GameEvents[GAMESAVESTATED];
+}
+
+bool GameSaveStated(bool set){
+	GameEvents[GAMESAVESTATED] = set;
+}
+
+
+bool EverSaved = false; 
+//This is used exactly once, to prevent the 
+//player from using the restore command if he has never saved using a Save command.
+//Call this from the Tango menu for 'Game->Restore' and if false, report
+//'No Saved Game to Restore' instead of restoring a blank game!
+
+bool SaveAndQuit = false; //This boolean is used to determine if the game was quit via the save and quit command, and not by death, or F6.
+//If this boolean is true, the onContinue punishment is skipped. This boolean is set to false when the game starts every time, and set to true if the player
+// Uses Game->Save and Quit or Game->Quit.
+// Because it is set to false EVERY TIME THE GAME STARTS and ONLY set to TRUE when the game is SAVED FULLy with the MENU
+// and NOT with QUICK SAVE, we do not need to store it in a _BAK table.
+
+const int SAVESCREEN= 1020;
+const int SAVEDMAP = 1021;
+const int SAVEX = 1022;
+const int SAVEY = 1023;
+const int GAME_SAVED = 1024;
+
+const int CMB_SAVE = 0; //COmbo ID of combo with inherent Save Point type.
+
+void SavePoint(){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curX = Link->X;
+	int curY = Link->Y;
+	//Screen->FastCombo(0, curX, curY, CMB_SAVE, 0, 0);
+	GameDynamics[SAVESCREEN] = curScreen;
+	GameDynamics[SAVEDMAP] = curDMAP;
+	GameDynamics[SAVEX] = curX;
+	GameDynamics[SAVEY] = curY;
+	GameEvents[GAME_SAVED] = true;
+	SaveState();
+	// ! 
+	// ! Do save point combos store XY coordinates for a return point, or do they use the A warp return on a screen?
+	// !
+	//Link->InputStart;
+	//Waitframes(1);
+	//Link->InputDown;
+	//Waitframes(1);
+	//Link->InputDown;
+	//Game->ShowSaveQuitScreen();
+	Game->Save();
+	//Display SAVED Message in menu. offer Quit Menu.
+	//End(); //Do this if the player selects to quit.
+	
+}
+
+void SaveGame(){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curX = Link->X;
+	int curY = Link->Y;
+	Screen->FastCombo(0, curX, curY, CMB_SAVE, 0, 0);
+	GameDynamics[SAVESCREEN] = curScreen;
+	GameDynamics[SAVEDMAP] = curDMAP;
+	GameDynamics[SAVEX] = curX;
+	GameDynamics[SAVEY] = curY;
+	SaveState();
+	GameEvents[GAME_SAVED] = true;
+}
+
+void SaveGame(bool full){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curX = Link->X;
+	int curY = Link->Y;
+	Screen->FastCombo(0, curX, curY, CMB_SAVE, 0, 0);
+	GameDynamics[SAVESCREEN] = curScreen;
+	GameDynamics[SAVEDMAP] = curDMAP;
+	GameDynamics[SAVEX] = curX;
+	GameDynamics[SAVEY] = curY;
+	SaveState();
+	GameEvents[GAME_SAVED] = true;
+	if ( full ) {
+		Game->Save();
+	}
+}
+
+void SaveGameAndQuit(){
+	int curScreen = Game->GetCurScreen();
+	int curDMAP = Game->GetCurDMap();
+	int curX = Link->X;
+	int curY = Link->Y;
+	Screen->FastCombo(0, curX, curY, CMB_SAVE, 0, 0);
+	GameDynamics[SAVESCREEN] = curScreen;
+	GameDynamics[SAVEDMAP] = curDMAP;
+	GameDynamics[SAVEX] = curX;
+	GameDynamics[SAVEY] = curY;
+	SaveState();
+	GameEvents[GAME_SAVED] = true;
+	Game->Save();
+	Game->End();
+}
+
+void RestoreGame(bool AndClearSave){
+	int menuFFC = FindFFCRunning(FFCMENU);
+	//Externally kill FFC 51?
+	bool restoring = true;
+	int restScreen = GameDynamics[SAVESCREEN];
+	int restDMAP = GameDynamics[SAVEDMAP];
+	int restX = GameDynamics[SAVEX];
+	int restY = GameDynamics[SAVEY];
+	do{
+		restoring=false;
+		Screen->Rectangle(6, 0, 0, 256, 172, SOLID_BLACK, 1, 0, 0, 0, true, 100);
+		Link->CollDetection = false;
+		Link->PitWarp(restDMAP, restScreen);
+		Link->X = restX;
+		Link->Y = restY;
+		RestoreState();
+		Link->CollDetection = true;
+		if ( AndClearSave ) {
+			ClearSave();
+		}
+	}
+	while(restoring);
+}
+
+void ClearSave(){
+	GameEvents[GAME_SAVED] = false;
+}
+
+float XP_BAK[8]={0};
+
+void BackupXP(){
+	for (int i = 0; i < SizeOfArray(XP); i++){
+		XP_BAK[i] = XP[i];
+	}
+}
+
+void RestoreXP(){
+	for (int i = 0; i < SizeOfArray(XP); i++){
+		XP[i] = XP_BAK[i];
+	}
+}
+
+bool Equipment_BAK[256]={false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+			false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+	false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false};
+
+bool EquipmentBig_BAK[4096]={false};
+
+//void BackupEquipment(){
+//	for ( int i = 0; i < 255; i++) {
+//		Equipment_BAK[i] = Link->Item[i];
+		//if ( Link->Item[i] != Equipment_BAK[i] ) {
+		//	Equipment_BAK[i] = Link->Item[i];
+		//}
+//	}
+//}
+
+//void BackupEquipment(){
+//	bool playerHas;
+//	for ( int i = 0; 1 < 255; i++) {
+//		if ( Link->Item[i] == true ) {
+//			Equipment_BAK[i] = true;
+//		}
+//	}
+//}
+
+bool CheckEquipment(int equip){
+	for ( int i = 1; i < 255; i++){
+		if ( Link->Item[equip] == true ){
+			return true;
+		}
+	}
+}
+
+//void BackupEquipment(){
+//	for (int i = 1; i < 255; i++){
+//		Equipment_BAK[i] = CheckEquipment(i);
+//	}
+//}
+
+
+//void BackupEquipment(){
+//	bool playerHas;
+//	for ( int i = 0; 1 < 255; i++) {
+//		if ( Link->Item[i] == true ) {
+//			playerHas = true;
+//			if ( playerHas )
+//				playerHas = false;
+//				Equipment_BAK[i] = true;
+//			}
+//		}
+//	}
+//}
+
+//void SaveLinkMisc
+
+void RestoreEquipment(){
+	//int state;
+	for ( int i = 0; i < 255; i++ ) {
+		if ( Link->Item[i] == true && Equipment_BAK[i] == false ) {
+			Link->Item[i] = false;
+		}
+		else if ( Link->Item[i] == false && Equipment_BAK[i] == true ) {
+			Link->Item[i] = true;
+		}
+		//Waitframe();
+	}
+}
+
+void BackupEquipment(){
+	//int state;
+	for ( int i = 0; i < 255; i++ ) {
+		if ( Link->Item[i] == true && Equipment_BAK[i] == false ) {
+			Equipment_BAK[i] = true;
+		}
+		else if ( Link->Item[i] == false && Equipment_BAK[i] == true ) {
+			Equipment_BAK[i] = false;
+		}
+		//Waitframe();
+	}
+}
+
+void CheatEquipment(){
+	for ( int i = 0; i < 255; i++ ) {
+		if ( Link->Item[i] != true ){
+			Link->Item[i] = true;
+		}
+	}
+}
+
+void CheatEquipment(int equip){
+	if ( Link->Item[equip] != true ){
+		Link->Item[equip] = true;
+	}
+}
+
+void CheatEquipment(bool enable){
+	for ( int i = 0; i < 255; i++ ) {
+		if ( Link->Item[i] != enable ){
+			Link->Item[i] = enable;
+		}
+	}
+}
+
+
+void godMode(bool set){
+	for ( int i = 0; i < 255; i++ ) {
+		if ( Link->Item[i] != set ){
+			Link->Item[i] = set;
+		}
+		
+	}
+	for (int i = 0; i < 32; i++){
+		Game->MCounter[i] = 9999;
+		Game->Counter[i] = 9999;
+	}
+}
+
+
+
+void MaxCounters(){
+	for (int i = 0; i < 32; i++){
+		Game->MCounter[i] = 9999;
+		Game->Counter[i] = 9999;
+	}
+}
+
+
+int teleportMatrix_BAK[40]={
+	100,22,104,152,50,
+	0,0,88,96,1,
+	0,0,88,96,1,
+	0,0,88,96,1,
+	0,0,88,96,1,
+	0,0,88,96,1,
+	0,0,88,96,1,
+	0,0,88,96,1};
+	
+void BackupTeleportMatrixArrays(){
+	for (int i =0; i < SizeOfArray(teleportMatrix); i++){
+		teleportMatrix_BAK[i] = teleportMatrix[i];
+		teleportMatrix_BAK[i] = teleportMatrix[i];
+	}
+}
+
+void RestoreTeleportMatrixArrays(){
+	for (int i =0; i < SizeOfArray(teleportMatrix); i++){
+		teleportMatrix[i] = teleportMatrix_BAK[i];
+		teleportMatrix[i] = teleportMatrix_BAK[i];
+	}
+}
+
+int GameDynamics_BAK[8192]={0};
+bool GameEvents_BAK[8192]={false};
+
+int Counters_BAK[32]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+			
+int MCounters_BAK[32]={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+			0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+
+void BackupCounters(){
+	for (int i = 0; i < 32; i++){
+		Counters_BAK[i] = Game->Counter[i];
+		//Trace(Counters_BAK[i]);
+	}
+}
+
+void RestoreCounters(){
+	for (int i = 0; i < 32; i++){
+		Game->Counter[i] = Counters_BAK[i];
+	}
+}
+
+
+
+void BackupMCounters(){
+	for (int i = 0; i < 32; i++){
+		MCounters_BAK[i] = Game->MCounter[i];
+		//Trace(Counters_BAK[i]);
+	}
+}
+
+void RestoreMCounters(){
+	for (int i = 0; i < 32; i++){
+		Game->MCounter[i] = MCounters_BAK[i];
+	}
+}
+
+void BackupGameArrays(){
+	for (int i =0; i < SizeOfArray(GameDynamics); i++){
+		GameEvents_BAK[i] = GameEvents[i];
+		GameDynamics_BAK[i] = GameDynamics[i];
+	}
+}
+
+void RestoreGameArrays(){
+	for (int i = 0; i < SizeOfArray(GameDynamics); i++){
+		GameEvents[i] = GameEvents_BAK[i];
+		GameDynamics[i] = GameDynamics_BAK[i];
+	}
+}
+
+//bool Equipment_BAK[4096]={0};
+
+const int EQUIP_ARRAY_SIZE = 2048;
+
+void BackupEquipmentArrays(){ //Change these to RestoreEquippedItems()
+	for (int i = 0; i < EQUIP_ARRAY_SIZE; i++){
+		EquipmentBig_BAK[i] = OwnsItems[i];
+		EquipmentBig_BAK[i+EQUIP_ARRAY_SIZE] = ItemEquipped[i];
+	}
+}
+
+void RestoreEquipmentArrays(){
+	for (int i = 0; i < EQUIP_ARRAY_SIZE; i++){
+		OwnsItems[i] = EquipmentBig_BAK[i];
+		ItemEquipped[i] = EquipmentBig_BAK[i+EQUIP_ARRAY_SIZE];
+	}
+}
+
+void SaveState(){
+	//FreezeAction();
+	GameSaveStated(true);
+	BackupEquipment();
+	BackupGameArrays();
+	BackupEquipmentArrays();
+	BackupMCounters();
+	BackupCounters();
+	BackupTeleportMatrixArrays();
+	
+	//SavingEquipment(true);
+	
+	//Restore stat arrays, and other arrays.
+	//Read all screen NPCs and store them in an array.
+	int string1[]="State Saved";
+	TraceS(string1);
+	//UnfreezeAction();
+}
+
+void RestoreState(){
+	//FreezeAction();
+	RestoreEquipment();
+	//RestoringEquipment(true);
+	//Waitframes(1);
+	RestoreGameArrays();
+	RestoreEquipmentArrays();
+	RestoreMCounters();
+	RestoreCounters();
+	RestoreTeleportMatrixArrays();
+	//GameSaveStated(true);
+	//Restore stat arrays, and other arrays.
+	//Remove all screen NPCs.
+	//Read ScreenNPCs array and reconstruct onto screen.
+	int string1[]="State Restored";
+	TraceS(string1);
+	//UnfreezeAction();
+}
+
+const int SAVINGEQUIPMENT = 496;
+const int RESTORINGEQUIPMENT = 497;
+
+bool RestoringEquipment(){
+	if ( GameEvents[RESTORINGEQUIPMENT] == true ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool RestoringEquipment(bool set){
+	if ( set ) {
+	GameEvents[RESTORINGEQUIPMENT] = true;
+	}
+	else if ( !set ) {
+		GameEvents[RESTORINGEQUIPMENT] = false;
+	}
+}
+
+bool SavingEquipment(){
+	if ( GameEvents[SAVINGEQUIPMENT] == true ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool SavingEquipment(bool set){
+	if ( set ) {
+	GameEvents[SAVINGEQUIPMENT] = true;
+	}
+	else if ( !set ) {
+		GameEvents[SAVINGEQUIPMENT] = false;
+	}
+}
+
+
+void DoEquipmentRestore(){
+	for ( int i = 0; i < 256; i++ ) {
+		if ( i < 256 ) {
+			if ( Link->Item[i] == true && Equipment_BAK[i] == false ) {
+				Link->Item[i] == false;
+			}
+			else if ( Link->Item[i] == false && Equipment_BAK[i] == true ) {
+				Link->Item[i] == true;
+			}
+		}
+		else if ( i == 256 ) {
+			RestoringEquipment(false);
+		}
+		Waitframe();
+	}
+}
+
+void DoEquipmentBackup(){
+	for ( int i = 0; i < 256; i++ ) {
+		if ( i < 256 ) {
+			if ( Link->Item[i] == true && Equipment_BAK[i] == false ) {
+				Equipment_BAK[i] = true;
+			}
+			else if ( Link->Item[i] == false && Equipment_BAK[i] == true ) {
+				Equipment_BAK[i] = false;
+			}
+		}
+		else if ( i == 256 ) {
+			RestoringEquipment(false);
+		}
+		Waitframe();
+	}
+}

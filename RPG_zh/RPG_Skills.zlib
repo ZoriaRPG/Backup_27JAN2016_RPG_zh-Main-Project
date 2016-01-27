@@ -1,0 +1,234 @@
+/// Skills
+
+// Constants
+
+/////////////////////////////
+/// SKill Check Constants ///
+/////////////////////////////
+
+
+
+
+int loreSuccess = 0; //Shouldnl't this be part of the array?
+int loreRow = 0;
+int loreColumn = 0;
+//Create a single pointer, that may not be needed.
+
+///////////////////
+/// Lore Skills ///
+///////////////////
+
+int skillCheckArray[32] = { 0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0,
+                        0, 0, 0, 0, 0, 0, 0, 0 };
+                        
+const int LORE_itemNumber = 0;
+const int LORE_levelUnlocked = 1;
+const int LORE_lastChecked = 2;
+const int LORE_nextCheck = 3;
+const int LORE_messageFailure = 4;
+const int LORE_messageSuccess = 5;
+const int LORE_upgradeItem = 6;
+const int LORE_result = 7;
+
+//Setting array elements:
+//TABLE
+//        item001, item001_levelUnlocked, item001_lastChecked, item001_nextCheck, item001_messageFailure, item001_messageSuccess, item001_upgrade, item 001_result,
+//        item002, item002_levelUnlocked, item002_lastChecked, item002_nextCheck, item002_messageFailure, item002_messageSuccess, item002_upgrade, item_002_result,
+//        item003, item003_levelUnlocked, item003_lastChecked, item003_nextCheck, item003_messageFailure, item003_messageSuccess, item003_upgrade, item_002_result,
+//        item004, item004_levelUnlocked, item004_lastChecked, item004_nextCheck, item004_messageFailure, item004_messageSuccess, item004_upgrade, item_004_result
+//        };
+
+
+//Set a value:
+//int loreValue;
+//skillCheckArray[loreValue] = 0;
+
+// Establish rows.
+
+int itemLoreRow = 0; //Move array pointer to desired row, by advancing it by 8 positions.
+const int loreItem000 = 0;
+const int loreItem001 = 1;
+const int loreItem002 = 2;
+const int loreItem003 = 3;
+const int loreItem004 = 4;
+const int loreItem005 = 5;
+const int loreItem006 = 6;
+const int loreItem007 = 7;
+//int setLoreArrayRow = ( 8 * loreRow );
+// +8 * 0 for row 0, +8 * 1 for row 1, + 8 * 2 for row 2, etc.
+
+//Establish Columns
+
+const int LoreColumn0 = 0;
+const int LoreColumn1 = 1;
+const int LoreColumn2 = 2;
+const int LoreColumn3 = 3;
+const int LoreColumn4 = 4;
+const int LoreColumn5 = 5;
+const int LoreColumn6 = 6;
+const int LoreColumn7 = 7;
+
+//Function to select a column.
+void setCurrentLoreColumn(int columnValue){
+    loreColumn = columnValue;
+}
+
+//Function to select a row:
+void setLoreRow(int rowValue) {
+    loreRow = ( 8 * rowValue );
+}
+
+
+
+//int loreSkill = 1;
+
+int skillLevels[11]={ 1, // Lore
+                    1, // Mystic Lore
+                    1, // Site & History Lore
+                    1, // Swordsmanship
+                    1, // Marksmanship
+                    1, // Diplomacy
+                    1, // Spellcraft
+                    1, // Perception
+                    1, // Language
+                    1, // Thief
+                    1}; //Assense
+                    
+const int LORE_BASIC = 0;
+const int LORE_MYSTIC = 1;
+const int LORE_HISTORY = 2;
+const int SWORDSMANSHIP = 3;
+const int MARKSMANSHIP = 4;
+const int DIPLOMACY = 5;
+const int SPELLCRAFT = 6;
+const int PERCEPTION = 7;
+const int LANGUAGE = 8;
+const int THIEF_SKILLS = 9;
+const int ASSENSE = 10;
+
+//Produce an effect, such as setting itms true, or false, by a series of if/else statements, working from the value passed into
+//this function by 'result'.
+//}
+
+void loreCheck(int itemRow){
+
+    int thisItem; //Need a way to point to the item being checked.
+    int itemNumber = 0;
+    int levelUnlocked = 1;
+    int lastChecked = 2;
+    int nextCheck = 3;
+    int messageFailure = 4;
+    int messageSuccess = 5;
+    int upgradeItem = 6;
+    int result = 7;
+    
+    int thisItemRow = itemRow;
+    int currentLevel = Game->Counter[CR_LEVEL];
+    int currentSkillLevel = ( skillLevels[LORE_BASIC] * 10 ) + getMindStat();
+    bool success;
+    int itemSlot = skillCheckArray[thisItemRow + LORE_itemNumber];
+    
+    //Needs a way to determine the item in question, to select a row.
+    
+    if ( skillCheckArray[thisItemRow + LORE_nextCheck] <= currentLevel &&
+        skillCheckArray[thisItemRow + LORE_lastChecked] < currentLevel ) {
+        int checkDie;
+        checkDie = rollDie(100);
+        if ( checkDie < currentSkillLevel ) {
+            success = true;
+        }
+        else {
+            success = false;
+        }
+        
+        if ( success == true ) {
+            skillCheckArray[thisItemRow + LORE_levelUnlocked] += 1;
+            UnlockItem(thisItem, skillCheckArray[thisItemRow + LORE_levelUnlocked]);
+            skillResult(skillCheckArray[thisItemRow + LORE_result]);
+            Screen->Message(skillCheckArray[thisItemRow + LORE_messageSuccess]);
+        }
+        
+        else if ( success == false ) {
+            skillCheckArray[thisItemRow + LORE_lastChecked] = currentLevel;
+            skillCheckArray[thisItemRow + LORE_nextCheck] = ( currentLevel + 1 );
+            Screen->Message(skillCheckArray[thisItemRow + LORE_messageFailure]);
+        }
+    }
+}
+
+void UnlockItem(int itemNumber, int element){
+}
+
+void skillResult(int element){
+}
+
+
+// Arrays
+
+// Vars
+
+int loreSkill;
+
+//Functions
+
+int loreValue(){
+    int value = ( loreRow + loreColumn );
+    return value;
+}
+
+///////////////////////
+/// SKill Functions ///
+///////////////////////
+
+void LoreCheckGeneric() {
+    int loreBase;
+    loreBase = ( loreSkill * 10 );
+    int loreTotal = ( loreBase + getMindStat() );
+    int loreDifference = ( loreTotal - loreBase );
+    int loreRoll = rollDie(100);
+    bool success;
+    int loreType;
+    int itemToCheck;
+    int location;
+    int level;
+    int skill;
+    if ( loreRoll < loreTotal ) {
+        //Success
+        loreSuccess = 1; //Shouldn't this be part of the array, that stores successes?
+        }
+    else {
+    //failure
+    loreSuccess = 2; //Shouldn't this be part of the array, that stores successes?
+    }
+}
+
+void makeLoreCheck(){
+    if ( loreSuccess == 0 ){
+    //do this
+    }
+ }
+ 
+    
+
+void LoreCheckSuccess(bool success, int loreType, int itemToCheck, int location, int level, int skill ){
+    if ( loreSuccess == 0 ){
+    //import results from makeLoreCheck. Create a makeLoreCheck command for each item 
+    //that can use it, and each site that can use it.
+    }
+ }
+    
+void loreLevel(){
+loreSuccess = 0; //When increasing Lore, or gaining a level, reset this value. 
+}
+
+//Possibly, use a function in the while loop with its own ints and bools.
+//THis function would store the lore check results and the level of the check
+//for every item. It wouod compare the result (0, 1, 2) to the character level, and the level at the time 
+//that the player made the check. If the currentLevel > lastLevelForCheck, then it will allow a new check.
+//if the result is 0, it will always allow a check, and if the result is 2, it gives the new item.
+//This would keep the variables in the scope of the function, instead of as global constants and global vars.
+
+
+//Scripts

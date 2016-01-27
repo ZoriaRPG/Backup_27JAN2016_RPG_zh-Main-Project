@@ -1,0 +1,106 @@
+///Level and XP Functions and COnstants
+
+//Constants
+
+const int CR_XP = 12; //Script 6
+const int CR_LEVEL = 13; //Script 7
+const int CR_LVL = 13; //Script 7
+const int CR_XP_10K = 16; //Script 10
+
+//XP System
+
+const int HP_DEAD = -999; //Enemy has been counted for EXP (don't touch)
+const int NPC_MISC_MAXHP = 0; //Which npc->Misc[] value to store HP in (don't touch)
+
+
+const int EXP_HP_RATIO = 1; //Enemy EXP value = HP divided by this
+
+const int SFX_LEVEL = 32; //SFX to play when you level up (0 = disable)
+
+const int I_FASTWALK = 17; //ID of the fast walk item
+const int I_LEADERSHIP = 17; //ID of the leadership item
+const int I_TREASUREHUNTER = 17; //ID of the treasure hunter item
+const int EXP_LEADERSHIPCHANCE = 10; //One in {this} chance to get +1 exp
+const int EXP_FASTWALKRATE = 5; //Every {this} frames, walk an extra pixel
+
+const int SF_TREASURE = 0; //Which screen flag to check for treasure (default Script1)
+const int SFX_TREASURESCREEN = 27; //SFX to play when Treasure Hunter activates
+
+
+//Arrays
+
+int levelStrings[21] = { 61, 61, 61, 61, 60, 59, 59, 59, 59, 61, 59, 59, 59, 59, 59, 62, 59, 59, 59, 63, 85 };
+// Element [0] General string, for common use.
+// Element [1] to [20]The strings to play when gaining levels 1, through 20.
+
+
+
+//Vars
+
+//int gainLevel; //Part of Game Engine
+
+//Functions
+
+/////////////////
+/// XP SYSTEM ///
+/////////////////
+
+/// Replacement functions are in RPG_Experimental_Ext.zh and will be moved here when complete, and fully tested/debugged.
+/// Old functions moved to RPG_Legacy.zh
+	
+bool checkScreenFlag(int flag){
+    return Screen->Flags[SF_MISC] & (4<<flag);
+}
+
+
+
+
+////////////////////////
+/// XP TABLE ///////////
+////////////////////////
+/// 0 = 0       ////////
+/// 100 = 1     ////////
+/// 150 = 2     ////////
+/// 225 = 3     ////////
+/// 338 = 4     ////////
+/// 507 = 5     ////////
+/// 760 = 6     ////////
+/// 1140 = 7    ////////
+/// 1710 = 8    ////////
+/// 2565 = 9    ////////
+/// 3848 = 10   ////////
+/// 5772 = 11   ////////
+/// 8658 = 12   ////////
+/// 12987 = 13  ////////
+/// 19481 = 14  ////////
+/// 29222 = 15  ////////
+/// 43833 = 16  ////////
+/// 65750 = 17  ////////
+/// 98625 = 18  ////////
+/// 147938 = 19 ////////
+/// 210500 = 20 ////////
+//////////////////////////////////////////
+//// XP Algorithm                     ////
+//// C = Current Base                 ////
+//// H = Half Current Base            ////
+//// N = Amount Needed for Next Level ////
+//// C + H = N                        ////
+//// Thus C (100) + H (50) = N (150)  ////
+//////////////////////////////////////////
+
+
+
+
+
+
+
+
+/////////////////////////
+//// Level Functions ////
+/////////////////////////
+
+/// Replacement functions are in RPG_Experimental_Ext.zh and will be moved here when complete, and fully tested/debugged.
+/// Old functions moved to RPG_Legacy.zh
+
+
+//Scripts

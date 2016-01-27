@@ -1,0 +1,55 @@
+//const int DALEK_SFX_DURATION 
+//Durations of Dalek sounds in frames. 
+//Add +80 or thereabout to each, to allow for a second of silence between trnasitions.
+const int DALEK_SFX_DURATION1 = 240; //4 seconds.
+const int DALEK_SFX_DURATION2 = 240;
+const int DALEK_SFX_DURATION3 = 240;
+const int DALEK_SFX_DURATION4 = 240;
+const int DALEK_SFX_DURATION5 = 240;
+const int DALEK_SFX_DURATION6 = 240;
+const int DALEK_SFX_DURATION7 = 240;
+const int DALEK_SFX_DURATION8 = 240;
+const int DALEK_SFX_DURATION9 = 240;
+const int DALEK_SFX_DURATION10 = 240;
+//const int DALEK_SFX
+//Dalek sounds.
+const int DALEK_SFX1 = 63;
+const int DALEK_SFX2 = 63;
+const int DALEK_SFX3 = 63;
+const int DALEK_SFX4 = 63;
+const int DALEK_SFX5 = 63;
+const int DALEK_SFX6 = 63;
+const int DALEK_SFX7 = 63;
+const int DALEK_SFX8 = 63;
+const int DALEK_SFX9 = 63;
+const int DALEK_SFX10 = 63;
+
+int dalekSounds[10] = {DALEK_SFX1, DALEK_SFX1, DALEK_SFX3, DALEK_SFX4, DALEK_SFX5, 
+                        DALEK_SFX6, DALEK_SFX7, DALEK_SFX8, DALEK_SFX9, DALEK_SFX10};
+
+int dalekSoundDuration[10] = {DALEK_SFX_DURATION1, DALEK_SFX_DURATION2, DALEK_SFX_DURATION3, DALEK_SFX_DURATION4, DALEK_SFX_DURATION5, 
+                            DALEK_SFX_DURATION6, DALEK_SFX_DURATION7, DALEK_SFX_DURATION8, DALEK_SFX_DURATION9, DALEK_SFX_DURATION10};
+
+
+
+int dalekSoundBaseWaitDuration = 80;
+bool playingDalekSound = true;
+
+if (alive && !firing){
+
+    do {
+        int soundNumber = Rand(1,10);
+        int soundTime = dalekSoundDuration[soundNumber];
+        Game->PlaySound(dalekSounds[soundNumber]);
+        for ( i = soundTime; i > 0; i--){
+            Waitframe();
+        }
+    while(playingDalekSound);
+}
+
+//Hurtsound
+
+int dalekHP = //HP at start of frame.
+if ( Ghost->HP < dalekHP ) {
+//Play hurt sound (undr attack)
+}

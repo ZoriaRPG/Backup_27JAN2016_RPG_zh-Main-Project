@@ -1,0 +1,14 @@
+//Enemy Misc. Flag constants. Use with GetNPCMiscFlag().
+const int EMF_DAM0POWER	= 0x0001; //Damaged by 0-power weapons.
+const int EMF_ISINVISIBLE		= 0x0002; //Is invisible.
+const int EMF_NEVRETDEATH				= 0x0004; //Allow whistle whirlwinds
+const int EMF_NOTBEATABLE			= 0x0008; //Special rooms and guys are in caves only
+const int EMF_ONLYLENS			= 0x0010; //Don't display compass marker in minimap
+const int EMF_ISFLASHING 				= 0x0020; //Underwater wave effect
+const int EMF_ISFLICKERING			= 0x0040; //Whistle whirlwind returns Link to start
+const int EMF_ISTRANSLUCENT	= 0x0080; //Always display intro string
+const int EMF_SHIELD_FRONT       	= 0x0100; //View overworld map by pressing 'Map'
+const int EMF_SHIELD_LEFT         	= 0x0200; //...But only show screens marked in minimap
+const int EMF_SHIELD_RIGHT 	= 0x0400; //Use minimap foreground colour 2
+const int EMF_SHIELD_BACK 			= 0x0800;
+const int EMF_SHIELD_CANBREAK 			= 0x1000;

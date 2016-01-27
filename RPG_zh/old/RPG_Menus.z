@@ -1,0 +1,70 @@
+// Menus
+
+//Constants
+
+///////////////////////////                    
+/// Menu System Command ///
+/// Variables and Bools ///
+///////////////////////////
+
+//These bools are used to interact with menu functions.
+//When a menu function activates it sets one of these to true, and 
+//when one of these is true, a function int he main active loop runs.
+//When that function is finished, or if the player exits, it resets this to false.
+
+//This should be an array!
+
+bool menuTalk = false; 
+bool playerTalking = false;
+bool playerListening = false;
+bool playerSearching = false;
+bool playerExamining = false;
+bool playerDisarming = false;
+bool playerTakingItem = false;
+bool playerChecking = false;
+bool playerLooking = false;
+bool playerVista = false;
+bool playerSkillCheck[8]={false, false, false, false, false, false, false, false};
+
+//Constants for the skill array, for easy use. 
+
+const int skillLore = 0;
+const int skillArcana = 1;
+const int skillHistory = 2;
+const int skillXeno = 3;
+const int skillScience = 4;
+const int skillDiplomacy = 5;
+const int skillSword = 6;
+const int skillMarksman = 7;
+
+
+//Arrays
+
+
+//Vars
+bool menuOpen; // Used to define if menus are active.
+bool equipItem = false; // Used to equip items through the menus.
+
+
+//Functions
+
+// A function to equip a given item via a menu command,
+
+void equipItem(int equipThis) {
+     if (equipItem) {
+         if (Link->Item[equipThis] == false){
+             Link->Item[equipThis] = true;
+             equipItem = false;
+         }
+         else if (Link->Item[equipThis] == true) {
+             Link->Item[equipThis] = false;
+             equipItem = false;
+             
+         }
+     }
+}
+     
+
+
+
+//Scripts

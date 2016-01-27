@@ -1,0 +1,542 @@
+/////////////////////////////////////
+///    Enemy Vulnerabilities      ///
+/// Modified from: the Gibdo Burn ///
+///      Script by Avataro        ///
+///       and MoscowModder        ///
+/// Combined with the FFC Trigger ///
+///    Script by: grayswandir     ///
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/// Place on screen with an enemy, so that if it is killed by a specific type of weapon   ///
+/// it spawms a different enemy. or produces a different effect.                          ///
+/// D0: Enemy Number of SOurce Enemy to Affect.                                           ///
+/// D1: Enemy to Replace D0 with on Contact with Trigger.                                 ///
+/// D2: Trigger - Positive Number for Specific Item Number; Negative Number of LW Type.   ///
+/////////////////////////////////////////////////////////////////////////////////////////////
+/// Place one FFC of this script on the screen for each enemy to affect by it.            ///
+/// You can cascade this by setting the replacement enemy type as a source type in        ///
+/// a second instance of this FFC.                                                        ///
+/// THis can be especially useful for spells: You can have enemies that are outwardly     ///
+/// invincible, but are changed once affected by a spell or item. You can use the same    ///
+/// sprite, or a variation of itl to reflect the change int he state of the enemy, or to  ///
+/// make the change invisible to the player.                                              ///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+
+ 
+
+
+//Trigger is a specific item (item number in editor).
+//Vulnerability is an item class (LW Type).
+
+ffc script specialEnemyVulnerabilityII{
+    void run (int enemy0, int enemy1, int enemy2, int enemy3, int enemy4, int enemy5, int trigger_vulnerability, int switches){
+    
+    int enemy0old = GetValue4High(enemy0); //max 255
+    int enemy0new = GetHighArgument(enemy0); //max 0255
+	 //D0: (999).(x999)
+     
+    int enemy1old = GetValue4High(enemy1); //max 255
+    int enemy1new = GetHighArgument(enemy1); //max 0255
+	 //D1: (999).(x999)
+     
+    int enemy2old = GetValue4High(enemy2); //max 255
+    int enemy2new = GetHighArgument(enemy2); //max 0255
+	 //D2: (999).(x999)
+     
+    int enemy3old = GetValue4High(enemy3); //max 255
+    int enemy3new = GetHighArgument(enemy3); //max 0255
+	 //D3: (999).(x999)
+     
+    int enemy4old = GetValue4High(enemy4); //max 255
+    int enemy4new = GetHighArgument(enemy4); //max 0255
+	 //D4: (999).(x999)
+     
+    int enemy5old = GetValue4High(enemy5); //max 255
+    int enemy5new = GetHighArgument(enemy5); //max 0255
+	 //D5: (999).(x999)
+	 
+    int trigger = GetValue4High(trigger_vulnerability); //max 999
+    int vulnerability = GetHighArgument(trigger_vulnerability); //max 0999
+	 //D6: (999).(x999)
+
+    int switch0 = GetDigit(switches, 4);
+    int switch1 = GetDigit(switches, 3);
+    int switch2 = GetDigit(switches, 2);
+    int switch3 = GetDigit(switches, 1);
+    int switch4 = GetDigit(switches, 0);
+    int switch5 = GetDigit(switches, -1);
+    int switch6 = GetDigit(switches, -2);
+    int switch7 = GetDigit(switches, -3);
+    int switch8 = GetDigit(switches, -4);
+//
+// Switch:		Decimal Place:					Value Range:
+//    0			#xxxx.xxxx	(Ten-Thousands)		   0-to-2
+//    1			x#xxx.xxxx	(Thousands)			   0-to-9
+//    2			xx#xx.xxxx	(Hundreds)			   0-to-9
+//    3			xxx#x.xxxx	(Tens)				   0-to-9
+//    4			xxxx#.xxxx	(Ones)				   0-to-9
+//    5			xxxxx.#xxx	(Tenths)			   0-to-9
+//    6			xxxxx.x#xx	(Hundredths)		   0-to-9
+//    7			xxxxx.xx#x	(Thousandths)		   0-to-9
+//    8			xxxxx.xxx#	(Ten-Thousandths)	   0-to-9
+
+
+    int haveItem;
+    int haveTFpiece;
+    int triggerAndVulnerability;
+    int triggerAndLevel;
+    int vulnerabilityAndLevel;
+    int triggerAndLevelAndVulnerability;
+    
+    int none;
+    
+    bool levelRequired = false;
+    bool TF_Required = false;
+    bool itemRequired = false;
+    bool triggerBool = false;
+    bool vulnerabilityBool = false;
+    
+    bool haveTF = false;
+    bool isLevel = false;
+    bool hasItem = false;
+    
+    bool changeCause = false;
+ //   int cause;
+    
+ //   if ( switch8 == 0)  {
+ //   triggerBool = false;
+ //   vulnerabilityBool = false;
+ //   }
+ //   if ( switch8 == 1)  {
+ //   triggerBool = true;
+ //   vulnerabilityBool = false;
+ //   }
+ //   if ( switch8 == 2)  {
+ //   triggerBool = false;
+ //   vulnerabilityBool = true;
+ //   }
+ //   if ( switch8 == 3)  {
+ //   triggerBool = true;
+ //   vulnerabilityBool = true;
+ //   }
+ //   if ( switch8 == 4 ) {
+ //   cause = none;
+ //   }
+ //   if ( switch8 == 5 ) {
+ //   cause = trigger;
+ //   }
+ //   if ( switch8 == 6 ) {
+ //   cause = vulnerability;
+ //   }
+
+//Sets the main operator, whether it is or is not level dependant:
+//if the enemy should always be changed, set this to none. 
+    
+  //  xxxxx.xxx0
+
+////////////////////////////////////////////////////////////////
+/// Switch 7: Set flag for item, level, and TF requirements. ///
+////////////////////////////////////////////////////////////////
+/// FLAG    TFORCE      LEVEL   ITEM  /// 
+/// 0 :     FALSE       FALSE   FALSE ///
+/// 1 :     TRUE        FALSE   FALSE ///
+/// 2 :     FALSE       TRUE    FALSE ///
+/// 3 :     TRUE        TRUE    FALSE ///
+/// 4 :     FALSE       FALSE   TRUE  ///
+/// 5 :     TRUE        FALSE   TRUE  ///
+/// 6 :     FALSE       TRUE    TRUE  ///
+/// 7 :     TRUE        TRUE    TRUE  ///
+/////////////////////////////////////////
+    
+    if ( switch7 == 0)  {
+    itemRequired = false;
+    levelRequired = false;
+    TF_Required = false;
+    }
+    if ( switch7 == 1 ) {
+    itemRequired = true;
+    levelRequired = false;
+    TF_Required = false;
+    }
+    if ( switch7 == 2)  {
+    itemRequired = false;
+    levelRequired = true;
+    TF_Required = false;
+    }
+    if ( switch7 == 3 ) {
+    itemRequired = true;
+    levelRequired = true;
+    TF_Required = false;
+    }
+    if ( switch7 == 4 ) {
+    itemRequired = false;
+    levelRequired = false;
+    TF_Required = true;
+    }
+    if ( switch7 == 5 ) {
+    itemRequired = true;
+    levelRequired = false;
+    TF_Required = true;
+    }
+    if ( switch7 == 6 ) {
+    itemRequired = false;
+    levelRequired = true;
+    TF_Required = true;
+    }
+    if ( switch7 == 7 ) {
+    itemRequired = true;
+    levelRequired = true;
+    TF_Required = true;
+    }
+    
+    //  xxxxx.xx0x
+    
+    int TFLevel = switch6; // Set the level of the TF piece, 1 to , if it is required.
+    bool TFLevelRequired = Game->LItems[TFLevel];
+  //  if ( Game->LItem[TFLevel]&LI_TRIFORCE == LI_TRIFORCE ) {
+  // if ( TFLevelRequired == true )
+
+//  xxxxx.x#xx value 0 (for none) or 1 to 8. 
+
+//Switches 4-through-6: Sets the item number for the required item (if any), 
+//either as an item is true, as a trigger, or as a vulnerability
+
+    int requireThisItem = GetValue3Lower567(switches);
+
+//  xxxx#.##xx Value 000 to 999
+
+    
+//Switches 2-and-3: Sets the minimum character level for the change to occur (if any)
+    int requireTheLevel = GetValue223(switches);
+
+//  xx##x.xxxx Value 00 - 99
+    
+    
+// Switch 1: Sets additional, conditional effect (from list, or user defined).
+    int effect = switch1;
+    
+    //Continue HP. If set to 1, the replacement enemy will have the same hP as the enemy that it replaces
+    //If set to 2, the enemy will have 2x the HP of the enemy it replaces.
+
+//  x#xxx.xxxx
+
+// Switch 0: Sets additional, conditional cause (user defined).
+    int cause = switch0;
+
+//  #xxxx.xxxx
+
+
+
+
+
+    
+ //   if ( trigger == true && vulnerability == true ){
+ //   }
+    
+    
+    
+    //if ( switch 7 == 0 ) {
+    //cause = haveitem;
+    //}
+    //if (switch 7 == 0 ) {
+    //cause = haveTFPiece;
+    //}
+     
+        while(true){
+        
+            if ( Link->Item[haveItem] == true ) {
+                hasItem = true;
+            }
+
+            if ( Game->LItems[TFLevel]&LI_TRIFORCE ) {
+                haveTF = true;
+            }
+
+            if ( Game->Counter[CR_LEVEL] >= requireTheLevel ) {
+                isLevel= true;
+            }
+
+            if ( itemRequired == true && hasItem == true && levelRequired == false && TF_Required == false ){
+                changeCause == true;
+            }
+            if ( itemRequired == false && levelRequired == true && isLevel == true && TF_Required == false ){
+                changeCause == true;
+            }
+            
+            if ( itemRequired == true && hasItem == true && levelRequired == true && isLevel == true && TF_Required == false ){
+                changeCause == true;
+            }
+            
+            if ( itemRequired == false && levelRequired == false && TF_Required == true && haveTF == true ) {
+                changeCause == true;
+            }
+            
+
+            if ( itemRequired == true && hasItem == true && levelRequired == false && TF_Required == true && haveTF == true ){
+                changeCause == true;
+            }
+            
+            if ( itemRequired == false && levelRequired == true && isLevel == true && TF_Required == true && haveTF == true ) {
+                changeCause == true;
+            }
+            
+            if ( itemRequired == true && hasItem == true && levelRequired == true && isLevel == true && TF_Required == true && haveTF == true ) {
+                changeCause == true;
+            }
+            
+            for(int i = 1; i < Screen->NumNPCs(); i++){ //Check every enemy
+                npc enem = Screen->LoadNPC(i);
+
+                
+                ///Enemy 0
+                if(enem->ID == enemy0old){ //If it's a the enemeny editor number of enemy0
+                for(int j = 1; j < Screen->NumLWeapons(); j++){ //Check every weapon
+                        lweapon weap = Screen->LoadLWeapon(j);
+                        if (weap->CollDetection && Collision(enem, weap)) { //if the LW touches the enemy,
+                            if (IsFromItem(weap, trigger)) { // If LW is from right item type.
+                               npc e0new = CreateNPCAt(enemy0new, enem->X, enem->Y); //Create the replacement enemy
+                               if ( effect == 1 ) {
+                               e0new->HP = enem->HP; //Set its HP to the same as the original enemy (optional; can remove this)
+                               }
+                               Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if (IsFromItemClass(weap, vulnerability)) {
+                            npc e0new = CreateNPCAt(enemy0new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e0new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if ( changeCause == true ) {
+                            npc e0new = CreateNPCAt(enemy0new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e0new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                        }
+                    }
+                }  // end main if for enemy check (enemy 0).
+                
+                ///Enemy 1
+                if(enem->ID == enemy1old){ //If it's a the enemeny editor number of enemy1
+                for(int j = 1; j < Screen->NumLWeapons(); j++){ //Check every weapon
+                        lweapon weap = Screen->LoadLWeapon(j);
+                        if (weap->CollDetection && Collision(enem, weap)) { //if the LW touches the enemy,
+                            if (IsFromItem(weap, trigger)) { // If LW is from right item type.
+                               npc e1new = CreateNPCAt(enemy1new, enem->X, enem->Y); //Create the replacement enemy
+                               if ( effect == 1 ) {
+                               e1new->HP = enem->HP; //Set its HP to the same as the original enemy (optional; can remove this)
+                               }
+                               Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if (IsFromItemClass(weap, vulnerability)) {
+                            npc e1new = CreateNPCAt(enemy1new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e1new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if ( changeCause == true ) {
+                            npc e1new = CreateNPCAt(enemy1new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e1new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                        }
+                    }
+                }  // end main if for enemy check (enemy 1).
+                
+                
+                ///Enemy 2
+                if(enem->ID == enemy2old){ //If it's a the enemeny editor number of enemy2
+                for(int j = 1; j < Screen->NumLWeapons(); j++){ //Check every weapon
+                        lweapon weap = Screen->LoadLWeapon(j);
+                        if (weap->CollDetection && Collision(enem, weap)) { //if the LW touches the enemy,
+                            if (IsFromItem(weap, trigger)) { // If LW is from right item type.
+                               npc e2new = CreateNPCAt(enemy2new, enem->X, enem->Y); //Create the replacement enemy
+                               if ( effect == 1 ) {
+                               e2new->HP = enem->HP; //Set its HP to the same as the original enemy (optional; can remove this)
+                               }
+                               Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if (IsFromItemClass(weap, vulnerability)) {
+                            npc e2new = CreateNPCAt(enemy2new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e2new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if ( changeCause == true ) {
+                            npc e2new = CreateNPCAt(enemy2new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e2new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                        }
+                    }
+                }  // end main if for enemy check (enemy 2).
+                
+                /// Enemy 3
+                if(enem->ID == enemy3old){ //If it's a the enemeny editor number of enemy3
+                for(int j = 1; j < Screen->NumLWeapons(); j++){ //Check every weapon
+                        lweapon weap = Screen->LoadLWeapon(j);
+                        if (weap->CollDetection && Collision(enem, weap)) { //if the LW touches the enemy,
+                            if (IsFromItem(weap, trigger)) { // If LW is from right item type.
+                               npc e3new = CreateNPCAt(enemy3new, enem->X, enem->Y); //Create the replacement enemy
+                               if ( effect == 1 ) {
+                               e3new->HP = enem->HP; //Set its HP to the same as the original enemy (optional; can remove this)
+                               }
+                               Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if (IsFromItemClass(weap, vulnerability)) {
+                            npc e3new = CreateNPCAt(enemy3new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e3new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if ( changeCause == true ) {
+                            npc e3new = CreateNPCAt(enemy3new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e3new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                        }
+                    }
+                }  // end main if for enemy check (enemy 3).
+                
+                ///Enemy 4
+                if(enem->ID == enemy4old){ //If it's a the enemeny editor number of enemy4
+                for(int j = 1; j < Screen->NumLWeapons(); j++){ //Check every weapon
+                        lweapon weap = Screen->LoadLWeapon(j);
+                        if (weap->CollDetection && Collision(enem, weap)) { //if the LW touches the enemy,
+                            if (IsFromItem(weap, trigger)) { // If LW is from right item type.
+                               npc e4new = CreateNPCAt(enemy4new, enem->X, enem->Y); //Create the replacement enemy
+                               if ( effect == 1 ) {
+                               e4new->HP = enem->HP; //Set its HP to the same as the original enemy (optional; can remove this)
+                               }
+                               Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if (IsFromItemClass(weap, vulnerability)) {
+                            npc e4new = CreateNPCAt(enemy4new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e4new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if ( changeCause == true ) {
+                            npc e4new = CreateNPCAt(enemy4new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e4new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                        }
+                    }
+                }  // end main if for enemy check (enemy 4).
+                
+                /// Enemy 5
+                
+                if(enem->ID == enemy5old){ //If it's a the enemeny editor number of enemy5
+                for(int j = 1; j < Screen->NumLWeapons(); j++){ //Check every weapon
+                        lweapon weap = Screen->LoadLWeapon(j);
+                        if (weap->CollDetection && Collision(enem, weap)) { //if the LW touches the enemy,
+                            if (IsFromItem(weap, trigger)) { // If LW is from right item type.
+                               npc e5new = CreateNPCAt(enemy5new, enem->X, enem->Y); //Create the replacement enemy
+                               if ( effect == 1 ) {
+                               e5new->HP = enem->HP; //Set its HP to the same as the original enemy (optional; can remove this)
+                               }
+                               Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if (IsFromItemClass(weap, vulnerability)) {
+                            npc e5new = CreateNPCAt(enemy5new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e5new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                            
+                            else if ( changeCause == true ) {
+                            npc e5new = CreateNPCAt(enemy5new, enem->X, enem->Y); //Create the replacement enemy.
+                            if ( effect == 1 ) {
+                            e5new->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            }
+                            Remove(enem); //Remove original enemy.
+                            }
+                        }
+                    }
+                }  // end main if for enemy check (enemy 5).
+                
+                Waitframe();
+            }
+        }
+    }
+}
+
+
+
+
+/////////////////////////
+/// GLobal Components ///
+/////////////////////////
+
+const int NPC_MISC_DIGIVOLVED = 0; //Valid values 0-7
+const int DIGIVOLVE = 5; //Set this to the item required to DigiVolve enemies.
+const int DIGIVOLVE_TF = 1; //Set this to the TF Piece required to DigiVolve enemies. 
+//Best to use DIGIVOLVE above and attach that item to a TF piece.
+
+
+void digiVolveEnemies() {
+
+//When changing - From MM
+//if(enemy1->Misc[NPC_MISC_EVOLVED == 0)
+//    enemy2->Misc[NPC_MISC_EVOLVED] = 1;
+
+    for(int i = 1; i < Screen->NumNPCs(); i++){ //Check every enemy on the screen.
+        npc enemy1 = Screen->LoadNPC(i); //Set variable to all enemies.
+            
+            //Need to real all enemy editor numbers, and store them.
+            //Need to change all enemies on a screen to +1 enemy editor number.
+            
+        int enemy1number = ( enemy1->ID );
+        int enemy2number = ( enemy1number + 1 );
+            
+        if ( Link->Item[DIGIVOLVE] == true && enemy1->Misc[NPC_MISC_DIGIVOLVED] == 0 ){
+        npc enemy2 = CreateNPCAt(enemy2number, enemy1->X, enemy1->Y); //Create enemyReplace at their position.
+        enemy2->Misc[NPC_MISC_DIGIVOLVED] = 1;
+            Remove(enemy1); //Remove enemyOriginal
+            if ( Link->Action == LA_SCROLLING ) {
+            enemy2->Misc[NPC_MISC_DIGIVOLVED] = 0;
+            }
+        }
+        
+        
+            
+            
+  //      else if ( Game->LItems[DIGIVOLVE_TF]&LI_TRIFORCE && enemy1->Misc[NPC_MISC_DIGIVOLVED] == 0 ){
+  //      npc enemy2 = CreateNPCAt(enemy2number, enemy1->X, enemy1->Y); //Create enemyReplace at their position.
+  //      enemy2->Misc[NPC_MISC_DIGIVOLVED] = 1;
+  //          Remove(enemy1); //Remove enemyOriginal
+  //      }
+        
+  //      Waitframes(1);
+            
+            
+    }
+}

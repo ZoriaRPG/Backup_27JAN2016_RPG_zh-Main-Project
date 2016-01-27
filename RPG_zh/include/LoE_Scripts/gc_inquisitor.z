@@ -1,0 +1,55 @@
+void inquisitor(){
+    //Imperial Inquisitor Menus
+    //Play at start of gane.
+    //Use character window.
+    //Ask player:
+    
+    int string1[]="have you played this scenareo in the past?@26"
+    int string2[]="@choice(1)Yes.@tab(56)@choice(2)No.@26@26"
+    int string3[]="Select yoyr answer with the 'A' Button.@domenu@end"
+    
+    if ( choice == 1 ) {
+    int answer;
+    int correct;
+    bool test1Correct;
+    bool test2Correct;
+    int test1[]="By decree of his imperial majesty, the inquisitor is required to verify your skills@26."
+    int test2[]="Please answer the following question:@26"
+    int path = Rand(1,4);
+    //Run first test, 1/4 paths
+    
+    //test1
+    if (path == 1){
+        int test3[]="Which button opens the main menu?@26@26";
+        int test4[]="@choice(1)A@tab(56)choice(2)B@26@choice(3)L@tab26@choice(4)R@26";
+        int test5[]=@choice(5)Ex1@tab(56)@choice(6)Ex2@26@choice(7)Ex3@tab(56)@choice(8)Ex4@26";
+        int test6[]=@26@choice(9)I'm not sure.@26@choice(10)None of the above.@domenu@done";
+        
+    //test 2    
+    if (path == 2) {
+        int test7[]="What button is a shortcut to look at items, or speak to people?@26@26"
+        int test8[]="@choice(1)A@tab(56)choice(2)B@26@choice(3)L@tab26@choice(4)R@26";
+        int test9[]=@choice(5)Ex1@tab(56)@choice(6)Ex2@26@choice(7)Ex3@tab(56)@choice(8)Ex4@26";
+        int test10[]=@26@choice(9)I'm not sure.@26@choice(10)None of the above.@domenu@done";
+        
+    if (path == 3) {
+        int test11[]="What button closes a menu?@26@26"
+        int test12[]="@choice(1)A@tab(56)choice(2)B@26@choice(3)L@tab26@choice(4)R@26";
+        int test13[]=@choice(5)Ex1@tab(56)@choice(6)Ex2@26@choice(7)Ex3@tab(56)@choice(8)Ex4@26";
+        int test14[]=@26@choice(9)I'm not sure.@26@choice(10)None of the above.@domenu@done";
+        
+    if ( path == 4) {
+        int test15[]="What button is a shortcut to buy items, or take objects?@26@26"
+        int test16[]="@choice(1)A@tab(56)choice(2)B@26@choice(3)L@tab26@choice(4)R@26";
+        int test17[]=@choice(5)Ex1@tab(56)@choice(6)Ex2@26@choice(7)Ex3@tab(56)@choice(8)Ex4@26";
+        int test18[]=@26@choice(9)I'm not sure.@26@choice(10)None of the above.@domenu@done";
+        
+        
+//    int reRand(int min, int max, int exclude){
+//        do{
+//            int value = Rand(min, max);
+//        }
+//            while(value < min || value = exclude);
+//            return value;
+//        }
+    

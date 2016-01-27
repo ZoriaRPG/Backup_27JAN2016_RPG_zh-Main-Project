@@ -1,0 +1,61 @@
+//D0: Damage to deal
+//D1: Weap/Misc sprite to use (34 is golden arrow sprite)
+//D2: Magic required (expended as you start charging) (8)
+//D3: Speed of the arrow (same scale as enemy step speed) (500 for normal; 2500 for super)
+//D4: # of the FFC script (check as you assign it to a slot)
+//D5 Colour of Flash (suggest 1)
+//D6 Duration of Flash (suggest 45)
+//D7 MP Cost to use
+
+item script RodOfCalmen{
+    void run(int basePower, int arrowSprite, int magicCost, int speed, int Script_ID, int Color, int Duration){
+	 int screenDamage = ( diePerLevel(3,10) % 4 );
+    if ( screenDamage < 1 ) {
+        screenDamage = 1;
+    }
+    
+   currentDamage = diePerLevel(basePower,0);
+    
+    int power = currentDamage;
+     
+     if (Game->Counter[CR_MAGIC] > magicCost) //Fill in the numbers for magic consumption and number of projectiles allowed on screen
+        {
+	
+	 Game->Counter[CR_MAGIC] -= magicCost;
+	
+
+        
+	
+		int startX;
+        int startY;
+        int startHP = Link->HP;
+        lweapon calmen;
+        Game->PlaySound(ThunderSFX);
+        startX = Link->X+8;
+        startY = Link->Y+8;
+        Link->Action = LA_ATTACKING;
+        calmen = NextToLink(LW_SCRIPT3, 8);                        //Create in front of Link
+        calmen->UseSprite(arrowSprite);                            //Graphics (invisible)
+        calmen->Damage = power;                                    //Damage
+        calmen->Step = speed;                                    //Speed
+		//RunFFCScript(Script_ID, args);
+		}
+		else{
+    Game->PlaySound(SFX_ERROR); //If out of MP, play ERROR SOund Effects.
+    }
+    }
+}
+
+
+
+//this ffc script adds the flashing functionality for the spell "Thunder".
+ffc script Calmen_Functionality{
+    void run(int color, int duration){
+	
+        while(duration > 0){
+            if(duration % 2 == 0) Screen->Rectangle(6, 0, 0, 256, 172, color, 1, 0, 0, 0, true, 64);
+            duration--;
+            Waitframe();
+        }
+    }
+}

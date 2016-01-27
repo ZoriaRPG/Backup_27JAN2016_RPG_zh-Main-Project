@@ -1,0 +1,83 @@
+//Section 2. Functions- Placement or Purpose Unknown
+
+//DrawEnemyDamageFinal.zs
+
+StoreEnemyHP()
+
+//This function is designed to draw numeric values representing the damage an enemy took per hit. It should run immediately prior to Waitdraw(), after StoreEnemyHP(). 
+//X and Y offset are how far from the enemy to draw the numbers. 
+//The function will NOT draw damage if an enemiy DIES! It will draw only if the enemy remains alive after being damaged!
+//A message string on-screen will cause a glitch, displaying the last diff value at pos x0/y0, if it appears immediately after an enemy dies. 
+//We need to give messages one pre-frame, with a Waitframes(1) on the message functions, to allow this to clear.
+DrawDamage(int showFor, int thisLayer, int xOffset, int yOffset, int useFont, int damageColour, int healColour, int bgColour, int widthPX, int heightPX, int floatingPlaces, int opacity, bool outline, int outlineLayer, int outlineColour){ //Place after Waitdraw() ?
+
+//NextBlockSecret.zs	
+NextBlockSecret()//I'm not entirely sure how this is supposed to work.
+
+//Playersprite_arrs
+PlayerTilesCopied(int setting)//Unknown.
+
+PlayerTilesRestored(int setting)//Unknown
+
+detonateSpell()//detonate_spell.z
+
+doubleSwords//I don't know if this works or not. Before Waitdraw anyways.
+
+digiVolveEnemies()//Evolves enemies as you progress through the game.
+
+//Each of the next set of functions sets one item in an array of bools to true.
+
+setDalekAppearance()
+
+setDalekLanding() 
+
+setDalekEmerge()
+
+setDalekFirstExtermination()
+
+setDalekConquest() 
+
+setDalekShipOpen() 
+
+setDalekSupremeDalekDead()
+
+setDalekShipStolen()
+
+//Same as above, but as integers.
+
+setDalekAppearanceAsInt()
+
+setDalekLandingAsInt() 
+
+setDalekEmergeAsInt()
+
+setDalekFirstExterminationAsInt()
+
+setDalekConquestAsInt() 
+
+setDalekShipOpenAsInt() 
+
+setDalekSupremeDalekDeadAsInt()
+
+setDalekShipStolenAsInt()
+
+//These functions may not be finished.
+
+//This functions needs to be updated to use OwnsItems, and needs to be checked against backup routines. 
+swordOfLightSwitcher()
+
+cigarActive()
+
+//What to do after teleporting.
+
+afterTeleport()
+
+//Working stuff
+
+SET_SCRIPT_DEFENSE(int lw, int npcid, int value)		//ARGUMENTS: Script weapon number, ID of the NPC with the defense, NPC defense type (Use the NPCD_ constants from std.zh)
+
+CLEAR_SCRIPT_DEFENSE(int line)//Clears the scripted defenses. Uses a array.
+
+doenemyhit(int m)//Misc index of npc.
+
+Set_Weapon_Damage(int index)//Set weapon damage based on npc misc index. Or set value of index.

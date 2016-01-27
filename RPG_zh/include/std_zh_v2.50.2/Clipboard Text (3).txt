@@ -1,0 +1,13 @@
+// Specifically, return the y component of a line with a length of 1 extending
+// in the given direction from origin.
+int DirY(int dir) {
+    // Is a diagonal.
+    if (dir & 100b) {
+        return Cond(dir & 010b, 0.7071, -0.7071);
+    }
+    // Is vertical.
+    if (!(dir & 010b)) {
+        return Cond(dir & 001b, 1, -1);
+    }
+    return 0;
+}

@@ -1,0 +1,11 @@
+const int BACKUP_LINK_TILES = 32000; //First tile for backup tiles.
+
+void WriteLinkTile(int firstTile){
+	//rEADS PRESENT TILE USED BY lINK
+//Uses CopyTile to make backup of original tile to specified location	
+	//Then  copies specied tile to Tile used by Link
+	//effectivel changing Link->Tile
+}
+
+int LinkTileOnExit[256]; //Store Link tiles on exit in array.
+

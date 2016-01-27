@@ -1,0 +1,17 @@
+//Game Constants Array
+
+int gameConstants[] = { } //Initialise with elements for each constant
+
+value = gameConstants[0] //Specify element. 
+
+globalIntsArray[] = { } //Initialise with values for each int variable. 
+
+
+//Set value:
+globalIntsArray[0] = 1; //0 = array posiyion, 1 = new value.
+
+value = globalIntsArray[0]; //0 = element position.  
+
+int levelStrings[21] = { 59, 59, 59, 59, 60, 59, 59, 59, 59, 61, 59, 59, 59, 59, 59, 62, 59, 59, 59, 63. 85 };
+
+

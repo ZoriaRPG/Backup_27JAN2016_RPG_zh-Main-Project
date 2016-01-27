@@ -1,0 +1,151 @@
+//Savestating Extension
+
+//List the values that we need to save
+
+//!Screen combos. 176 of these, * D, F, I, C, S * 7 layers
+int ScreenCombosSave[176*5*7];
+int BackupScreenCombos[]
+
+//const int SAVE_SCREEN_COMBOS_LAYER = 
+const int SAVE_SCREEN_COMBOS_C = 3;
+const int SAVE_SCREEN_COMBOS_D = 0;
+const int SAVE_SCREEN_COMBOS_I = 2;
+const int SAVE_SCREEN_COMBOS_F = 1;
+const int SAVE_SCREEN_COMBOS_S = 4;
+
+void BackupScreenCombos(){
+	for ( int q = 0; q < 7; q++ ) {
+		for ( int w = 0; w < 176; w++ ) {
+			BackupScreenCombos[q*w+SAVE_SCREEN_COMBOS_D] = GetLayerComboD(q,w);
+			BackupScreenCombos[q*w+SAVE_SCREEN_COMBOS_F] = GetLayerComboF(q,w);
+			BackupScreenCombos[q*w+SAVE_SCREEN_COMBOS_I] = GetLayerComboI(q,w);
+			BackupScreenCombos[q*w+SAVE_SCREEN_COMBOS_S] = GetLayerComboS(q,w);
+			BackupScreenCombos[q*w+SAVE_SCREEN_COMBOS_C] = GetLayerComboC(q,w);
+		}
+	}
+}
+
+void RestoreScreenCombos(){
+	for ( int q = 0; q < 7; q++ ) {
+		for ( int w = 0; w < 176; w++ ) {
+			SetLayerComboD(q,w,BackupScreenCombos[q*w+SAVE_SCREEN_COMBOS_D]);
+			SetLayerComboF(q,w,BackupScreenCombos[q*w+SAVE_SCREEN_COMBOS_F]);
+			SetLayerComboI(q,w,BackupScreenCombos[q*w+SAVE_SCREEN_COMBOS_I]);
+			SetLayerComboC(q,w,BackupScreenCombos[q*w+SAVE_SCREEN_COMBOS_C]);
+			if ( q < 2 ) SetLayerComboS(q,w,BackupScreenCombos[q*w+SAVE_SCREEN_COMBOS_S]);
+				//Setting solidity on layers above 1, freezes ZC. 
+		}
+	}
+}
+
+
+//!Screen Enemies 
+
+void BackupScreenEnemies(){
+	int lanmola_segs;
+	for ( int q = 0; q < Screen->NumNPCs(); q++ ) {
+		
+		//Check enemy Types. Segmented enemies need their own checks by type. 
+		
+		
+		
+	}
+	
+}
+
+const int SAVE_ENEMY_ID = 0
+const int SAVE_ENEMY_X = 1
+const int SAVE_ENEMY_Y = 2
+const int SAVE_ENEMY_Z = 3
+const int SAVE_ENEMY_DIR = 4
+const int SAVE_ENEMY_HP = 5
+const int SAVE_ENEMY_SHIELD = 6
+const int SAVE_ENEMY_MISC_0 = 7
+const int SAVE_ENEMY_MISC_1 = 8
+const int SAVE_ENEMY_MISC_2 = 9
+const int SAVE_ENEMY_MISC_3 = 10
+const int SAVE_ENEMY_MISC_4 = 11
+const int SAVE_ENEMY_MISC_5 = 12 
+const int SAVE_ENEMY_MISC_6 = 13
+const int SAVE_ENEMY_MISC_7 = 14
+const int SAVE_ENEMY_MISC_8 = 15
+const int SAVE_ENEMY_MISC_9 = 16
+const int SAVE_ENEMY_MISC_10 = 17
+const int SAVE_ENEMY_MISC_11 = 18
+const int SAVE_ENEMY_MISC_12 = 19
+const int SAVE_ENEMY_MISC_13 = 20
+const int SAVE_ENEMY_MISC_14 = 21
+const int SAVE_ENEMY_MISC_15 = 22
+
+void BackupScreenEnemies(){
+	WipeEnemiesBackup();
+	for ( int q = 0; q <= Screen->NumNPCs(); q++ ) {
+	
+	}
+}
+
+void WipeEnemyBackup(){
+	for ( int q = 0; q < SizeOfArray(BackupScreenEnemies); q++ ) {
+		BackupScreenEnemies[q] = 0;
+	}
+}
+
+//Enemies[256]
+
+//Enemy ID[256]
+
+//Enemy X[256]
+
+//Enemy Y[256]
+
+//Enemy Z[256]
+
+//ENemy HP[256]
+
+//Enemy Dir
+
+//Enemy Shield[256]
+
+//Enemy Misc[16*256]
+
+BackupScreenEnemies[256*23];
+
+//!Screen Information
+
+//ScreenD[10]
+
+//Screen States[10]
+
+//!Screen FLags ?
+
+//Screen items
+
+int BackupScreenItems[1024];
+
+//Item IDs [256]
+//item X [256]
+//Item Y [256]
+//Item Z [256]
+//Item Drop or Perm?
+
+//! FFCs
+
+int ScreenFFCs[];
+
+//FFCs[32* ( 14 + 16 + flags )] all the ffc attributes * 32
+//Data
+//Script
+//CSet
+//X
+//Y
+//Vx
+//Vy
+//Ax
+//Ay
+//Flags[] ( how many ) 
+//TileWidth
+//TileHeight
+//EffectWidth
+//EffectHeight
+//Link
+//Misc[16]

@@ -1,0 +1,417 @@
+//////////////
+// Whip FFC //
+//////////////
+
+ffc script WhipFFC2{
+    void run(int hearts_pain, int hurt_stun, int tile_cset, int FFCSlot1_FFCSlot2, int lType_nouse, int sfx_errorFX, int itemnumber_eFlashFFC)
+    {
+        int hearts = GetHighArgument(hearts_pain);
+		int pain = GetLowArgument(hearts_pain);
+		int hurt = GetHighArgument(hurt_stun);
+		int stunduration = GetLowArgument(hurt_stun);
+		int tilenum = GetHighArgument(tile_cset);
+		int whipcset = GetLowArgument(tile_cset);
+		int sfx = GetHighArgument(sfx_errorFX);
+		int error_FX = GetLowArgument(sfx_errorFX);
+		int FFCSlot1 = GetHighArgument(FFCSlot1_FFCSlot2);
+		int FFCSlot2 = GetLowArgument(FFCSlot1_FFCSlot2);
+		int lType = GetHighArgument(lType_nouse);
+		int nouse = GetLowArgument(lType_nouse);
+		int itemnumber = GetHighArgument(itemnumber_eFlashFFC);
+		int eFlashFFC = GetLowArgument(itemnumber_eFlashFFC);
+		
+		// On the A button.
+    if (GetEquipmentA() == itemnumber) {
+      Cooldown_ATimer = nouse;}
+    // On the B button.
+    else if (GetEquipmentB() == itemnumber) {
+      Cooldown_BTimer = nouse;}
+		
+		Game->PlaySound(sfx);
+        lweapon whip = Screen->CreateLWeapon(LW_SCRIPT1);
+        whip->CSet = whipcset;
+        whip->NumFrames=1;
+        whip->TileWidth=1;
+        whip->TileHeight=1;
+		whip->DeadState=30;
+		
+		lweapon whip2 = Screen->CreateLWeapon(LW_SCRIPT1);
+        whip2->CSet = whipcset;
+        whip2->NumFrames=1;
+        whip2->TileWidth=1;
+        whip2->TileHeight=1;
+		whip2->DeadState=30;
+		
+		int whipTimer = 30;
+		//int whipCooldownTimer = 0;
+		
+		
+
+	while(whipTimer > 0){      
+		//if (whipCooldownTimer == 0){
+       if (Link->Dir==0)            //Link facing up
+        {
+
+			whip->X = Link->X; whip->Y = Link->Y-16;
+			whip->UseSprite(97);
+            //whip->OriginalTile = tilenum + 2;
+    //        int secondtileargs[8] = {hearts_pain, hurt_stun, tile_cset, FFCSlot1_FFCSlot2, lType_nouse, sfx_errorFX, itemnumber_eFlashFFC};
+	//		RunFFCScript(FFCSlot2, secondtileargs);
+			
+			
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip->X-8 && enem->X <= whip->X+8 &&
+                       enem->Y >= whip->Y-8 && enem->Y <= whip->Y+16)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip->X-8 && enem->X <= whip->X+8 &&
+                       enem->Y >= whip->Y-32 && enem->Y <= whip->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+            for(int j=0; j<=Screen->NumItems(); j++)
+            {
+                item itemtograb=Screen->LoadItem(j);
+                if (itemtograb->X >= whip->X-8 && itemtograb->X <= whip->X+8 &&
+                    itemtograb->Y >= whip->Y-32 && itemtograb->Y <= whip->Y+8)
+                {
+                    itemtograb->X=Link->X;
+                    itemtograb->Y=Link->Y;
+                }
+            }
+
+			whip2->X = Link->X; whip2->Y = Link->Y-32;
+            whip2->UseSprite(98);
+
+					
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip2->X-8 && enem->X <= whip2->X+8 &&
+                       enem->Y >= whip2->Y-8 && enem->Y <= whip2->Y+16)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip2->X-8 && enem->X <= whip2->X+8 &&
+                       enem->Y >= whip2->Y-32 && enem->Y <= whip2->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+            for(int j=0; j<=Screen->NumItems(); j++)
+            {
+                item itemtograb=Screen->LoadItem(j);
+                if (itemtograb->X >= whip2->X-8 && itemtograb->X <= whip2->X+8 &&
+                    itemtograb->Y >= whip2->Y-32 && itemtograb->Y <= whip2->Y+8)
+                {
+                    itemtograb->X=Link->X;
+                    itemtograb->Y=Link->Y;
+                }
+            }
+			
+			
+
+        }
+		
+		if (Link->Dir==1)            //Link facing down
+        {
+			whip->X = Link->X; whip->Y = Link->Y+16;
+            whip->UseSprite(99);
+    //        int secondtileargs[8] = {hearts_pain, hurt_stun, tile_cset, FFCSlot1_FFCSlot2, lType_nouse, sfx_errorFX, itemnumber_eFlashFFC};
+	//		RunFFCScript(FFCSlot2, secondtileargs);
+			
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip->X-8 && enem->X <= whip->X+8 &&
+                       enem->Y >= whip->Y-16 && enem->Y <= whip->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+            
+
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip->X-8 && enem->X <= whip->X+8 &&
+                       enem->Y >= whip->Y-8 && enem->Y <= whip->Y+32)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+            for(int j=0; j<=Screen->NumItems(); j++)
+            {
+                item itemtograb=Screen->LoadItem(j);
+                if (itemtograb->X >= whip->X-8 && itemtograb->X <= whip->X+8 &&
+                    itemtograb->Y >= whip->Y-8 && itemtograb->Y <= whip->Y+32)
+                {
+                    itemtograb->X=Link->X;
+                    itemtograb->Y=Link->Y;
+                }
+            }
+
+			whip2->X = Link->X; whip2->Y = Link->Y+32;
+            whip2->UseSprite(100);
+			
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip2->X-8 && enem->X <= whip2->X+8 &&
+                       enem->Y >= whip2->Y-16 && enem->Y <= whip2->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+            
+
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip2->X-8 && enem->X <= whip2->X+8 &&
+                       enem->Y >= whip2->Y-8 && enem->Y <= whip2->Y+32)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+            for(int j=0; j<=Screen->NumItems(); j++)
+            {
+                item itemtograb=Screen->LoadItem(j);
+                if (itemtograb->X >= whip2->X-8 && itemtograb->X <= whip2->X+8 &&
+                    itemtograb->Y >= whip2->Y-8 && itemtograb->Y <= whip2->Y+32)
+                {
+                    itemtograb->X=Link->X;
+                    itemtograb->Y=Link->Y;
+                }
+            }
+        }
+		
+		      if (Link->Dir==2)            //Link facing left
+        {
+			whip->X = Link->X-16; whip->Y = Link->Y;
+            whip->UseSprite(101);
+    //        int secondtileargs[8] = {hearts_pain, hurt_stun, tile_cset, FFCSlot1_FFCSlot2, lType_nouse, sfx_errorFX, itemnumber_eFlashFFC};
+	//		RunFFCScript(FFCSlot2, secondtileargs);
+			
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip->X-8 && enem->X <= whip->X+16 &&
+                       enem->Y >= whip->Y-8 && enem->Y <= whip->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip->X-32 && enem->X <= whip->X+8 &&
+                       enem->Y >= whip->Y-8 && enem->Y <= whip->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+            for(int j=0; j<=Screen->NumItems(); j++)
+            {
+                item itemtograb=Screen->LoadItem(j);
+                if (itemtograb->X >= whip->X-32 && itemtograb->X <= whip->X+8 &&
+                    itemtograb->Y >= whip->Y-8 && itemtograb->Y <= whip->Y+8)
+                {
+                    itemtograb->X=Link->X;
+                    itemtograb->Y=Link->Y;
+                }
+            }
+
+			whip2->X = Link->X-32; whip2->Y = Link->Y;
+            whip2->UseSprite(102);
+
+			
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip2->X-8 && enem->X <= whip2->X+16 &&
+                       enem->Y >= whip2->Y-8 && enem->Y <= whip2->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip2->X-32 && enem->X <= whip2->X+8 &&
+                       enem->Y >= whip2->Y-8 && enem->Y <= whip2->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+            for(int j=0; j<=Screen->NumItems(); j++)
+            {
+                item itemtograb=Screen->LoadItem(j);
+                if (itemtograb->X >= whip2->X-32 && itemtograb->X <= whip2->X+8 &&
+                    itemtograb->Y >= whip2->Y-8 && itemtograb->Y <= whip2->Y+8)
+                {
+                    itemtograb->X=Link->X;
+                    itemtograb->Y=Link->Y;
+                }
+            }
+			
+        }
+		
+		  if (Link->Dir==3)            //Link facing right
+        {
+
+			
+			whip->X = Link->X+16; whip->Y = Link->Y;
+            whip->UseSprite(103);
+     //       int secondtileargs[8] = {hearts_pain, hurt_stun, tile_cset, FFCSlot1_FFCSlot2, lType_nouse, sfx_errorFX, itemnumber_eFlashFFC};
+	//		RunFFCScript(FFCSlot2, secondtileargs);
+			
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip->X-16 && enem->X <= whip->X+8 &&
+                       enem->Y >= whip->Y-8 && enem->Y <= whip->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+			
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);
+                if(enem->X >= whip->X-8 && enem->X <= whip->X+32 &&
+                       enem->Y >= whip->Y-8 && enem->Y <= whip->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+            for(int j=0; j<=Screen->NumItems(); j++)
+            {
+                item itemtograb=Screen->LoadItem(j);
+                if (itemtograb->X >= whip->X-8 && itemtograb->X <= whip->X+32 &&
+                    itemtograb->Y >= whip->Y-8 && itemtograb->Y <= whip->Y+8)
+                {
+                    itemtograb->X=Link->X;
+                    itemtograb->Y=Link->Y;
+                }
+            }
+			
+			whip2->X = Link->X+32; whip2->Y = Link->Y;
+            whip2->UseSprite(104);
+
+			
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);    
+                if(enem->X >= whip2->X-16 && enem->X <= whip2->X+8 &&
+                       enem->Y >= whip2->Y-8 && enem->Y <= whip2->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+			
+            for(int i=0; i<=Screen->NumNPCs(); i++)
+            {
+                npc enem = Screen->LoadNPC(i);
+                if(enem->X >= whip2->X-8 && enem->X <= whip2->X+32 &&
+                       enem->Y >= whip2->Y-8 && enem->Y <= whip2->Y+8)
+                {
+                    int args[1] = {i};
+                    RunFFCScript(eFlashFFC, args);
+                    enem->HP -= (hurt / 30);
+                    enem->Stun=stunduration;
+                }
+            }
+
+            for(int j=0; j<=Screen->NumItems(); j++)
+            {
+                item itemtograb=Screen->LoadItem(j);
+                if (itemtograb->X >= whip2->X-8 && itemtograb->X <= whip2->X+32 &&
+                    itemtograb->Y >= whip2->Y-8 && itemtograb->Y <= whip2->Y+8)
+                {
+                    itemtograb->X=Link->X;
+                    itemtograb->Y=Link->Y;
+                }
+            }
+        }
+		Waitframe();
+		whipTimer--;
+		//whip->DeadState=30;	
+		
+		
+	//	}
+		}
+    }
+	
+}
+

@@ -1,0 +1,203 @@
+//v2
+
+ffc script electricRemove{
+    void run(int removeFromItem, int message, int soundFX, int dataBit){
+        bool waiting = true;
+        
+        while(waiting) {
+            if ( Link->Item[removeFromItem] == true ) {
+            
+                this->Data = 0; //Remove sprite
+                if ( Screen->D[dataBit] < 1 ) {
+                    if ( message > 0 ) {
+                        Screen->Message(message);
+                    }
+                    Game->PlaySound(soundFX);
+                    Screen->D[dataBit] = 1;
+                }
+                //waiting = false;
+                return; //Quit
+            }
+            Waitframe();
+        }
+    }
+}
+
+
+ffc script pickUpSpecialItem{
+    void run(int giveItem, int messageLook, int messagePickup, int soundFX, int dataBit, int issolid){
+        bool waitingItem = true;
+        int tho=(this->TileHeight*16-16);
+        if ( Screen->D[dataBit] > 0 ) {
+            waitingItem = false;
+        }
+        
+        while(waitingItem) {
+            if ( Screen->D[dataBit] > 0 ) {
+                this->Data = 0; //Remove sprite
+                waitingItem = false;
+                return;
+            }
+            
+           // //This enables the NPC to be solid without having to lay a solid combo under it.
+           //           if (issolid > 0){
+           //             if ((Abs(Link->X - this->X) < 10) &&
+           // (Link->Y <= this->Y+tho + 12) && (Link->Y > this->Y+tho+8)){Link->Y = this->Y+tho+12;}
+           // 
+           // if ((Abs(Link->Y - this->Y-tho) < 10) &&
+           // (Link->X >= this->X - 12) && (Link->X < this->X-8)){Link->X = this->X-12;}
+        
+           // if ((Abs(Link->X - this->X) < 10) &&
+           // (Link->Y >= this->Y+tho - 12) && (Link->Y < this->Y+tho-8)){Link->Y = this->Y+tho-12;}
+         
+           // if ((Abs(Link->Y - this->Y-tho) < 10) &&
+           // (Link->X <= this->X + 12) && (Link->X > this->X+8)){Link->X = this->X+12;}
+           //     }
+            
+            else {
+                if ( DistanceLink(this->X+8,this->Y+8) < 14 && Link->PressL ){ //If press L, display info
+                    if ( messageLook > 0) {
+                        Is(PLAYINGMESSAGE,true);
+                        Screen->Message(messageLook); //Display item info if any
+                        Link->InputL = false;
+                        Is(PLAYINGMESSAGE,false);
+                    }
+                }
+                else if ( DistanceLink(this->X+8,this->Y+8) < 14 && Link->PressR ) { //If press R, buy it
+                    if ( Link->Item[giveItem] == false ) { //Check to ensure item isn't already extant.
+                        if ( soundFX > 0 ) {
+                            Game->PlaySound(soundFX);
+                        }
+                        if ( messagePickup > 0 ) {
+                            Is(PLAYINGMESSAGE,true);
+                            Screen->Message(messagePickup);
+                        }
+                        item givenitem = Screen->CreateItem(giveItem);
+                        givenitem->X = Link->X; //Added this myself, as the original code does not seem to actually give me the item.
+                        givenitem->Y = Link->Y; //Added this myself, as the original code does not seem to actually give me the item.
+                        givenitem->Z = Link->Z; //Added this myself, as the original code does not seem to actually give me the item.
+                        Link->Action = LA_HOLD2LAND; //Added this myself, to hold item over head.
+                        Link->HeldItem = giveItem; //Added this myself, to hold item over head.
+                        Screen->D[dataBit] = 1;
+                        this->Data = 0; //Remove sprite
+                        Is(PLAYINGMESSAGE,false);
+                    }
+                
+            
+               
+                }
+                Waitframe();
+            }
+        }
+        this->Data = 0; //Remove sprite
+        if ( Screen->D[dataBit] < 1 ) {
+            Screen->D[dataBit] = 1;
+        }
+        Is(PLAYINGMESSAGE,false);
+        return; //Quit
+        
+    }
+}
+
+ffc script waitForMessage_thenRemoveFFC{
+    void run(int removeFromItem, int message, int soundFX, int dataBit){
+        bool waiting = true;
+        if ( Link->Item[removeFromItem] == true && Screen->D[dataBit] > 0 ) {
+            
+		this->TileWidth = 0;
+		this->TileHeight = 0;
+		this->EffectWidth = 0;
+		this ->EffectHeight = 0;
+		this->X = -300;
+		this->Y - -300;
+		//this->Data = 0; //Remove sprite
+            return;
+        }
+        
+        while(waiting) {
+            if ( Is(PLAYINGMESSAGE) ) {
+                Waitframe();
+            }
+            else if ( !Is(PLAYINGMESSAGE) ) {
+                if ( Link->Item[removeFromItem] == true ) {
+			this->TileWidth = 0;
+		this->TileHeight = 0;
+		this->EffectWidth = 0;
+		this ->EffectHeight = 0;
+		this->X = -300;
+		this->Y - -300;
+                    //this->Data = 0; //Remove sprite
+                    if ( Screen->D[dataBit] < 1 ) {
+                        if ( message > 0 ) {
+                            Screen->Message(message);
+                        }
+                        Game->PlaySound(soundFX);
+                        Screen->D[dataBit] = 1;
+                    }
+                    //waiting = false;
+                    return; //Quit
+                }
+                Waitframe();
+            }
+        }
+    }
+}
+
+ffc script waitForMessage_thenRemoveFFC_Rev2{
+    void run(int removeFromItem, int message, int soundFX, int dataBit){
+        bool waiting = true;
+        if ( Link->Item[removeFromItem] == true && Screen->D[dataBit] > 0 ) {
+            
+		this->TileWidth = 0;
+		this->TileHeight = 0;
+		this->EffectWidth = 0;
+		this ->EffectHeight = 0;
+		this->X = -300;
+		this->Y - -300;
+		//this->Data = 0; //Remove sprite
+            return;
+        }
+        
+        while(waiting) {
+            if ( Is(PLAYINGMESSAGE) ) {
+                Waitframe();
+            }
+            else if ( !Is(PLAYINGMESSAGE) ) {
+                if ( Link->Item[removeFromItem] == true ) {
+			this->TileWidth = 0;
+		this->TileHeight = 0;
+		this->EffectWidth = 0;
+		this ->EffectHeight = 0;
+		this->X = -300;
+		this->Y - -300;
+                    //this->Data = 0; //Remove sprite
+                    if ( Screen->D[dataBit] < 1 ) {
+                        if ( message > 0 ) {
+                            Screen->Message(message);
+                        }
+                        Game->PlaySound(soundFX);
+                        Screen->D[dataBit] = 1;
+                    }
+                    //waiting = false;
+                    return; //Quit
+                }
+                Waitframe();
+            }
+        }
+    }
+}
+
+item script pickupMessage {
+    void run(int message) {
+        if ( message > 0 ) {
+            Screen->Message(message);
+        }
+    }
+}
+
+item script pickupMessageRodofDragonfire {
+    void run(int message) {
+        Screen->Message(107);
+    }
+}
+    

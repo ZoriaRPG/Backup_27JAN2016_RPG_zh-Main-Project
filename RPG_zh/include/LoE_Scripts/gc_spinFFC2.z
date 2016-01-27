@@ -1,0 +1,22 @@
+ffc script CircularMotion2{
+    void run(int radius, int speed, int angle, int radius2, int radiusB, int speedB, int angleB, int radius2B){
+        if(radius2 == 0) radius2 = radius;
+        int x = this->X; int y = this->Y;
+        for(;true;angle++){
+            this->X = x + radius*Cos(angle*speed);
+            this->Y = y + radius2*Sin(angle*speed);
+            angle %= 360;
+            
+            this->X = x + radiusB*Cos(angle*speed);
+            this->Y = y + radius2B*Sin(angle*speed);
+            angleB %= 360;
+            
+            Waitframe();
+        }
+    }
+}
+
+//D0 is the radius
+//D1 is the speed, negative for anti-clockwise movement
+//D2 is the initial placement of the ffc, in degrees
+//D3 turns the circle into an oval, with y-radius D3 and x-radius D0. Left at 0, it will be a circle.

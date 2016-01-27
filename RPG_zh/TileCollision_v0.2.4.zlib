@@ -1,0 +1,445 @@
+//TileCollision.zh
+//v0.2.4
+
+float Vars[147414];
+const int FRAME_COUNT = 0;
+
+int ScreenNPCs[256];
+int ScreenLWeapons[256];
+int ScreenEWeapons[256];
+int ScreenItems[256];
+
+global script active{
+	void run(){
+		Vars[FRAME_COUNT] = 1; //Start of a new game, set the frame count at '1'.
+		while(true){
+			FrameCounter(); //Increase the frame count by 1 each frame, so that we can use it as a reference. 
+			Waitdraw();
+			Waitframe();
+		}
+	}
+}
+
+//Damage NPCs on Collision with Tiles by making a temporary weapon. This is the most HACKISH way to handle this. 
+bool DrawTileCollisionDamage(int damage, int weap_type, int layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	
+	//We need to adjust damage based on the weapon type. 
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		if ( ( n->X >= ( x-8 ) && n->X <= (x + (blockw*16) + 8) && n->Y >= ( x-8 ) && ->Y <= ( y + (blockh*16) + 8 ) ) ){
+		{
+			lweapon l = Screen->CreateLWeapon(weap_type);
+			l->X = n->X;
+			l->Y = n->Y;
+			l->UseSprite(0);
+			l->DeadState = WDS_DEAD;
+		}
+	}
+	
+		//! We need f->HitWidth & f->HitHeight in here. 
+	//here, we need to consider the collision box of the npc, and calculate X/Y offsets for that, too.
+	
+}
+
+
+//Store the ID of an enemy in the array when collision occurs. Damage handling must be separate. 
+bool DrawTileCollision_N(int layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	npc n;
+	int nx; int ny;
+	
+	
+		
+	
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		n = Screen->LoadNPC(q);
+		if ( n->X >= ( x-8 ) && n->X <= (x + (blockw*16) + 8) && n->Y >= ( x-8 ) && ->Y <= ( y + (blockh*16) + 8 ) );
+			ScreenNPCs[q] = n->ID;
+	}
+		//! We need f->HitWidth & f->HitHeight in here. 
+	//here, we need to consider the collision box of the npc, and calculate X/Y offsets for that, too.
+	
+}
+			
+		
+//Runs a counter so that we always know what frame we are on. 
+void FrameCounter(){
+	if ( Vars[FRAME_COUNT] <= 60 ) Vars[FRAME_COUNT]++;
+	else if Vars[FRAME_COUNT] > 60 ) Vars[FRAME_COUNT] = 1;
+}
+
+bool DrawTileCollision(npc n, int layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	return ( n->X >= ( x-8 ) && n->X + n->HitWidth <= (x + (blockw*16) + 8) && n->Y >= ( x-8 ) && n->Y + n->HitHeight <= ( y + (blockh*16) + 8 ) );
+	
+}
+
+void DamageNPC(int npc, int damage){
+	if ( !Vars[FRAME_COUNT] % 60 ) n->HP -=damage;
+}
+
+//Damage NPCs on Collision with Tiles
+bool DrawTileCollisionDamage(int damage, int layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		if ( ( n->X >= ( x-8 ) && n->X + n->HitWidth <= (x + (blockw*16) + 8) && n->Y >= ( x-8 ) && n->Y + n->HitHeight <= ( y + (blockh*16) + 8 ) ) ){
+			DamageNPC(n,damage);
+	}
+	
+		//! We need f->HitWidth & f->HitHeight in here. 
+	//here, we need to consider the collision box of the npc, and calculate X/Y offsets for that, too.
+	
+}
+
+//Draws block of tiles and returns if **Link** is in Collision with them. 
+bool DrawTileCollision(layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	return ( Link->X + Link->HitXOffset >= ( x-8 ) && Link->X + Link->HitXOffset + Link->HitWidth <= (x + (blockw*16) + 8) && Link->Y + Link->HitYOffset >= ( x-8 ) && Link->Y + Link->HitYOffset + Link->HitHeight <= ( y + (blockh*16) + 8 ) );
+}
+
+//Draws block of tiles and returns if **Link** is in Collision with them. 
+bool LinkTileCollision(layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	return ( Link->X + Link->HitXOffset >= ( x-8 ) && Link->X + Link->HitXOffset + Link->HitWidth <= (x + (blockw*16) + 8) && Link->Y + Link->HitYOffset >= ( x-8 ) && Link->Y + Link->HitYOffset + Link->HitHeight <= ( y + (blockh*16) + 8 ) );
+}
+
+//Draws a block of tiles and returns if npc 'n' is on collision with them. 
+bool DrawTileCollision(npc n, int layer, int x, int y, int tile, int blockw, int blockh, int cset,  int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	return ( n->X >= ( x-8 ) && n->X + n->HitWidth <= (x + (blockw*16) + 8) && n->Y >= ( x-8 ) && n->Y + n->HitHeight <= ( y + (blockh*16) + 8 ) );	
+}
+
+//Draws a block of tiles and returns if ffc 'f' is on collision with them. 
+bool DrawTileCollision(ffc f, int layer, int x, int y, int tile, int blockw, int blockh, int cset,  int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	return ( f->X >= ( x-8 ) && f->X + (f->TileWidth*16) <= (x + (blockw*16) + 8) && f->Y >= ( x-8 ) && f->Y + (f->TileHeight*16) <= ( y + (blockh*16) + 8 ) );	
+}
+
+//Draws a block of tiles and returns if lweapon 'l' is on collision with them. 
+bool DrawTileCollision(lweapon l, int layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	return ( l->X + l->HitXOffset >= ( x-8 ) && l->X + l->HitXOffset + l->HitWidth <= (x + (blockw*16) + 8) && l->Y + l->HitYOffset >= ( x-8 ) && l->Y + l->HitYOffset + l->HitHeight <= ( y + (blockh*16) + 8 ) );
+}
+
+//Draws a block of tiles and returns if item 'i' is on collision with them. 
+bool DrawTileCollision(item i, int layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	return ( i->X + i->HitXOffset >= ( x-8 ) && i->X + i->HitXOffset + i->HitWidth <= (x + (blockw*16) + 8) && i->Y + i->HitYOffset >= ( x-8 ) && i->Y + i->HitYOffset + i->HitHeight <= ( y + (blockh*16) + 8 ) );
+}
+
+//Draws a block of tiles and returns if npc 'e' is in collision with them. 
+//! This will pose a problem if we want to use it in for loops, as we need to know 
+//! the e pointer first, but we're already drawing.
+bool DrawTileCollision(eweapon e, int layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	return ( e->X + e->HitXOffset >= ( x-8 ) && e->X + e->HitXOffset + e->HitWidth <= (x + (blockw*16) + 8) && e->Y + e->HitYOffset >= ( x-8 ) && e->Y + e->HitYOffset + e->HitHeight <= ( y + (blockh*16) + 8 ) );
+}
+
+//Draws a block of tiles and returns the pointer ID of lweapon 'l' if it is in collision with them. 
+int DrawTileCollisionNPC(int layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	npc n;
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		n = Screen->LoadNPC(q);
+		if ( n->X + n->HitXOffset >= ( x-8 ) && n->X + n->HitXOffset + n->HitWidth <= (x + (blockw*16) + 8) && n->Y + n->HitYOffset >= ( x-8 ) && n->Y + n->HitYOffset + n->HitHeight <= ( y + (blockh*16) + 8 ) )
+			return q;
+	}
+	return 0;
+}
+
+//Draws a block of tiles and returns the ID of an ffc 'f' if it is in collision with them. 
+int DrawTileCollisionFFC(int layer, int x, int y, int tile, int blockw, int blockh, int cset,  int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	ffc f;
+	for ( int q = 1; q <= 32; q++ ) {
+		f = Screen->LoadFFC(q);
+		if ( f->X >= ( x-8 ) && f->X + (f->TileWidth*16) <= (x + (blockw*16) + 8) && f->Y >= ( x-8 ) && f->Y + (f->TileHeight*16) <= ( y + (blockh*16) + 8 ) )
+		return q;
+	}
+	return 0;
+}
+
+//Draws a block of tiles and returns the pointer ID of lweapon 'l' if it is in collision with them. 
+int DrawTileCollisionLW(int layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	lweapon l;
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ) {
+		l = Screen->LoadLWeapon(q);
+		if ( l->X + l->HitXOffset >= ( x-8 ) && l->X + l->HitXOffset + l->HitWidth <= (x + (blockw*16) + 8) && l->Y + l->HitYOffset >= ( x-8 ) && l->Y + l->HitYOffset + l->HitHeight <= ( y + (blockh*16) + 8 ) )
+			return q;
+	}
+	return 0;
+}
+
+//Draws a block of tiles and returns the pointer ID of eweapon 'e' if it is in collision with them. 
+bool DrawTileCollisionEW(int layer, int x, int y, int tile, int blockw, int blockh, int cset, int rx, int ry, int rangle, int flip, bool transparency, int opacity){
+	DrawTile(layer, x, y, tile, blockw, blockh, cset, -1, -1, rx, ry, rangle, flip, transparency, opacity);
+	eweapon e;
+	for ( int q = 1; q <= Screen->NumEWeapons(); q++ ) {
+		e = Screen->LoadEWeapon(q);
+		if ( e->X + e->HitXOffset >= ( x-8 ) && e->X + e->HitXOffset + e->HitWidth <= (x + (blockw*16) + 8) && e->Y + e->HitYOffset >= ( x-8 ) && e->Y + e->HitYOffset + e->HitHeight <= ( y + (blockh*16) + 8 ) )
+			return q;
+	}
+	return 0;
+}
+
+
+	
+//We need additional args to constrain hit size of box. int CollWidthX and int CollWidthY
+
+//DrawCombbo Collision
+
+//Draws a combo, or combo block, and returns if it is in collision with Link.
+bool DrawComboCollision( int layer, int x, int y, int combo, int w, int h, int cset, int rx, int ry, int rangle, int frame, int flip, bool transparency, int opacity){
+
+	DrawCombo(layer, x, y, combo, w, h, cset, -1, -1, rx, ry, rangle, frame, flip, transparency opacity);
+
+	return ( Link->X + Link->HitXOffset >= ( x-8 ) && Link->X + Link->HitXOffset + Link->HitWidth <= (x + (blockw*16) + 8) && Link->Y + Link->HitYOffset >= ( x-8 ) && Link->Y + Link->HitYOffset + Link->HitHeight <= ( y + (blockh*16) + 8 ) );
+
+}
+
+//Draws a combo, or combo block, and returns if it is in collision with Link.
+//! Accepts additional hitbox constraints collWidthX and collWidthY.
+bool DrawComboCollision( int layer, int x, int y, int combo, int w, int h, int cset, int rx, int ry, int rangle, int frame, int flip, bool transparency, int opacity, int collWidthX, int collWidthY){
+	
+	DrawCombo(layer, x, y, combo, w, h, cset, -1, -1, rx, ry, rangle, frame, flip, transparency opacity);
+	
+	return ( Link->X + Link->HitXOffset >= (x + (blockw*16) + 8 + collWidthX) && Link->X + Link->HitXOffset + Link->HitWidth <= (x + (blockw*16) + 8) && Link->Y + Link->HitYOffset >= ( x-8 ) && Link->Y + Link->HitYOffset + Link->HitHeight <= ( y + (blockh*16) + 8 + collWidthY) );
+}
+
+
+//! ### If n collided with this last frame, check if there are any other collisions. 
+//! if so, return the first of those, and so forth. 
+//! otherwise, return whatever it hit.
+
+//Very preliminary function for circular combo or tile collision. Note that the maths here are placeholders, and incorrect. 
+bool DrawCircularComboCollision( int layer, int x, int y, int combo, int w, int h, int cset, int rx, int ry, int rangle, int frame, int flip, bool transparency, int opacity){
+	int lx = Link->X; //So that we can modify them to adjust for things, if needed.
+	int ly = Link->Y;
+	int lx = Link->Z; //We should have a separate function with int UseZ, for this.
+	int cmbX = x+w;
+	int cmbY = x+h;
+	int xrad = cmbx / 2; //Use these to gauge distance from the effect.
+	int yrad = cmbY / 2;
+	
+	bool matchX;
+	bool matchY;
+	
+	
+	DrawCombo(layer, x, y, combo, w, h, cset, -1, -1, rx, ry, rangle, frame, flip, transparency opacity);
+	int collBoxX = x + (w*16);
+	int collBoxY = y + (h*16);
+	//if ( ( lx <= collBoxX-4 && lx > collBoxX-5 ) || ( lx >= collBoxX +12 && lx < collBoxX+13 ) ) matchX = true;
+	//if ( ( ly <= collBoxY-4 && ly > collBoxY-5 ) || ( ly >= collBoxY +12 && ly < collBoxY+13 ) ) matchY = true;
+	//if ( matchX && matchY ) return true;
+	if ( Distance( LinkCenterX(), LinkCenterY(), cmbX, cmbY ) <= 8+xrad ) return true;
+	return false;
+}
+
+//////////////////////////////////
+/// Enemy Invincibility Frames ///
+//////////////////////////////////
+
+//Settings for Enemy Invincibility Frames
+const int ENEMY_INVINCIBILITY_FRAMES_DURATION = 180;
+const int INVINCIBLE_ENEMIES_PHANTOM = 1; //Setting to enable or disable phantoming injured enemies.
+const int STORE_ORIGINAL_ENEMY_PALETTE = 1; //Setting to enable storing original enemy palette or cset. 
+
+//You may enable *ONE* of these two rules, to match your quest rule settings. 
+//! If one is enabled, the other MUST be disabled. 
+const int ENEMIES_FLICKER_WHEN_HIT = 0; //Use the OriginalSprite, and store it instead of CSet or BPal
+const int ENEMIES_FLASH_WHEN_HIT = 0; //Use the CSet or BPal to make an enemy flash, when hit. 
+
+//Values For Enemy Invincibility Frames
+
+//n->Misc Indices
+const int ENEM_HP_LAST = 1; //n->Mics[] holds last enemy HP. Adjusted when damaged. 
+const int ENEM_INV_FRAMES = 2; //n->Misc[] holds the present nth frame of invincibility as a countdown timer. 
+const int ENEM_ORIG_PAL = 3; //original CSet or Palette, or OriginalSprite
+
+const int ENEM_BLANK_TILE = 65260; //Set to a tile at the head of a FULL PAGE of BLANK tiles. 
+//const int ENEM_FLASH_TIMER = 4;
+
+//Framecount for each enemy flash or flicker.
+const int ENEM_FLASH_1 = 180; //Will change on frame 180
+const int ENEM_FLASH_2 = 150; //...frame 150
+const int ENEM_FLASH_3 = 120;
+const int ENEM_FLASH_4 = 90; 
+const int ENEM_FLASH_5 = 60; 
+const int ENEM_FLASH_6 = 30; //...frame 30
+
+//Cset or BPal to use when flashing
+const int ENEM_BPAL_FLASH = 6;
+const int ENEM_CSET_FLASH = 6;
+
+
+//Run before Waitdraw, and before EnemyInvincibilityFrames()
+void InitEnemyLastHP(){
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(q);
+		if (!n->Misc[ENEM_HP_LAST] && n->HP > 0) n->Misc[ENEM_HP_LAST] = n->HP;
+		if ( STORE_ORIGINAL_ENEMY_PALETTE && !n->Misc[ENEM_ORIG_PAL] ) {
+			if ( n->CSet == 14 ) n->Misc[ENEM_ORIG_PAL] = n->BossPal;
+			else n->Misc[ENEM_ORIG_PAL] = n->CSet;
+		}
+		if ( ENEMIES_FLICKER_WHEN_HIT && !n->Misc[ENEM_ORIG_PAL] ) {
+			n->Misc[ENEM_ORIG_PAL] = n->OriginalTile;
+		}
+	}
+}
+
+void _InitEnemyLastHP(){
+    for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+        npc n = Screen->LoadNPC(q);
+        if (!n->Misc[ENEM_HP_LAST] && n->HP > 0) n->Misc[ENEM_HP_LAST] = n->HP;
+    }
+}
+
+//Run before Waitdraw and before any collision/damage functions that need to read these values. 
+void _EnemyInvincibilityFrames(){
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(q);
+		if ( n->Misc[ENEM_HP_LAST] > n->HP ) {
+			n->Misc[ENEM_HP_LAST] = n->HP;
+			n->Misc[ENEM_INV_FRAMES] = ENEMY_INVINCIBILITY_FRAMES_DURATION;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] > 0 ) n->Misc[ENEM_INV_FRAMES]--;
+		if ( n->Misc[ENEM_INV_FRAMES] < 0 ) n->Misc[ENEM_INV_FRAMES] = 0;
+	}
+}
+
+//Run after InitEnemyLastHP, before Waitdraw and before any collision/damage functions that need to read these values. 
+void EnemyInvincibilityFrames(){
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) {
+		npc n = Screen->LoadNPC(q);
+		if ( n->Misc[ENEM_HP_LAST] > n->HP ) {
+			n->Misc[ENEM_HP_LAST] = n->HP;
+			n->Misc[ENEM_INV_FRAMES] = ENEMY_INVINCIBILITY_FRAMES_DURATION;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] > 0 ) n->Misc[ENEM_INV_FRAMES]--;
+		if ( n->Misc[ENEM_INV_FRAMES] < 0 ) n->Misc[ENEM_INV_FRAMES] = 0;
+		
+		if ( INVINCIBLE_ENEMIES_PHANTOM ) {
+			if ( EnemyInvincible(n) && n->DrawStyle != DS_PHANTOM ) n->DrawStyle = DS_PHANTOM;
+			if ( !EnemyInvincible(n) && n->DrawStyle == DS_PHANTOM 
+				&& !GetNPCMiscFlag(n,NPCM_TRANSLUCENT) && !GetNPCMiscFlag(n,NPCM_FLICKERING) 
+				&& !GetNPCMiscFlag(n,NPCM_FLASHING) ) n->DrawStyle = DS_NORMAL;
+
+		}
+	}
+}
+
+
+
+//Run IMMEDIATELY AFTER EnemyInvincibilityFrames() if you have flashing, or flickering settings enabled. 
+void FlashEnemyWhenHit(npc n) {
+	if ( ENEMIES_FLASH_WHEN_HIT && n->Misc[ENEM_INV_FRAMES] > 0 ) {
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_1 ) {
+			if ( n->CSet == 14 ) n->BossPal = ENEM_BPAL_FLASH;
+			else n->CSet = ENEM_CSET_FLASH;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_2 ) {
+			if ( n->CSet == 14 ) n->BossPal = n->Misc[ENEM_ORIG_PAL];
+			else n->CSet = n->Misc[ENEM_ORIG_PAL];
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_3 ) {
+			if ( n->CSet == 14 ) n->BossPal = ENEM_BPAL_FLASH;
+			else n->CSet = ENEM_CSET_FLASH;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_4 ) {
+			if ( n->CSet == 14 ) n->BossPal = n->Misc[ENEM_ORIG_PAL];
+			else n->CSet = n->Misc[ENEM_ORIG_PAL];
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_5 ) {
+			if ( n->CSet == 14 ) n->BossPal = ENEM_BPAL_FLASH;
+			else n->CSet = ENEM_CSET_FLASH;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_6 ) {
+			if ( n->CSet == 14 ) n->BossPal = n->Misc[ENEM_ORIG_PAL];
+			else n->CSet = n->Misc[ENEM_ORIG_PAL];
+		}
+	}
+	if ( ENEMIES_FLICKER_WHEN_HIT && n->Misc[ENEM_INV_FRAMES] > 0 ) {
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_1 ) {
+			n->OriginalTile = ENEM_BLANK_TILE;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_2 ) {
+			n->OriginalTIle = n->Misc[ENEM_ORIG_PAL];
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_3 ) {
+			n->OriginalTile = ENEM_BLANK_TILE;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_4 ) {
+			n->OriginalTIle = n->Misc[ENEM_ORIG_PAL];
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_5 ) {
+			n->OriginalTile = ENEM_BLANK_TILE;
+		}
+		if ( n->Misc[ENEM_INV_FRAMES] == ENEM_FLASH_6 ) {
+			n->OriginalTIle = n->Misc[ENEM_ORIG_PAL];
+		}
+	}
+}
+
+//Returns if an enemy is invincible.
+int EnemyInvincible(npc n){
+	return n->Misc[ENEM_INV_FRAMES];
+}
+
+
+//! Who originally made this? I'm adapting some of it as a method, ad DrawYOffset is probably better than changing the tile. 
+ffc script FlickerWhenHit{
+    void run(int enemyID){
+        npc e = FindNPCOf(enemyID);
+        e->Misc[0] = 1;
+        int life = e->HP;
+        int offset = e->DrawYOffset;
+        int flicker;
+        while(e->isValid()){
+            if(e->HP < life){
+                flicker = FLICKER_TIME;
+                life = e->HP;
+            }
+            if(flicker > 0 && e->HP > 0){
+                if(flicker%2 == 0) e->DrawYOffset = -200;
+                else e->DrawYOffset = offset;
+                flicker--;
+            }
+            else e->DrawYOffset = offset;
+            Waitframe();
+        }
+    }
+    npc FindNPCOf(int enemyID){
+        npc e;
+        for(int i = Screen->NumNPCs(); i > 0; i--){
+            npc e2 = Screen->LoadNPC(i);
+            if(e2->ID != enemyID) continue;
+            else if(e2->Misc[0] != 0) continue;
+            e = e2;
+            break;
+        }
+        return(e);
+    }
+}
+
+
+///Circular Implementation Refs
+
+//A circular collision between an ffc and an ffc. Uses TileWidth and TileHeight to find the centre of the FFCs.
+bool Collision(ffc f, int radius1, ffc f2, int radius2) {
+    return CircleCollision(f->X+f->TileWidth/2, f->Y+f->TileHeight/2, radius1,f2->X+f2->TileWidth/2, f2->Y+f2->TileHeight/2, radius2);
+}
+
+//Returns true if the two circles c1 and c2 overlap.
+bool CircleCollision(int c1x, int c1y, int radius1, int c2x, int c2y, int radius2) {
+  return (Distance(c1x,c1y,c2x,c2y) <= (radius1+radius2));
+}
+
+//A circular collision between an ffc and an ffc. Uses TileWidth and TileHeight to find the centre of the FFCs.
+bool Collision(ffc f, int radius1, ffc f2, int radius2) {
+	return CircleCollision(f->X+f->TileWidth/2, f->Y+f->TileHeight/2, radius1,f2->X+f2->TileWidth/2, f2->Y+f2->TileHeight/2, radius2);
+}

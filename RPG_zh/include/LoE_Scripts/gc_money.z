@@ -1,0 +1,21 @@
+item script moneyObject {
+    void run(int size, int value, int altValue, int altCurrencyType, int pickUpSound, increaseMaxCounter, int errorMessage, int errorSound) {
+    
+    //Calculate difference between total Wallet & Pocket space, and available space.
+    
+    //Compare to the size of this currency object.
+    
+    //If the player has room for this object, play the sound, and add it to the space used, 
+    //and add its value to current current currecny total.
+    
+    //If using an alternative currency type, add it to that counter instead.
+    
+    //If the player is out of space...
+    
+    //...and they have not seen the error message.
+    
+    //...and they *have* seen the error message.
+    
+    //Increase maxCounter
+    
+    

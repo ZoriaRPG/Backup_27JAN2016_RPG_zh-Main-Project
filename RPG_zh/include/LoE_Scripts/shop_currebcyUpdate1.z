@@ -1,0 +1,36 @@
+//shop modification
+
+//add these calculations
+//int dieType;
+
+//int dieNunber;`
+//int coinSpaceReplenished = rollDice(dieNumber, dieType);
+int remainder;
+int numberOfCoins = ( cost % 4 );
+int coinSpaceReplenished = rollSpentCoins(numberOfCoins);
+
+//add to place where deducing money:
+
+    if ( walletSpaceUsed >= coinSpaceReplenished ) {
+        walletSpaceUsed -= coinSpaceReplenished;
+    }
+    else if ( walletSpaceUsed < coinSpaceReplenished ) {
+        remainder = ( coinSpaceReplenished - walletSpaceUsed );
+        walletSpaceUsed = 0;
+        if ( pocketSpaceUsed >= remainder ) {
+            pocketSpaceUsed -= remainder;
+        }
+        else if ( pocketSpaceUsed < remainder ) {
+            pocketSpaceUsed = 0;
+        }
+    }
+
+noFreeSpace == false;
+
+//pocketSpaceUsed 
+// If coinSpaceReplenished would set 
+
+
+int rollSpentCoins(int numberSpent){
+    return rollDice(numberSpent, 4);
+    }

@@ -1,0 +1,225 @@
+//Money and Storage
+
+//Constants
+
+//////////////////////////////////
+/// Wallet and Money Constants ///
+//////////////////////////////////
+
+//const int CR_WALLETS = 0; // Counter for wallets; now deprecated.
+//const int NO_FREE_SPACE = 0; // Error message for 'Out of Space' warning.
+const int NO_FREE_SPACE = 0; //Sets default 'You don't have the space to carry this item' message.
+const int NO_SPACE_SFX = 0; //Sets SFX to play when trying to pick up an item that you can't carry. 
+const int CR_SIZE_COINS_CURRENCY = 0; // Counter for base currency.
+const int CR_DSARI = 0; //Counter for secondary currency.
+const int CR_MERKS = 20; //Script 14
+
+const int CR_FREE_SPACE = 21; //Script 15
+
+
+//Arrays
+
+///////////////////////////////
+/// Wallet and Money Arrays ///
+///////////////////////////////
+
+float capacitiyArray[26]={ 
+                    0, //baseWalletSpace[0]
+                    50, //walletSize [1]
+                    1, //walletsOwned [2]
+                    0, //CR_CUSTOM_WALLET_SIZE [3] (add space to this for wallets that have a size > walletSize)
+                    50, //totalWalletSpace [4]
+
+                    2, //pockets [5]
+                    20, //pocketCapacity [6]
+                    40, //totalPocletSpace [7]
+                    
+                    90, //totalPocketAndWalletSpace [8]
+
+                    0, //pocketSpaceUsed [9]
+                    0, //walletSpaceUsed [10]
+                    0, //fineSpaceUsed [11] (for items smaller than 1, multiply this by *0.10, then add this to spaceUsed)
+                    0, //totalSpaceUsed [12]
+                    
+                    0, //freePocketSpace [13]
+                    0, //freeWalletSpace [14]
+                    0, //freeFineSpace [15]
+                    0, //freeSpace [16]
+                    
+                    0, //valueStored [17]
+                    0, //coinsize [18]
+                    
+                    0, //Merks Carried [19]
+                    
+                    0, //Value of Dsari banked [20]
+                    0, //Value of Merks banked [21]
+                    0, //Dsari CryDiscs [22]
+                    0, //merks CryDiscs [23]
+                    
+                    
+                    0, //NO_FREE_SPACE [24] Message
+                    0}; //NO_SPACE_SFX [25] SFX
+                    
+                    
+
+
+//Vars
+
+
+//////////////////////////////////
+/// Wallet and Money Variables ///
+//////////////////////////////////
+
+
+float walletSize = 50; //Sts default space within wallets. Can be changed later in game.
+int walletsOwned = 1; //Setsa initial number of wallets owned by player.
+float walletSpaceUsed = 0; //Sets initial amount of used wallet space.
+int pockets = 2; //Sets initial number of pockets player has. Can be changed with clothing upgrades.
+float pocketCapacity = 20; // Sets pocket capacity for loose items.
+float pocketSpaceUsed = 0; //Sets initial pocket space used by player.
+float totalWalletSpace; // Total amount of available WALLET space.
+float baseWalletSpace; // Base amount of space for ONE wallet.
+float totalPocketSpace; // Total amount of available POCKET space.
+float totalPocketAndWalletSpace; //Combined total available space.
+float CR_CUSTOM_WALLET_SIZE = 0; // 
+
+float freePocketSpace;  // Available (free) space in pockets.
+float freeWalletSpace;// Available (free) space in wallets.
+
+float freeSpace; // Total free space.
+float valueStored; // Stored item volume.
+float coinsize; // Size of coins.
+
+//int totalWalletSpace = ( CR_WALLETSPACE * CR_WALLETS )
+//int freeWalletSpace = Game->MCounter[CR_WALLETSPACE] - Game->Counter[CW_WALLETSPACE]
+
+
+bool noFreeSpace = false; 
+// THis becomes true after the game first displays
+// an 'out of space' message, so that it doesn't constantly bother the 
+// player. When space is freed, it resets this to false.
+bool reduced; // U3d for removing stored items, and reducing the amount of space used.
+
+//These values should be an array!
+
+
+
+//Functions
+//////////////////////////////////
+/// Wallet & Pockets Functions ///
+//////////////////////////////////
+
+void noFreeSpace() {
+    if ( noFreeSpace == false ) { 
+    noFreeSpace = true;
+    Screen->Message(NO_FREE_SPACE); 
+    //This message will be shown to the player one time, setting noFreeSpace to true.
+    //If the player visits a bank, spends money depleting used space, or ptherwise increases space
+    //then this flag is set back to false. The idea is to prevent displaying a message regularly. 
+    }
+    else {
+    Game->PlaySound(NO_SPACE_SFX);
+    }
+}
+
+void spaceFreed() {
+    noFreeSpace = false; //This is a global function that resets the noFreeSpace flag,a nd can be called from anywhere.
+}
+
+void checkFreeSpace() {
+
+//This function should be in your global while true loop. 
+//It ensures that the noFreeSpace flag is reset if the player spends money, or deposits funds, etc.
+    int walletFreeSpace;
+    int pocketFreeSpace;
+    walletFreeSpace = ( totalWalletSpace - Game->Counter[CR_SIZE_COINS_CURRENCY] );
+    pocketFreeSpace = ( totalPocketSpace - CR_SIZE_COINS_CURRENCY );
+        if ( walletFreeSpace > 5 ) {
+            noFreeSpace = false;
+        }
+        if ( walletFreeSpace < 5 ){
+            if (pocketFreeSpace < coinsize ) {
+            noFreeSpace = false;
+            }
+        } 
+    }
+    
+void storeValue(){
+    int valueStored = Game->Counter[CR_RUPEES];
+    }
+
+void compareValue(){
+    if ( valueStored <= Game->Counter[CR_RUPEES] ) {
+    noFreeSpace = true;
+    }
+    else {
+    noFreeSpace = false;
+    }
+}
+    
+
+//Scripts
+
+/////////////////////////////////////
+/// Wallet & Pockets Item Scripts ///
+/////////////////////////////////////
+
+item script moneyPickup{
+    void run(int coinsize, int coinvalue) {
+        int walletFreeSpace = ( totalWalletSpace - CR_SIZE_COINS_CURRENCY );
+        int pocketFreeSpace = ( totalPocketSpace - CR_SIZE_COINS_CURRENCY );
+            if ( walletFreeSpace > coinsize ) {
+               Game->Counter[CR_DSARI] += coinvalue;
+                walletSpaceUsed += coinsize; //Fills wallet space.
+                noFreeSpace = false;
+            }
+           else if ( walletFreeSpace < coinsize ){
+                if (pocketFreeSpace < coinsize ) {
+               Game->Counter[CR_DSARI] += coinvalue;
+               pocketSpaceUsed += coinsize; //Fills pocket space.
+               noFreeSpace = false;
+                }
+            }
+            else if ( walletFreeSpace < coinsize && pocketFreeSpace < coinsize) {
+            noFreeSpace();
+        }
+    }
+}
+
+item script fractionalMoneyPickup{
+    void run(float coinsize, int coinvalue) {
+        int walletFreeSpace = ( totalWalletSpace - CR_SIZE_COINS_CURRENCY );
+        int pocketFreeSpace = ( totalPocketSpace - CR_SIZE_COINS_CURRENCY );
+            if ( walletFreeSpace > coinsize ) {
+               Game->Counter[CR_DSARI] += coinvalue;
+                walletSpaceUsed += coinsize; //Fills wallet space.
+                noFreeSpace = false;
+            }
+           else if ( walletFreeSpace < coinsize ){
+                if (pocketFreeSpace < coinsize ) {
+               Game->Counter[CR_DSARI] += coinvalue;
+               pocketSpaceUsed += coinsize; //Fills pocket space.
+               noFreeSpace = false;
+                }
+            }
+            else if ( walletFreeSpace < coinsize && pocketFreeSpace < coinsize) {
+            noFreeSpace();
+        }
+    }
+}
+
+///////////////////////////
+/// Wallets and Storage ///
+///////////////////////////
+
+item script walletPickup{
+    void run (int capacity){
+        if ( capacity == 0 ) {
+            walletsOwned += 1;
+            }
+        if ( capacity > 0 ){
+        Game->Counter[CR_CUSTOM_WALLET_SIZE] += capacity; //Can make different sized wallets
+        noFreeSpace = false;
+        }
+    }
+}

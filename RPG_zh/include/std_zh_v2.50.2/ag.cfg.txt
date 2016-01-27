@@ -1,0 +1,281 @@
+//ag.cfg Settings Explained
+
+
+[zquest]
+//Settings for ZQuest
+
+mouse_scroll = 0
+	//
+invalid_static = 1
+	// Use Static for Invalid Data.
+tile_protection = 1
+	//
+showinfo = 1
+	//
+show_grid = 1
+	// Displays the combo grid. 0 = off. 
+grid_color = 15
+	// Colour of the grid, based on (system colours?)
+snapshot_format = 3
+	// Output formats for screenshots. 0 = ; 1 = ; 2 = ; 3 = png
+save_paths = 1
+	// use relative save paths. 1 = on. 
+cycle_on = 1
+	//
+vsync = 1
+	//
+showfps = 0
+	//
+combo_brush = 0
+	//Enables combo brushes. (Check these out.)
+brush_position = 0
+	//
+float_brush = 0
+	//
+open_last_quest = 0
+	// If set to 1, the last quest that was autosaved will be loaded automatically. 
+show_misalignments = 0
+	//
+scale = 1
+	// Scale factor of editor window size. 
+scale_large = 1
+	// If set to '1', ZQuest will use the modern 'large' interface. otherwise, the 2.10 style interface.
+fullscreen = 0
+	// Set to 1 to enable fullscreen.
+showffscripts = 1
+	// Display the names of all ffc script son a screen. 1 = on. 
+showsquares = 1
+	//
+animation_on = 1
+	//
+auto_backup_retention = 2
+	// How may .qb* files ZQ will generate. You may manually set this to 0.
+auto_save_interval = 6
+	// Minutes between auto-saves.
+auto_save_retention = 2
+	//Number of .qt* files that ZQuest will autmatically generate. 
+uncompressed_auto_saves = 1
+	// If enabled, autosaves will use an uncompressed (.qsu) format. This is faster, but uses far more disc space. 
+overwrite_prevention = 0
+	// If set to 1, ZQuest will NEVER OVERWRITE a quest file. 'Save as...' becomes mandatory.
+import_map_bias = 0
+	// File -> Import -> Map bias settings.
+keyboard_repeat_delay = 300
+	//
+keyboard_repeat_rate = 80
+	//
+zqmusic_bufsz = 64
+	// Size of the music buffer in KB.
+small = 0
+	//?
+rulesetdialog = 1
+	//?
+enable_tooltips = 1
+	//Enable mouseover tooltips on buttons.
+layer_mask = 65535
+	// Controls which layers are hidden.
+normal_duplicate_action = 2
+	// Default actions for duplicate tiles in the tile leech dialog.
+horizontal_duplicate_action = 0
+	//
+vertical_duplicate_action = 0
+	//
+both_duplicate_action = 0
+	//
+leech_update = 500
+	//
+leech_update_tiles = 1
+	//
+only_check_new_tiles_for_duplicates = 0
+	//
+gui_colorset = 0
+	// Colour set for the interface. 
+command01 = 0
+	//Favourite commands (1). 
+	//? What are te numeric values for these?
+command02 = 0
+	//Favourite commands (2). 
+command03 = 0
+	//Favourite commands (3). 
+command04 = 0
+	//Favourite commands (1). 
+command05 = 0
+	//Favourite commands (1). 
+command06 = 0
+	//Favourite commands (1). 
+command07 = 0
+	//Favourite commands (1). 
+command08 = 0
+	//Favourite commands (1). 
+fps = 60
+	//Default framerate. 
+frameskip = 0
+	//Skip frames. if 0, this is disabled. 
+	//?Otherwise, ZC will skip this number of frames per second?
+	//? or will ZC autodetect rate, and adjust dramedropping to meet available CPU clock time?
+force_exit = 0
+	// Set to '1' to enable force-quitting on exit. This was implemented for bug-handling as a quick fix on Win 7+.
+zq_win_proc_fix = 0
+	///not supported (may crash is enabled)
+win_image_path = c:\Users\Dell ATG\Desktop\ZC\2.50.2\DK_Sprites\
+	//
+last_timed_save = c:\Users\Dell ATG\Desktop\ZC\2.50.2\WaitdrawTimingTest.qt0
+	//
+win_last_quest = c:\Users\Dell ATG\Desktop\ZC\2.50.2\WaitdrawTimingTest.qst
+	//
+beta_warning = nWJ~~Q!]
+	//
+
+//Graphics Mode Settings (all components)
+[graphics]
+disable_direct_updating = 1
+	//Disables Direct Updating in Allegro:
+	//Windows only: specifies whether to disable direct updating when the
+	//GFX_DIRECTX_WIN driver is used in color conversion mode (yes or no). 
+	//Direct updating can cause artifacts to be left on the desktop when the window 
+	//is moved or minimized; disabling it results in a significant performance loss.
+
+//Zelda Classic
+[zeldadx]
+use_dwm_flush = 0
+	// enables DwmFlush() on Windows Vista and above. 
+	// It's meant to fix tearing and stuttering issues, but it 
+	// disables framerate uncapping and causes the game to run slowly on some systems.
+zc_win_proc_fix = 0
+	///not supported (may crash if enabled)
+joystick_index = 0
+	// The ID of the joypad/joystick to use, if more than one is connected. 
+key_a = 119
+	// A button (keymap)
+key_b = 117
+	// B button (keymap)
+key_s = 67
+	// Start button (keymap)
+key_l = 26 
+	// L button (keymap)
+key_r = 24
+	// R button (keymap)
+key_p = 75
+	// Map button (keymap)
+key_ex1 = 17
+	// Ex1 button (keymap)
+key_ex2 = 23
+	// Ex2 button (keymap)
+key_ex3 = 1
+	// Ex3 button (keymap)
+key_ex4 = 19
+	// Ex4 button (keymap)
+key_up = 84
+	// Up button (keymap)
+key_down = 85
+	// Down button (keymap)
+key_left = 82
+	// Left button (keymap)
+key_right = 83
+	// Right button (keymap)
+btn_a = 2 
+	// A button (joypad)
+btn_b = 1
+	// B button (joypad)
+btn_s = 10
+	// Start button (joypad)
+btn_m = 9
+	// Map button (joypad)
+btn_l = 5
+	// L button (joypad)
+btn_r = 6
+	// R button (joypad)
+btn_p = 12
+	//? isn;t p map?
+btn_ex1 = 7
+	// Ex1 button (joypad)
+btn_ex2 = 8
+	// Ex2 button (joypad)
+btn_ex3 = 4
+	// Ex3 button (joypad)
+btn_ex4 = 3
+	// Ex4 button (joypad)
+digi = 248
+	//Master digi volume.
+midi = 255
+	// Master MIDI volume
+sfx = 248
+	// SFX volume
+emusic = 248
+	//Enhanced music volume
+pan = 1
+	//L/R audio pan. 
+zcmusic_bufsz = 64
+	// Size of the music buffer in KB.
+volkeys = 0
+	//
+vsync = 0
+	///vsync enabled if set to 1.
+throttlefps = 1
+	// Use throttled (capped) framerate by default.
+translayers = 1
+	// Settings -> Show Trans. Layers; 1 to enable. 
+snapshot_format = 3
+	// Screenshot image format. 0 = ; 1 = ; 2 = ; 3 = png.
+name_entry_mode = 0
+	// Skip name entry? 
+	// Settings -> Name Entry Mode.
+showfps = 1
+	// Disow framerate indicator when playing. 1 = on
+fastquit = 0
+	// Up+A+B To Quit, set to 1 to enable. 
+clicktofreeze = 1
+	// Set to '1' to enable pausing ZC when clicking the window. 
+title = 2
+	// The title screen graphic to use.0 = none, 1 = pond/lake, 2 = new. 
+resx = 640
+	// Horizontal ZC display resolution in pixels.
+resy = 480
+	// vertical ZC display resolution in pixels.
+scanlines = 0
+	// Set to 1 to enqable virtual scanlines (emulate old CRT TV)
+load_last = 15
+	// Automatically load this saved game on launch. ?
+win_qst_dir = C:\Users\Dell ATG\Desktop\ZC\2.50.2\
+	//The default path for loading quests, and where all ZC component files are located. 
+ss_enable = 1
+	// Enable screenshots
+ss_after = 14
+	// ?
+ss_speed = 2
+	//?
+ss_density = 3
+	//?
+heart_beep = 1
+	// Set to 0 to disable continuous heart beep when Link has low HP.
+gui_colorset = 0
+	// The colours of the ZC interface.
+use_sfx_dat = 0
+	//? use old SFX format?
+fullscreen = 1
+	// Run Zelda Classic in full-screen mode. 1 enable, 0 disable. 
+doublebuffer = 0
+	//Default doublebuffered window (prevents window flickering and tearing). Enable = 1.
+triplebuffer = 0
+	//Hardware only (limited support) Should be auto-detected.
+color_depth = 8
+	// Bit depth of ZC. Normally 8 (256 colours). ZC quests are 8-bit in any event, 
+	// so setting this to 16, 24, or 32 is only useful if your OS has problems with 8-bit depth.
+frame_rest_suggest = 1
+	// A way of preventing problems on Windows. '0' may use up 100% of a CPU core via glorified 
+	// busy looping, so 1 increases the granularity of sleeping the thread after each frame.
+	//Leave at '1', unless you require altering this. 
+force_exit = 0
+	// Causes ZC to force-exit when closing, skipping Allegro's shutdown routine. 
+	// Old bug-patching, and should no longer be used. May do nothing.
+debug_console = 1
+	// Set to '1' to enable the debugging console. This is a powerful tool that reports errors in real time.
+midi_patch_fix = 0
+	// ?
+save_indicator = 0
+	// Displays game saving progress?
+
+//ZLaunch
+[ZCL]
+multiple_instances = 1
+	//Allow running multiple ZC instances. (THis may cause save file corruption). 0 by default, 1 to enable. 

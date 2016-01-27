@@ -1,0 +1,76 @@
+void _StoreEnemyHP(){ //Run after ClearEnemyHP, precisely before Waitdraw.
+	for ( int q = 1; q < NumberOfNPCs(); q++ ) {
+		npc r = Screen->LoadNPC(q);
+		int presentHP = r->HP;
+		r->Misc[MISC_HP] = presentHP;
+	}
+}
+
+void _DrawDamage(int thisLayer, int xOffset, int yOffset, int useFont, int damageColour, int healColour, int bgColour, int widthPX, int heightPX, int floatingPlaces, int opacity ){ //Place after Waitdraw() ?
+	int curHP;
+	int newHP;
+	int diff;
+	int npcX;
+	int npcY;
+	int modDiff; //Used to display damage as a negative value. If DrawInteger() does not automatically place a (-) sign in front of it, then we can later simplify this to use colours only. 
+	int buff; //Used to display healing (a positive value)
+	int drawX;
+	int drawY;
+	for ( int q = 0; q < Screen->NumNPCs(); q++){
+		npc r = Screen->LoadNPC(q);
+		curHP = r->Misc[MISC_HP];
+		newHP = r->HP;
+		diff = curHP - newHP;
+		buff = newHP - r->Misc[MISC_HP];
+		npcX = r->X;
+		npcY = r->Y;
+		if ( newHP < curHP ) { //Enemy damaged
+			modDiff = diff - ( diff * 2 ); //Turn difference into negative number reflecting amount of damage dealt.
+			drawX = npcX + DAMAGE_VALUE_X_OFFSET;
+			drawY = npcY + DAMAGE_VALUE_Y_OFFSET;
+			int report[]="The enemy HP changed by:";
+			TraceS(report);
+			Trace(diff);
+			for ( int w = 80; w > 0; w--) {
+				Screen->DrawInteger(thisLayer, drawX, drawY, useFont, damageColour, bgColour, widthPX, heightPX, modDiff, floatingPlaces, opacity);
+		
+			}
+		}
+		//void DrawInteger(int layer, int x, int y, int font,int color, int background_color,int width, int height, int number, int number_decimal_places, int opacity);
+
+		else if ( newHP > curHP ) { //Enemy healed.
+			modDiff = buff;
+			npcX = r->X;
+			npcY = r->Y;
+			drawX = npcX + DAMAGE_VALUE_X_OFFSET;
+			drawY = npcY + DAMAGE_VALUE_Y_OFFSET;
+			int report[]="The enemy HP changed by:";
+			TraceS(report);
+			Trace(diff);
+			for ( int w = 80; w > 0; w--) {
+				Screen->DrawInteger(thisLayer, drawX, drawY, useFont, healColour, bgColour, widthPX, heightPX, buff, floatingPlaces, opacity);
+			}
+		}
+		else if ( newHP == curHP ) {
+			int err[]="The enemy HP did not change.";
+			TraceS(err);
+		}
+	}
+}
+
+
+//void ClearEnemyHP(){ //Run before Waitdraw, early, before StoreEnemyHP().
+//	if ( Event(SCREENCHANGED) ) {
+//		for ( int q = 0; q < SizeOfArray(EnemyHP); q++ ){
+//			EnemyHP[q] = 0;
+//		}
+//	}
+//}
+
+//void StoreEnemyHP(){ //Run after ClearEnemyHP, precisely before Waitdraw.
+//	for ( int q = 0; q < Screen->NumNPCs(); q++ ) {
+//		npc r = Screen->LoadNPC(q);
+//		int presentHP = r->HP;
+//		EnemyHP[q] = presentHP;
+//	}
+//}

@@ -1,0 +1,68 @@
+//Array Indices
+const int IRONBOOTS = 0; //Boolean for Iron Boots
+const int POWER_WALK_TIMER = 1;
+const int BLUE_RING_TIMER = 2;
+const int WEAR_BLUE_RING = 3;
+const int TRIGGER_PRESSURE_PLATE = 4;
+const int WALK_SPEED_RIGHT = 5;
+const int WALK_SPEED_LEFT = 6;
+const int WALK_SPEED_UP = 7;
+const int WALK_SPEED_DOWN = 8;
+
+const float WALK_FRACTION = 0.016; //The number of fake, decomal pixels to move per frame.
+const int WALK_STEP = 1; //The value needed, before Link actually moves. 
+
+//Increase walking speed when Link has a Piece of Power and LA_WALKING
+void WalkSpeed(){
+	int linkX;
+	int linkY;
+	if ( Z4_ItemsAndTimers[POWER_BOOSTED] ) { //Check to see if Link has a Piece of Power power-up boost...
+		if ( Link->Action == LA_HOLD1LAND ) return;
+		if ( Link->Action == LA_WALKING && !LinkJump() && Link->Z == 0 ) { //If he isnt attacking, swimming, hurt, or casting, and h
+			if ( Link->InputDown && !IsSideview() //If the player presses down, and we aren't in sideview mode...
+				&& !Screen->isSolid(Link->X,Link->Y+17) //SW Check Solidity
+				&& !Screen->isSolid(Link->X+7,Link->Y+17) //S Check Solidity
+				&& !Screen->isSolid(Link->X+15,Link->Y+17) //SE Check Solidity
+			) {
+				Z4_ItemsAndTimers[WALK_SPEED_DOWN] += WALK_FRACTION;
+				
+				//We use a timer to choke the walk speed. Without it, Link would move the full additional number of
+				//pixels PER FRAME. THus, a walk speed bonus of +1 would be +60 pixels (almost four tiles) PER SECOND!
+				if ( Z4_ItemsAndTimers[WALK_SPEED_DOWN] >= WALK_STEP ) {  //If our timer is fresh, or has reset...
+					Z4_ItemsAndTimers[WALK_SPEED_DOWN] = 0;
+					Link->Y += WALK_SPEED_POWERUP; //Let Link move faster...
+				}
+			}
+			else if ( Link->InputUp && !IsSideview()  //If the player presses up, and we aren't in sideview mode...
+				&& !Screen->isSolid(Link->X,Link->Y+6) //NW Check Solidity
+				&& !Screen->isSolid(Link->X+7,Link->Y+6) //N Check Solidity
+				&& !Screen->isSolid(Link->X+15,Link->Y+6) //NE Check Solidity
+			) {
+				Z4_ItemsAndTimers[WALK_SPEED_UP] += WALK_FRACTION;
+				if ( Z4_ItemsAndTimers[WALK_SPEED_UP] >= WALK_STEP ) { //If our timer is fresh, or has reset...
+					Z4_ItemsAndTimers[WALK_SPEED_UP] = 0;
+					Link->Y -= WALK_SPEED_POWERUP; //Increase the distance the player moves down, by this constant.
+				}
+			}
+			else if ( Link->InputRight && !Screen->isSolid(Link->X+17,Link->Y+8) //If the player presses right, check NE solidity...
+				&& !Screen->isSolid(Link->X+17,Link->Y+15) //and check SE Solidity 
+			) { 
+				Z4_ItemsAndTimers[WALK_SPEED_RIGHT] += WALK_FRACTION;
+				if ( Z4_ItemsAndTimers[WALK_SPEED_RIGHT] >= WALK_STEP ) { //If our timer is fresh, or has reset...
+					Z4_ItemsAndTimers[WALK_SPEED_RIGHT] = 0;
+					Link->X += WALK_SPEED_POWERUP; //Increase the distance the player moves down, by this constant.
+				}
+			}
+			else if ( Link->InputLeft && !Screen->isSolid(Link->X-2,Link->Y+8)  //If the player presses right, check NW solidity...
+				&& !Screen->isSolid(Link->X-2,Link->Y+15) //SW Check Solidity
+			) {
+				Z4_ItemsAndTimers[WALK_SPEED_LEFT] += WALK_FRACTION;
+				if ( Z4_ItemsAndTimers[WALK_SPEED_LEFT] >= WALK_STEP ) { //If our timer is fresh, or has reset...
+					Z4_ItemsAndTimers[WALK_SPEED_RIGHT] = 0;
+					Link->X -= WALK_SPEED_POWERUP; //Increase the distance the player moves down, by this constant.
+				}
+			}
+		}
+	}
+}
+

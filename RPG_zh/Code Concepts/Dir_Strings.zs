@@ -1,0 +1,14 @@
+const int PEGASUS_DEBUG = 1;
+int S_curDir[]="Link's present direction is: ";
+int S_dirUp[]="DIR_UP";
+int S_dirDown[]="DIR_DOWN";
+int S_dirLeft[]="DIR_LEFT";
+int S_dirRight[]="DIR_RIGHT";
+int S_swordDir[]="The present sprite Direction is: ";
+int S_swordFlip[]="The present swoord sprite Flip is: ";
+int S_flipNone[]="FLIP_NONE";
+int S_flipH[]="FLIP_H";
+int S_flipV[]="FLIP_V";
+int S_flipBoth[]="FLIP_BOTH";
+int S_TilePlus[]="Sword tile increased by one.";
+int S_Yplus3[]="Y-Position increased by +3";

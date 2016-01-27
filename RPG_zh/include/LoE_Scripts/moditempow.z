@@ -1,0 +1,16 @@
+import "std.zh"
+
+//void ModItemPower(item itm, int pow){
+//	itm->Power = pow;
+//}
+
+void ModItemPower(int itm, int pow){
+	itemdata id = Game->LoadItemData(itm);
+	id->Power = pow;
+}
+
+item script modItemPower{
+	void run(int itm, int value){
+		ModItemPower(itm, value);
+	}
+}

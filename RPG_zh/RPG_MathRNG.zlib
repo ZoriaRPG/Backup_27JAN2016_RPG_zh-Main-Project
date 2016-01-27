@@ -1,0 +1,92 @@
+//Mathematical Operations & RNG
+// v0.2 for RPG.zh v0.96.5
+
+int excludeList[] = {2, 4, 7}; //Template list for exclusions. Populate as desired, or make additional lists.
+
+//This is extraneous. Use Rand(int min, int max, int list, int maxAttempts) instead.
+int Rand(int min, int max, bool exclude, int list, int maxAttempts){ //producing a random number, excluding any on array list. Safeguarded from long delays for lists with high index sizes.
+	int v;
+	int q;
+	int attempts;
+	int errorString[]="The random generation exceeded the maximum number of attempts, and produced a value of:";
+	bool matches = true;
+	if (exclude){
+		while(matches){
+			v = Rand(min, max);
+			for ( q = 0; q < SizeOfArray(list); q++ ){
+				if ( v != list[q] ){
+					matches = false;
+				}
+				else {
+					attempts++;
+				}
+				if ( attempts >= maxAttempts ) {
+					v = 0;
+					TraceS(errorString);
+					Trace(v);
+					return 0;
+				}
+					
+			}
+		}
+		return v;
+	}
+	else if (!exclude){
+		v = Rand(min,max); //This is here, for added comfort.
+		return v;
+	}
+}
+
+int Rand(int min, int max, int list, int maxAttempts){ //producing a random number, excluding any on array list. Safeguarded from long delays for lists with high index sizes.
+	int v;
+	int q;
+	int attempts;
+	int errorString[]="The random generation exceeded the maximum number of attempts, and produced a value of:";
+	bool matches = true;
+	while(matches){
+		v = Rand(min, max);
+		for ( q = 0; q < SizeOfArray(list); q++ ){
+			if ( v != list[q] ){
+				matches = false;
+			}
+			else {
+				attempts++;
+			}
+			if ( attempts >= maxAttempts ) {
+				v = 0;
+				TraceS(errorString);
+				Trace(v);
+				return 0;
+			}
+				
+		}
+	}
+	return v;
+}
+
+int Rand(int min, int max, int list){ //producing a random number, excluding any on array list. NOT safeguarded from long delays for lists with high index sizes.
+	int v;
+	int q;
+	int errorString[]="The random generation exceeded the maximum number of attempts, and produced a value of:";
+	bool matches = true;
+	while(matches){
+		v = Rand(min, max);
+		for ( q = 0; q < SizeOfArray(list); q++ ){
+			if ( v != list[q] ){
+				matches = false;
+			}
+				
+		}
+	}
+	return v;
+}
+
+int RandExclude(int min,int max, int list){
+	return Rand(min,max,list);
+}
+
+int RandExclude(int min, int max, int list, int maxAttempts){
+	return Rand(min,max,list,maxAttempts);
+}
+
+

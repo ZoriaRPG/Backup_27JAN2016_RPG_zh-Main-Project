@@ -1,0 +1,11 @@
+// tango.zh
+// Beta 2
+
+// Dummy function.
+
+int __Tango_RunStringControlCode(int pos)
+{
+    __Tango_LogMessage(__TANGO_ERROR_SCC_DISABLED, __Tango_Buffer[pos]-1);
+    return 1;
+}
+

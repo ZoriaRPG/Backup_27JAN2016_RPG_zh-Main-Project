@@ -1,0 +1,31 @@
+//import "std.zh"
+
+//Returns the register value of Screen-D[r] as an int for a specific screen and specific dmap.
+int getScreenDataAsInt(int dmap, int screen, int r){
+    int datum = Game->GetDMapScreenD(dmap, screen, r);
+    return datum;
+}
+
+//Returns the register value of Screen-D[r] as a float for a specific screen and specific dmap.
+float getScreenData(int dmap, int screen, float r){
+    float datum = Game->GetDMapScreenD(dmap, screen, r);
+    return datum;
+}
+
+//Compares the register value of Screen->D[r] to the value v, on a specific screen, and specific DMAP.
+bool getScreenData(int dmap, int screen, int r, int v){
+    int datum = Game->GetDMapScreenD(dmap, screen, r);
+    if (datum == v) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+//Sets a register value on a for Screen->D, on a specific DMAP, and specific screen. 
+void setScreenData(int dmap, int screen, int r, int v){
+    Game->SetDMapScreenD(dmap, screen, r, v);
+}
+

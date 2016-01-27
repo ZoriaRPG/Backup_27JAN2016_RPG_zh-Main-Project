@@ -1,0 +1,539 @@
+//RPG.zh NPC Expansion
+
+bool screenUpdated = false;
+bool scheenchanged = false;
+
+int currentLastScreen[6]={0,0,0,0,0,0,0,0,0,0);
+
+const int V_DMAP = 0;
+const int V_SCREEN = 1;
+const int V_MAP = 2;
+const int V_CURRENT_STATE = 0;
+const int V_LAST_STATE = 3;
+
+void CheckScreen(){
+	int curScreen = Game->GetCurScreen;
+	int curDMAP = Game->GetCurDMAP;
+	int curMap = Game->GetCurMap;
+	
+	if ( curScreen != currentLastScreen[V_CURRENT_STATE + V_SCREEN] ) {
+		currentLastScreen[V_LAST_STATE + V_SCREEN] = currentLastScreen[V_CURRENT_STATE + V_SCREEN];
+		currentLastScreen[V_CURRENT_STATE + V_SCREEN] = currScreen;
+		
+	}
+	if ( curDMAP != currentLastScreen[V_CURRENT_STATE + V_DMAP] ) {
+		currentLastScreen[V_LAST_STATE + V_SCREEN] = currentLastScreen[V_CURRENT_STATE + V_SCREEN];
+		currentLastScreen[V_CURRENT_STATE + V_SCREEN] = currDMAP;
+	}
+	if ( curMap != currentLastScreen[V_CURRENT_STATE + V_MAP] ) {
+		currentLastScreen[V_LAST_STATE + V_SCREEN] = currentLastScreen[V_CURRENT_STATE + V_SCREEN];
+		currentLastScreen[V_CURRENT_STATE + V_SCREEN] = curMap;
+	}
+}
+
+void screenHasChanged(){
+	
+	int curScreen = Game->GetCurScreen;
+	int curDMAP = Game->GetCurDMAP;
+	int curMap = Game->GetCurMap;
+	
+	if ( curScreen != currentLastScreen[V_CURRENT_STATE + V_SCREEN] || curDMAP != currentLastScreen[V_CURRENT_STATE + V_DMAP] ||
+		curMap != currentLastScreen[V_CURRENT_STATE + V_MAP] ){
+	
+		screenChanged = true;
+	}
+	else {
+		screenChanged = false;
+	}
+}
+
+bool ScreenChanged() {
+	int curScreen = Game->GetCurScreen;
+	int curDMAP = Game->GetCurDMAP;
+	int curMap = Game->GetCurMap;
+	
+	if ( curScreen != currentLastScreen[V_CURRENT_STATE + V_SCREEN] || curDMAP != currentLastScreen[V_CURRENT_STATE + V_DMAP] ||
+		curMap != currentLastScreen[V_CURRENT_STATE + V_MAP] ){
+	
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+const int EV_NPCS = 0;
+const int EV_DIGIVOLVE = 1;
+const int EV_ELEMENTAL = 2;
+
+void DoEnemyUpdates(){
+	if ( ScreenChanged() ){
+		changeEnemies();
+		//Do other enemy changes by type here.
+		//Set enemy flags and def mods.
+		//Do other things.
+	}
+}
+
+void updateScreen(){
+	if (Link->Action == LA_SCROLLING ) {
+		updateScreen = false;
+	}
+	//Also needs to reset boolean if warping.
+	//Perhaps ignore scrolling and warping and instead, and store screen number and DMAP number in arraay do not match the other. 
+	//This will guarantee that the boolean updates if thye player leaveds a screen, nomatter how they leave it.
+
+}
+		
+void changeEnemies(int list){
+	if ( screenChanged ) { //Does this onlky when entering new screens, or DMAPS.
+		//for loop reads enemies on screen.
+		 for(int i = 1; i < Screen->NumNPCs(); i++){ 
+			npc enem = Screen->LoadNPC(i);
+				//for loop reads array passed as list.
+			for ( int j = SizeOfArray(list); i > 0; i--){
+				if ( enem->ID == list[j] ) {
+					//
+					//Change enemies;
+					//Update sprites, or other vars here.
+					//
+				}
+			}
+		}
+	}
+}
+
+
+void strafe(){
+	Link->Action(LA_NONE);
+}
+
+ffc script noHurt{
+	void run(){
+		while(true){
+			if Collision(Link, this){
+				strafe();
+			}
+			Waitframe();
+		}
+	}
+}
+
+int playerHP;
+
+void updatePlayerHP(){
+	playerHP = Link->HP;
+} //run before Waitdraw();
+
+void noHurtEffects(){
+	if ( playerHP > Link->HP ) {
+			Link->Action = LA_NONE;
+			Link->HitDir = -1;
+	}
+}
+
+void noHitMove(){
+	if ( Link->Action == LA_GOTHURTLAND && Link->HitDIR != -1 ){
+		Link->HitDir = -1;
+	}
+}
+
+void NoHurtOnCollision(int types){ //Run before Waitdraw?
+	//For loop to read all enemies on screen.
+	//for loop needed to cycle through types as list;
+	//int enemyList[256]={};
+	for (int i =  SizeOfArray(types); i > 0; i--){
+		//for loop reads each entry in array and compares it to value of i.
+		if (LinkCollision(enemyList[i]){
+			Link->Action = LA_NONE;
+			Link->HitDir = -1;
+		}
+	}
+}
+
+//Enemy tables
+
+int FireEnemies[]={0,0};
+int IceEnemies[]={0,0};
+int WaterEnemies[]={0,0};
+int AirEnemies[]={0,0};
+int LitEnemies[]={0,0};
+int EarthEnemies[]={0,0};
+int AcidEnemies[]={0,0};
+int DarkEnemies[]={0,0};
+int LightEnemies[]={0,0};
+int LivingEnemies[]={0,0};
+int UndeadEnemies[]={0,0};
+int AlienEnemies[]={0,0};
+int MachineEnemies[]={0,0};
+int CyborgEnemies[]={0,0};
+int EtherealEnemies[]={0,0};
+int ArmourPierceEnemies[]={0,0};
+int ArmourBludgeonEnemies[]={0,0};
+int ArmourEnergyEnemies[]={0,0};
+int NCPEnemies[]={0,0};
+int MelkorEnemies[]={0,0};
+int SernaranOnlyEnemies[]={0,0};
+int MageEnemies[]={0,0};
+
+//Enemy Type Constants
+
+const int E_FIRE = 0;
+
+bool isEnemyType(int arrayType){
+	for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+			//for loop reads array passed as list.
+		for ( int j = SizeOfArray(arrayType); i > 0; i--){
+			if ( enem->ID == arrayType[j] ) {
+				return true;
+			}
+			else {
+				return false;
+			}
+		}
+	}
+}
+
+
+
+void setDefs(int list, int en, int defs){
+	//Use bool isEnemyType(int list) and setEnemyDefs(int list)
+	//combined with int en to affect an enemy before waitdraw
+	//Need array for all def types for each enem category.
+	//Script will be different per table line.
+	//To automate this...
+	//int en above should be internal, as we won't probably pass this datum...
+	///unless an external for loop does need to pass that, in which case, we need to overload here.
+	
+}
+
+//Uses value assigned as HP in enemy editor to give all enemies on screen xD8 HP.
+//Should do this once, before setting values of screenUpdated to true.
+void SetEnemyHP(){
+	int tempHP;
+	int dice;
+	if ( !ScreenUpdated() ){
+	for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+		tempHP = enem->HP;
+		dice = tempHP;
+		enem->HP = rollDice(dice,8);
+	}
+}
+
+void SetEnemies(){ //Run once in global loop, before waitdraw.
+	//Change Sprites
+	//Update HP
+	//Set defs
+	//set screenUpdated true;
+}
+		
+void SetEnemyHP (int enemyTable, int hpTable){ //Uses arrays to set HP. One array holds enemy IDS, the other can be used to set HP
+	for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+			//for loop reads array passed as list.
+		for ( int j = SizeOfArray(arrayType); i > 0; i--){
+			if ( enem->ID == arrayType[j] ) {
+				enem->HP = hpTable[j];
+		}
+	}
+}
+
+void SetEnemyHP(int enemyToModify, int val){
+		for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+			if ( enem->ID == enemyToModify ) {
+				enem->HP = val;
+			}
+		}
+	}
+}
+
+
+void SetEnemyHP(int enemyToModify, int val, bool hpLink)
+	for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+		int lhp = Link->HP;
+		if ( enem->ID == enemyToModify ) {
+			if ( hpLink == true ) {
+				enem->HP = lhp;
+			}
+			else {
+				enem->HP = val;
+			}
+		}
+	}
+}
+
+//Enemy damaged player when hit, by amount of damage received 9cursed).
+
+void NoCollision(){
+	//Works as FFC version, but with an array list.
+}
+
+ffc script NoCollision{
+	void run (int enemNoCollide){
+		while(true){
+			for(int i = 1; i < Screen->NumNPCs(); i++){ 
+				npc enem = Screen->LoadNPC(i);
+				if ( LinkCollision(enem) ) {
+					Game->PlaySound(0);
+					Link->Action = LA_NONE;
+					Link->HitDir = -1;
+				}
+			}
+			Waitframe();
+		}
+	}
+}
+
+void InstantKill(bool combo, bool combotype, int src){
+	if ( combo ) {
+		if LinkComboCollision(src){
+			Link->HP = 0;
+		}
+	}	
+	else if ( combotype ) {
+		if LinkComboTypeCollision(src,1){
+			Link->HP = 0;
+		}
+	}
+	else if ( LinkCollision(source){
+		Link->HP = 0;
+	}
+}
+
+ffc script NoSpillBlood{
+	//int hp = Link->HP;
+	//int hpLast;
+	void run (int cmbType, int sens, int size){
+		while(true){
+		//hpLast = hp;
+		//hp = Link->HP;
+			for(int i = 1; i < Screen->NumNPCs(); i++){ 
+				npc enem = Screen->LoadNPC(i);
+				if ( LinkCollision(enem) ) {
+					Link->Action = LA_NONE;
+					Link->HitDir = -1;
+				}
+			}
+			if ( LinkComboTypeCollision(cmbType, sens) ) {
+				Game->PlaySound(0);
+				//Link->Action = LA_NONE;
+				//Link->HitDir = -1;
+				
+				
+				
+				if ( Link->Dir == DIR_DOWN) {
+					Link->Action = LA_FROZEN;
+					Link->HitDir = DIR_UP;
+					//if ( Link->InputDown ) {
+					//	Link->InputDown = false;
+					//}
+					//if ( Link->PressDown ) {
+						Link->PressDown = false;
+					//}
+				}
+				if ( Link->Dir == DIR_RIGHT) {
+					Link->Action = LA_FROZEN;
+					Link->HitDir = DIR_LEFT;
+					//if ( Link->InputRight ) {
+					//	Link->InputRight = false;
+					//};
+					//if ( Link->PressRight ) {
+					//	Link->PressRight = false;
+					//}
+				}
+				if ( Link->Dir == DIR_LEFT) {
+					Link->Action = LA_FROZEN;
+					Link->HitDir = DIR_RIGHT;
+					//if ( Link->InputRight ) {
+					//	Link->InputRight = false;
+					//}
+					//if ( Link->PressLeft ) {
+					//	Link->PressLeft = false;
+					//}
+				}
+				if ( Link->Dir == DIR_UP) {
+					Link->Action = LA_GOTHURTLAND;
+					Link->HitDir = DIR_LEFT;
+					//if ( Link->InputUp ) {
+					//	Link->InputUp = false;
+					//}
+					//if ( Link->PressUp ) {
+					//	Link->PressUp = false;
+					//}
+				}
+			}
+			Waitframe();
+		}
+	}
+}
+
+void ShoveLink(int dir) {
+	if ( dir == DIR_DOWN) {
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_DOWN;
+	}
+	if ( dir == DIR_RIGHT) {
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_RIGHT;
+	}
+	if ( dir == DIR_LEFT) {
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_LEFT;
+	}
+	if ( dir == DIR_UP) {
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_UP;
+	}
+}
+
+void ShoveLink(int dir, bool changeFacingDir) {
+
+	if ( dir == DIR_DOWN) {
+		if ( changefacingDir ) {
+			Link->Dir = dir;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_DOWN;
+	}
+	if ( dir == DIR_RIGHT) {
+		if ( changefacingDir ) {
+			Link->Dir = dir;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_RIGHT;
+	}
+	if ( dir == DIR_LEFT) {
+		if ( changefacingDir ) {
+			Link->Dir = dir;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_LEFT;
+	}
+	if ( dir == DIR_UP) {
+		if ( changefacingDir ) {
+			Link->Dir = dir;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_UP;
+	}
+}
+
+void ShoveLink(int dir, bool changeFacingDir, bool invert) {
+
+	if ( dir == DIR_DOWN) {
+		if ( changefacingDir ) {
+			Link->Dir = DIR_UP;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_DOWN;
+	}
+	if ( dir == DIR_RIGHT) {
+		if ( changefacingDir ) {
+			Link->Dir = DIR_LEFT;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_RIGHT;
+	}
+	if ( dir == DIR_LEFT) {
+		if ( changefacingDir ) {
+			Link->Dir = DIR_RIGHT;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_LEFT;
+	}
+	if ( dir == DIR_UP) {
+		if ( changefacingDir ) {
+			Link->Dir = DIR_UP;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_UP;
+	}
+}
+
+const int DIR_RANDOM = 10;
+const int DIR_INVERT = 11;
+
+void ShoveLink(int dir, bool changeFacingDir, int random) {
+
+	if ( dir == DIR_DOWN) {
+		if ( changefacingDir ) {
+			Link->Dir = DIR_UP;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_DOWN;
+	}
+	if ( dir == DIR_RIGHT) {
+		if ( changefacingDir ) {
+			Link->Dir = DIR_LEFT;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_RIGHT;
+	}
+	if ( dir == DIR_LEFT) {
+		if ( changefacingDir ) {
+			Link->Dir = DIR_RIGHT;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_LEFT;
+	}
+	if ( dir == DIR_UP) {
+		if ( changefacingDir ) {
+			Link->Dir = DIR_UP;
+		}
+		Link->Action = LA_GOTHURTLAND;
+		Link->HitDir = DIR_UP;
+	}
+}
+
+void SetEnemyHP(int enemyToModify, int val, bool hpLink){
+	for(int i = 1; i < Screen->NumNPCs(); i++){ 
+		npc enem = Screen->LoadNPC(i);
+		int lhp = Game->Counter[CR_LIFE];
+		if ( enem->ID == enemyToModify ) {
+			if ( hpLink == true ) {
+				enem->HP = lhp;
+			}
+			else {
+				enem->HP = val;
+			}
+		}
+	}
+}
+
+const int LIST_ITEM = 0;
+const int DROP_CHANCE_1 = 256;
+const int DROP_CHANCE_2 = 512;
+const int DROP_CHANCE_3 = 768;
+const int DROP_CHANCE_4 = 1024;
+
+int DropListOne[000]={0}; Populate with item IDs per 1%. 
+
+int DropSetChance[4096]={0}; //Populate with drops and dropset chances.
+void RandomItem(int itemList, int dropChance){
+	int itm = Rand(0,9);
+	//FadeOutIte(itm);
+	//for (int i = SizeofArray[itemList + LIST_ITEM]; i > 0
+}
+
+void CreateItemFromList(int list, int posX, int posY){
+	int max = SizeOfArray(list);
+	int val = Rand(0,max);
+	Screen->CreateItem(val);
+}
+
+void TalkNPC(int list){
+	int max = SizeOfArray(list);
+	int thisString = Rand(0,max);
+	Game->PlayString(thisString);
+}
+
+void LinkIsFrozenFor(int time){
+	for (; time >0; time-){
+		Link->Action(LA_FROZEN);
+		Waitframe;
+	}
+}

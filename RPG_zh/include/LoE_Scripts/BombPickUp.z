@@ -1,0 +1,123 @@
+import "std.zh"
+
+const int ITM_HOLD1LAND = 1;
+const int ITM_HOLD2LAND = 2;
+const int ITM_HOLD1WATER = 3;
+const int ITM_HOLD2WATER = 4;
+
+void _Bow_HoldUpItem(int itm, int holdType){
+	if ( holdType == ITM_HOLD1LAND ) {
+		Link->Action = LA_HOLD1LAND;
+		Link->HeldItem = itm;
+	}
+	if ( holdType == ITM_HOLD2LAND ) {
+		Link->Action = LA_HOLD2LAND;
+		Link->HeldItem = itm;
+	}
+	if ( holdType == ITM_HOLD1WATER ) {
+		Link->Action = LA_HOLD1WATER;
+		Link->HeldItem = itm;
+	}
+	if ( holdType == ITM_HOLD2WATER ) {
+		Link->Action = LA_HOLD2WATER;
+		Link->HeldItem = itm;
+	}
+}
+	
+// D0: Number of starting bombs to give with this bomb bag. If positive, the player will be given that many bombs.
+	//You may pass a negative value here, to award super-bombs, instead. 
+// D1: Bomb Bag to Give: Small Bag ( 81 ), Medium Bag ( 82 ), Large Bag ( 83 ), Magic Bag ( 106 ) , or custom.
+// D2: Override counnter increase? : No ( 0 ), Yes ( Enter amount ).
+// D3: Sound Effect to play: Special Item ( 20 ), or custom.
+// D4: Message String ID to display (if any). None ( 0 ), or custom. 
+// D5: Hold-Up Animation to use: None ( 0 ) , 1-Hand ( 1 ), 2-Hand ( 2 ) , 1-Hand-Water ( 3 ), 2-Hand-Water ( 4 ).
+// D6: Bomb to give (PICK-UP ANIMATION): Bomb ( 3 ) , Bomb Ammo 1 ( 77 ), Ammo 4 ( 78 ), Ammo 8 ( 79 ), Ammo 30 ( 80 ), 
+				       //Bomb Bag ( 81 ), Medium Bomb Bag ( 82 ) , Large Bomb Bag ( 83 ), 
+				       //Magic Bomb Bag ( 106 ), SBomb ( 48 ) or custom. 
+	//This should match the item ID to which you attach this script!
+// D7: SuperBomb Maximum Increase: None ( 0 ) , or ( specify amount ) .
+
+item script BombPickup{
+	void run(int giveBombs, int bombBag, int bombMaxOverride, int playSFX, int showMessage, int holdUp, int bombID, int SBombMaxPlus){
+		int arrowsMax;
+		if ( quiver && !Link->Item[bombBag] ) {
+			Link->Item[bombBag] = true;
+			itemdata bombIT = Game->LoadItemData(bombBag);
+			bombMax = bombIT->Max;
+		}
+		if ( Game->MCounter[CR_BOMBS] < bombMax && bombMaxOverride < 1 ) {
+			Game->MCounter[CR_BOMBS] = bombMax;
+			Game->MCounter[CR_SBOMBS] = ( bombMax * 0.25);
+		}
+		if ( bombMaxOverride && Game->MCounter[CR_BOMBS] != bombMaxOverride ) {
+			Game->MCounter[CR_BOMBS] = bombMaxOverride;
+			int sBombMaxOverride = bombMaxOverride * 0.25;
+			if ( sBombMaxOverride > 1 ) {
+				Game->MCounter[CR_SBOMBS] = ( bombMaxOverride * 0.25);
+			}
+			else Game->MCounter[CR_SBOMBS] = 1;
+		}
+		if ( SBombMaxPlus ) Game->MCounter[SBOMBS] += SBombMaxPlus;
+		if ( giveBombs ) Game->Counter[CR_BOMBS] += giveBombs;
+		if ( giveBombs < 0 ) Game->Counter[CR_SBOMBS] -= giveBombs;
+		if ( playSFX ) Game->PlaySound(playSFX);
+		if ( holdUp && bombID ) _Bow_HoldUpItem(bombID,holdUp);
+		if ( showMessage ) Screen->Message(showMessage);
+	}
+}
+
+import "ffcscript.zh"
+
+item script BowPickupWithFFC{
+	void run(int giveArrows, int quiver, int arrowType, int playSFX, int showMessage, int holdUp, int bowID, int ffcSlot){
+		int args[7]={giveArrows,quiver,arrowType,playSFX,showMessage,holdUp,bowID};
+		RunFFCScript(ffcSlot,args);
+	}
+}
+	
+
+ffc script BowPickupFFC{
+	void run(int giveArrows, int quiver, int arrowType, int playSFX, int showMessage, int holdUp, int bowID){
+		bool waiting = true;
+		int arrowsMax;
+		while(waiting){
+			if ( quiver && !Link->Item[quiver] ) {
+				Link->Item[quiver] = true;
+				itemdata quiverIT = Game->LoadItemData(quiver);
+				arrowsMax = quiverIT->Max;
+				if ( Game->MCounter[CR_ARROWS] < arrowsMax ) Game->MCounter[CR_ARROWS] = arrowsMax;
+				Waitframe();
+			}
+			if ( arrowType && !Link->Item[arrowType] ) {
+				Link->Item[arrowType] = true;
+				Waitframe();
+			}
+			if ( giveArrows < 0 ) {
+				Game->Counter[CR_RUPEES] += giveArrows;
+				Waitframe();
+			}
+			if ( giveArrows ) {
+				Game->MCounter[CR_ARROWS] +=giveArrows;
+				Game->Counter[CR_ARROWS] += giveArrows;
+				Waitframe();
+			}
+			if ( playSFX ) {
+				Game->PlaySound(playSFX);
+				Waitframe();
+			}
+			if ( holdUp && bowID ) {
+				_Bow_HoldUpItem(bowID,holdUp);
+				Waitframe();
+			}
+			if ( showMessage ) Screen->Message(showMessage);
+			waiting = false;
+			Waitframe();
+		}
+	}
+}
+				
+			
+			
+			
+		
+		

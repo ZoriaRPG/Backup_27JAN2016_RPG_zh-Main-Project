@@ -1,0 +1,197 @@
+//Prototype (Base) Functions
+//v0.1.7 for RPG.zh v0.97.7
+//05-DEC-2015
+
+//Returns a value of frames, in Seconds, as a handy shortcut.
+int Seconds(int val){
+	return val * 60;
+}
+
+//Returns a value of minutes, in frames, as a handy chortcut. 
+int Minutes(int val){
+	return val * 360;
+}
+
+
+int ComboXSnap(int loc){ //Returns the X position of the centre of ComboX.
+}
+
+int ComboYSnap(int loc){ //Returns the Y position of the centre of ComboX.
+}
+
+//For loop shortcut for SizeOfArray, for ++ loops, instead of using <= SezeOfArray(), use < Array()
+int Array(int arr){
+	return SizeOfArray(arr) + 1;
+}
+
+int NumberOfNPCs(){
+	return (Screen->NumNPCs() + 1);
+}
+
+bool NumberOfNPCs(int max){
+	if ( Screen->NumNPCs() <= max) return true;
+	return false;
+}
+
+bool MoreThanNPCs(int min){
+	if ( Screen->NumNPCs() > min) return true;
+	return false;
+}
+
+
+
+bool OR(bool valA, bool valB){
+	if ( valA || valB ) return true;
+	return false;
+}
+
+bool XOR(bool valA, bool valB){
+	if ( !valA && valB ) return true;
+	else if ( valA && !valB ) return true;
+	return false;
+}
+
+bool AND (bool valA, bool valB){
+	if ( valA && valB ) return true;
+	return false;
+}
+
+//Redundant, but included for the sake of completion. 
+bool NOT(bool valA){
+	if ( !valA ) return true;
+	return false;
+}
+
+bool NAND(bool valA, bool valB){
+	if ( valA && valB ) return false;
+	return true;
+}
+
+bool NOR(bool valA, bool valB){
+	if ( !valA || !valB ) return true;
+	return false;
+}
+
+bool XNOR(bool valA, bool valB){
+	if ( !valA && valB ) return false;
+	else if ( valA && !valB ) return false;
+	return true;
+}
+
+bool NAND(bool arr, int size){
+	for ( int q = 0; q <= size; q++ ) {
+		if ( !arr[q] ) continue;
+		if ( q == size && !arr[q] ) return true;
+		
+	}
+	return false;
+}
+
+bool NAND (float arr){
+	int n = SizeOfArray(arr);
+	for ( int q = 0; q < n; q++ ) {
+		if ( !arr[q] && q < n ) continue;
+		if ( q == n && !arr[q] ) return true;
+	}
+	return false;
+}
+
+bool NOR(bool arr, int size){
+	int n = SizeOfArray(arr);
+	for ( int q = 0; q < size; q++ ) {
+		if ( !arr[q] ) continue;
+		else return false;
+	}
+	return true;
+}
+
+bool NOR (float arr){
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		if ( !arr[q]) continue;
+		else return false;
+	}
+	return true;
+}
+
+
+bool AND(float arr){
+	float match;
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		match = arr[q];
+		if ( match != arr[q+1] ) return false;
+	}
+	return true;
+}
+
+bool AND(int arr){
+	int match;
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		match = arr[q];
+		if ( match != arr[q+1] ) return false;
+	}
+	return true;
+}
+
+bool AND(bool arr){
+	bool match;
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		match = arr[q];
+		if ( match != arr[q+1] ) return false;
+	}
+	return true;
+}
+	
+
+
+//Returns the number of places of a positive, or negative int.
+int NumberOfPlaces(int val){
+	if ( val <= -100000 ) return 6;
+	if ( val > -100000 && val <= -10000 ) return 5;
+	if ( val > -10000 && val <= -1000 ) return 4;
+	if ( val > -1000 && val <= -100 ) return 3;
+	if ( val > -100 && val <= -10 ) return 2;
+	if ( val > -10 && val < 0 ) return 1;
+	if ( val >= 0 && val < 10 ) return 1;
+	if ( val >=10 && val < 100 ) return 2;
+	if ( val >=100 && val < 1000 ) return 3;
+	if ( val >=1000 && val < 10000 ) return 4;
+	if ( val >=10000 && val < 100000 ) return 5;
+	if ( val >= 100000 ) return 6;
+}
+	
+
+void TraceArray(int arr){
+	int str[]="Tracing array with Pointer: ";
+	int bufferPtr[7]=" ";
+	itoa(arr,bufferPointer);
+	int mainBuffer[40]=" ";
+	strcat(str,mainBuffer);
+	strcat(bufferPointer,mainBuffer);
+	TraceNL();
+	TraceS(mainBuffer);
+	TraceNL();
+
+	for ( int q = 0; q < SizeOfArray(arr); q++ ) {
+		int str2[]="Index: ";
+		int str3[]="is : ";
+		int buffer[22]=" ";
+		int bufferAmt[7]=" ";
+		int bufferIndex[7]=" ";
+		itoa(arr[q],bufferAmt);
+		itoa(q,bufferIndex);
+		strcat(str2,buffer);
+		strcat(bufferIndex,buffer);
+		strcat(str3,buffer);
+		strcat(bufferAmt,buffer);
+		TraceS(buffer);
+		TraceNL();
+	}
+}
+
+void TraceA(int arr){
+	TraceArray(arr);
+}
+		
+		
+		
+		

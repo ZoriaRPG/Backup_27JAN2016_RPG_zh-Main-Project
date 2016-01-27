@@ -1,0 +1,242 @@
+/// NPCs and Enemies
+
+// Constants
+
+// Arrays
+
+// Vars
+
+// Functions
+
+void SET_SCRIPT_DEFENSE(int lw, int npcid, int value){		//ARGUMENTS: Script weapon number, ID of the NPC with the defense, NPC defense type (Use the NPCD_ constants from std.zh)
+	for ( int i = Screen->NumNPCs(); i > 0; i-- ){
+		npc e = Screen->LoadNPC(i);
+		if(e->ID == npcid){
+			NPC_SCRIPT_DEFENSE[(i*10) + lw] = value;
+		}
+	}
+}
+void CLEAR_SCRIPT_DEFENSE(int line){					//Use Screen->LoadNPC with this. Clears the defenses associated with that NPC.
+	for(int i; i<10; i++){
+		NPC_SCRIPT_DEFENSE[(line*10) + i] = 0;
+	}
+}
+
+void doenemyhit(int m){
+	float defensemodifier[] = {
+		1, .5, .25, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 9999
+	};
+	for ( int i = Screen->NumNPCs(); i > 0; i-- ){
+		npc e = Screen->LoadNPC(i);
+		
+		for ( int j = Screen->NumLWeapons(); j > 0; j-- ){
+			lweapon l = Screen->LoadLWeapon(j);
+			TraceB(Collision(l, e));
+			if(Collision(l, e)){
+				
+				if(l->ID == LW_ARROW){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_ARROW]]);
+                    if ( WSpierce == true ){
+                    l->DeadState = WDS_ALIVE;
+                    }
+                    else {
+					l->DeadState = WDS_DEAD;
+                    }
+				}
+				if(l->ID == LW_BEAM){
+                    int applyDamage;
+                    int NPCD_sum = e->Defense[NPCD_BEAM];
+                    applyDamage = NPCD_sum * currentDamage;
+					l->Damage = applyDamage;
+                    Trace(applyDamage);
+                    if ( WSpierce == true ){
+                    l->DeadState = WDS_ALIVE;
+                    }
+                    else {
+					l->DeadState = WDS_DEAD;
+                    }
+				}
+				if(l->ID == LW_BRANG){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_BRANG]]);
+					l->DeadState = WDS_BOUNCE;
+				}
+				if(l->ID == LW_BOMBBLAST){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_BOMB]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_CANEOFBYRNA){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_BYRNA]]);
+					l->DeadState = WDS_ALIVE;
+				}
+				if(l->ID == LW_FIRE || l->ID == LW_SPARKLE){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_FIRE]]);
+					l->DeadState = WDS_ALIVE;
+				}
+				if(l->ID == LW_HAMMER){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_HAMMER]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_HOOKSHOT){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_HOOKSHOT]]);
+					l->DeadState = WDS_BOUNCE;
+				}
+				if(l->ID == LW_MAGIC){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_MAGIC]]);
+                    if ( WSpierce == true ){
+                    l->DeadState = WDS_ALIVE;
+                    }
+                    else {
+					l->DeadState = WDS_DEAD;
+                    }
+				}
+				if(l->ID == LW_REFBEAM){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_REFBEAM]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_REFMAGIC){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_REFMAGIC]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_REFFIREBALL){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_REFFIREBALL]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_REFROCK){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_REFROCK]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_SBOMBBLAST){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_SBOMB]]);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_CANEOFBYRNA){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_BYRNA]]);
+					l->DeadState = WDS_ALIVE;
+				}
+				if(l->ID >= LW_SCRIPT1 && l->ID <= LW_SCRIPT10){
+					e->HP -= (l->Misc[m] * NPC_SCRIPT_DEFENSE[(i*10) + (l->ID - 30)]);
+                    if ( WSpierce == true ){
+                    l->DeadState = WDS_ALIVE;
+                    }
+                    else {
+					l->DeadState = WDS_DEAD;
+                    }
+				}
+//				if(l->ID == LW_STOMP){
+//					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_STOMP]]);
+//					l->DeadState = WDS_DEAD;
+//LW_STOMP does not exist, and there is no constant for this LW class. Does this class exist, or is this handled by the Link class?
+//				}
+				if(l->ID == LW_SWORD){
+                    int applyDamage;
+                    int NPCD_sum = e->Defense[NPCD_SWORD];
+                    applyDamage = NPCD_sum * currentDamage;
+                    //lweapon temp(LW_SCRIPT10);
+                    //temp->X = l->X;
+                    //temp->Y = l->Y;
+                    //temp->Damage = currentDamage;
+                    //e->HP -= l->Misc[1];
+					//l->Damage = applyDamage;
+                    //l->Damage = l->Misc[1];
+                    //int doDamage = 901;
+                    l->Damage = currentDamage;
+                    Trace(l->Misc[1]);
+                    //Trace(doDamage);
+					l->DeadState = WDS_DEAD;
+				}
+				if(l->ID == LW_WAND){
+					e->HP -= (l->Misc[m] * defensemodifier[e->Defense[NPCD_WAND]]);
+					l->DeadState = WDS_DEAD;
+				}
+			}
+		}
+	}
+}
+
+
+/////////////////////
+/// ENEMY SCRIPTS ///
+/////////////////////
+
+ffc script spawnEnemy{
+    void run(int enemyID, int hp){
+        npc ffcEnemy = CreateNPCAt(enemyID, this->X, this->Y); //Create enemyReplace at the FFC position.
+        ffcEnemy->HP = hp;
+        while (true){
+        ffcEnemy->X = this->X;
+        ffcEnemy->Y = this->Y;
+        Waitframe();
+        }
+    }
+}
+
+//////////////////////
+/// Enemy Defences ///
+//////////////////////
+
+ffc script FFC_Enemy_Script_Defenses{
+    void run(int enemyID, int hp, int defenceItem, int defenceType){
+        npc ffcEnemy = CreateNPCAt(enemyID, this->X, this->Y); //Create enemyReplace at the FFC position.
+        ffcEnemy->HP = hp;
+        ffcEnemy->X = this->X;
+        ffcEnemy->Y = this->Y;
+        
+        SET_SCRIPT_DEFENSE(defenceItem, enemyID, defenceType);
+        while (true){
+            Waitframe();
+        }
+    }
+}
+
+
+/////////////////////////////////////
+///    Enemy Vulnerabilities      ///
+/// Modified from: the Gibdo Burn ///
+///   Script by MoscowModder      ///
+/// Combined with the FFC Trigger ///
+///    Script by: grayswandir     ///
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/// Place on screen with an enemy, so that if it is killed by a specific type of weapon   ///
+/// it spawms a different enemy. or produces a different effect.                          ///
+/// D0: Enemy Number of SOurce Enemy to Affect.                                           ///
+/// D1: Enemy to Replace D0 with on Contact with Trigger.                                 ///
+/// D2: Trigger - Positive Number for Specific Item Number; Negative Number of LW Type.   ///
+/////////////////////////////////////////////////////////////////////////////////////////////
+/// Place one FFC of this script on the screen for each enemy to affect by it.            ///
+/// You can cascade this by setting the replacement enemy type as a source type in        ///
+/// a second instance of this FFC.                                                        ///
+/// THis can be especially useful for spells: You can have enemies that are outwardly     ///
+/// invincible, but are changed once affected by a spell or item. You can use the same    ///
+/// sprite, or a variation of itl to reflect the change int he state of the enemy, or to  ///
+/// make the change invisible to the player.                                              ///
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+ffc script specialEnemyVulnerability{
+    void run(int enemy1, int enemy2, int trigger) {
+        while(true){
+            for(int i = 1; i < Screen->NumNPCs(); i++){ //Check every enemy
+                npc enem = Screen->LoadNPC(i);
+                if(enem->ID == enemy1){ //If it's a the enemeny editor number of enemy1
+                for(int j = 1; j < Screen->NumLWeapons(); j++){ //Check every weapon
+                        lweapon weap = Screen->LoadLWeapon(j);
+                        if (weap->CollDetection && Collision(enem, weap)) { //if the LW touches the enemy,
+                            if (IsFromItem(weap, trigger)) { // If LW is from right item type.
+                               npc newEnem = CreateNPCAt(enemy2, enem->X, enem->Y); //Create the skeleton
+                               newEnem->HP = enem->HP; //Set its HP to gibdo's HP (optional; can remove this)
+                               Remove(enem); //Remove gibdo quietly
+                            }
+                            
+                            else if (IsFromItemClass(weap, -trigger)) {
+                            npc newEnem = CreateNPCAt(enemy2, enem->X, enem->Y); //Create the replacement enemy.
+                            newEnem->HP = enem->HP; //Set its HP to original enemy's HP (optional; can remove this)
+                            Remove(enem); //Remove original enemy quietly
+                            }
+                        }
+                    }
+                }
+                Waitframe();
+            }
+        }
+    }
+}

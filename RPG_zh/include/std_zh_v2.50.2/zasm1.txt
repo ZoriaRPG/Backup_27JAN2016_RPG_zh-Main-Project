@@ -1,0 +1,30 @@
+     REFFFC
+    FFCHEIGHT
+    FFCWIDTH
+    FFFLAGSD
+    FFINITD
+    FFINITDD
+    FFLINK
+    FFMISC
+    FFMISCD
+    FFSCRIPT
+    FFTHEIGHT
+    FFTWIDTH
+    
+    //ZASM registers
+//When adding indexed variables the index will be loaded into ri.d[0], don't add a register for each one!
+#define D(n)               ((0x0000)+(n)) //8
+#define A(n)               ((0x0008)+(n)) //2
+#define DATA                 0x000A
+#define FCSET                0x000B
+#define DELAY                0x000C
+#define FX                   0x000D
+#define FY                   0x000E
+#define XD                   0x000F
+#define YD                   0x0010
+#define XD2                  0x0011
+#define YD2                  0x0012
+#define FLAG                 0x0013
+#define WIDTH                0x0014
+#define HEIGHT               0x0015
+#define LINK                 0x0016

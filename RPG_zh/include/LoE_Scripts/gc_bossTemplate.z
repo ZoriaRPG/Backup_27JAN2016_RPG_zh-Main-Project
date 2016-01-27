@@ -1,0 +1,48 @@
+ffc script bossEnemy{
+    void run(){
+
+        bool hasSpoken = false;
+        bool hasAgreed = false;;
+        bool alliedWith = false;
+        bool isAlive = true;
+
+        while(true) {
+
+            if (!hasSpoken) {
+                while (!alliedWith){
+                //Dialogue menus.
+                //Give alliance choice i applicable.
+                Waitrame();
+                }
+                hasSpoken = true;
+                if ( choice == true ){
+                    alliedWith = true;
+                }
+                else { 
+                alliedWith = false;
+                }
+            }   
+
+            if (hasAgreed) {
+                //Special enemy actions.
+                //Remove Enemy FFC, or make harmless.
+                alliedWith = true;
+                break;
+            }
+            else if (!alliedWith) {
+                if (e->HP < 1 && e->HP > HP_DEAD) {
+                    isAlive = false;
+                    //deathThrows(type);
+                    //deathMessage(message);
+                }
+                do {
+                    //Run special attack options
+                }
+                while(isAlive);
+            }
+            Waitframe();
+        }
+    }
+}
+
+            

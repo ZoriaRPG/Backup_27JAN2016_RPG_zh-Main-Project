@@ -1,0 +1,6 @@
+ffc script gogglesFFC{
+	void run(int onSFX, int offSFX, int duration, int Script_ID){
+		Screen->Wavy = duration;
+		//Link->Item[I_AMULET1] = true;
+		}
+	}

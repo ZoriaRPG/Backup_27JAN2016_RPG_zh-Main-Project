@@ -1,0 +1,35 @@
+ffc script BoltFFC{
+    void run(int basePower, int chargeTime, int arrowSprite, int speed){
+        int startHP = Link->HP;
+        currentDamage = diePerLevel(basePower,0);
+        int power = currentDamage;
+        lweapon lArrow;
+        Game->PlaySound(SFX_MAGICCHARGE);
+        for(int i = chargeTime; i > 0; i--){ //Charge duration
+            NoAction(); //Freeze Link
+            //Display charging animation: gold circle (non-filled) appears and shrinks (radius)
+            Screen->Circle ( 7, Link->X+8, Link->Y+8, 20*i/chargeTime, lightColor, 1, 0, 0, 0, false, 64 );
+            if ( Link->HP < startHP )
+                return; //If Link is hurt, quit
+            Waitframe();
+        }
+        
+        //Charging done! Shoot that arrow!
+        Link->Action = LA_ATTACKING;
+		Game->PlaySound(ThunderSFX);
+        lArrow = NextToLink(LW_SCRIPT4, 8);                        //Create in front of Link
+        lArrow->UseSprite(arrowSprite);                            //Graphics
+        lArrow->Damage = power;                                    //Damage
+        lArrow->Step = speed;                                    //Speed
+        if ( Link->Dir == DIR_DOWN ){                            //Sprite selection/rotation
+            lArrow->Flip = 3;
+        }
+        else if ( Link->Dir == DIR_LEFT ){
+            lArrow->Tile++;
+            lArrow->Flip = 1;
+        }
+        else if ( Link->Dir == DIR_RIGHT ){
+            lArrow->Tile++;
+        }
+    }
+}

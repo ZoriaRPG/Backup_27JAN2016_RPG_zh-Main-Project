@@ -1,0 +1,28 @@
+RPG.ZH Line Count
+RPH.zh 80 ish
+Debug 34
+Dialogue 18
+Dice 226
+Engine 359
+Experimental 1203
+Experimental_Ext 332
+FFCs 70
+Itemsx 191
+Levels 685
+Menus 65
+Money 225
+NPCDs 205
+NPCDsTable 256
+Overworld 26
+Skills 224
+Spells 84
+Stats 513
+Status 307
+Timers 1
+Wewapons 136
+
+---
+
+stdCombos 1518
+
+

@@ -1,0 +1,286 @@
+// BrangBushes v0.5
+// 10th September, 2015
+// By: ZoriaRPG ( c ) 2015 TMGS
+
+
+int BrangBushes[20]={	CMB_BRANGBUSH1, CMB_BRANGBUSH2, CMB_BRANGBUSH3, CMB_BRANGBUSH4, //Four original tiles. Expand as needed.
+			CMB_SECRETBUSH1, CMB_SECRETBUSH1, CMB_SECRETBUSH1, CMB_SECRETBUSH1, //Four special combos, for secrets.
+			CMB_BUSH_SECRET_DEST1, CMB_BUSH_SECRET_DEST2, CMB_BUSH_SECRET_DEST3, CMB_BUSH_SECRET_DEST4, //Replacement combos for triggers of CMB_SECRETBUSH* 
+			VINE_DROPS, VINE_DROPS, VINE_DROPS, VINE_DROPS, //Dropsets
+			SPR_BUSH_CLIPPINGS, SPR_BUSH_CLIPPINGS, SPR_BUSH_CLIPPINGS, SPR_BUSH_CLIPPINGS}; //Sprites for clippings.
+			
+
+const int I_NONE = -1; //No item (0% drop) for scripted droplists.
+const int VINE_DROPS = 1; //Constant if a vine/bush makes a drop.
+const int VINE_NODROPS = 0; //Constant if a vine/bush does NOT make a drop.
+const int SFX_CUTVINE = 50; //General Sound Effect for cutting bushes, and vines.
+const int SFX_SECRET_TRIG = 27; //Secret sound. 
+const int SPR_BUSH_CLIPPINGS = 122; //General sprite for clippings. Modify this value as needed.
+
+//Array Indices: Expand, or modify, as needed. Set up to utilise four combo types, four secret combo types, and four destination combos. 
+const int BRANGBUSH_SECRET_SRC = 4;
+const int BRANGBUSH_SECRET_DEST = 8;
+const int BRANGBUSH_DROP = 12; //Does this combo drop items? 0 for no, 1 for yes.
+const int BRANGBUSH_CLIPPING_SPRITES = 16; //Array index for plant clipping sprite IDs.
+			
+//Position 0, First Combo Type
+const int CMB_BRANGBUSH1 = 0; //Set to ID of first plant combo to cut, as Slash->Next.
+const int CMB_SECRETBUSH1 = 100; //Set to ID of combo with identical title to SMB_BRANGBUSH1 that is to become a specific combo. 
+const int CMB_BUSH_SECRET_DEST1 = 200; //Set to ID of combo to replace CMB_SECRETBUSH1.
+		
+//Position 1, Second Combo Type			
+const int CMB_BRANGBUSH2 = 0; //Set to ID of second plant combo to cut.
+const int CMB_SECRETBUSH2 = 100; //Set to ID of combo with identical title to SMB_BRANGBUSH2 that is to become a specific combo. 
+const int CMB_BUSH_SECRET_DEST2 = 200; //Set to ID of combo to replace CMB_SECRETBUSH2.			
+
+//Position 3, Third Combo Type
+const int CMB_BRANGBUSH3 = 0; //Set to ID of third plant combo to cut.
+const int CMB_SECRETBUSH3 = 100; //Set to ID of combo with identical title to SMB_BRANGBUSH3 that is to become a specific combo. 
+const int CMB_BUSH_SECRET_DEST3 = 200; //Set to ID of combo to replace CMB_SECRETBUSH3.
+
+//Position 4, Fourth Combo Type
+const int CMB_BRANGBUSH4 = 0; //Set to ID of fourth plant combo to cut.
+const int CMB_SECRETBUSH4 = 100; //Set to ID of combo with identical title to SMB_BRANGBUSH4 that is to become a specific combo. 
+const int CMB_BUSH_SECRET_DEST4 = 200; //Set to ID of combo to replace CMB_SECRETBUSH4.
+			
+			
+//! Example global active script. 
+			
+global script activeExample(){
+	void run(){
+		while(true){
+			PlantCleaveD(BrangBushes, LW_BRANG, SFX_CUTVINE);
+			Waitdraw();
+			Waitframe();
+		}
+	}
+}
+
+/////////////////
+//! Functions !//
+/////////////////
+			
+//! Cut bushes/vines, and replace it, either with the NEXT combo in list, or a specified combo.
+			
+//Cut bushes with any lweapon, by LType, and ComboD[] (ID)
+void PlantCleaveD(int comboArray, int ltype, int cutSound){
+	int cmb;
+	int cmbX;
+	int cmbY;
+	bool secret;
+	bool match;
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ) {
+		lweapon l = Screen->LoadLWeapon(q);
+		if ( q->Type != lType ) continue;
+		for ( int w = 0; w < 176; w++ ) {
+			cmb = Screen->ComboD[w];
+			for ( int e = 0; e <= SizeOfArray(comboArray); e++){
+				if ( cmb != comboArray[e] ) continue;
+				if ( cmb >= comboArray[e+BRANGBUSH_SECRET_DEST] ) break;
+				if ( ( cmb >= comboArray[e] && cmb < comboArray[e+BRANGBUSH_SECRET_SRC ) && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						match = true;
+				}
+				if ( ( cmb >= comboArray[e+BRANGBUSH_SECRET_SRC] && cmb < comboArray[e+ BRANGBUSH_SECRET_DEST] )  && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						match = true;
+						secret = true;
+				}
+				if ( match && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						if ( l->Type = LW_BRANG || l->Type == LW_HOOKSHOT ) l->DeadState = WDS_BOUNCE;
+						cmbX = ComboX(cmb);
+						cmbY = ComboY(cmb);
+						Game->PlaySound(cutSound);
+						if ( !secret ) ComboD[w]++;
+						if ( secret ) {
+							ComboD[w] = comboArray[e+BRANGBUSH_SECRET_DEST];
+							Game->PlaySound(SFX_SECRET_TRIG);
+						}
+					if ( BrangBushes[e+BRANGBUSH_CLIPPING_SPRITES] ){
+						lweapon clippings = Screen->CreateLWeapon(LW_SPARKLE,cmbX,cmbY);
+						clippings->CollDetection = false;
+						clippings->UseSprite(comboArray[e+BRANGBUSH_CLIPPING_SPRITES]);
+					}
+					
+					if ( comboArray[e+BRANGBUSH_DROP] ) {
+						int chance = Rand(1,100);
+						BrangBushDrops(chance, cmbX, cmbY);
+				}
+			}
+		}
+	}
+}
+
+
+//Cut bushes with any lweapon, by LType, and ComboT[] (Type)
+void PlantCleaveT(int comboArray, int ltype, int cutSound){
+	int cmb;
+	int cmbX;
+	int cmbY;
+	bool secret;
+	bool match;
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ) {
+		lweapon l = Screen->LoadLWeapon(q);
+		if ( q->Type != lType ) continue;
+		for ( int w = 0; w < 176; w++ ) {
+			cmb = Screen->ComboT[w];
+			for ( int e = 0; e <= SizeOfArray(comboArray); e++){
+				if ( cmb != comboArray[e] ) continue;
+				if ( cmb >= comboArray[e+BRANGBUSH_SECRET_DEST] ) break;
+				if ( ( cmb >= comboArray[e] && cmb < comboArray[e+BRANGBUSH_SECRET_SRC ) && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						match = true;
+				}
+				if ( ( cmb >= comboArray[e+BRANGBUSH_SECRET_SRC] && cmb < comboArray[e+ BRANGBUSH_SECRET_DEST] )  && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						match = true;
+						secret = true;
+				}
+				if ( match && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						if ( l->Type = LW_BRANG || l->Type == LW_HOOKSHOT ) l->DeadState = WDS_BOUNCE;
+						cmbX = ComboX(cmb);
+						cmbY = ComboY(cmb);
+						Game->PlaySound(cutSound);
+						if ( !secret ) ComboD[w]++;
+						if ( secret ) {
+							ComboD[w] = comboArray[e+BRANGBUSH_SECRET_DEST];
+							Game->PlaySound(SFX_SECRET_TRIG);
+						}
+					if ( BrangBushes[e+BRANGBUSH_CLIPPING_SPRITES] ){
+						lweapon clippings = Screen->CreateLWeapon(LW_SPARKLE,cmbX,cmbY);
+						clippings->CollDetection = false;
+						clippings->UseSprite(comboArray[e+BRANGBUSH_CLIPPING_SPRITES]);
+					}
+					
+					if ( comboArray[e+BRANGBUSH_DROP] ) {
+						int chance = Rand(1,100);
+						BrangBushDrops(chance, cmbX, cmbY);
+				}
+			}
+		}
+	}
+}
+
+//Cut bushes with any lweapon, by LType, and ComboF[] (Flag)
+void PlantCleaveF(int comboArray, int ltype, int cutSound){
+	int cmb;
+	int cmbX;
+	int cmbY;
+	bool secret;
+	bool match;
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ) {
+		lweapon l = Screen->LoadLWeapon(q);
+		if ( q->Type != lType ) continue;
+		for ( int w = 0; w < 176; w++ ) {
+			cmb = Screen->ComboF[w];
+			for ( int e = 0; e <= SizeOfArray(comboArray); e++){
+				if ( cmb != comboArray[e] ) continue;
+				if ( cmb >= comboArray[e+BRANGBUSH_SECRET_DEST] ) break;
+				if ( ( cmb >= comboArray[e] && cmb < comboArray[e+BRANGBUSH_SECRET_SRC ) && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						match = true;
+				}
+				if ( ( cmb >= comboArray[e+BRANGBUSH_SECRET_SRC] && cmb < comboArray[e+ BRANGBUSH_SECRET_DEST] )  && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						match = true;
+						secret = true;
+				}
+				if ( match && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						if ( l->Type = LW_BRANG || l->Type == LW_HOOKSHOT ) l->DeadState = WDS_BOUNCE;
+						cmbX = ComboX(cmb);
+						cmbY = ComboY(cmb);
+						Game->PlaySound(cutSound);
+						if ( !secret ) ComboD[w]++;
+						if ( secret ) {
+							ComboD[w] = comboArray[e+BRANGBUSH_SECRET_DEST];
+							Game->PlaySound(SFX_SECRET_TRIG);
+						}
+					if ( BrangBushes[e+BRANGBUSH_CLIPPING_SPRITES] ){
+						lweapon clippings = Screen->CreateLWeapon(LW_SPARKLE,cmbX,cmbY);
+						clippings->CollDetection = false;
+						clippings->UseSprite(comboArray[e+BRANGBUSH_CLIPPING_SPRITES]);
+					}
+					
+					if ( comboArray[e+BRANGBUSH_DROP] ) {
+						int chance = Rand(1,100);
+						BrangBushDrops(chance, cmbX, cmbY);
+				}
+			}
+		}
+	}
+}
+
+//Cut bushes with any lweapon, by LType, and ComboI[] (Inherent Flag)
+void PlantCleaveI(int comboArray, int ltype, int cutSound){
+	int cmb;
+	int cmbX;
+	int cmbY;
+	bool secret;
+	bool match;
+	for ( int q = 1; q <= Screen->NumLWeapons(); q++ ) {
+		lweapon l = Screen->LoadLWeapon(q);
+		if ( q->Type != lType ) continue;
+		for ( int w = 0; w < 176; w++ ) {
+			cmb = Screen->ComboI[w];
+			for ( int e = 0; e <= SizeOfArray(comboArray); e++){
+				if ( cmb != comboArray[e] ) continue;
+				if ( cmb >= comboArray[e+BRANGBUSH_SECRET_DEST] ) break;
+				if ( ( cmb >= comboArray[e] && cmb < comboArray[e+BRANGBUSH_SECRET_SRC ) && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						match = true;
+				}
+				if ( ( cmb >= comboArray[e+BRANGBUSH_SECRET_SRC] && cmb < comboArray[e+ BRANGBUSH_SECRET_DEST] )  && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						match = true;
+						secret = true;
+				}
+				if ( match && l->Type == lType && l->isValid() && CmbLWeaponCollision(l,cmb) ) {
+						if ( l->Type = LW_BRANG || l->Type == LW_HOOKSHOT ) l->DeadState = WDS_BOUNCE;
+						cmbX = ComboX(cmb);
+						cmbY = ComboY(cmb);
+						Game->PlaySound(cutSound);
+						if ( !secret ) ComboD[w]++;
+						if ( secret ) {
+							ComboD[w] = comboArray[e+BRANGBUSH_SECRET_DEST];
+							Game->PlaySound(SFX_SECRET_TRIG);
+						}
+					if ( BrangBushes[e+BRANGBUSH_CLIPPING_SPRITES] ){
+						lweapon clippings = Screen->CreateLWeapon(LW_SPARKLE,cmbX,cmbY);
+						clippings->CollDetection = false;
+						clippings->UseSprite(comboArray[e+BRANGBUSH_CLIPPING_SPRITES]);
+					}
+					
+					if ( comboArray[e+BRANGBUSH_DROP] ) {
+						int chance = Rand(1,100);
+						BrangBushDrops(chance, cmbX, cmbY);
+				}
+			}
+		}
+	}
+}
+
+//! Create Drops
+
+
+void BrangBushDrops(int chance, int x, int y) {
+	int _I_DropSet[100]={ 	I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1,
+				I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1, I_RUPEE1,
+				I_HEART, I_HEART, I_HEART, I_HEART, I_HEART, I_HEART, I_HEART, I_HEART, I_HEART, I_HEART,
+				I_HEART, I_HEART, I_HEART, I_HEART, I_HEART, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE,
+				I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE,
+				I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE,
+				I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE,
+				I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE,
+				I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE,
+				I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE, I_NONE};
+	if ( _I_DropSet[chance] != -1 ) CreateTimeoutItem(DropSet[chance], x, y);
+}
+		
+//! Check collision between an arbitrary combo, and LWeapon; from stdCombos.zh (renamed to prevent compilation errors for people using that header).
+
+// Returns TRUE if there is a collision between an LWeapon and a combo on screen.
+bool CmbLWeaponCollision (int loc, lweapon f){
+	int ax = (f->X)+(f->HitXOffset);
+	int ay = (f->Y)+(f->HitYOffset);
+	int bx = ax+(f->HitWidth);
+	int by = ay+(f->HitHeight);
+	if (!(f->CollDetection)) return false;
+	int cx = ComboX(loc);
+	int cy = ComboY(loc);
+	int dx = ComboX(loc)+16;
+	int dy = ComboY(loc)+16;
+	return RectCollision( cx, cy, dx, dy, ax, ay, bx, by);
+}
+				

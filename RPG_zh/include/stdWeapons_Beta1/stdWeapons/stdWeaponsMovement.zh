@@ -1,0 +1,117 @@
+//Makes FFC bounce off solid combos. Don`t call it too often. Otherwise Lweapon can be stuck in a wall.
+void Bounce (ffc ball, lweapon l, int sound){
+	bool bounce = false;
+	int lwx = l->X + l->HitXOffset;
+	int lwy = l->Y + l->HitYOffset;
+	if (Screen->isSolid(lwx+l->HitWidth/2, lwy)) {
+		ball->Vy= -(ball->Vy);
+		bounce = true;
+	}
+	if (Screen->isSolid(lwx+l->HitWidth/2, lwy+l->HitHeight)) {
+		ball->Vy= -(ball->Vy);
+		bounce = true;
+	}
+	if (Screen->isSolid(lwx, lwy+l->HitHeight/2)) {
+		ball->Vx= -(ball->Vx);
+		bounce = true;
+	}
+	if (Screen->isSolid(lwx+l->HitWidth, lwy+l->HitHeight/2)) {
+		ball->Vx= -(ball->Vx);
+		bounce = true;
+	}
+	if (bounce){
+		Game->PlaySound(sound);
+		return;
+	}
+	if ((Screen->isSolid(lwx, lwy))&&(ball->Vx < 0)&&(ball->Vy <0)){
+		ball->Vx= Abs(ball->Vx);
+		ball->Vy= Abs(ball->Vy);
+		bounce = true;
+	}
+	if ((Screen->isSolid(lwx, lwy+l->HitHeight))&&(ball->Vx < 0)&&(ball->Vy > 0)){
+		ball->Vx= -(ball->Vx);
+		ball->Vy= -(ball->Vy);
+		bounce = true;
+	}
+	if ((Screen->isSolid(lwx+l->HitWidth, lwy+l->HitHeight))&&(ball->Vx > 0)&&(ball->Vy >0)){
+		ball->Vx= -(ball->Vx);
+		ball->Vy= -(ball->Vy);
+		bounce = true;
+	}
+	if ((Screen->isSolid(lwx+l->HitWidth, lwy))&&(ball->Vx > 0)&&(ball->Vy <0)){
+		ball->Vx= -(ball->Vx);
+		ball->Vy= -(ball->Vy);
+		bounce = true;
+	}
+	if (bounce){
+		Game->PlaySound(sound);
+		return;
+	}	
+}
+
+//Puts FFC at position where it`s Lweapon`s wall collision just recently occured.
+//Do you remember the same function in Game Maker?
+void MoveToSolidContactPosition(ffc f, lweapon l){
+	f->X= f->X - f->Vx;
+	f->Y= f->Y - f->Vy;
+	while (!WallCollision8way(l)){
+		f->X= f->X+Sign(f->Vx);
+		f->Y= f->Y+Sign(f->Vy);
+		LweaponPosUpdate(f, l);
+	}
+}
+
+//Set FFC`s position using polar coordinate system with given origin point, radius and angle set.
+//Best used with circling Lweapons. Run once every frame.
+void SetPolarCoordinates (ffc f, int oX, int oY, float radius, int angle){
+	f->X=oX+(radius*Cos(angle));
+	f->Y=oY+(radius*Sin(angle));	
+}
+
+//Causes FFC to be affected by gravity. Run once every frame.
+void AffectedByGravity (ffc f, lweapon l){
+	if (IsSideview()){
+		if (f->Vy>TERMINAL_VELOCITY){
+			f->Vy=TERMINAL_VELOCITY;
+			f->Ay=0;
+			}
+		else f->Ay=GRAVITY;
+		}
+	else {
+		if (f->Misc[FFC_MISC_VZ] > -TERMINAL_VELOCITY) f->Misc[FFC_MISC_VZ]-=GRAVITY;
+		else f->Misc[FFC_MISC_VZ]=-TERMINAL_VELOCITY;
+		f->Misc[FFC_MISC_Z] += f->Misc[FFC_MISC_VZ];
+	}
+}
+
+//Sets FFC to move in one of cardinal directions at given speed, using Link`s direction.
+void SetStraightMotion4(ffc f, float speed){
+	if (Link->Dir==DIR_RIGHT)f->Vx=speed;
+	else if (Link->Dir==DIR_LEFT)f->Vx=-(speed);
+	else if (Link->Dir==DIR_UP)f->Vy=-(speed);
+	else f->Vy=speed;
+}
+
+//Same as previous function, but in specific direction (not reading Link`s one).
+void SetStraightMotion4(ffc f, int dir, float speed){
+	if (dir==DIR_RIGHT)f->Vx=speed;
+	else if (dir==DIR_LEFT)f->Vx=-(speed);
+	else if (dir==DIR_UP)f->Vy=-(speed);
+	else f->Vy=speed;
+}
+
+//Causes FFC to home on given point. If "accel" boolean is set to TRUE, the function affects FFC`s
+//acceleration, instead of velocity.
+void HomingUpdate(ffc f, int speed, int targetX, int targetY, bool accel){
+	int fx = CenterX (f);
+	int fy = CenterY (f);
+	int hdir = Angle(fx, fy, targetX, targetY);
+	if (accel){
+		f->Ax = speed*Cos(hdir);
+		f->Ay = speed*Sin(hdir);
+	}
+	else{
+		f->Vx = speed*Cos(hdir);
+		f->Vy = speed*Sin(hdir);
+	}
+}

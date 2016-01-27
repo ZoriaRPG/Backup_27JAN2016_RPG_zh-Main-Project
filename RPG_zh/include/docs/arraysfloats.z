@@ -1,0 +1,15 @@
+//General Arrays- Floats
+
+XtalSwitches[464]//Array for number of Dmaps in use plus one.
+
+XTalSwitchesList[214369]//Array equal to number of Dmaps in use squared. Up to 463 dmaps.
+
+XtalSwitchTriggerLWeapons[]//This array is blank. I'm not sure why.
+
+XtalSwitchTriggerEWeapons[]//Ditto.
+
+tangoUserOptions[6]=(0,0,0,0,0,0)
+
+GameTimer[7]={0,0,0,0,0,0,0}
+
+InGameTime[12]={1,1,1,1,1,1,1,1,1,1,1,4}

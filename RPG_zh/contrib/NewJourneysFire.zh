@@ -1,0 +1,784 @@
+ffc script NJF
+{
+	
+	void run(int enemyid)
+	{
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_SetFlag(GHF_4WAY);
+		Ghost_SetFlag(GHF_NO_FALL);
+		Ghost_SetFlag(GHF_SET_DIRECTION);
+		Ghost_CSet = 10;
+		int AttackXY[6];
+		int Attack[5];
+		int AfterX[16];
+		int AfterY[16];
+		int AfterDir;
+		Attack[0] = 0;
+		Attack[1] = 300;
+		Attack[2] = 0;
+		Attack[3] = 0;
+		Attack[4] = 0;
+		int Counter = -1;
+		int Defend[18];
+		Ghost_StoreDefenses(ghost, Defend);
+		while(true)
+		{
+			Attack[2]++;
+			Attack[2] %= 360;
+			AfterX[15] = AfterX[14];
+			AfterX[14] = AfterX[13];
+			AfterX[13] = AfterX[12];
+			AfterX[12] = AfterX[11];
+			AfterX[11] = AfterX[10];
+			AfterX[10] = AfterX[9];
+			AfterX[9] = AfterX[8];
+			AfterX[8] = AfterX[7];
+			AfterX[7] = AfterX[6];
+			AfterX[6] = AfterX[5];
+			AfterX[5] = AfterX[4];
+			AfterX[4] = AfterX[3];
+			AfterX[3] = AfterX[2];
+			AfterX[2] = AfterX[1];
+			AfterX[1] = AfterX[0];
+			AfterX[0] = Ghost_X;
+			AfterY[15] = AfterY[14];
+			AfterY[14] = AfterY[13];
+			AfterY[13] = AfterY[12];
+			AfterY[12] = AfterY[11];
+			AfterY[11] = AfterY[10];
+			AfterY[10] = AfterY[9];
+			AfterY[9] = AfterY[8];
+			AfterY[8] = AfterY[7];
+			AfterY[7] = AfterY[6];
+			AfterY[6] = AfterY[5];
+			AfterY[5] = AfterY[4];
+			AfterY[4] = AfterY[3];
+			AfterY[3] = AfterY[2];
+			AfterY[2] = AfterY[1];
+			AfterY[1] = AfterY[0];
+			AfterY[0] = Ghost_Y;
+			if (Attack[0] == 0)
+			{
+				Counter = Ghost_ConstantWalk4(Counter, ghost->Step, ghost->Rate, ghost->Homing, ghost->Hunger);
+				for (int i; i <= Screen->NumEWeapons(); i++)
+				{
+					eweapon Bumber = Screen->LoadEWeapon(i);
+					if (Bumber->ID == EW_BOMBBLAST)
+					{
+						Bumber->DeadState = 0;
+					}
+				}
+				eweapon Bomb1 = CreateEWeaponAt(EW_BOMBBLAST, Ghost_X + VectorX(48, Attack[2]), Ghost_Y + VectorY(48, Attack[2]));
+				eweapon Bomb2 = CreateEWeaponAt(EW_BOMBBLAST, Ghost_X + VectorX(48, (Attack[2] + 180) % 360), Ghost_Y + VectorY(48, (Attack[2] + 180) % 360));
+				Bomb1->Damage = 8;
+				Bomb2->Damage = 8;
+				if (Attack[1] % 60 == 0)
+				{
+					FireEWeapon(EW_FIRE2, Ghost_X, Ghost_Y, dirToRad(Ghost_Dir), 200, 16, -1, -1, 0);
+					FireEWeapon(EW_FIRE2, Ghost_X, Ghost_Y, dirToRad(Ghost_Dir) - 0.6, 200, 16, -1, -1, 0);
+					FireEWeapon(EW_FIRE2, Ghost_X, Ghost_Y, dirToRad(Ghost_Dir) + 0.6, 200, 16, -1, -1, 0);
+				}
+				if (Attack[1] > 0) Attack[1]--;
+				else
+				{
+					Attack[0] = 1;
+					AttackXY[0] = Link->X;
+					AttackXY[1] = Link->Y;
+					AttackXY[2] = Ghost_X;
+					AttackXY[3] = Ghost_Y;
+					AttackXY[4] = (AttackXY[0] + AttackXY[2]) / 2;
+					AttackXY[5] = (AttackXY[1] + AttackXY[3]) / 2;
+					Attack[1] = 300;
+					AfterX[15] = 0;
+					AfterX[14] = 0;
+					AfterX[13] = 0;
+					AfterX[12] = 0;
+					AfterX[11] = 0;
+					AfterX[10] = 0;
+					AfterX[9] = 0;
+					AfterX[8] = 0;
+					AfterX[7] = 0;
+					AfterX[6] = 0;
+					AfterX[5] = 0;
+					AfterX[4] = 0;
+					AfterX[3] = 0;
+					AfterX[2] = 0;
+					AfterX[1] = 0;
+					AfterX[0] = 0;
+					AfterY[15] = 0;
+					AfterY[14] = 0;
+					AfterY[13] = 0;
+					AfterY[12] = 0;
+					AfterY[11] = 0;
+					AfterY[10] = 0;
+					AfterY[9] = 0;
+					AfterY[8] = 0;
+					AfterY[7] = 0;
+					AfterY[6] = 0;
+					AfterY[5] = 0;
+					AfterY[4] = 0;
+					AfterY[3] = 0;
+					AfterY[2] = 0;
+					AfterY[1] = 0;
+					AfterX[0] = 0;
+				}
+			}
+			else if (Attack[0] == 1)
+			{
+				Ghost_SetFlag(GHF_IGNORE_SOLIDITY);
+				Ghost_MoveAtAngle(Angle(Ghost_X, Ghost_Y, AttackXY[0], AttackXY[1]), Distance(AttackXY[2], AttackXY[3], AttackXY[0], AttackXY[1]) / 45, 4);
+				if (AfterX[3] != 0 && AfterY[3] != 0)
+				{
+					Screen->FastCombo(2, AfterX[3], AfterY[3], Ghost_Data + AfterDir, 10, OP_TRANS);
+				}
+				if (AfterX[7] != 0 && AfterY[7] != 0)
+				{
+					Screen->FastCombo(2, AfterX[7], AfterY[7], Ghost_Data + AfterDir, 10, OP_TRANS);
+				}
+				if (AfterX[11] != 0 && AfterY[11] != 0)
+				{
+					Screen->FastCombo(2, AfterX[11], AfterY[11], Ghost_Data + AfterDir, 10, OP_TRANS);
+				}
+				if (AfterX[15] != 0 && AfterY[15] != 0)
+				{
+					Screen->FastCombo(2, AfterX[15], AfterY[15], Ghost_Data + AfterDir, 10, OP_TRANS);
+				}
+				AfterDir = Ghost_Dir;
+				if (Abs(Floor(Ghost_X) - Floor(AttackXY[0])) < 4 && Abs(Floor(Ghost_Y) - Floor(AttackXY[1])) < 4)
+				{
+					Attack[0] = 2;
+					Ghost_UnsetFlag(GHF_IGNORE_SOLIDITY);
+					Game->PlaySound(SFX_JUMP);
+				}
+			}
+			else if (Attack[0] == 2)
+			{
+				Ghost_SetFlag(GHF_NO_FALL);
+				Ghost_UnsetFlag(GHF_SET_DIRECTION);
+				int angle=Angle(Ghost_X, Ghost_Y, AttackXY[4], AttackXY[5]);
+				Ghost_X+=VectorX(Distance(AttackXY[0], AttackXY[1], AttackXY[4], AttackXY[5]) / 30, angle);
+				Ghost_Y+=VectorY(Distance(AttackXY[0], AttackXY[1], AttackXY[4], AttackXY[5]) / 30, angle);
+				int totalDist = Distance(AttackXY[0], AttackXY[1], AttackXY[4], AttackXY[5]);
+				int currentDist = Distance(Ghost_X, Ghost_Y, AttackXY[4], AttackXY[5]);
+				Ghost_Z = totalDist/2*Sin(currentDist/totalDist*180);
+				eweapon Bomb = CreateEWeaponAt(EW_BOMBBLAST, Ghost_X, Ghost_Y);
+				Bomb->Damage = 8;
+				Bomb->Z = Ghost_Z;
+				if (Abs(Floor(Ghost_X) - Floor(AttackXY[4])) < 4 && Abs(Floor(Ghost_Y) - Floor(AttackXY[5])) < 4)
+				{
+					Attack[0] = 3 + Rand(3);
+					Attack[4] = 0;
+					Ghost_UnsetFlag(GHF_NO_FALL);
+					Ghost_SetFlag(GHF_SET_DIRECTION);
+					Ghost_Z = 0;
+					Ghost_X = GridX(Ghost_X + 8);
+					Ghost_Y = GridY(Ghost_Y + 8);
+				}
+			}
+			else if (Attack[0] == 3)
+			{
+				Attack[3]++;
+				Attack[4]++;
+				Attack[3] %= 20;
+				if (Attack[3] == 5)
+				{
+					FireAimedEWeapon(EW_FIRE2, Ghost_X, Ghost_Y, 0, 275, 16, -1, -1, 0);
+				}
+				else if (Attack[3] == 10 || Attack[3] == 0)
+				{
+					FireAimedEWeapon(EW_FIRE2, Ghost_X, Ghost_Y, 0.8, 275, 16, -1, -1, 0);
+					FireAimedEWeapon(EW_FIRE2, Ghost_X, Ghost_Y, -0.8, 275, 16, -1, -1, 0);
+				}
+				else if (Attack[3] == 15)
+				{
+					FireAimedEWeapon(EW_FIRE2, Ghost_X, Ghost_Y, 1.6, 275, 16, -1, -1, 0);
+					FireAimedEWeapon(EW_FIRE2, Ghost_X, Ghost_Y, -1.6, 275, 16, -1, -1, 0);
+					//FireAimedEWeapon(EW_FIRE2, Ghost_X, Ghost_Y, 0, 275, 16, -1, -1, 0);
+				}
+				if (Attack[4] >= 210)
+				{
+					Attack[0] = 0;
+				}
+			}
+			else if (Attack[0] == 4)
+			{
+				eweapon Meh[9];
+				Meh[0] = FireAimedEWeapon(EW_FIREBALL, Ghost_X, Ghost_Y, 0, 75, 16, -1, -1, 0);
+				SetEWeaponMovement(Meh[0], EWM_THROW, -1, EWMF_DIE);
+				SetEWeaponDeathEffect(Meh[0], EWD_SBOMB_EXPLODE, 32);
+				Meh[1] = FireAimedEWeapon(EW_FIREBALL, Ghost_X, Ghost_Y, 0.4, 300, 16, -1, -1, 0);
+				SetEWeaponMovement(Meh[1], EWM_THROW, -1, EWMF_DIE);
+				SetEWeaponDeathEffect(Meh[1], EWD_SBOMB_EXPLODE, 32);
+				Meh[2] = FireAimedEWeapon(EW_FIREBALL, Ghost_X, Ghost_Y, 0.8, 150, 16, -1, -1, 0);
+				SetEWeaponMovement(Meh[2], EWM_THROW, -1, EWMF_DIE);
+				SetEWeaponDeathEffect(Meh[2], EWD_SBOMB_EXPLODE, 32);
+				Meh[3] = FireAimedEWeapon(EW_FIREBALL, Ghost_X, Ghost_Y, -0.4, 300, 16, -1, -1, 0);
+				SetEWeaponMovement(Meh[3], EWM_THROW, -1, EWMF_DIE);
+				SetEWeaponDeathEffect(Meh[3], EWD_SBOMB_EXPLODE, 32);
+				Meh[4] = FireAimedEWeapon(EW_FIREBALL, Ghost_X, Ghost_Y, -0.8, 150, 16, -1, -1, 0);
+				SetEWeaponMovement(Meh[4], EWM_THROW, -1, EWMF_DIE);
+				SetEWeaponDeathEffect(Meh[4], EWD_SBOMB_EXPLODE, 32);
+				Meh[5] = FireAimedEWeapon(EW_FIREBALL, Ghost_X, Ghost_Y, 1.2, 225, 16, -1, -1, 0);
+				SetEWeaponMovement(Meh[5], EWM_THROW, -1, EWMF_DIE);
+				SetEWeaponDeathEffect(Meh[5], EWD_SBOMB_EXPLODE, 32);
+				Meh[6] = FireAimedEWeapon(EW_FIREBALL, Ghost_X, Ghost_Y, -1.2, 225, 16, -1, -1, 0);
+				SetEWeaponMovement(Meh[6], EWM_THROW, -1, EWMF_DIE);
+				SetEWeaponDeathEffect(Meh[6], EWD_SBOMB_EXPLODE, 32);
+				Meh[7] = FireAimedEWeapon(EW_FIREBALL, Ghost_X, Ghost_Y, 1.6, 375, 16, -1, -1, 0);
+				SetEWeaponMovement(Meh[7], EWM_THROW, -1, EWMF_DIE);
+				SetEWeaponDeathEffect(Meh[7], EWD_SBOMB_EXPLODE, 32);
+				Meh[8] = FireAimedEWeapon(EW_FIREBALL, Ghost_X, Ghost_Y, -1.6, 375, 16, -1, -1, 0);
+				SetEWeaponMovement(Meh[8], EWM_THROW, -1, EWMF_DIE);
+				SetEWeaponDeathEffect(Meh[8], EWD_SBOMB_EXPLODE, 32);
+				Attack[0] = 0;
+			}
+			else if (Attack[0] == 5)
+			{
+				if (Attack[4] == 0)
+				{
+					AttackXY[0] = Link->X;
+					AttackXY[1] = Link->Y;
+					AfterX[15] = Ghost_X;
+					AfterX[14] = Ghost_X;
+					AfterX[13] = Ghost_X;
+					AfterX[12] = Ghost_X;
+					AfterX[11] = Ghost_X;
+					AfterX[10] = Ghost_X;
+					AfterX[9] = Ghost_X;
+					AfterX[8] = Ghost_X;
+					AfterX[7] = Ghost_X;
+					AfterX[6] = Ghost_X;
+					AfterX[5] = Ghost_X;
+					AfterX[4] = Ghost_X;
+					AfterX[3] = Ghost_X;
+					AfterX[2] = Ghost_X;
+					AfterX[1] = Ghost_X;
+					AfterX[0] = Ghost_X;
+					AfterY[15] = Ghost_Y;
+					AfterY[14] = Ghost_Y;
+					AfterY[13] = Ghost_Y;
+					AfterY[12] = Ghost_Y;
+					AfterY[11] = Ghost_Y;
+					AfterY[10] = Ghost_Y;
+					AfterY[9] = Ghost_Y;
+					AfterY[8] = Ghost_Y;
+					AfterY[7] = Ghost_Y;
+					AfterY[6] = Ghost_Y;
+					AfterY[5] = Ghost_Y;
+					AfterY[4] = Ghost_Y;
+					AfterY[3] = Ghost_Y;
+					AfterY[2] = Ghost_Y;
+					AfterY[1] = Ghost_Y;
+					AfterY[0] = Ghost_Y;
+					Attack[4]++;
+				}
+				Ghost_SetFlag(GHF_IGNORE_SOLIDITY);
+				Ghost_MoveAtAngle(Angle(Ghost_X, Ghost_Y, AttackXY[0], AttackXY[1]), Distance(AttackXY[2], AttackXY[3], AttackXY[0], AttackXY[1]) / 45, 4);
+				Screen->FastCombo(2, AfterX[3], AfterY[3], Ghost_Data + AfterDir, 10, OP_TRANS);
+				Screen->FastCombo(2, AfterX[7], AfterY[7], Ghost_Data + AfterDir, 10, OP_TRANS);
+				Screen->FastCombo(2, AfterX[11], AfterY[11], Ghost_Data + AfterDir, 10, OP_TRANS);
+				Screen->FastCombo(2, AfterX[15], AfterY[15], Ghost_Data + AfterDir, 10, OP_TRANS);
+				AfterDir = Ghost_Dir;
+				if (Abs(Floor(Ghost_X) - Floor(AttackXY[0])) < 4 && Abs(Floor(Ghost_Y) - Floor(AttackXY[1])) < 4)
+				{
+					AttackXY[0] = Link->X;
+					AttackXY[1] = Link->Y;
+					Attack[4]++;
+				}
+				if (Attack[4] == 5)
+				{
+					Attack[0] = 0;
+					Ghost_UnsetFlag(GHF_IGNORE_SOLIDITY);
+					Ghost_X = GridX(Ghost_X + 8);
+					Ghost_Y = GridY(Ghost_Y + 8);
+				}
+			}
+			Ghost_Waitframe(this, ghost, false, false);
+			if (Ghost_HP <= 0)
+			{
+				Ghost_HP = 75;
+				break;
+			}
+		}
+		int Start[2];
+		Start[0] = Ghost_X;
+		Start[1] = Ghost_Y;
+		Game->PlaySound(SFX_JUMP);
+		Ghost_SetAllDefenses(ghost, NPCDT_IGNORE);
+		while(true)
+		{
+			Ghost_SetFlag(GHF_NO_FALL);
+			Ghost_UnsetFlag(GHF_SET_DIRECTION);
+			int angle=Angle(Ghost_X, Ghost_Y, 120, 80);
+			Ghost_X+=VectorX(Distance(Start[0], Start[1], 120, 80) / 30, angle);
+			Ghost_Y+=VectorY(Distance(Start[0], Start[1], 120, 80) / 30, angle);
+			int totalDist = Distance(Start[0], Start[1], 120, 80);
+			int currentDist = Distance(Ghost_X, Ghost_Y, 120, 80);
+			Ghost_Z = totalDist/2*Sin(currentDist/totalDist*180);
+			eweapon Bomb = Screen->CreateEWeapon(EW_BOMBBLAST);
+			Bomb->X = Ghost_X;
+			Bomb->Y = Ghost_Y;
+			Bomb->Z = Ghost_Z;
+			if (Abs(Floor(Ghost_X) - Floor(120)) < 4 && Abs(Floor(Ghost_Y) - Floor(80)) < 4)
+			{
+				Screen->Quake = 30;
+				Ghost_UnsetFlag(GHF_NO_FALL);
+				Ghost_SetFlag(GHF_SET_DIRECTION);
+				Ghost_Z = 0;
+				Ghost_X = GridX(Ghost_X + 8);
+				Ghost_Y = GridY(Ghost_Y + 8);
+				break;
+			}
+			Ghost_Waitframe(this, ghost, false, false);
+		}
+		Start[0] = Link->X;
+		Start[1] = Link->X;
+		Game->PlaySound(SFX_JUMP);
+		while(true)
+		{
+			Link->Jump = 0;
+			int angle=Angle(Link->X, Link->Y, 120, 120);
+			Link->X+=VectorX(Distance(Start[0], Start[1], 120, 120) / 15, angle);
+			Link->Y+=VectorY(Distance(Start[0], Start[1], 120, 120) / 15, angle);
+			int totalDist = Distance(Start[0], Start[1], 120, 120);
+			int currentDist = Distance(Link->X, Link->Y, 120, 120);
+			Link->Z = totalDist/2*Sin(currentDist/totalDist*180);
+			if (Abs(Floor(Link->X) - Floor(120)) < 4 && Abs(Floor(Link->Y) - Floor(120)) < 4)
+			{
+				Link->Z = 0;
+				Link->X = 120;
+				Link->Y = 120;
+				break;
+			}
+			NoAction();
+			Ghost_Waitframe(this, ghost, false, false);
+		}
+		for (int i = 0; i <= 175; i++)
+		{
+			Screen->ComboD[i] = Game->GetComboData(14, 35, i);
+			Screen->Quake = 16;
+			NoAction();
+			Ghost_Waitframe(this, ghost, false, false);
+			NoAction();
+			Ghost_Waitframe(this, ghost, false, false);
+			NoAction();
+			Ghost_Waitframe(this, ghost, false, false);
+			NoAction();
+			Ghost_Waitframe(this, ghost, false, false);
+		}
+		int Random = FindSpawnPoint(true, false, false, false);
+		int tic = 3;
+		Ghost_SetDefenses(ghost, Defend);
+		while(true)
+		{
+			tic %= 7;
+			if (tic < 3)
+			{
+				Ghost_SetFlag(GHF_NO_FALL);
+				Ghost_UnsetFlag(GHF_SET_DIRECTION);
+				int angle=Angle(Ghost_X, Ghost_Y, ComboX(Random), ComboY(Random));
+				Ghost_X+=VectorX(Distance(Start[0], Start[1], ComboX(Random), ComboY(Random)) / 60, angle);
+				Ghost_Y+=VectorY(Distance(Start[0], Start[1], ComboX(Random), ComboY(Random)) / 60, angle);
+				int totalDist = Distance(Start[0], Start[1], ComboX(Random), ComboY(Random));
+				int currentDist = Distance(Ghost_X, Ghost_Y, ComboX(Random), ComboY(Random));
+				Ghost_Z = totalDist/2*Sin(currentDist/totalDist*180);
+				eweapon Bomb = CreateEWeaponAt(EW_BOMBBLAST, Ghost_X, Ghost_Y);
+				Bomb->Damage = 8;
+				Bomb->Z = Ghost_Z;
+				if (Abs(Floor(Ghost_X) - Floor(ComboX(Random))) < 4 && Abs(Floor(Ghost_Y) - Floor(ComboY(Random))) < 4)
+				{
+					Ghost_UnsetFlag(GHF_NO_FALL);
+					Ghost_SetFlag(GHF_SET_DIRECTION);
+					Ghost_Z = 0;
+					Ghost_X = GridX(Ghost_X + 8);
+					Ghost_Y = GridY(Ghost_Y + 8);
+					eweapon Fire[8];
+					for (int i = 0; i < 8; i++)
+					{
+						Fire[i] = Screen->CreateEWeapon(EW_FIRE2);
+						Fire[i]->Dir = i;
+						Fire[i]->Damage = 16;
+						Fire[i]->Step = 500;
+						Fire[i]->X = Ghost_X;
+						Fire[i]->Y = Ghost_Y;
+					}
+					tic++;
+					Random = FindSpawnPoint(true, false, false, false);
+				}
+			}
+			else
+			{
+				if (tic == 3)
+				{
+					AttackXY[0] = Link->X;
+					AttackXY[1] = Link->Y;
+					AfterX[15] = Ghost_X;
+					AfterX[14] = Ghost_X;
+					AfterX[13] = Ghost_X;
+					AfterX[12] = Ghost_X;
+					AfterX[11] = Ghost_X;
+					AfterX[10] = Ghost_X;
+					AfterX[9] = Ghost_X;
+					AfterX[8] = Ghost_X;
+					AfterX[7] = Ghost_X;
+					AfterX[6] = Ghost_X;
+					AfterX[5] = Ghost_X;
+					AfterX[4] = Ghost_X;
+					AfterX[3] = Ghost_X;
+					AfterX[2] = Ghost_X;
+					AfterX[1] = Ghost_X;
+					AfterX[0] = Ghost_X;
+					AfterY[15] = Ghost_Y;
+					AfterY[14] = Ghost_Y;
+					AfterY[13] = Ghost_Y;
+					AfterY[12] = Ghost_Y;
+					AfterY[11] = Ghost_Y;
+					AfterY[10] = Ghost_Y;
+					AfterY[9] = Ghost_Y;
+					AfterY[8] = Ghost_Y;
+					AfterY[7] = Ghost_Y;
+					AfterY[6] = Ghost_Y;
+					AfterY[5] = Ghost_Y;
+					AfterY[4] = Ghost_Y;
+					AfterY[3] = Ghost_Y;
+					AfterY[2] = Ghost_Y;
+					AfterY[1] = Ghost_Y;
+					AfterY[0] = Ghost_Y;
+					tic++;
+				}
+				Ghost_SetFlag(GHF_IGNORE_SOLIDITY);
+				Ghost_MoveAtAngle(Angle(Ghost_X, Ghost_Y, AttackXY[0], AttackXY[1]), Distance(AttackXY[2], AttackXY[3], AttackXY[0], AttackXY[1]) / 45, 4);
+				Screen->FastCombo(2, AfterX[3], AfterY[3], Ghost_Data + AfterDir, 10, OP_TRANS);
+				Screen->FastCombo(2, AfterX[7], AfterY[7], Ghost_Data + AfterDir, 10, OP_TRANS);
+				Screen->FastCombo(2, AfterX[11], AfterY[11], Ghost_Data + AfterDir, 10, OP_TRANS);
+				Screen->FastCombo(2, AfterX[15], AfterY[15], Ghost_Data + AfterDir, 10, OP_TRANS);
+				AfterDir = Ghost_Dir;
+				if (Abs(Floor(Ghost_X) - Floor(AttackXY[0])) < 4 && Abs(Floor(Ghost_Y) - Floor(AttackXY[1])) < 4)
+				{
+					Ghost_UnsetFlag(GHF_IGNORE_SOLIDITY);
+					AttackXY[0] = Link->X;
+					AttackXY[1] = Link->Y;
+					tic++;
+				}
+			}
+			if (Ghost_HP <= 0)
+			{
+				Ghost_HP = 150;
+				break;
+			}
+			Ghost_Waitframe(this, ghost, false, false);
+		}
+		AttackXY[0] = Link->X;
+		AttackXY[1] = Link->Y;
+		AfterX[15] = Ghost_X;
+		AfterX[14] = Ghost_X;
+		AfterX[13] = Ghost_X;
+		AfterX[12] = Ghost_X;
+		AfterX[11] = Ghost_X;
+		AfterX[10] = Ghost_X;
+		AfterX[9] = Ghost_X;
+		AfterX[8] = Ghost_X;
+		AfterX[7] = Ghost_X;
+		AfterX[6] = Ghost_X;
+		AfterX[5] = Ghost_X;
+		AfterX[4] = Ghost_X;
+		AfterX[3] = Ghost_X;
+		AfterX[2] = Ghost_X;
+		AfterX[1] = Ghost_X;
+		AfterX[0] = Ghost_X;
+		AfterY[15] = Ghost_Y;
+		AfterY[14] = Ghost_Y;
+		AfterY[13] = Ghost_Y;
+		AfterY[12] = Ghost_Y;
+		AfterY[11] = Ghost_Y;
+		AfterY[10] = Ghost_Y;
+		AfterY[9] = Ghost_Y;
+		AfterY[8] = Ghost_Y;
+		AfterY[7] = Ghost_Y;
+		AfterY[6] = Ghost_Y;
+		AfterY[5] = Ghost_Y;
+		AfterY[4] = Ghost_Y;
+		AfterY[3] = Ghost_Y;
+		AfterY[2] = Ghost_Y;
+		AfterY[1] = Ghost_Y;
+		AfterY[0] = Ghost_Y;
+		while (true)
+		{
+			while(true)
+			{
+				Ghost_SetFlag(GHF_IGNORE_SOLIDITY);
+				Ghost_MoveAtAngle(Angle(Ghost_X, Ghost_Y, AttackXY[0], AttackXY[1]), Distance(AttackXY[2], AttackXY[3], AttackXY[0], AttackXY[1]) / 45, 4);
+				Screen->FastCombo(2, AfterX[3], AfterY[3], Ghost_Data + AfterDir, 10, OP_TRANS);
+				Screen->FastCombo(2, AfterX[7], AfterY[7], Ghost_Data + AfterDir, 10, OP_TRANS);
+				Screen->FastCombo(2, AfterX[11], AfterY[11], Ghost_Data + AfterDir, 10, OP_TRANS);
+				Screen->FastCombo(2, AfterX[15], AfterY[15], Ghost_Data + AfterDir, 10, OP_TRANS);
+				AfterDir = Ghost_Dir;
+				if (Abs(Floor(Ghost_X) - Floor(AttackXY[0])) < 4 && Abs(Floor(Ghost_Y) - Floor(AttackXY[1])) < 4)
+				{	
+					Ghost_UnsetFlag(GHF_IGNORE_SOLIDITY);
+					AttackXY[0] = Link->X;
+					AttackXY[1] = Link->Y;
+					AfterX[15] = Ghost_X;
+					AfterX[14] = Ghost_X;
+					AfterX[13] = Ghost_X;
+					AfterX[12] = Ghost_X;
+					AfterX[11] = Ghost_X;
+					AfterX[10] = Ghost_X;
+					AfterX[9] = Ghost_X;
+					AfterX[8] = Ghost_X;
+					AfterX[7] = Ghost_X;
+					AfterX[6] = Ghost_X;
+					AfterX[5] = Ghost_X;
+					AfterX[4] = Ghost_X;
+					AfterX[3] = Ghost_X;
+					AfterX[2] = Ghost_X;
+					AfterX[1] = Ghost_X;
+					AfterX[0] = Ghost_X;
+					AfterY[15] = Ghost_Y;
+					AfterY[14] = Ghost_Y;
+					AfterY[13] = Ghost_Y;
+					AfterY[12] = Ghost_Y;
+					AfterY[11] = Ghost_Y;
+					AfterY[10] = Ghost_Y;
+					AfterY[9] = Ghost_Y;
+					AfterY[8] = Ghost_Y;
+					AfterY[7] = Ghost_Y;
+					AfterY[6] = Ghost_Y;
+					AfterY[5] = Ghost_Y;
+					AfterY[4] = Ghost_Y;
+					AfterY[3] = Ghost_Y;
+					AfterY[2] = Ghost_Y;
+					AfterY[1] = Ghost_Y;
+					AfterY[0] = Ghost_Y;
+					break;
+				}
+				if (Ghost_HP <= 0)
+				{
+					Ghost_DeathAnimation(this, ghost, GHD_EXPLODE_FLASH);
+					Quit();
+				}
+				Ghost_Waitframe(this, ghost, false, false);
+			}
+			int Choose = Rand(7);
+			if (Choose < 5)
+			{
+				continue;
+			}
+			else if (Choose == 5)
+			{
+				int HookX[4];
+				int HookY[4];
+				int HookState[4];
+				int HookAngle[4];
+				int tics = 0;
+				int timer = 0;
+				bool Grabbed = false;
+				while(!Grabbed && timer <= 450)
+				{
+					if (Ghost_HP <= 0)
+					{
+						Ghost_DeathAnimation(this, ghost, GHD_EXPLODE_FLASH);
+						Quit();
+					}
+					tics %= 60;
+					tics++;
+					timer++;
+					for (int i = 0; i <= 3; i++)
+					{
+						if (Screen->isSolid(HookX[i] + VectorX(2, HookAngle[i]), HookY[i] + VectorY(2, HookAngle[i])) && HookState[i] == 1)
+						{
+							HookState[i] = 2;
+						}
+						if (Abs(Link->X - HookX[i]) < 10 && Abs(Link->Y - HookY[i]) < 10 && (HookState[i] == 1 || HookState[i] == 2))
+						{
+							HookX[i] = Link->X;
+							HookY[i] = Link->Y;
+							Grabbed = true;
+							HookState[i] = 3;
+							break;
+						}
+						if (Abs(Ghost_X - HookX[i]) < 10 && Abs(Ghost_Y - HookY[i]) < 10 && HookState[i] == 2)
+						{
+							HookState[i] = 0;
+							HookX[i] = Ghost_X;
+							HookY[i] = Ghost_Y;
+						}
+						if (HookState[i] == 1)
+						{
+							HookX[i] += VectorX(2, HookAngle[i]);
+							HookY[i] += VectorY(2, HookAngle[i]);
+						}
+						if (HookState[i] == 2)
+						{
+							HookX[i] += VectorX(2, Angle(HookX[i], HookY[i], Ghost_X, Ghost_Y));
+							HookY[i] += VectorY(2, Angle(HookX[i], HookY[i], Ghost_X, Ghost_Y));
+						}
+						if (HookState[i] == 0 && tics == 55)
+						{
+							tics++;
+							HookState[i] = 1;
+							HookX[i] = Ghost_X;
+							HookY[i] = Ghost_Y;
+							HookAngle[i] = Angle(HookX[i], HookY[i], Link->X, Link->Y);
+						}
+						if (HookState[i] != 0)
+						{
+							Screen->FastTile(3, HookX[i], HookY[i], 146, 8, OP_OPAQUE);
+							Screen->FastTile(2, HookX[i] + ((Ghost_X - HookX[i]) / 2), HookY[i] + ((Ghost_Y - HookY[i]) / 2), 145, 8, OP_OPAQUE);
+							Screen->FastTile(2, HookX[i] + ((Ghost_X - HookX[i]) / 4), HookY[i] + ((Ghost_Y - HookY[i]) / 4), 145, 8, OP_OPAQUE);
+							Screen->FastTile(2, HookX[i] + (((Ghost_X - HookX[i]) / 4) * 3), HookY[i] + (((Ghost_Y - HookY[i]) / 4) * 3), 145, 8, OP_OPAQUE);
+							Screen->FastTile(2, HookX[i] + (((Ghost_X - HookX[i]) / 8) * 1), HookY[i] + (((Ghost_Y - HookY[i]) / 8) * 1), 145, 8, OP_OPAQUE);
+							Screen->FastTile(2, HookX[i] + (((Ghost_X - HookX[i]) / 8) * 3), HookY[i] + (((Ghost_Y - HookY[i]) / 8) * 3), 145, 8, OP_OPAQUE);
+							Screen->FastTile(2, HookX[i] + (((Ghost_X - HookX[i]) / 8) * 5), HookY[i] + (((Ghost_Y - HookY[i]) / 8) * 5), 145, 8, OP_OPAQUE);
+							Screen->FastTile(2, HookX[i] + (((Ghost_X - HookX[i]) / 8) * 7), HookY[i] + (((Ghost_Y - HookY[i]) / 8) * 7), 145, 8, OP_OPAQUE);
+						}
+					}
+					Ghost_Waitframe(this, ghost, false, false);
+				}
+				int HookSave;
+				for (int i = 0; i <= 3; i++)
+				{
+					while ((Abs(HookX[i] - Ghost_X) > 11 && Abs(HookY[i] - Ghost_Y) > 11) && HookState[i] != 0)
+					{
+						if (HookState[i] == 3) break;
+						if (Ghost_HP <= 0)
+						{
+							Ghost_DeathAnimation(this, ghost, GHD_EXPLODE_FLASH);
+						}
+						HookX[i] += VectorX(2, Angle(HookX[i], HookY[i], Ghost_X, Ghost_Y));
+						HookY[i] += VectorY(2, Angle(HookX[i], HookY[i], Ghost_X, Ghost_Y));
+						if (Abs(Ghost_X - HookX[i]) < 10 && Abs(Ghost_Y - HookY[i]) < 10 && HookState[i] != 3)
+						{
+							HookState[i] = 0;
+							HookX[i] = Ghost_X;
+							HookY[i] = Ghost_Y;
+						}
+						if (Grabbed)
+						{
+							NoAction();
+						}
+						for (int l = 0; l <= 3; l++)
+						{
+							if (HookState[l] != 0)
+							{
+								Screen->FastTile(3, HookX[l], HookY[l], 146, 8, OP_OPAQUE);
+								Screen->FastTile(2, HookX[l] + ((Ghost_X - HookX[l]) / 2), HookY[l] + ((Ghost_Y - HookY[l]) / 2), 145, 8, OP_OPAQUE);
+								Screen->FastTile(2, HookX[l] + ((Ghost_X - HookX[l]) / 4), HookY[l] + ((Ghost_Y - HookY[l]) / 4), 145, 8, OP_OPAQUE);
+								Screen->FastTile(2, HookX[l] + (((Ghost_X - HookX[l]) / 4) * 3), HookY[l] + (((Ghost_Y - HookY[l]) / 4) * 3), 145, 8, OP_OPAQUE);
+								Screen->FastTile(2, HookX[l] + (((Ghost_X - HookX[l]) / 8) * 1), HookY[l] + (((Ghost_Y - HookY[l]) / 8) * 1), 145, 8, OP_OPAQUE);
+								Screen->FastTile(2, HookX[l] + (((Ghost_X - HookX[l]) / 8) * 3), HookY[l] + (((Ghost_Y - HookY[l]) / 8) * 3), 145, 8, OP_OPAQUE);
+								Screen->FastTile(2, HookX[l] + (((Ghost_X - HookX[l]) / 8) * 5), HookY[l] + (((Ghost_Y - HookY[l]) / 8) * 5), 145, 8, OP_OPAQUE);
+								Screen->FastTile(2, HookX[l] + (((Ghost_X - HookX[l]) / 8) * 7), HookY[l] + (((Ghost_Y - HookY[l]) / 8) * 7), 145, 8, OP_OPAQUE);
+							}
+						}
+						Ghost_Waitframe(this, ghost, false, false);
+					}
+					if (HookState[i] == 3)
+					{
+						HookSave = i;
+					}
+				}
+				if (Grabbed)
+				{
+					Link->HP -= 64;
+					eweapon Bomb = Screen->CreateEWeapon(EW_BOMBBLAST);
+					Bomb->X = Link->X;
+					Bomb->Y = Link->Y;
+					Bomb->Damage = 0;
+					Link->Action = LA_GOTHURTLAND;
+					while(true)
+					{
+						HookX[HookSave] += VectorX(2, Angle(HookX[HookSave], HookY[HookSave], Ghost_X, Ghost_Y));
+						HookY[HookSave] += VectorY(2, Angle(HookX[HookSave], HookY[HookSave], Ghost_X, Ghost_Y));
+						Screen->FastTile(3, HookX[HookSave], HookY[HookSave], 146, 8, OP_OPAQUE);
+						Screen->FastTile(2, HookX[HookSave] + ((Ghost_X - HookX[HookSave]) / 2), HookY[HookSave] + ((Ghost_Y - HookY[HookSave]) / 2), 145, 8, OP_OPAQUE);
+						Screen->FastTile(2, HookX[HookSave] + ((Ghost_X - HookX[HookSave]) / 4), HookY[HookSave] + ((Ghost_Y - HookY[HookSave]) / 4), 145, 8, OP_OPAQUE);
+						Screen->FastTile(2, HookX[HookSave] + (((Ghost_X - HookX[HookSave]) / 4) * 3), HookY[HookSave] + (((Ghost_Y - HookY[HookSave]) / 4) * 3), 145, 8, OP_OPAQUE);
+						Screen->FastTile(2, HookX[HookSave] + (((Ghost_X - HookX[HookSave]) / 8) * 1), HookY[HookSave] + (((Ghost_Y - HookY[HookSave]) / 8) * 1), 145, 8, OP_OPAQUE);
+						Screen->FastTile(2, HookX[HookSave] + (((Ghost_X - HookX[HookSave]) / 8) * 3), HookY[HookSave] + (((Ghost_Y - HookY[HookSave]) / 8) * 3), 145, 8, OP_OPAQUE);
+						Screen->FastTile(2, HookX[HookSave] + (((Ghost_X - HookX[HookSave]) / 8) * 5), HookY[HookSave] + (((Ghost_Y - HookY[HookSave]) / 8) * 5), 145, 8, OP_OPAQUE);
+						Screen->FastTile(2, HookX[HookSave] + (((Ghost_X - HookX[HookSave]) / 8) * 7), HookY[HookSave] + (((Ghost_Y - HookY[HookSave]) / 8) * 7), 145, 8, OP_OPAQUE);
+						if (Abs(Ghost_X - HookX[HookSave]) < 10 && Abs(Ghost_Y - HookY[HookSave]) < 10 && HookState[HookSave] != 3)
+						{
+							HookState[HookSave] = 0;
+							HookX[HookSave] = Ghost_X;
+							HookY[HookSave] = Ghost_Y;
+						}
+						if (Ghost_HP <= 0)
+						{
+							Ghost_DeathAnimation(this, ghost, GHD_EXPLODE_FLASH);
+						}
+						Ghost_Waitframe(this, ghost, false, false);
+					}
+				}
+				for (int i = 240; i > 0; i--)
+				{
+					Ghost_Waitframe(this, ghost, false, false);
+					if (Ghost_HP <= 0)
+					{
+						Ghost_DeathAnimation(this, ghost, GHD_EXPLODE_FLASH);
+					}
+				}
+			}
+			else if (Choose == 6)
+			{
+				int tics = 0;
+				for(int i = 360; i > 0; i--)
+				{
+					tics %= 45;
+					tics++;
+					int Find = FindSpawnPoint(false, true, false, false);
+					if (tics == 40)
+					{
+						eweapon Fire[7];
+						Fire[0] = CreateEWeaponAt(EW_FIRE2, ComboX(Find), ComboY(Find));
+						Fire[1] = CreateEWeaponAt(EW_FIRE2, ComboX(Find), ComboY(Find));
+						Fire[2] = CreateEWeaponAt(EW_FIRE2, ComboX(Find), ComboY(Find));
+						Fire[3] = CreateEWeaponAt(EW_FIRE2, ComboX(Find), ComboY(Find));
+						Fire[4] = CreateEWeaponAt(EW_FIRE2, ComboX(Find), ComboY(Find));
+						Fire[5] = CreateEWeaponAt(EW_FIRE2, ComboX(Find), ComboY(Find));
+						Fire[6] = CreateEWeaponAt(EW_FIRE2, ComboX(Find), ComboY(Find));
+						Fire[0]->Step = 350;
+						Fire[1]->Step = 300;
+						Fire[2]->Step = 250;
+						Fire[3]->Step = 200;
+						Fire[4]->Step = 150;
+						Fire[5]->Step = 100;
+						Fire[6]->Step = 50;
+						Fire[0]->Damage = 80;
+						Fire[1]->Damage = 80;
+						Fire[2]->Damage = 80;
+						Fire[3]->Damage = 80;
+						Fire[4]->Damage = 80;
+						Fire[5]->Damage = 80;
+						Fire[6]->Damage = 80;
+						Fire[0]->Angular = true;
+						Fire[1]->Angular = true;
+						Fire[2]->Angular = true;
+						Fire[3]->Angular = true;
+						Fire[4]->Angular = true;
+						Fire[5]->Angular = true;
+						Fire[6]->Angular = true;
+						Fire[0]->Angle = Angle(ComboX(Find), ComboY(Find), Link->X, Link->Y);
+						Fire[1]->Angle = Angle(ComboX(Find), ComboY(Find), Link->X, Link->Y);
+						Fire[2]->Angle = Angle(ComboX(Find), ComboY(Find), Link->X, Link->Y);
+						Fire[3]->Angle = Angle(ComboX(Find), ComboY(Find), Link->X, Link->Y);
+						Fire[4]->Angle = Angle(ComboX(Find), ComboY(Find), Link->X, Link->Y);
+						Fire[5]->Angle = Angle(ComboX(Find), ComboY(Find), Link->X, Link->Y);
+						Fire[6]->Angle = Angle(ComboX(Find), ComboY(Find), Link->X, Link->Y);
+					}
+					Ghost_Waitframe(this, ghost, false, false);
+					if (Ghost_HP <= 0)
+					{
+						Ghost_DeathAnimation(this, ghost, GHD_EXPLODE_FLASH);
+					}
+				}
+			}
+			Ghost_Waitframe(this, ghost, false, false);
+			if (Ghost_HP <= 0)
+			{
+				Ghost_DeathAnimation(this, ghost, GHD_EXPLODE_FLASH);
+			}
+		}
+	}
+}

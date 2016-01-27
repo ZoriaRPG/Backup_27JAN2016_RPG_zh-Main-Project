@@ -1,0 +1,27 @@
+/**************************
+* Array Memory Management *
+**************************/
+
+void Malloc(int arr, int startindex, int lastindex)
+ * Sets array indices in array 'arr' from range 'startindex' to 'lastindex' to a 'free' state. 
+ 
+int FindFreeArrayIndices(int arr, int numbercont)
+ * Parses an array to find a range of CONTIGINOUS free (MALLOC_FREE) indices. 
+ * Returns the lowest index number, in the range that it finds.
+ * Returns -1 on a failure. 
+ 
+int FreeIndex(int arr)
+ * Scans an array for any single free index, starting with the highest numbered index.
+ 
+int FreeIndexLow(int arr) 
+ * Scans an array for a single free index, starting with the lowest numbered index. 
+ 
+bool FreeIndex(int arr, int index)
+ * Determines if a specific array index is free.
+ * For use with Malloc()
+ 
+void MallocArray(int arr)
+ * Initialises, or mallocs a full array. 
+
+void MallocArray(int arr, onlyvalue)
+ * Mallocs an entire array, but only indices that have the value specified by 'onlyvalue'.

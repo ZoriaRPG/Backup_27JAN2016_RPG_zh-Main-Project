@@ -1,0 +1,55 @@
+item script mcp2{
+void run(int m){
+Link->Item[230] = false;
+item givenitem = Screen->CreateItem(58);
+givenitem->X = Link->X;
+givenitem->Y = Link->Y;
+givenitem->Z = Link->Z;
+
+
+}
+}
+
+////D0:Is the fake item you pick up
+////D1:Is the item that will disapear
+////D2:Is the amount of Max MP gained
+////D3:Is the amount of MP refill
+////D4:Is item given if D0 is not in inventory.
+
+
+ffc script MCP4{
+    void run(int i, int j, int k, int mg, int mx)
+    {
+       while(true)
+       {
+        if (Link->Item[i] == true) //If Link has the fake item designated in D0
+        {
+           Link->Item[i] = false; //Removes the fake item user selects in D0
+           Link->Item[j] = false; //Removes the item the user selects in in D1   
+        Link->MP += 256; //Increases MP by value of D3
+        Link->MaxMP += 256; //Increases Max MP by value of D2
+        }
+        else (Link->Item[k] == true); //Gives Link the specified item in D4.{
+       Waitframe();
+       }
+    }
+}
+
+
+item script MCP4I{
+    void run(int i, int j, int k, int mg, int mx)
+    {
+       while(true)
+       {
+        if (Link->Item[i] == true) //If Link has the fake item designated in D0
+        {
+           Link->Item[i] = false; //Removes the fake item user selects in D0
+           Link->Item[j] = false; //Removes the item the user selects in in D1   
+        Link->MP += 256; //Increases MP by value of D3
+        Link->MaxMP += 256; //Increases Max MP by value of D2
+        }
+        else (Link->Item[k] == true); //Gives Link the specified item in D4.{
+       Waitframe();
+       }
+    }
+}

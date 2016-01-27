@@ -1,0 +1,105 @@
+//Main Functions
+//v0.4 for RPG.zh v0.97.1
+//Call any of these, using a constant, to read from one of the main arrays.
+
+//Returns a value from GameEvents[]
+bool Is(int event){
+	return GameEvents[event];
+}
+
+//Sets a value in GameEvents[]
+void Is(int event, bool setting){
+	GameEvents[event] = setting;
+}
+
+
+//Returns from GameDynamics[]
+float Val(int var){
+	return GameDynamics[var];
+}
+
+//Sets a value in GameDynamics[]
+void Val(int var, float value){
+	GameDynamics[var] = value;
+}
+
+//Returns from GameDynamics[]
+float Var(int var){
+	return GameDynamics[var];
+}
+
+//Sets a value in GameDynamics[]
+void Var(int var, float value){
+	GameDynamics[var] = value;
+}
+
+//Owns() should be here, and is in another .zlib
+//bool Owns(int itm){
+//	return OwnsItems[itm];
+//}
+
+
+//Sets a value in OwnsItems[]
+bool Owns(int itm, int val){
+	OwnsItems[itm] = val;
+}
+
+//Returns a value from GameEvents[]
+bool Event(int event){
+	return GameEvents[event];
+}
+
+//Sets a value in GameEvents[]
+void Event(int event, bool setting){
+	GameEvents[event] = setting;
+}
+
+
+
+
+//Analogue to Val/Var to Set vakue in GameDynamics[]
+void Set(int var, float value){
+	GameDynamics[var] = value;
+}
+
+//Analogue to Is/Event to set Value in GameEvents[]
+void SetB(int var, bool value){
+	GameEvents[var] = value;
+}
+
+
+void ReportFunctionEnd(){
+	TraceNL();
+	TraceS(stringEndFunction);
+	TraceNL();
+}
+
+void DrawCounter(int x, int y, int colour, int size, int font, int useCounter){
+	int val = Game->Counter[useCounter];
+	if ( size == 0 ) {
+		size = 16;
+	}
+	if ( font == 0 ) {
+		font = 16;
+	}
+	Screen->DrawInteger(7, x, y, size, colour, -1, size, size, val, 0, 100);
+}
+
+void DrawCounter(int x, int y, int colour, int size, int font, int arr, int index){
+	int val = arr[index];
+	if ( size == 0 ) {
+		size = 16;
+	}
+	if ( font == 0 ) {
+		font = 16;
+	}
+	Screen->DrawInteger(7, x, y, size, colour, -1, size, size, val, 0, 100);
+}
+
+
+
+bool PressedAnyActionButton(){
+    if ( Link->PressA || Link->PressB || Link->PressR || Link->PressL || Link->PressEx1 || Link->PressEx2 || Link->PressEx3 || Link->PressEx4 ){
+        return true;
+    }
+}

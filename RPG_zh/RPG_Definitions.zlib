@@ -1,0 +1,47 @@
+//Definitions
+
+//Strings for verbose tracing.
+int True[]="true";
+int False[]="false";
+
+
+int stringEndForLoop[]="END OF FOR LOOP";
+int stringEndFunction[]="END OF FUNCTION";
+int stringForLoopRepeats[]="FOR LOOP REPEATS HERE";
+
+int S_BeginForLoop[]="BEGIN FOR LOOP";
+int S_EndForLoop[]="END OF FOR LOOP";
+int S_ForLoopRepeats[]="FOR LOOP REPEATS HERE";
+
+int S_PassNumber[]="Pass Number: ";
+
+int S_BeginWhileLoop[]="BEGIN WHILE LOOP";
+int S_EndWhileLoop[]="END WHILE LOOP";
+int S_WhileLoopRepeats[]="WHILE LOOP REPEATS HERE";
+
+int S_DoLoopStarts[]="DO LOOP BEGINS HERE";
+int S_DoLoopEnds[]="DO LOOP ENDS HERE";
+int S_UntilMarker[]="UNTIL STATEMENT HERE";
+
+int S_RunningFunction[]="Running function: ";
+int S_BeginFunction[]="BEGIN FUNCTION";
+int S_EndFunction[]="END OF FUNCTION";
+
+
+
+
+//TraceS strings.
+int S_Present_NPC[]="The present NPC is: ";
+int S_Present_NPC_ID[]="The HP for that NPC is: ";
+int S_Checking_MISC_CR[]="Checking if MISC_CR == 0 :";
+int S_ComparingHPtoMisc[]="Comparing HP to Misc[MISC_HP]: ";
+int S_ThePresentMiscHP[]="The present Misc[8] for that NPC is: ";
+int S_TheOldHPWas[]="The old HP for the creature was: ";
+int S_ThePresentActualHP[]="The present actual HP of the creature is :";
+int S_MiscHP_NotZero[]="The value of Misc[MISC_HP] was NOT '0'.";
+int S_DifferenceIs[]="The difference is: ";
+
+
+int S_ValuesDiffer[]="The values are different.";
+int S_EnemyWasDamagedBy[]="The enemy was damaged by: ";
+int S_Resetting_MISC_HP[]="Resetting r->Misc[MISC_HP].";

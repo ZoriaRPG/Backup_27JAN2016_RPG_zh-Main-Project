@@ -1,0 +1,176 @@
+ffc script Menu
+{
+    void run()
+    {
+    int typeCaught;
+    if ( typeCaught = BOTTLE_FAERIE) {
+        int line1[]="You caught a faerie!";
+        int line2[]=Do you want to keep it in a bottle?";
+    }
+    
+    if ( typeCaught = BOTTLE_BEE ) {
+            int line1[]="You caught a bee!";
+            int line2[]=Do you want to keep it in a bottle?";
+    }
+    
+    if ( typeCaught == BOTTLE_BUG ) {
+            int line1[]="You caught a bug!";
+            int line2[]=Do you want to keep it in a bottle?";
+    }
+    
+    if ( typeCaught == BOTTLE_WATER ) {
+            int line1[]="You captured some water in a bottle";
+            int line2[]=Do you want to keep it?";
+    }
+    
+    if ( typeCaught == BOTTLE_SPECIAL_WATER ) {
+            int line1[]="You captured some magical water in a bottle";
+            int line2[]=Do you want to keep it?";
+    }
+    
+    if ( typeCaught == BOTTLE_FIRE ) {
+            int line1[]="You captured some fire in a bottle";
+            int line2[]=Do you want to keep it?";
+    }
+    
+
+
+        int line3[]="@choice(1)Yes@26@26";
+        
+        int line4[]="@choice(2)No@domenu(1)@suspend()";
+
+
+        
+        
+        SetUpWindow(WINDOW_SLOT_1, WINDOW_STYLE_1, 16, 16, SIZE_LARGE);
+        Tango_LoadString(WINDOW_SLOT_1, line1);
+        Tango_AppendString(WINDOW_SLOT_1, line2);
+        Tango_AppendString(WINDOW_SLOT_1, line3);
+        Tango_AppendString(WINDOW_SLOT_1, line4);
+
+        Tango_ActivateSlot(WINDOW_SLOT_1);
+        
+        
+        while(!Tango_MenuIsActive()){
+            
+            Waitframe();
+        }
+        
+        // Save the state of the text slot and menu. The bitmap won't change,
+        // so it doesn't need saved.
+        int slotState[274];
+        int menuState[60];
+        int cursorPos;
+        Tango_SaveSlotState(WINDOW_SLOT_1, slotState);
+        Tango_SaveMenuState(menuState);
+        
+        bool done=false;
+        int choice;
+        while(true)
+        {
+        if ( Link->PressEx1 ){
+          
+            Quit();
+        }
+        
+
+            while(Tango_MenuIsActive())
+            {
+               
+                cursorPos=Tango_GetMenuCursorPosition();
+                
+                Waitframe();
+            }
+            
+            choice=Tango_GetLastMenuChoice();
+            
+            if(choice==1) // Yes
+            {
+            int useThisBottle;
+            //Find an empty bottle
+            if ( BOTTLE_1_CONTENTS == BOTTLE_EMPTY ) {
+                useThisBottle = BOTTLE_1_CONTENTS;
+                Tango_D[0] = " bottle one.";
+            }
+            else {
+                if ( BOTTLE_2_CONTENTS == BOTTLE_EMPTY ) {
+                    useThisBottle = BOTTLE_2_CONTENTS;
+                    Tango_D[0] = " bottle two.";
+                }
+                else {
+                    if ( BOTTLE_3_CONTENTS == BOTTLE_EMPTY ) {
+                        useThisBottle = BOTTLE_3_CONTENTS;
+                        Tango_D[0] = " bottle three.";
+                    }
+                    else {
+                        if ( BOTTLE_4_CONTENTS == BOTTLE_EMPTY ) {
+                            useThisBottle = BOTTLE_4_CONTENTS;
+                            Tango_D[0] = " bottle four.";
+                        }
+                        else {
+                            useThisBottle = 5;
+                            Tango_D[0] = " nowhere ";
+                        }
+                    }
+                }
+            }
+            
+            if ( useThisBottle > 5 ) {
+            //Store the contents to the array.
+            int text[]="Stowed, in@number(@d0)";
+                ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+                done=true;
+            }
+            else 
+            {
+                int text[]="Sorry, you don;t have any empty bottles...";
+                ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+                done=true;
+            }
+            
+                
+            else if (Link->PressEx1){
+              
+                Quit();
+            }
+            else{
+               
+                done=true;
+            }
+            
+            // If we need to return to the top-level menu,
+            // restore the state and loop again.
+            if(done){
+                
+                break;
+            }
+            else
+            {
+                Tango_RestoreSlotState(WINDOW_SLOT_1, slotState);
+                Tango_RestoreMenuState(menuState);
+                Tango_SetMenuCursorPosition(cursorPos);
+            }
+        }
+        
+        else if(choice==2) // No
+            {
+            done=true;
+            }
+            
+            // If we need to return to the top-level menu,
+            // restore the state and loop again.
+            if(done){
+                
+                break;
+            }
+            else
+            {
+                Tango_RestoreSlotState(WINDOW_SLOT_1, slotState);
+                Tango_RestoreMenuState(menuState);
+                Tango_SetMenuCursorPosition(cursorPos);
+            }
+        }
+        
+        Tango_ClearSlot(WINDOW_SLOT_1);
+    }
+}

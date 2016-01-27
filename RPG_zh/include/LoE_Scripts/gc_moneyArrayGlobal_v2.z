@@ -1,0 +1,54 @@
+            capacitiyArray[0] = ( capacitiyArray[1] * capacitiyArray[2] );
+            capacitiyArray[4] = ( capacitiyArray[0] + capacitiyArray[3] );
+            capacitiyArray[7] = ( capacitiyArray[5] * capacitiyArray[6] );
+            capacitiyArray[8] = ( capacitiyArray[4] + capacitiyArray[7] );
+            
+       
+            
+            capacitiyArray[13] = ( capacitiyArray[7] - capacitiyArray[9] );
+            capacitiyArray[14] = ( capacitiyArray[4] - capacitiyArray[10] );
+            capacitiyArray[16] = ( capacitiyArray[13] + capacitiyArray[14] );
+            
+            int freespaceInt = Floor ( capacitiyArray[16] );
+            
+            ///////////////////////////////////
+            
+            baseWalletSpace = ( walletSize * walletsOwned );
+            totalWalletSpace = ( baseWalletSpace + CR_CUSTOM_WALLET_SIZE );
+            totalPocketSpace = ( pockets * pocketCapacity );
+            totalPocketAndWalletSpace = ( totalWalletSpace + totalPocketSpace );
+                      
+            freePocketSpace = ( totalPocketSpace - pocketSpaceUsed );
+            freeWalletSpace = ( totalWalletSpace - walletSpaceUsed );
+            freeSpace = ( freePocketSpace + freeWalletSpace );
+
+            int freespaceInt = Floor ( freeSpace );
+            
+            int baseWalletSpace = capacitiyArray[0];
+            int walletSize = capacitiyArray[1];
+            int walletsOwned = capacitiyArray[2];
+            int CR_CUSTOM_WALLET_SIZE = capacitiyArray[3];
+            int totalWalletSpace = capacitiyArray[4];
+            int pockets = capacitiyArray[5];
+            int pocketCapacity = capacitiyArray[6];
+            int totalPocketSpace = capacitiyArray[7];
+            int totalPocketAndWalletSpace = capacitiyArray[8];
+            int pocketSpaceUsed  = capacitiyArray[9];
+            int walletSpaceUsed = capacitiyArray[10];
+            int fineSpaceUsed = capacitiyArray[11];
+            int totalSpaceUsed = capacitiyArray[12];
+            int freePocketSpace = capacitiyArray[13];
+            int freeWalletSpace = capacitiyArray[14];
+            int freeFineSpace = capacitiyArray[15];
+            int freeSpace = capacitiyArray[16];
+            int valueStored = capacitiyArray[17];
+            int coinsize = capacitiyArray[18];
+            int merksCarried = capacitiyArray[19];
+            int dsariBanked = capacitiyArray[20];
+            int merksBanked = capacitiyArray[21];
+            int dsariCryDiscs = capacitiyArray[22];
+            int merkCryDiscs = capacitiyArray[23];
+            int NO_FREE_SPACE = capacitiyArray[24];
+            int NO_SPACE_SFX = capacitiyArray[25];
+            
+            

@@ -1,0 +1,202 @@
+//==== * SHOP, ETC * ==========================================================
+//R = BUY; L = INFO
+//D0: Price of item
+//D1: Item to give (doesn't apply to upgrades)
+//D2 & D3: Each item must have a unique combination PER SCREEN, each variable is 0 to 7
+//D4: Info about this item (press A before buying only)
+//D5: 'Dummy' item that unlocks this one (optional)
+
+const int S_NOTENOUGH = 30;
+const int S_BOUGHT = 29;
+const int S_UPGRADED = 31;
+ffc script shopItem{
+        void run ( int price, int giveItem, int type, int bit, int infoString, int unlocker, int divBy ){
+                int origData = this->Data;
+                int remainder;
+                int numberOfCoins = price;
+                int coinSpaceReplenished = rollSpentCoins(numberOfCoins);
+                
+                //Secret shop: Items don't appear unless they have been unlocked (check for unlocker item)
+                if ( unlocker > 0 && !Link->Item[unlocker] ){ //If unlocker is enabled but not obtained
+                        this->Data = 0; //Remove sprite
+                        return; //Quit
+                }
+                
+                while( (type < 4 && !GetScreenDBit(type, bit)) ){ //Until item purchased                        
+                       // Screen->DrawInteger( 6, this->X, this->Y-4, FONT_S, COLOR_TEXT, COLOR_BG, -1, -1, price, 0, 128); //Draw the price
+                        
+                        if ( DistanceLink(this->X+8,this->Y+8) < 14 && Link->PressL ){ //If press L, display info
+                                if(infoString) Screen->Message(infoString); //Display item info if any
+                                Link->InputL = false;
+                        }
+                        
+                        else if ( DistanceLink(this->X+8,this->Y+8) < 14 && Link->PressR ){ //If press R, buy it
+                                if ( Game->Counter[CR_RUPEES] < price ){//Check for sufficient funds
+                                        Game->PlaySound(SFX_ALARM);
+                                        Screen->Message(S_NOTENOUGH);
+                                }
+                                else{
+                                        if ( divBy == 0 ) {
+                                            divBy = rollDice(2,3);
+                                        }
+                                        numberOfCoins = ( price % divBy );
+                                        Game->Counter[CR_RUPEES] -= price;
+                                        noFreeSpace == false;
+                                            if ( walletSpaceUsed >= coinSpaceReplenished ) {
+                                                walletSpaceUsed -= coinSpaceReplenished;
+                                            }
+                                            else if ( walletSpaceUsed < coinSpaceReplenished ) {
+                                                remainder = ( coinSpaceReplenished - walletSpaceUsed );
+                                                walletSpaceUsed = 0;
+                                                if ( pocketSpaceUsed >= remainder ) {
+                                                    pocketSpaceUsed -= remainder;
+                                                }
+                                                else if ( pocketSpaceUsed < remainder ) {
+                                                    pocketSpaceUsed = 0;
+                                                }
+                                            }
+                                        Game->PlaySound(SFX_PICKUP); //Play fanfare
+										
+										item givenitem = Screen->CreateItem(giveItem);
+										givenitem->X = Link->X; //Added this myself, as the original code does not seem to actually give me the item.
+										givenitem->Y = Link->Y; //Added this myself, as the original code does not seem to actually give me the item.
+										givenitem->Z = Link->Z; //Added this myself, as the original code does not seem to actually give me the item.
+										Link->Action = LA_HOLD2LAND; //Added this myself, to hold item over head.
+										Link->HeldItem = giveItem; //Added this myself, to hold item over head.
+                                        SetScreenDBit(type, bit, true); //Mark item purchased
+                                        Screen->Message(S_BOUGHT); //Display "Item purchased" string
+										this->Data = 0;
+                                }
+                                //Link->InputR = false; //I disabled this because the item FFC cannot be repurchased on exit, and some FFC items should be able to be purchased more than once in a shop.
+                        }
+                        Waitframe();
+                } //Loop exits when item (or all upgrades) is bought
+        }
+}
+
+
+
+
+/////////////////
+//MANY IN STOCK//
+/////////////////
+
+ffc script shopItemMany{
+        void run ( int price, int giveItem, int type, int bit, int infoString, int unlocker, int divBy ){
+                int origData = this->Data;
+                int remainder;
+                int numberOfCoins = ( price * 0.75) ;
+                int coinSpaceReplenished = rollSpentCoins(numberOfCoins);
+                
+                //Secret shop: Items don't appear unless they have been unlocked (check for unlocker item)
+                if ( unlocker > 0 && !Link->Item[unlocker] ){ //If unlocker is enabled but not obtained
+                        this->Data = 0; //Remove sprite
+                        return; //Quit
+                }
+                
+                while( (type < 4 && !GetScreenDBit(type, bit)) ){ //Until item purchased                        
+                       // Screen->DrawInteger( 6, this->X, this->Y-4, FONT_S, COLOR_TEXT, COLOR_BG, -1, -1, price, 0, 128); //Draw the price
+                        
+                        if ( DistanceLink(this->X+8,this->Y+8) < 14 && Link->PressL ){ //If press L, display info
+                                if(infoString) Screen->Message(infoString); //Display item info if any
+                                Link->InputL = false;
+                        }
+                        
+                        else if ( DistanceLink(this->X+8,this->Y+8) < 14 && Link->PressR ){ //If press R, buy it
+                                if ( Game->Counter[CR_RUPEES] < price ){//Check for sufficient funds
+                                        Game->PlaySound(SFX_ALARM);
+                                        Screen->Message(S_NOTENOUGH);
+                                }
+                                else{
+                                        if ( divBy == 0 ) {
+                                            divBy = rollDice(2,3);
+                                        }
+                                        numberOfCoins = ( price / divBy );
+                                        Game->Counter[CR_RUPEES] -= price;
+                                        noFreeSpace == false;
+                                            if ( walletSpaceUsed >= coinSpaceReplenished ) {
+                                                walletSpaceUsed -= coinSpaceReplenished;
+                                            }
+                                            else if ( walletSpaceUsed < coinSpaceReplenished ) {
+                                                remainder = ( coinSpaceReplenished - walletSpaceUsed );
+                                                walletSpaceUsed = 0;
+                                                if ( pocketSpaceUsed >= remainder ) {
+                                                    pocketSpaceUsed -= remainder;
+                                                }
+                                                else if ( pocketSpaceUsed < remainder ) {
+                                                    pocketSpaceUsed = 0;
+                                                }
+                                            }
+                                        Game->PlaySound(SFX_PICKUP); //Play fanfare
+										
+										item givenitem = Screen->CreateItem(giveItem);
+										givenitem->X = Link->X; //Added this myself, as the original code does not seem to actually give me the item.
+										givenitem->Y = Link->Y; //Added this myself, as the original code does not seem to actually give me the item.
+										givenitem->Z = Link->Z; //Added this myself, as the original code does not seem to actually give me the item.
+										Link->Action = LA_HOLD2LAND; //Added this myself, to hold item over head.
+										Link->HeldItem = giveItem; //Added this myself, to hold item over head.
+                                        //SetScreenDBit(type, bit, true); //Mark item purchased
+                                        Screen->Message(S_BOUGHT); //Display "Item purchased" string
+										
+                                }
+                                //Link->InputR = false; //I disabled this because the item FFC cannot be repurchased on exit, and some FFC items should be able to be purchased more than once in a shop.
+                        }
+                        Waitframe();
+                } //Loop exits when item (or all upgrades) is bought
+        }
+}
+
+/////////////
+/// BANKS ///
+/////////////
+
+ffc script bankDownSize{
+        void run ( int percentage, int giveItem, int type, int bit, int infoString, int unlocker, int size, int transactionMessage ){
+                int origData = this->Data;
+                int currentMoney = Game->Counter[CR_RUPEES];
+                int totalReturned;
+
+                while( (type < 4 && !GetScreenDBit(type, bit)) ){ //Until item purchased                        
+                       // Screen->DrawInteger( 6, this->X, this->Y-4, FONT_S, COLOR_TEXT, COLOR_BG, -1, -1, price, 0, 128); //Draw the price
+                        
+                        if ( DistanceLink(this->X+8,this->Y+8) < 14 && Link->PressL ){ //If press L, display info
+                                if(infoString) Screen->Message(infoString); //Display item info if any
+                                Link->InputL = false;
+                        }
+                        
+                        else if ( DistanceLink(this->X+8,this->Y+8) < 14 && Link->PressR ){ //If press R, buy it
+                                
+
+                                if ( percentage == 0 ) {
+                                            percentage = .95;
+                                        }
+                                        totalReturned = ( currentMoney * percentage );
+                                        Game->Counter[CR_RUPEES] = totalReturned;
+                                        noFreeSpace == false;
+                                            walletSpaceUsed = size;
+                                            if ( pocketSpaceUsed > 5 ) {
+                                                pocketSpaceUsed = 5;
+                                            }
+                                        Game->PlaySound(SFX_PICKUP); //Play fanfare
+										
+										item givenitem = Screen->CreateItem(giveItem);
+										givenitem->X = Link->X; //Added this myself, as the original code does not seem to actually give me the item.
+										givenitem->Y = Link->Y; //Added this myself, as the original code does not seem to actually give me the item.
+										givenitem->Z = Link->Z; //Added this myself, as the original code does not seem to actually give me the item.
+										Link->Action = LA_HOLD2LAND; //Added this myself, to hold item over head.
+										Link->HeldItem = giveItem; //Added this myself, to hold item over head.
+                                        SetScreenDBit(type, bit, true); //Mark item purchased
+                                        Screen->Message(transactionMessage); //Display "Item purchased" string
+										this->Data = 0;
+                                
+                                //Link->InputR = false; //I disabled this because the item FFC cannot be repurchased on exit, and some FFC items should be able to be purchased more than once in a shop.
+                        }
+                        Waitframe();
+                } //Loop exits when item (or all upgrades) is bought
+        }
+}
+
+int rollSpentCoins(int numberSpent){
+    int value = rollDice(numberSpent, 4);
+    return value;
+    }

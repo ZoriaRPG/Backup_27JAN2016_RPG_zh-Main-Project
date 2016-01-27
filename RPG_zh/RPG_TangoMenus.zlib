@@ -1,0 +1,304 @@
+//v0.2
+//Import Tango here.
+
+//Import Game Menu Scripts
+
+// import "/RPG_zh/RPG_Menus/..."
+
+//Leave constants, and global menu code here. 
+
+//Move Tango set up things specific to this build, (e.g. styles, and slot 5) here.
+
+const int WINDOW_SLOT_1 = 0;
+const int WINDOW_SLOT_2 = 1;
+const int WINDOW_SLOT_3 = 2;
+const int WINDOW_SLOT_4 = 3;
+const int WINDOW_SLOT_5 = 4;
+
+// There are certainly other ways to handle these...
+int menuCommand;
+int menuArg;
+
+void SetUpWindow(int slot, int style, int x, int y, int size)
+{
+    SetStyleSize(style, size);
+    Tango_ClearSlot(slot);
+    Tango_SetSlotStyle(slot, style);
+    Tango_SetSlotPosition(slot, x, y);
+}
+
+void ShowString(int string, int slot, int style, int x, int y)
+{
+    SetUpWindow(slot, style, x, y, SIZE_LARGE);
+    Tango_LoadString(slot, string);
+    Tango_ActivateSlot(slot);
+    while(Tango_SlotIsActive(slot))   
+        Waitframe();
+}
+
+///Main Menu FFC
+ffc script Menu{
+	void run() {
+	//Store strings as locals to call them in a menu,
+	//@choice(3) sets the value that selecting the choice will toggle in the if statements.
+	//@tab(56) creates a tab margin in rows.
+	//@26 tells Tango to make a new line.
+	//@domenu(1) tells tango to init a menu.
+	
+        int line1[]="@choice(4)Spells@tab(56)@choice(13)!Words@26";
+        int line2[]="@choice(8)Set@tab(56)@choice(7)Equip@26";
+        int line3[]="@choice(5)Search@tab(56)@choice(1)Look@26";
+        int line4[]="@choice(11)Talk@tab(56)@choice(12)Ask?@26";
+        int line5[]="@choice(2)Skills@tab(56)@choice(3)Items@26";
+        int line6[]="@choice(15)Read@tab(56)@choice(6)Vista@26";
+        int line7[]="@choice(9)Stats@tab(56)@choice(16)Maps@26";
+        int line8[]="@choice(10)Game@tab(56)@choice(14)Misc@domenu(1)@suspend()";
+
+        
+        
+        SetUpWindow(WINDOW_SLOT_1, WINDOW_STYLE_1, 16, 16, SIZE_LARGE);
+        Tango_LoadString(WINDOW_SLOT_1, line1); //We start the menu by loading the first string.
+        Tango_AppendString(WINDOW_SLOT_1, line2); //Additional lines are *appended*
+        Tango_AppendString(WINDOW_SLOT_1, line3);
+        Tango_AppendString(WINDOW_SLOT_1, line4);
+        Tango_AppendString(WINDOW_SLOT_1, line5);
+        Tango_AppendString(WINDOW_SLOT_1, line6);
+        Tango_AppendString(WINDOW_SLOT_1, line7);
+        Tango_AppendString(WINDOW_SLOT_1, line8);
+        Tango_ActivateSlot(WINDOW_SLOT_1); //When done, activate the menu offscreen bitmap.
+        
+        
+        while(!Tango_MenuIsActive()){
+            
+            Waitframe();
+        }
+        
+        // Save the state of the text slot and menu. The bitmap won't change,
+        // so it doesn't need saved.
+        int slotState[274];
+        int menuState[60];
+        int cursorPos;
+        Tango_SaveSlotState(WINDOW_SLOT_1, slotState);
+        Tango_SaveMenuState(menuState);
+        
+        bool done=false; //When done, the menu closes. If we use Boolean functions that can return a state, we can process that through to their nested, parent menus.
+        int choice; //This is used to tell the menu what to do, when the user selects an option.
+        while(true) {
+        if ( Link->PressEx1 ){
+		Quit();
+        }
+		while(Tango_MenuIsActive()){
+			cursorPos=Tango_GetMenuCursorPosition();
+                
+			Waitframe();
+		}
+		choice=Tango_GetLastMenuChoice();
+            
+		if(choice==1) // Look
+		{
+			int text[]="The Look function is not yet available. Please use your 'L' button for the present.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true; //We can use ShowString with an embedded string to generate a new menu window with that text.
+		}
+		else if(choice==2) // Skills
+		{
+			int text[]="The Skills function is not yet available.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==3) // Items
+		{
+			int text[]="The Items function is not yet available. Use 'R' to pick up, or buy items for the present.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==4){ // Magic
+			DoMagic(); //Menus can perform functions, or run any instruction. You can call external functions, that are themselves menus.
+			done=true;
+		}
+		else if(choice==5) // Search
+		{
+			int text[]="The Search function is not yet available. Please use your 'L' button for the present.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==6) // Vista
+		{
+			int text[]="The Vista function is not yet available.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==7) // Equip
+		{
+			int text[]="The Equip function is not yet available.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==8) // Set
+		{
+			int text[]="The Set function is not yet available.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==9) // Stats
+		{
+			showStats(); //Cals the Boolean function showStats()
+			done=true;
+		}
+		else if(choice==10) // Game
+		{
+			GameMenu(); //Calls the boolean function GameMenu() that opens a new menu over this one.
+			done=true;
+		}
+		else if(choice==11) // Talk
+		{
+			int text[]="The Talk function is not yet available. Please use your 'L' button for the present.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==12) // Ask
+		{
+			int text[]="The Ask function is not yet available.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==13) // !Words
+		{
+			int text[]="Words of Power are not yet available.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==14) // Misc.
+		{
+			int text[]="Misc. is not yet available.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==15) // Read
+		{
+			int text[]="Read is not yet available.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if(choice==16) // Maps
+		{
+			int text[]="Maps are not yet available.";
+			ShowString(text, WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32);
+			done=true;
+		}
+		else if (Link->PressEx1){
+			Quit(); //If we press Ex1 while this menu is active, it quits the FFC. Run from base menus only, and use return true to close daughter windows.
+		}
+		else{
+			done=true; //Enables the loop below if the player presses anything other than 'A'.
+		}
+            
+		// If we need to return to the top-level menu,
+		// restore the state and loop again.
+		if(done){
+			break; //Breaks the main while loop, closing the menu.
+		}
+		else
+		{
+                Tango_RestoreSlotState(WINDOW_SLOT_1, slotState); //Refresh the menu this frame.
+                Tango_RestoreMenuState(menuState);
+                Tango_SetMenuCursorPosition(cursorPos);
+		}
+        }
+        Tango_ClearSlot(WINDOW_SLOT_1); //Now that we break out, we clear the slot and remove the FFC DISPLAY.
+    }
+}
+
+// Submenu Function
+
+bool showStats(){ //Is a boolean function so that its return passes to the parent menu.
+	Tango_D[0] = getMuscStat(); //We store a game variable in the Tango_D array, so that we can reference it inside the menu.
+	Tango_D[1] = getBodyStat();
+	Tango_D[2] = getMindStat();
+	Tango_D[3] = getMystStat();
+	Tango_D[4] = getLuckStat();
+	Tango_D[5] = getInflStat();
+	Tango_D[6] = Game->Counter[CR_LEVEL];
+    
+	int line0[]="@choice(1)Done@26@26";
+	int line1[]="MUSCLE@tab(56)@number(@d0)@26"; //@d0 appends Tango_D[0] to the string.
+	int line2[]="BODY@tab(56)@number(@d1)@26"; //@d1 appends Tango_D[0] to the string.
+	int line3[]="MIND@tab(56)@number(@d2)@26"; //etc.
+	int line4[]="MYSTIC@tab(56)@number(@d3)@26";
+	int line5[]="LUCK@tab(56)@number(@d4)@26";
+	int line6[]="INFL@tab(56)@number(@d5)@domenu(1)@suspend()";
+ 
+	//You can use a string with a pure Tango command, and append it to generate the effect. You can also set up global strings that do this.
+	int lineBreak[]="@26"; 
+	int menuEnd[]="@domenu(1)@suspend()";
+
+
+    
+	SetUpWindow(WINDOW_SLOT_2, WINDOW_STYLE_2, 32, 32, SIZE_LARGE); //Slot 2, because we haven't killed the parent menu in slot 1, and this lays over it.
+	Trace(__Tango_Data[__TDIDX_SCREEN_FREEZE]); //Ensure Tango is feezing enemies, Link, and Ghost scripts.
+        Tango_LoadString(WINDOW_SLOT_2, line0);
+        Tango_AppendString(WINDOW_SLOT_2, line1);
+        Tango_AppendString(WINDOW_SLOT_2, line2);
+        Tango_AppendString(WINDOW_SLOT_2, line3);
+        Tango_AppendString(WINDOW_SLOT_2, line4);
+        Tango_AppendString(WINDOW_SLOT_2, line5);
+        Tango_AppendString(WINDOW_SLOT_2, line6);
+        Tango_AppendString(WINDOW_SLOT_2, menuEnd);
+        Tango_ActivateSlot(WINDOW_SLOT_2);
+    
+    
+    
+    
+	while(!Tango_MenuIsActive()){
+		Waitframe();
+	}
+    
+	// Save the state again...
+	int slotState[274];
+	int menuState[60];
+	int cursorPos;
+	Tango_SaveSlotState(WINDOW_SLOT_2, slotState);
+	Tango_SaveMenuState(menuState);
+    
+	int done=0; //We use an int, so that we can decide to close the submenu with, or without closing the parent menu.
+	int choice;
+	while(true)
+	{
+		while(Tango_MenuIsActive())
+		{       
+			cursorPos=Tango_GetMenuCursorPosition();
+			Waitframe();
+		}
+        
+		choice=Tango_GetLastMenuChoice();
+		if(choice==0) // Canceled
+			done=true;
+		else if(choice == 1) 
+		{
+			done=2; //In this case, choice 1 is 'Cancel'. DOne = 2 closes this menu, but keeps its parent mindow alive.
+		
+		}
+		else if(Link->PressEx1) 
+		{
+			done=1; //If we press Ex1, we kill this menu, and its parent window.
+		
+		}
+
+		if(done>0){
+			break; //Break out of this while loop, closing the present menu and in this case, closing the parent menu too.
+		}
+		else
+		{
+			Tango_RestoreSlotState(WINDOW_SLOT_2, slotState);
+			Tango_RestoreMenuState(menuState);
+			Tango_SetMenuCursorPosition(cursorPos);
+		}
+	}
+    
+	Tango_ClearSlot(WINDOW_SLOT_2);
+    
+	if(done==1)
+		return true; // Tell parent menu to close
+	else
+		return false; // Tell parent not to close
+}

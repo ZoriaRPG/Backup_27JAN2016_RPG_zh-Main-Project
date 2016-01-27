@@ -1,0 +1,4 @@
+//Global Script Functions- Init
+
+//Dmap to set, sprite to set, whether invisible, how many frames to show up for, animation delay, how many frames in animation, duration of animation delay.
+SetPlayerSpriteOptions(int dmap, int sprite, bool invis, int frames, int delay, int numFrames, int framesDur){

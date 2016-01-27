@@ -1,0 +1,256 @@
+void comboChange(int comboTF, int LType, bool flagCheck){
+    for ( int i = 0; i < 176; i++ ){
+        if ( flagCheck == true && Screen->ComboF[i] == comboTF ) {
+            if ( ComboCollision(i, LType){
+                Screen->ComboD[i]++;
+            }
+        }
+        if ( flagCheck == false && Screen->ComboT[i] == comboTF ) {
+            if ( ComboCollision(i, LType){
+                Screen->ComboD[i]++;
+            }
+        }
+    }
+}
+
+//ComboChange(CF_MELT, LW_ICE, true);
+
+
+
+MagmaChange(int LType){
+    for ( i = 0; i < 176; i++ ) {
+        if Screen->ComboD[i] == CMB_TYPE ||
+        Screen->ComboD[i] == CMB_TYPE ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CMB_REPLACE;
+            }
+        }
+    }
+}
+
+MagmaChangeByItem(int changeItem){
+    for ( int j = 1; j <= <= Screen->NumLWeapons(); j++ ) {
+        lweapon lw = Screen->LoadLWeapon(j);
+        if ( j == changeItem ) {
+            for ( i = 0; i < 176; i++ ) {
+            
+                if Screen->ComboD[i] == CMB_MAGMA_UL ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_UL;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_U ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_U;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_UR ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_UR;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_L ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_L;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_C ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_C;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_R ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_R;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_LL ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_LL;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_D ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_D;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_MAGMA_LR ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_MAGMA_FROZEN_LR;
+                    }
+                }
+            }
+        }
+    }
+}
+
+WaterChangeSpecial(int changeItem){
+    for ( int j = 1; j <= <= Screen->NumLWeapons(); j++ ) {
+        lweapon lw = Screen->LoadLWeapon(j);
+        if ( j == changeItem ) {
+            for ( i = 0; i < 176; i++ ) {
+            
+                if Screen->ComboD[i] == CMB_WATER_SPECIAL_UL ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_UL;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_U ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_U;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_UR ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CCMB_WATER_SPECIAL_FROZEN_UR;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_L ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_L;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_C ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_C;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_R ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_R;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_LL ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_LL;
+                    }
+                }
+                else if  Screen->ComboD[i] ==CMB_WATER_SPECIALD ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_D;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_LR ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_LR;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void MagmaChangeItem(int itemNumber){
+      for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+        lweapon lw = Screen->LoadLWeapon(i);
+        
+        if (lw->CollDetection && Collision(this, lw)) {
+if (IsFromItem(lw, trigger)) {
+
+
+
+WaterChangeSpecial(int changeItem){
+    for ( int j = 1; j <= <= Screen->NumLWeapons(); j++ ) {
+        lweapon lw = Screen->LoadLWeapon(j);
+        if ( j == changeItem ) {
+            for ( i = 0; i < 176; i++ ) {
+            
+                if Screen->ComboD[i] == CMB_WATER_SPECIAL_UL ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_UL;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_U ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_U;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_UR ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CCMB_WATER_SPECIAL_FROZEN_UR;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_L ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_L;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_C ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_C;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_R ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_R;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_LL ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_LL;
+                    }
+                }
+                else if  Screen->ComboD[i] ==CMB_WATER_SPECIALD ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_D;
+                    }
+                }
+                else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_LR ) {
+                    if ( ComboCollision(i, j) {
+                        Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_LR;
+                    }
+                }
+            }
+        }
+    }
+}
+
+WaterChangeSpecial(int LType){
+    for ( i = 0; i < 176; i++ ) {
+        if Screen->ComboD[i] == CMB_WATER_SPECIAL_UL ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_UL;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_U ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_U;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_UR ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CCMB_WATER_SPECIAL_FROZEN_UR;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_L ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_L;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_C ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_C;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_R ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_R;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_LL ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_LL;
+            }
+        }
+        else if  Screen->ComboD[i] ==CMB_WATER_SPECIALD ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_D;
+            }
+        }
+        else if  Screen->ComboD[i] == CMB_WATER_SPECIAL_LR ) {
+            if ( ComboCollision(i, LType) {
+                Screen->ComboD[i] = CMB_WATER_SPECIAL_FROZEN_LR;
+            }
+        }
+    }
+}

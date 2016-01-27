@@ -1,0 +1,10 @@
+damageArray[28]= {0, 0, 0, 0, 0, 0, 0, 
+                0, 0, 0, 0, 0, 0, 0, 
+                0, 0, 0, 0, 0, 0, 0, 
+                0, 0, 0, 0, 0, 0, 0}
+                
+//7 x 4 = 28; Four Rowa, Seven Columns.                
+// Boomerang [0], Bomb [1], Superbomb [2], Arrow[3], Fire [4], Wand Welee [5], Magic [6],
+// Hookshot [7], Hammer [8], Sword [9], Sword Beam [10], Refl Beam [11], Refl Magic [12], Refl Fireball [13], 
+// Refl Rock [14], Stomp Boots [15], Byrna Beam [16],  Script Weapons [17], Script1 [18], Script2 [19], Script3 [20],
+// Script4 [21], Script5 [22], Script6 [23], Script7 [24], Script8 [25], Script9 [26], Script10 [27]

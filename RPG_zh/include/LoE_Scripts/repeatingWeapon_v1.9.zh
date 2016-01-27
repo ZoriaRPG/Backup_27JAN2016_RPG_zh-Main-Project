@@ -1,0 +1,130 @@
+import "std.zh"
+
+import "ItemHandling.zh" //Requires v6.6 or higher.
+import "Timers.zh" //Requires v1.0 or higher.
+
+//////////////////////////////
+/// Automatic Item ///////////
+/// v1.9 - 23rd Sept, 2014 ///
+/// Creator: ZoriaRPG      ///
+//////////////////////////////
+
+///Variables, Arrays, and Constants
+
+bool isAutofire = false; //Used to define if autofire is on, or off.
+//bool isAutoFire[10]={false,false,false,false,false,false,false,false,false,false};
+//An array template, to permit multiple autofire items.
+
+const int I_REPEAT = 14; //Repeating item.
+
+int Timers[2]={0,0}; //Timers.zh array.
+const int TI_REPEAT = 0;
+
+int equipmB; //Holds the value of the B-Slot item, between automatic activations.
+
+///Global Scripts
+
+global script Init{
+    void run(){
+        setTimer(TI_REPEAT, 0);
+    }
+}
+    
+global script onExit{
+    void run(){
+        setTimer(TI_REPEAT, 0);
+    }
+}
+
+global script activeSample{
+    void run(){
+        while(true){
+            
+            setTimer(TI_REPEAT,100);
+            setRepeatOff();
+            reduceTimer(TI_REPEAT,1);
+            AutofireInitiate(LW_ARROW);
+            
+
+            Waitdraw();
+            //Trace(returnTimer(TI_REPEAT)); //Print value to allegro.log.
+            //AutofireUpdate(); //Disabled, not needed for this version.
+            
+            Waitframe();
+        }
+    }
+}
+
+//Item Scripts
+
+//This item simply triggers the boolean isAutoFire to true, or false. You can expand on this by using a boolean array.
+
+item script repeatingWeapon{
+    void run(){
+        if ( isAutofire ){
+            isAutofire = false;
+        }
+        else {
+            isAutofire = true;
+        }
+    }
+}
+
+//Functions
+
+void AutofireInitiate(int lType){
+    if ( isAutofire && !lWeaponExists(lType) && checkTimer(TI_REPEAT) ){
+        equipmB = GetEquipmentB();
+        SetItemB(I_REPEAT);
+        Link->InputB = true;
+        Waitframe();
+        if ( GetEquipmentB() == I_REPEAT ) {
+            SetItemB(equipmB);
+        }
+    }
+        else { 
+        equipmB = GetEquipmentB();
+            if ( GetEquipmentB() != equipmB ) {
+                SetItemB(equipmB);
+            }
+        }
+}
+
+//Initialises automatic firing of a weapon, or automatic use of an item. 
+
+void AutofireInitiate(int repeatingItem, bool notLType){
+    if ( isAutofire && checkTimer(TI_REPEAT) ){
+        equipmB = GetEquipmentB();
+        SetItemB(repeatingItem);
+        Link->InputB = true;
+        Waitframe();
+        if ( GetEquipmentB() == repeatingItem ) {
+            SetItemB(equipmB);
+        }
+    }
+        else { 
+        equipmB = GetEquipmentB();
+            if ( GetEquipmentB() != equipmB ) {
+                SetItemB(equipmB);
+            }
+        }
+}
+
+//Same as above, for use with non-LW items, such as Nayru's Love. 
+
+void AutofireUpdate(){
+    int itemB = GetEquipmentB();
+    if ( isAutofire && itemB != equipmB ) {
+        SetItemB(equipmB);
+    }
+}
+
+//Deprecated function, originally meant to work between Waitdraw() and Waitdrame().
+
+void setRepeatOff(){
+    if ( Link->PressR && isAutofire ){
+        isAutofire = false;
+    }
+}
+
+//Emergency function to turn boolean off by pressing R. 

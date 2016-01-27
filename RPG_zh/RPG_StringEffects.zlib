@@ -1,0 +1,13 @@
+//Star Wars Opening Crawl
+
+//Make font size a variable. is size a float?
+// Shrink the size of the text, as its y position decreases.
+//Scaling would otherwise require 3d rendering.
+
+void DrawStarWarsText(float shrink){
+	int size[100];
+	int string0[]="";
+	int string1[]="";
+	
+	//String size is stored in the array. When it moves -Y16, it downshifts in size by a factor determined as an arg.
+}

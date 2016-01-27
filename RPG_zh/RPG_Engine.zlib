@@ -1,0 +1,373 @@
+/// Game Engine
+//v0.4
+
+// Arrays
+float GameDynamics[32768] = {0}; //This array holds numeric values, and strings, used by the game. 
+bool GameEvents[32768] = {false}; //This array is used for most custom game engine dynamics as a boolean control. 
+//It works with GameDynamics[], which holds numeric values for these same things. 
+//The constants, and array index size should match when completed. 
+
+//Constants 0 to 499 reserved.
+	
+bool OwnsItems[2048]={0}; //512 items, x4 characters. Items that the player has, to allow 'Equip/Unequip'
+bool ItemEquipped[2048]={0}; //512 items, x4 characters
+
+int teleportMatrix[40]={
+	100,22,104,152,50,
+	0,0,88,96,1,
+	0,0,88,96,1,
+	0,0,88,96,1,
+	0,0,88,96,1,
+	0,0,88,96,1,
+	0,0,88,96,1,
+	0,0,88,96,1};
+
+// Constants
+
+///////////////
+/// To Sort ///
+///////////////
+
+////////////////
+//// Updates every LWeapon on screen. Call in the active script.
+void UpdateLWeapons() {
+  for (int i = 1; i <= Screen->NumLWeapons(); i++) {
+    UpdateLWeapon(Screen->LoadLWeapon(i));}}
+ 
+////////////////
+//// Update a given LWeapon.
+void UpdateLWeapon(lweapon lw) {
+
+  // If the weapon does not have it's source item marked, mark it as
+  // being created by the last item that Link has used.
+  if (lw->Misc[MISC_LWEAPON_ITEM] == 0) {
+    lw->Misc[MISC_LWEAPON_ITEM] = Val(LAST_ITEM_USED);}}
+ 
+////////////////
+//// Updates the LastItemUsed variable to our best guess at what was
+//// most recently used. This should be called at the end of the loop,
+//// right before Waitdraw or Waitframe, because the item marked in
+//// LastItemUsed isn't actually used until after the Waitdraw or
+//// Waitframe.
+void UpdateLastItem() {
+
+  // Since we don't know which button has priority if both are pressed
+  // at once, cancel the B button press if A has also been pressed
+  // this frame.
+  if (Link->PressA && Link->PressB) {Link->PressB = false;}
+
+  // If Link is currently in an action where he obviously can't use
+  // items, then ignore his button presses.
+  if (Link->Action != LA_NONE &&
+      Link->Action != LA_WALKING) {
+    return;}
+
+  // Check which button is being pressed, if any. Also check for the
+  // appopriate Jinx.
+  if (Link->PressA && Link->SwordJinx == 0) {
+    Val(LAST_ITEM_USED, GetEquipmentA() );}
+  else if (Link->PressB && Link->ItemJinx == 0) {
+    Val(LAST_ITEM_USED,  GetEquipmentB() );}}
+	
+////////////////
+//// Return true if the given lweapon is from the given item.
+bool IsFromItem(lweapon lw, int itemNumber) {
+  return lw->Misc[MISC_LWEAPON_ITEM] == itemNumber;}
+ 
+////////////////
+//// Return true if the given lweapon is from the given item class.
+bool IsFromItemClass(lweapon lw, int itemClass) {
+  itemdata data = Game->LoadItemData(lw->Misc[MISC_LWEAPON_ITEM]);
+  return data->Family == itemClass;}
+  
+  
+  // Cooldown timers for each button. Button presses are cancelled
+// unless their cooldown timer is <= 0
+int Cooldown_ATimer = -1;
+int Cooldown_BTimer = -1;
+
+// Place in the Active script's main loop.
+void Cooldown_Update() {
+
+  // Countdown the timers.
+  if (Cooldown_ATimer >= 0) {Cooldown_ATimer--;}
+  if (Cooldown_BTimer >= 0) {Cooldown_BTimer--;}
+
+  // Block inputs.
+  if (Cooldown_ATimer > 0) {
+    Link->InputA = false;
+    Link->PressA = false;}
+  if (Cooldown_BTimer > 0) {
+    Link->InputB = false;
+    Link->PressB = false;}
+    }
+
+///////////////////////
+/// ! END To Sort ! ///
+///////////////////////
+
+//Constants
+
+const int D20 = 50;
+const int SwimPaddle = 26; //Set to swimming paddle sound.
+
+//Overlay Meter Gauges
+
+
+const int EXP_METER_LENGTH = 100;
+const int EXP_PER_LEVEL = 1; //Need to fix this function to work witgh XP Chart.
+const int EXP_METER_X = 50;
+const int EXP_METER_Y = 4;
+const int EXP_METER_WIDTH = 8;
+const int EXP_METER_COLOR = 64;
+
+//Combos
+const int CMB_BLANK 		= 0;	//Leave this be - combo 0 should always be invisible and no properties
+const int CMB_FREEZEALL		= 1708;	//Combo with "Freeze all (Except FFCs)" type
+const int CMB_FREEZEACTION	= 1708;	//Combo with "Freeze all (Except FFCs)" type
+const int CMB_FREEZEFFC		= 1709;	//Combo with "Freeze all (FFCs only)" type
+
+//FFC Slots
+const int FFC_FREEZEALL		= 31;
+const int FFC_FREEZEFFC		= 32;
+
+const int FFC_FREEZE_1 = 31;
+const int FFC_FREEZE_2 = 32;
+const int SCREEN_FREEZE_COMBO_1 = 1708;
+const int SCREEN_FREEZE_COMBO_2 = 1709;
+
+
+//Arrays
+
+int GameEngine[]={0};
+int MeterGauges[10]={0,0,0,0,0,0,0,0,0,0};
+
+void MeterBar(int type){
+    int length = EXP_METER_LENGTH * MeterGauges[type] / EXP_PER_LEVEL;
+    Screen->Rectangle(7, EXP_METER_X, EXP_METER_Y, EXP_METER_X + length, EXP_METER_Y + EXP_METER_WIDTH, EXP_METER_COLOR, 1, 0, 0, 0, true, OP_OPAQUE);
+}
+
+//Vars
+//bool isSwimming; //Used with swimming functions.
+//bool d20Mods = false; //Set to true, to use d20 System calculations, Otherwise, stat mods use...
+//int statModMultiplier = 0.5; //Used if not using d20 Mods.
+//int timerItem = 0;
+//int timerValue = 0;
+//bool cigarPickup; //This is a timer item pickup.
+
+
+// The item id of the last item Link has used.
+//int LastItemUsed = 0;
+
+// The id of the item used to create an lweapon.
+const int MISC_LWEAPON_ITEM = 0;
+
+
+//Functions
+
+bool IsD20(){
+	if ( GameEngine[D20] > 0 ) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+///////////////////////
+/// SCREEN FREEZING ///
+///////////////////////
+
+//WARNING: DO NOT USE IN AN FFC SCRIPT OR THE FFC WILL FREEZE ITSELF!
+//Use in global scripts only.
+void freezeScreen(){
+	ffc freezeAll = Screen->LoadFFC(FFC_FREEZEALL);
+	freezeAll->Data = CMB_FREEZEALL;
+	ffc freezeFFC = Screen->LoadFFC(FFC_FREEZEFFC);
+	freezeFFC->Data = CMB_FREEZEFFC;
+}
+
+void unfreezeScreen(){
+	ffc freezeAll = Screen->LoadFFC(FFC_FREEZEALL);
+	freezeAll->Data = CMB_BLANK;
+	ffc freezeFFC = Screen->LoadFFC(FFC_FREEZEFFC);
+	freezeFFC->Data = CMB_BLANK;
+}
+
+// This will work, from an FFC:
+// If you are using ghost.zh, uncomment SuspendGhostZHScripts().
+
+void freezeAction(){
+	ffc freezeAll = Screen->LoadFFC(FFC_FREEZEALL);
+	freezeAll->Data = CMB_FREEZEALL;
+    SuspendGhostZHScripts(); //Un-comment this if you're using ghost.zh
+}
+
+// This will work, from an FFC:
+// If you are using ghost.zh, uncomment ResumeGhostZHScripts().
+
+void unfreezeAction(){
+	ffc freezeAll = Screen->LoadFFC(FFC_FREEZEALL);
+	freezeAll->Data = CMB_BLANK;
+    ResumeGhostZHScripts(); //Un-comment this if you're using ghost.zh
+}
+
+/////////////////////////
+/// Numeric Functions ///
+/////////////////////////
+
+///////////////////////////////
+/// SPECIAL RAND OPERATIONS ///
+///////////////////////////////
+
+int reRand(int min, int max, int exclude){
+        int value;
+        do{
+            value = Rand(min, max);
+        }
+            while(value < min || value == exclude);
+            return value;
+}
+
+//////////////////////////////////
+/// SPECIAL MOVEMENT FUNCTIONS ///
+//////////////////////////////////
+
+//Makes Link walk faster in addition to normal walking speed
+void fastWalk ( int speed ){
+    //Up
+    if( Link->InputUp
+    && !Screen->isSolid(Link->X,Link->Y+6) //NW
+    && !Screen->isSolid(Link->X+7,Link->Y+6) //N
+    && !Screen->isSolid(Link->X+15,Link->Y+6) //NE
+    )
+        Link->Y -= speed;
+    //Down
+    else if( Link->InputDown
+    && !Screen->isSolid(Link->X,Link->Y+17) //SW
+    && !Screen->isSolid(Link->X+7,Link->Y+17) //S
+    && !Screen->isSolid(Link->X+15,Link->Y+17) //SE
+    )
+        Link->Y += speed;
+    //Left
+    else if( Link->InputLeft
+    && !Screen->isSolid(Link->X-2,Link->Y+8) //NW
+    && !Screen->isSolid(Link->X-2,Link->Y+15) //SW
+    )
+        Link->X -= speed;
+    //Right
+    else if( Link->InputRight
+    && !Screen->isSolid(Link->X+17,Link->Y+8) //NE
+    && !Screen->isSolid(Link->X+17,Link->Y+15) //SE
+    )
+        Link->X += speed;
+}
+
+
+void paddle(){
+
+
+    int combo=Screen->ComboT[ComboAt(Link->X+8, Link->Y+12)];
+    if(combo==CT_WATER || combo==CT_SWIMWARP || combo==CT_DIVEWARP || (combo>=CT_SWIMWARPB && combo<=CT_DIVEWARPD))
+    {
+    Is(SWIMMING,true);
+    }
+    else{
+    Is(SWIMMING,false);
+    }
+    
+    if( Link->Dir == DIR_UP //If Link is facing up...
+                && Link->Action == LA_SWIMMING //and is swimming...
+                && Is(SWIMMING) //combo is a swim combo...
+                && Link->InputB //and presses B...
+                && !Screen->isSolid(Link->X,Link->Y+6) //NW
+                && !Screen->isSolid(Link->X+7,Link->Y+6) //N
+                && !Screen->isSolid(Link->X+15,Link->Y+6) //NE
+            )
+            {
+            Link->Y -= 2;
+            Game->PlaySound(SwimPaddle);
+            }
+    else if( Link->Dir == DIR_DOWN  //If Link is facing down...
+                && Link->Action == LA_SWIMMING //and is swimming...
+                && Is(SWIMMING) //combo is a swim combo...
+                && Link->InputB //and presses B...
+                && !Screen->isSolid(Link->X,Link->Y+17) //SW
+                && !Screen->isSolid(Link->X+7,Link->Y+17) //S
+                && !Screen->isSolid(Link->X+15,Link->Y+17) //SE
+            )
+            {
+            Link->Y += 2;
+            Game->PlaySound(SwimPaddle);
+            }
+    if( Link->Dir == DIR_RIGHT //If Link is facing right....
+                && Link->Action == LA_SWIMMING  //and is swimming...
+                && Is(SWIMMING) //combo is a swim combo...
+                && Link->InputB //and presses B...
+                && !Screen->isSolid(Link->X+17,Link->Y+8) //NE
+                && !Screen->isSolid(Link->X+17,Link->Y+15) //SE 
+            )
+            {
+            Link->X += 2;
+            Game->PlaySound(SwimPaddle);
+            }
+    if( Link->Dir == DIR_LEFT //If Link is facing left...
+                && Link->Action == LA_SWIMMING //and is swimming...
+                && Is(SWIMMING) //combo is a swim combo...
+                && Link->InputB //and presses B...
+                && !Screen->isSolid(Link->X-2,Link->Y+8) //NW
+                && !Screen->isSolid(Link->X-2,Link->Y+15) //SW
+            )
+            {
+            Link->X -= 2;
+            Game->PlaySound(SwimPaddle);
+            }
+            
+            
+
+   
+
+    if ( Link->Action == LA_SWIMMING && !Is(SWIMMING) )
+    {
+    Link->Action = LA_NONE;
+    }
+} 
+
+///////////////////////////
+/// Screen->D Functions ///
+///////////////////////////
+
+//Returns the register value of Screen-D[r] as an int for a specific screen and specific dmap.
+int getScreenDataAsInt(int dmap, int screen, int r){
+    int datum = Game->GetDMapScreenD(dmap, screen, r);
+    return datum;
+}
+
+//Returns the register value of Screen-D[r] as a float for a specific screen and specific dmap.
+float getScreenData(int dmap, int screen, float r){
+    float datum = Game->GetDMapScreenD(dmap, screen, r);
+    return datum;
+}
+
+//Compares the register value of Screen->D[r] to the value v, on a specific screen, and specific DMAP.
+bool getScreenData(int dmap, int screen, int r, int v){
+    int datum = Game->GetDMapScreenD(dmap, screen, r);
+    if (datum == v) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+
+//Sets a register value on a for Screen->D, on a specific DMAP, and specific screen. 
+void setScreenData(int dmap, int screen, int r, int v){
+    Game->SetDMapScreenD(dmap, screen, r, v);
+}
+
+
+//Scripts
+
+
+

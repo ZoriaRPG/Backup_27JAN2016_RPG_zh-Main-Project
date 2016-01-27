@@ -1,0 +1,119 @@
+//Functions to create an explosion using any pointer.
+
+void Explode(ffc f, int numExplosions, int explosionType){
+	int fX = f->X;
+	int fY = f->Y;
+	int explosionCount = numExplosions;
+	
+	
+	for ( int q = 1; q <= Screen->NumNPCs(); q++ ) { //Run a for loop to read every enemy on the screen...
+		//Otherwise...
+		npc n = Screen->LoadNPC(q); //Declare an npc variable, 
+		if ( n->isValid() ) {
+			
+			if ( n->ID == FINAL_BOSS_ID ) {
+				isFinalBoss = true;
+				enemType = ENEM_TYPE_FINAL_BOSS;
+			}
+			
+			for ( int e = 0; e < SizeOfArray(BossList); e++ ) {
+				if ( isFinalBoss) break;
+				enemID = BossList[e];
+				if ( n->ID == enemID ) {
+					isBoss = true;
+					enemType = ENEM_TYPE_BOSS;
+					break;
+				}
+
+			}
+			
+			for ( int e = 0; e < SizeOfArray(MiniBossList); e++ ) {
+				if ( isBoss ) break;
+				enemID = MiniBossList[e];
+				if ( n->ID == enemID ) {
+					isMiniBoss = true;
+					enemType = ENEM_TYPE_MINIBOSS;
+					break;
+				}
+			}
+			
+			
+			if ( !ENEMIES_ALWAYS_EXPLODE && !isBoss && !isMiniBoss && !isFinalBoss && !Z4_ItemsAndTimers[POWER_BOOSTED] ){ //If these flags are all disabled, exit this function.
+				break;
+			}
+			
+			//Determine number of explosions by type of enemy...
+			if ( isMiniBoss ) {
+				numExplosions = FFC_NUM_OF_EXPLOSIONS + FFC_EXPLOSIONS_MINIBOSS_EXTRA;
+			}
+			else if ( isBoss ) {
+				numExplosions = FFC_NUM_OF_EXPLOSIONS + FFC_EXPLOSIONS_BOSS_EXTRA;
+			}
+			else if ( isFinalBoss ) {
+				if ( !FINAL_BOSS_EXPLOSIONS ) break;
+				numExplosions = FFC_NUM_OF_EXPLOSIONS + FFC_EXPLOSIONS_FINALBOSS_EXTRA;
+			}
+			else numExplosions = FFC_NUM_OF_EXPLOSIONS;
+			
+			if ( Z4_ItemsAndTimers[POWER_BOOSTED] ) {
+				numExplosions += FFC_EXPLOSION_PIECE_OF_POWER_EXTRA_BLASTS; 
+			}
+			
+			//and assign it to each valid NPC in the for loop.
+			if ( n->HP <= 0 ) { //if the NPC is dead, or dying...
+				fX = n->X; //Set the variables to the coordinates of that NPC.
+				fY = n->Y;
+				
+				for ( int q = 0; q <= numExplosions; q++ ) {
+					
+					eweapon explosion; //Create a dummy eweapon to use for animations...
+						
+					//Run a for loop, to make a timed series of explosions...
+					if ( numExplosions) { //Run only if there are explision to make.
+						explosion = Screen->CreateEWeapon(EW_SCRIPT1); //Make an explosion..
+						Game->PlaySound(SFX_ENEMY_EXPLOSION);
+						explosion->CollDetection = false; //...that doesn;t hurt anyone...
+						
+						if ( enemType == ENEM_TYPE_NORMAL ) {
+							explosion->X = fX + Rand(-8,8); //at X coordinates fX plus a slightly randomised offset.
+							explosion->Y = fY + Rand(-8,8); //at Y coordinates fX plus a slightly randomised offset.
+							explosion->UseSprite(FFC_EXPLOSION_SPRITE_NORMAL_ENEM); //...using this sprite
+						}
+						else if ( enemType == ENEM_TYPE_MINIBOSS ) {
+							explosion->X = fX + Rand(-12,12); //at X coordinates fX plus a slightly randomised offset.
+							explosion->Y = fY + Rand(-12,12); //at Y coordinates fX plus a slightly randomised offset.
+							explosion->UseSprite(FFC_EXPLOSION_SPRITE_ENEM_MINIBOSS); //...using this sprite
+						}
+						else if ( enemType == ENEM_TYPE_BOSS ) {
+							explosion->X = fX + Rand(-16,16); //at X coordinates fX plus a slightly randomised offset.
+							explosion->Y = fY + Rand(-16,16); //at Y coordinates fX plus a slightly randomised offset.
+							explosion->UseSprite(FFC_EXPLOSION_SPRITE_ENEM_BOSS); //...using this sprite
+						}
+						else if ( enemType == ENEM_TYPE_FINAL_BOSS ) {
+							explosion->X = fX + Rand(-24,24); //at X coordinates fX plus a slightly randomised offset.
+							explosion->Y = fY + Rand(-24,24); //at Y coordinates fX plus a slightly randomised offset.
+							explosion->UseSprite(FFC_EXPLOSION_SPRITE_ENEM_FINAL_BOSS); //...using this sprite
+						}
+						else {
+							explosion->X = fX + Rand(-10,10); //at X coordinates fX plus a slightly randomised offset.
+							explosion->Y = fY + Rand(-10,10); //at Y coordinates fX plus a slightly randomised offset.
+							explosion->UseSprite(FFC_EXPLOSION_SPRITE); //...using this sprite
+						}
+						
+						
+						explosion->Extend = FFC_EXPLOSION_EXTEND; //...with extended size
+						explosion->TileWidth = FFC_EXPLOSION_TILEWIDTH; //...this many tiles wide
+						explosion->TileHeight = FFC_EXPLOSION_TILEHEIGHT; ///...this many tiles high
+						//Waitframe(); //..pause, then go back to the top of this loop, to repeat until the number of
+							     // explosions is a total matching FFC_NUM_OF_EXPLOSIONS + FFC_EXPLOSION_PIECE_OF_POWER_EXTRA_BLASTS
+						explosion->DeadState = WDS_ARROW; //Kill the dummy eweapon
+						
+							
+					}
+				}
+				explosion->DeadState = WDS_DEAD; //Kill the dummy eweapon
+				Remove(explosion); //and remove it.
+			}
+		}
+	}
+}

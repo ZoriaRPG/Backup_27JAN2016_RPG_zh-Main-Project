@@ -1,0 +1,178 @@
+// tango.zh
+// Beta 2
+
+// String control codes are stored one higher than their IDs.
+const int __TANGO_SCC_TEXT_COLOR = 2;
+const int __TANGO_SCC_TEXT_SPEED = 3;
+const int __TANGO_SCC_GOTO_IF_SCREEN_D = 4;
+const int __TANGO_SCC_GOTO_IF_RANDOM = 5;
+const int __TANGO_SCC_GOTO_IF_ITEM = 6;
+const int __TANGO_SCC_GOTO_IF_COUNTER = 7;
+const int __TANGO_SCC_GOTO_IF_COUNTER_PERCENT = 8;
+const int __TANGO_SCC_GOTO_IF_TRIFORCE = 9;
+const int __TANGO_SCC_GOTO_IF_TRIFORCE_COUNT = 10;
+const int __TANGO_SCC_COUNTER_UP = 11;
+const int __TANGO_SCC_COUNTER_DOWN = 12;
+const int __TANGO_SCC_COUNTER_SET = 13;
+const int __TANGO_SCC_COUNTER_UP_PERCENT = 14;
+const int __TANGO_SCC_COUNTER_DOWN_PERCENT = 15;
+const int __TANGO_SCC_COUNTER_SET_PERCENT = 16;
+const int __TANGO_SCC_ADD_ITEM = 17;
+const int __TANGO_SCC_REMOVE_ITEM = 18;
+const int __TANGO_SCC_PLAY_SOUND = 21;
+const int __TANGO_SCC_PLAY_MIDI = 22;
+
+int __Tango_RunStringControlCode(int pos)
+{
+    int code=__Tango_Buffer[pos];
+    int argInc;
+    int args[3]={ 0, 0, 0 };
+    pos++;
+    
+    if(code<11)
+    {
+        if(code==__TANGO_SCC_TEXT_COLOR)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            __Tango_SetVar(__TANGO_VAR_CSET, args[0]);
+            __Tango_SetVar(__TANGO_VAR_COLOR, args[1]);
+        }
+        else if(code==__TANGO_SCC_TEXT_SPEED)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 1, args);
+            __Tango_SetVar(__TANGO_VAR_SPEED, args[0]);
+        }
+        else if(code==__TANGO_SCC_GOTO_IF_SCREEN_D)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 3, args);
+            if(Screen->D[args[0]]>=args[1])
+                __Tango_FuncGoto(args[2]);
+        }
+        else if(code==__TANGO_SCC_GOTO_IF_RANDOM)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            if(Rand(args[0])==0)
+                __Tango_FuncGoto(args[1]);
+        }
+        else if(code==__TANGO_SCC_GOTO_IF_ITEM)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            if(Link->Item[args[0]])
+                __Tango_FuncGoto(args[1]);
+        }
+        else if(code==__TANGO_SCC_GOTO_IF_COUNTER)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 3, args);
+            if(Game->Counter[args[0]]>=args[1])
+                __Tango_FuncGoto(args[2]);
+        }
+        else if(code==__TANGO_SCC_GOTO_IF_COUNTER_PERCENT)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 3, args);
+            if(Game->Counter[args[0]]/Game->MCounter[args[0]]*100>=args[1])
+                __Tango_FuncGoto(args[2]);
+        }
+        else if(code==__TANGO_SCC_GOTO_IF_TRIFORCE)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            if((Game->LItems[args[0]]&LI_TRIFORCE)!=0)
+                __Tango_FuncGoto(args[1]);
+        }
+        else // __TANGO_SCC_GOTO_IF_TRIFORCE_COUNT
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            if(NumTriforcePieces()>=args[0])
+                __Tango_FuncGoto(args[1]);
+        }
+    }
+    else // code>=11
+    {
+        if(code==__TANGO_SCC_COUNTER_UP)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            Game->Counter[args[0]]=Min(Game->Counter[args[0]]+args[1],
+              Game->MCounter[args[0]]);
+        }
+        else if(code==__TANGO_SCC_COUNTER_DOWN)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            Game->Counter[args[0]]=Max(Game->Counter[args[0]]-args[1], 0);
+        }
+        else if(code==__TANGO_SCC_COUNTER_SET)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            Game->Counter[args[0]]=Clamp(args[1], 0, Game->MCounter[args[0]]);
+        }
+        else if(code==__TANGO_SCC_COUNTER_UP_PERCENT)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            int amount=(Game->MCounter[args[0]]*args[1]/100)<<0;
+            Game->Counter[args[0]]=Min(Game->Counter[args[0]]+amount,
+              Game->MCounter[args[0]]);
+        }
+        else if(code==__TANGO_SCC_COUNTER_DOWN_PERCENT)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            int amount=(Game->MCounter[args[0]]*args[1]/100)<<0;
+            Game->Counter[args[0]]=Max(Game->Counter[args[0]]-amount, 0);
+        }
+        else if(code==__TANGO_SCC_COUNTER_SET_PERCENT)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 2, args);
+            int value=(Game->MCounter[args[0]]*args[1]/100)<<0;
+            Game->Counter[args[0]]=Clamp(value, 0, Game->MCounter[args[0]]);
+        }
+        // The add and remove item codes don't affect counters...
+        else if(code==__TANGO_SCC_ADD_ITEM)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 1, args);
+            Link->Item[args[0]]=true;
+        }
+        else if(code==__TANGO_SCC_REMOVE_ITEM)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 1, args);
+            Link->Item[args[0]]=false;
+        }
+        else if(code==__TANGO_SCC_PLAY_SOUND)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 1, args);
+            Game->PlaySound(args[0]);
+        }
+        else if(code==__TANGO_SCC_PLAY_MIDI)
+        {
+            argInc=__Tango_ReadSCCArgs(pos, 1, args);
+            Game->PlayMIDI(args[0]);
+        }
+    }
+    
+    return argInc+1;
+}
+
+// Reads an arbitrary number of arguments and returns the pointer increment.
+int __Tango_ReadSCCArgs(int pos, int numArgs, int output)
+{
+    int arg;
+    int offset=0;
+    
+    for(int i=0; i<numArgs; i++)
+    {
+        arg=__Tango_Buffer[pos+offset]-1;
+        offset++;
+        
+        // Arguments are either 1 or 3 bytes. If the first byte is
+        // followed by 255, it's 3.
+        // It's possible that it's actually meant to be a 1-byte argument
+        // followed by character 255. Unfortunately, there's no way to tell,
+        // but it's unlikely this will ever actually be an issue.
+        if(__Tango_Buffer[pos+offset]==255)
+        {
+            arg+=254*__Tango_Buffer[pos+offset+1];
+            offset+=2;
+        }
+        
+        output[i]=arg;
+    }
+    
+    return offset;
+}
+

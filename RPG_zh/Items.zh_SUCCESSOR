@@ -1,0 +1,484 @@
+// -- items.zh 
+
+//This header refers to items as Active Equipment, Passive Equipment, Non-Equipment Items, and Level Items
+//for more info press CTRL+F and search for *!*!*!*!*
+
+//WIP: If you find a problem, a bug, get confused, or for some other reason are dissatisfied
+//  please let me know either in the thread you found this or by
+//  Private Message SUCCESSOR at AGN or PureZC or contact on irc.bladerock.net 
+
+//The direction Active Equipment is swapped
+const int SHIFT_DIR = 3;
+
+//constants for swap items used in SwapEquipment() these must be active equipment 
+//that you likely wont have when the player would have fewer than 3 Active Equipment 
+const int EQP_SWAP1 = 25;
+const int EQP_SWAP2 = 52;//
+
+//constants for UseEquipment()
+const int EQP_INPUT_EX1 = 1;//values for input
+const int EQP_INPUT_EX2 = 2;
+const int EQP_INPUT_EX3 = 3;
+const int EQP_INPUT_EX4 = 4;
+const int EQP_INPUT_L = 5;
+const int EQP_INPUT_R = 6;
+
+//Which slot of Link->Misc to use
+const int EQP_LINK_MISC = 0;
+
+//Use this function once in a loop above any "UseEquipment" function 
+//Do not use if you are using UseEquipmentOnExInput
+void ResetEquipment(){
+	int b = Link->Misc[EQP_LINK_MISC]<<0;
+	int wait = (Link->Misc[EQP_LINK_MISC] - b)*10000;
+	if(!b) return;
+	if(wait){
+		Link->Misc[EQP_LINK_MISC] -= .0001;
+		return;
+	}
+	else { 
+		SwapEquipmentB(b);
+		Link->Misc[EQP_LINK_MISC] = 0;
+	}
+}
+
+//Use Equipment on any extra button, Ex1, Ex2, Ex3, Ex4, L and R (L & R will be disabled)
+//do not use ResetEquipment() if you use this function
+//Do no use more than once; use 0 or negative for unused buttons
+void UseEquipmentOnExInput(int ex1, int ex2, int ex3, int ex4, int l, int r){
+	ResetEquipment();
+	int its[] = {0, ex1, ex2, ex3, ex4, l, r};
+	for(int i = 1; i<=6; i++){
+		if(its[i] <= 0 || !Link->Item[its[i]]) continue;
+		UseEquipmentOnInput(its[i], i, 0);
+		if(i == EQP_INPUT_L)Link->InputL = false;
+		if(i == EQP_INPUT_R)Link->InputR = false;
+	}
+}
+//takes Item ID Number and EQU_INPUT_ values for input
+void UseEquipmentOnInput(int it, int input){
+	if(CanUseEquipment() && UseEquipmentInput(input)){
+		UseEquipment(it);
+	}
+}
+
+void UseEquipment(int it){
+	if(!Link->Item[it]) return;
+	Link->Misc[EQP_LINK_MISC] = EquipmentB();
+	SwapEquipmentB(it);
+	if(EquipmentB() == it)Link->InputB = true;
+}
+void UseEquipment(int it, int wframes){
+	if(!Link->Item[it]) return;
+	int wait = wframes - (wframes<<0); 
+	Link->Misc[EQP_LINK_MISC] = EquipmentB() + wait;
+	SwapEquipmentB(it);
+	if(EquipmentB() == it)Link->InputB = true;
+}
+//takes Item ID Number, EQU_INPUT_ values for input, and the number of additional waitframes as arguments
+void UseEquipmentOnInput(int it, int input, int wframes){
+	if(CanUseEquipment() && UseEquipmentInput(input)){
+		UseEquipment(it, wframes);
+	}
+}
+//Whether or not Link can use an item
+bool CanUseEquipment(){
+	return Link->Action < 2 && !Link->PressA && !Link->PressB && !Link->PressStart && !Link->PressMap && !Link->Misc[EQP_LINK_MISC];
+}
+//same as above but checks for UseEquipment input
+bool UseEquipmentInput(int inp){
+	return (inp==EQP_INPUT_EX1 && Link->PressEx1) || (inp==EQP_INPUT_EX2 && Link->PressEx2) || (inp==EQP_INPUT_EX3 && Link->PressEx3) 
+		|| (inp==EQP_INPUT_EX4 && Link->PressEx4) || (inp==EQP_INPUT_L && Link->PressL) || (inp==EQP_INPUT_R && Link->PressR);
+}
+
+void SwapEquipmentA(int it){
+	if(!Link->Item[it]) return;
+	if(it == EquipmentA()) return;
+	if(it == EquipmentB()) SwapEquipment();
+	//save item we start with
+	int storeA = EquipmentA();
+	//move to next item before checking conditions
+	do{ Link->SelectAWeapon(SHIFT_DIR); }
+	//stop if Item A is the right item or the item we started at
+	while(EquipmentA() != it && storeA != EquipmentA() && EquipmentA())
+}
+
+//Changes B to specified item
+void SwapEquipmentB(int it){
+	if(!Link->Item[it]) return;
+	if(it == EquipmentB()) return;
+	if(it == EquipmentA()) SwapEquipment();
+	//save current item to mark where we started
+	int storeB = EquipmentB();
+	//move to next item before checking conditions
+	do{ Link->SelectBWeapon(SHIFT_DIR);}
+	//if Item B is the right item or the item we started at stop
+	while(EquipmentB() != it && storeB != EquipmentB() &&  EquipmentB())
+}
+
+//Change A to specified item gives item if needed
+void SetEquipmentA(int it){
+	//if Link doesn't have the item give it to him
+	if(!Link->Item[it]) Link->Item[it] = true;
+	SwapEquipmentA(it);
+}
+
+//Changes B to specified item gives item if needed
+void SetEquipmentB(int it){
+	if(!Link->Item[it]) Link->Item[it] = true;
+	SwapEquipmentB(it);
+}
+//Returns the item ID of the item equipped to Link's A or B button
+//attempts to swap to item if Item ID is supplied
+int EquipmentA() {
+	return (Link->Equipment&0xFF);
+}
+int EquipmentB() {
+	return ((Link->Equipment&0xFF00)>>8);
+}
+int EquipmentA(int it) {
+	SwapEquipmentA(it);
+	return (Link->Equipment&0xFF);
+}
+int EquipmentB(int it) {
+	SwapEquipmentB(it);
+	return ((Link->Equipment&0xFF00)>>8);
+}
+
+//constants for swap items, must be selectable equipment that you likely wont have
+//when your items are fewer than 3
+//const int EQP_SWAP1 = 25;//wand
+//const int EQP_SWAP2 = 52;//hookshot
+void SwapEquipment(){
+	if(!CountActiveEquipment())return; //no Active Items
+	if(CountActiveEquipment() < 3){
+		SwapEquipment(EQP_SWAP1, EQP_SWAP2);
+		return;
+	}  
+	else{	
+		int storeA = EquipmentA();
+		int storeB = EquipmentB();
+		Link->SelectBWeapon(SHIFT_DIR); //move B to next item
+		SwapEquipmentA(storeB);
+		SwapEquipmentB(storeA);
+	}
+}
+
+//if A and B are the only items creates item to swap
+//item must be an equipment item selectable in the subscreen(Active Equipment)
+void SwapEquipment(int swapID){
+	int storeA = EquipmentA();
+	int storeB = EquipmentB();
+	Link->SelectBWeapon(SHIFT_DIR); //move B off needed item
+	if(storeB == EquipmentB()){ //if move failed
+	 	Link->Item[swapID] = true; //create swap item
+		Link->SelectBWeapon(SHIFT_DIR); //move B to next item
+		if(storeB == EquipmentB()){
+			Link->Item[swapID] = false;
+			return; //if move failed quit
+		}
+	}
+	SwapEquipmentA(storeB);
+	SwapEquipmentB(storeA);
+	Link->Item[swapID] = false;
+}
+
+//creates two items to swap
+//items must be equipment items selectable in the subscreen
+void SwapEquipment(int swap1, int swap2){
+	Link->Item[swap1] = true;
+	Link->Item[swap2] = true;
+	int storeA = EquipmentA();
+	int storeB = EquipmentB();
+	Link->SelectBWeapon(SHIFT_DIR); //move B off needed item
+	if(storeB == EquipmentB()){ //if move failed cannot complete swap
+	 	Link->Item[swap1] = false;
+		Link->Item[swap2] = false;
+		return;//quit without completing swap
+	}
+	SwapEquipmentA(storeB);
+	SwapEquipmentB(storeA);
+	Link->Item[swap1] = false;
+	Link->Item[swap2] = false;
+}
+
+//Returns number of item currently selectable in subscreen, Active Equipment Items
+int CountActiveEquipment(){
+	//save item we start with
+	int storeB = EquipmentB();
+	int itnum = 0;
+	//move to next item before checking conditions
+	do{ Link->SelectBWeapon(SHIFT_DIR); if(EquipmentB())itnum++; }
+	//if Item B the item we started at stop
+	while(storeB != EquipmentB() && EquipmentB())
+	if(EquipmentA())itnum++;
+	return itnum;
+}
+//Returns number of items currently equipped
+int CountEquipment(){
+	int num;
+	for(int i; i < 256; i++) if(Link->Item[i])num++;
+	return num;
+}
+//Returns number of items equipped that aren't selectable, Passive Equipment Items
+int CountPassiveEquipment(){ 
+	return CountEquipment() - CountActiveEquipment();
+}
+int GetActiveEquipment(int it){
+	int ret;
+	if(EquipmentA() == it) return EquipmentA();
+	if(EquipmentB() == it) return EquipmentB();
+	int storeB = EquipmentB();
+	Link->SelectBWeapon(SHIFT_DIR);
+	while(storeB != EquipmentB() &&  EquipmentB()){
+		if(EquipmentB() == it){
+			ret = EquipmentB();
+			while( Link->Item[storeB] &&  storeB != EquipmentB() && storeB != EquipmentA()) Link->SelectBWeapon(SHIFT_DIR);
+			return ret;
+		}
+		Link->SelectBWeapon(SHIFT_DIR);
+	}
+	
+	while( Link->Item[storeB] &&  storeB != EquipmentB() && storeB != EquipmentA()) Link->SelectBWeapon(SHIFT_DIR);		
+	return -1; //if failed to find
+}
+int GetActiveEquipment(int it, int fail){
+	int ait = GetActiveEquipment(it);
+	if (ait == -1)return fail; //if failed to find
+	return ait;
+}
+
+int GetActiveEquipment(item it){
+	return GetActiveEquipmentOfFamily(it->ID);
+}
+
+int GetActiveEquipment(item it, int fail){
+	int ait = GetActiveEquipmentOfFamily(it->ID);
+	if (ait == -1)return fail; //if failed to find
+	return ait;
+}
+//returns ID of Active Equipment Item for the class of item ID supplied
+//if more than one item of a certain class is selectable this will return first found
+int GetActiveEquipmentOfFamily(int it){
+	itemdata base = Game->LoadItemData(it);
+	itemdata a = Game->LoadItemData(EquipmentA());
+	itemdata b = Game->LoadItemData(EquipmentB());
+	
+	int ret;
+	
+	if(a->Family == base->Family) return EquipmentA();
+	if(b->Family == base->Family) return EquipmentB();
+	int storeB = EquipmentB();
+	Link->SelectBWeapon(SHIFT_DIR);
+	while(storeB != EquipmentB() &&  EquipmentB()){
+		b = Game->LoadItemData(EquipmentB());
+		if(b->Family == base->Family){
+			ret = EquipmentB();
+			while( Link->Item[storeB] &&  storeB != EquipmentB() && storeB != EquipmentA()) Link->SelectBWeapon(SHIFT_DIR);
+			return ret;
+		}
+		Link->SelectBWeapon(SHIFT_DIR);
+	}
+	
+	while( Link->Item[storeB] &&  storeB != EquipmentB() && storeB != EquipmentA()) Link->SelectBWeapon(SHIFT_DIR);		
+	return -1; //if failed to find
+}
+//allows you to specify what to return if failed to find valid item
+int GetActiveEquipmentOfFamily(int it, int fail){
+	int ait = GetActiveEquipmentOfFamily(it);
+	if (ait == -1)return fail; //if failed to find
+	return ait;
+}
+
+int GetActiveEquipmentOfFamily(item it){
+	return GetActiveEquipmentOfFamily(it->ID);
+}
+
+int GetActiveEquipmentOfFamily(item it, int fail){
+	int ait = GetActiveEquipmentOfFamily(it->ID);
+	if (ait == -1)return fail; //if failed to find
+	return ait;
+}
+
+//Returns the Item's ID number from it's itemdata.
+int GetItemFromItemdata(itemdata it){
+	for(int i; i < 256; i++){
+		itemdata that = Game->LoadItemData(i);
+		if(that	== it){
+			return i;
+		}
+	}
+}
+//create an item on top of link so he picks it up
+void LinkPickupItem(int itID){
+	item it = Screen->CreateItem(itID);
+	if(it->isValid()){
+		it->X = Link->X;
+		it->Y = Link->Y;
+	}
+}
+//UpgradeItem 
+int UpgradeItem(int it){
+	itemdata base = Game->LoadItemData(it);
+	itemdata new = Game->LoadItemData(0);
+	for(int i; i<256; i++){
+		if(!Link->Item[i]) continue;
+		itemdata check = Game->LoadItemData(i);
+		if(check->Level > base->Level && check->Level < new->Level){
+			new = check;
+			it = i;
+		}
+	}
+	return it;	
+}
+//upgrade Link's item in inventory
+void UpgradeLinkItem(int it, bool pickup){
+	int upg = UpgradeItem(it);
+	if(!pickup) Link->Item[upg];
+	else LinkPickupItem(upg);	
+}
+
+//old functions for legacy purposes
+void SetItemA(int it){ //NOT EQUIVILENT to SetEquipment functions!
+	SwapEquipmentA(it);
+}
+void SetItemB(int it){ //NOT EQUIVILENT to SetEquipment functions!
+	SwapEquipmentB(it);
+}
+bool SetCheckA(int it){ //NOT EQUIVILENT to SetEquipment functions!
+	SwapEquipmentA(it);
+	return EquipmentA() == it;
+}
+bool SetCheckB(int it){ //NOT EQUIVILENT to SetEquipment functions!
+	SwapEquipmentB(it);
+	return EquipmentB() == it;
+}
+bool SwapCheckA(int it){
+	SwapEquipmentA(it);
+	return EquipmentA() == it;
+}
+bool SwapCheckB(int it){
+	SwapEquipmentB(it);
+	return EquipmentB() == it;
+}
+
+
+//*!*!*!*!*
+//Non-Equipment Items are used up as soon as they are collected and not kept: hearts, ammo, heart containers...
+//Level Items are items that only have significance inside their respective levels: Maps, Compasses, Keys...
+//Active Equipment are items that must be used with a button press: Sword, Hookshot, Hammer...
+//Passive Equipment effects are automatic: Ladder, Rings, Raft...
+
+  //This header file defines functions that are useful for managing items, mostly 
+	//focusing on Equipment Items. It is not meant to replace or extend any other
+	//header. All code is the work of SUCCESSOR unless otherwise stated. If you feel
+	//Something of yours was uncredited, used without permission, or misrepresented
+	//please contact SUCCESSOR via AGN or PureZC private messaging or BLADEROCK IRC
+	
+	
+global script UseEquipmentOnExInput{
+    void run(){
+        while(true){
+            //UseEquipmentOnExInput(Ex1, Ex2, Ex3, Ex4, L, R);
+            UseEquipmentOnExInput(I_CANDLE2, I_BRANG1, I_WAND, I_HOOKSHOT1, I_ARROW1, I_BOMB);
+            Waitframe();
+        }
+    }
+}
+
+
+global script UseEquipment{
+	void run(){
+		while(true){
+			ResetEquipment();
+			UseEquipmentOnInput(I_ROCSFEATHER, EQP_INPUT_EX1);
+			Waitframe();
+		}
+	}
+}
+
+    import "items.zh"
+    import "std.zh"
+
+    const int XSLOT_X = 100;
+    const int XSLOT_Y = -24;
+
+    //Equipment Slot Ex1
+    int EquipmentX[4];
+    	const int EX1_ID 	= 0;
+    	const int EX1_OLDID = 1;
+    	const int EX1_TILE 	= 2;
+    	const int EX1_CSET 	= 3;
+    	
+
+    global script EquipmentSlotX{
+    	void run(){
+    		
+    		while(true){
+    			ResetEquipment();
+    			EquipmentX();
+    			
+    			Waitframe();
+    		}
+    	}
+    	bool EquipmentXIsValid(){
+    		return (EquipmentX[EX1_ID] > 0 && EquipmentX[EX1_ID] < 256);
+    	}
+    	void ShiftEquipmentX(int dir){
+    		if(EquipmentXIsValid()){
+    			int storeB = EquipmentB();				//save EquipmentB value
+    			SwapEquipmentB(EquipmentX[EX1_ID]);		//Change EquipmentB to EquipmentX[EX1_ID]
+    			Link->SelectBWeapon(dir);				//Adjust EquipmentB as directed
+    			if(EquipmentB() == storeB)Link->SelectBWeapon(dir); //make sure we don't set X to B
+    			EquipmentX[EX1_ID] = EquipmentB();		//set X
+    			SwapEquipmentB(storeB);					//reset B
+    		}
+    	}
+    	void UpdateEqupimentX(){
+    		//Makes sure the value of EquipmentX is in inventory or another item of the same family is in inventory
+    		if(EquipmentXIsValid()){
+    			int get = GetActiveEquipment(EquipmentX[EX1_ID]); 			//Confirm EquipmentX or Equipment in the same family is in inventory
+    			if(get == -1) get = GetActiveEquipmentOfFamily(EquipmentX[EX1_ID]); //Link does not have that Equipment try Equipment of Family
+    			if(get == -1) EquipmentX[EX1_ID] = 0;						//Link does not have that Equipment 
+    			else if(get != EquipmentX[EX1_ID]) EquipmentX[EX1_ID] = get; //Equipment found set it to X
+    		}
+    		
+    		//If EquipmentX has no value
+    		else if(CountActiveEquipment() > 2) {
+    			EquipmentX[EX1_ID] = EquipmentB();
+    		}
+    		//change EquipmentX if it it already on A or B and we are not using EquipmentX
+    		if( (EquipmentX[EX1_ID] == EquipmentB() || EquipmentX[EX1_ID] == EquipmentA())  && !Link->Misc[EQP_LINK_MISC]){
+    			ShiftEquipmentX(DIR_RIGHT);			
+    		}
+    		//if EquipmentX has changed update draw variables
+    		if(EquipmentX[EX1_ID] != EquipmentX[EX1_OLDID]){
+    			GetItemTileAndCSet(EquipmentX[EX1_ID]);
+    			EquipmentX[EX1_OLDID] = EquipmentX[EX1_ID];
+    		}
+    	}
+    	//get tile and cset of our equipment to draw
+    	void GetItemTileAndCSet(int it){
+    		item get = Screen->CreateItem(it);
+    		EquipmentX[EX1_CSET] = get->CSet;
+    		EquipmentX[EX1_TILE] = get->Tile;
+    		Remove(get);
+    	}
+    	void EquipmentX(){
+    		//makes sure we have a good equipment ID and it's not a duplicate
+    		UpdateEqupimentX();
+    		//Press L or R to change EquipmentX
+    		if(Link->PressL  && CanUseEquipment()) ShiftEquipmentX(DIR_LEFT);
+    		else if(Link->PressR  && CanUseEquipment()) ShiftEquipmentX(DIR_RIGHT);
+    		
+    		
+    		if(EquipmentXIsValid()){
+    			//draw item tile to subscreen
+    			Screen->FastTile(7, XSLOT_X, XSLOT_Y, EquipmentX[EX1_TILE], EquipmentX[EX1_CSET], 128);
+    			//Use our equipment with with the right input
+    			UseEquipmentOnInput(EquipmentX[EX1_ID], EQP_INPUT_EX1);
+    		}
+    	}
+    }
+
+

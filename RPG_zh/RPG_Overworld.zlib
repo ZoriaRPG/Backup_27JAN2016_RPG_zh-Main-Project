@@ -1,0 +1,114 @@
+//Overworld
+//v0.3.1 for RPG.zh v0.96.9/2
+
+
+// Challenge Areas and Wandering Monsters
+
+// Constants
+
+// Arrays
+
+// Vars
+
+// Functions
+
+// Scripts
+
+////////////////////////////////
+/// Challenge Room and Arena ///
+////////////////////////////////
+
+//int challengeNumber = 0;
+int warpArray[5]={0,0,0,0,0};
+
+const int warpDMAP = 0;
+const int warpScreen = 1;
+const int warpX = 2;
+const int warpY = 3;
+const int warpZ = 4;
+
+//int breathUnderwater; //Move this into an arrray! 
+//It is not on the list at present, as I added it in 0.95, and the list of things to move is from 0.94.
+///I ought to stop doing that...           
+///This is going to be a timer, tied to the Body stat, for fully-immersed underwater areas, 
+///so it should be a function that is coupled to getStat(STAT_BODY) and GameTimers[].
+
+int BreatheUnderwater(){
+}
+
+//int warpRow = (0 + ( 5 * challengeNumber) );
+
+const int SCREEN_INTRO = 4;
+
+ffc script AreaIntro {
+	void run(int string, int dat, int element){
+		bool visited = false;
+		bool playMsg = true;
+		if ( Screen->D[SCREEN_INTRO] > 0 || GameEvents[element] == true ) {
+				visited = true;
+		}
+		while(true){
+			if (visited){
+				break;
+			}
+			if ( playMsg) {
+				//freezeAction();
+				Screen->Message(string);
+				
+				playMsg = false;
+				if ( dat > 0 ) {
+					Screen->D[SCREEN_INTRO]++;
+				}
+				//Replace with Tango function.
+			}
+			//freezeAction();
+			if (Link->PressB) {
+				unfreezeAction();
+				break;
+			}
+			Waitframe();
+		}
+		unfreezeAction();
+		return;
+	}
+}
+
+//bool FirstPlay = true; //Used once to determine if the game should show starting instructions.
+
+ffc script FirstPlay {
+	void run(int string, int dat){
+		bool playMsg = true;
+		while(true){
+			if (!Is(FIRST_PLAY) || Screen->D[SCREEN_INTRO] > 0 ) {
+				Quit();
+			}
+			if ( playMsg) {
+				//freezeAction();
+				Screen->Message(string);
+				
+				playMsg = false;
+				Is(FIRST_PLAY,false);
+				//Replace with Tango function.
+			}
+			//freezeAction();
+			if (Link->PressB) {
+				unfreezeAction();
+				break;
+			}
+			Waitframe();
+		}
+		unfreezeAction();
+		return;
+	}
+}
+
+
+
+
+
+//int dmapName[21]; //20 + NULL
+//int dmapTitle[21]; //20 + NULL
+//int dmapIntro[73]; //72 + NULL
+
+//int varmisc;
+

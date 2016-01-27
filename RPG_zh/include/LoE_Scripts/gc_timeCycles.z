@@ -1,0 +1,114 @@
+int dayCycle = 0;
+const int nightTime = 0;
+const int dayTime = 1;
+const int erevTime = 2;
+
+float GameTimer[7]={0,0,0,0,0,0,0};
+
+const int GT_SECONDS = 0;
+const int GT_MINUTES = 1;
+const int GT_HOURS = 2;
+const int GT_DAYS = 3;
+const int GT_WEEKS = 4;
+const int GT_YEARS = 5;
+const int GT_FRAMES = 6;
+
+float InGameTime[12]={1,1,1,1,1,1,1,1,1,1,1,4};
+
+const int IGT_ACTIONS = 0;
+const int IGT_SEGMENTS = 1;
+const int IGT_MINUTES = 2;
+const int IGT_TURNS = 3;
+const int IGT_SPANS = 4;
+const int IGT_SESP_CYCLES = 5;
+const int IGT_MAGN_CYCLES = 6;
+const int IGT_DAYS = 7;
+const int IGT_WEEKS = 8;
+const int IGT_MONTHS = 9;
+const int IGT_ANNUA = 10;
+const int IGT_ERA = 11;
+
+const int SECONDS = 60;
+const int SECONDS_DIVISOR = 6; // Ten minutes per span increase.
+
+void clockUpdate(){
+	gameTimeUpdate();
+	inGameTimeUpdate();
+}
+
+void inGameTimeUpdate(){
+	inGameTime();
+	inGameTimeDayCycle();
+}
+
+void inGameTime(){
+	if ( GameTimer[GT_SECONDS] == 10 ||
+		GameTimer[GT_SECONDS] == 20 ||
+		GameTimer[GT_SECONDS] == 30 ||
+		GameTimer[GT_SECONDS] == 40 ||
+		GameTimer[GT_SECONDS] == 50 ||
+		GameTimer[GT_SECONDS] == 0 &&
+		GameTimer[GT_SECONDS] ==  0 ){
+			InGameTime[IGT_SPANS]++; 
+	}
+
+	if (InGameTime[IGT_SPANS] > 56){
+		InGameTime[IGT_DAYS]++;
+		InGameTime[IGT_SPANS] = 1;
+	}
+
+	if ( InGameTime[IGT_DAYS] > 7 ){
+		InGameTime[IGT_WEEKS]++;
+		InGameTime[IGT_DAYS] = 1;
+	}
+
+	if ( InGameTime[IGT_WEEKS] > 5 ){
+		InGameTime[IGT_MONTHS]++;
+		InGameTime[IGT_WEEKS] = 1;
+	}
+
+	if ( InGameTime[IGT_MONTHS] > 10 ){
+		InGameTime[IGT_ANNUA]++;
+		InGameTime[IGT_MONTHS] = 1;
+	}
+}
+
+void inGameTimeDayCycle(){
+	if (InGameTime[IGT_SPANS] > 28) {
+		dayCycle = nightTime;
+	}
+
+	if (InGameTime[IGT_SPANS] < 28) {
+		dayCycle = dayTime;
+	}
+	if (InGameTime[IGT_SPANS] == 28) {
+		dayCycle = erevTime;
+	}
+}
+
+void gameTimeUpdate(){
+	for (i=60: i>0; i--){
+	    Waitframe();
+    }
+    GameTimer[GT_SECONDS]++;
+	if (GameTimer[GT_SECONDS] >= 60){
+		GameTimer[GT_MINUTES]++;
+		GameTimer[GT_SECONDS]=0;
+	}
+	if (GameTimer[GT_MINUTES] >= 60){
+		GameTimer[GT_HOURS]++;
+		GameTimer[GT_MINUTES]=0;
+	}
+	if (GameTimer[GT_HOURS] >= 24){
+		GameTimer[GT_DAYS]++;
+		GameTimer[GT_HOURS]=0;
+	}
+	if (GameTimer[GT_DAYS] >= 7){
+		GameTimer[GT_WEEKS]++;
+		GameTimer[GT_DAYS]=0;
+	}
+	if (GameTimer[GT_WEEKS] >= 52){
+		GameTimer[GT_YEARS]++;
+		GameTimer[GT_WEEKS]=0;
+	}
+}

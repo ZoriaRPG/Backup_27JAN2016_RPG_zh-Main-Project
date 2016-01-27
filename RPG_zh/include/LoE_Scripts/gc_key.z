@@ -1,0 +1,25 @@
+//Magical Key
+//D0 - Item to use for clock.(or whatever) If doing clock, this needs to be a clock item with duration set.
+//Note: The default clock item is 4.
+//D1 - Amount of time to Jinx link. (0 for no Jinx)
+//Note: The Jinx can be used to create a small pause before the item
+//can be used again. You can also make it the clock duration, but this
+//is only recommended in quests that aren't using the B+A item setting
+//configuration.
+
+item script magicalkey{
+
+void run(int keyitem, int jinxtime){
+
+item givenkey = Screen->CreateItem(9);
+givenkey->X = Link->X;
+givenkey->Y = Link->Y;
+givenkey->Z = Link->Z;
+Link->ItemJinx = 0;
+
+
+
+}
+
+
+}

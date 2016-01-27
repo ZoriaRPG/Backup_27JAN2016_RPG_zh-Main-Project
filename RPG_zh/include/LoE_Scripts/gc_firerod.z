@@ -1,0 +1,47 @@
+//D0: Damage
+//D1: Speed of projectile in pixels per frame.
+//D2: Sprite to use from Quest->Graphics->Sprites->Weapons/Misc.
+//D3: Distance of starting sprite.
+//D4: Sound effect from Quest->Audio->SFX
+//D5: Cost for item; applied against cpunter set in D6.
+//D6: Counter to use; see std_consants.zh.
+//D7: Eror sound, from Quest->Audio->SFX Data.
+
+item script fireRod{
+    void run(float rodPower, float rodSpeed, int rodSprite, float rodDistance, int rodSound, int rodCost, int rodCounter, errorSound){
+        if ( Game->Counter[rodCounter] >= rodCost || rodCost == 0 ) {
+            Game->Counter[rodCounter] -= rodCost;
+            Game->PlaySound(rodSound);
+            lweapon fireRod;
+            fireRod = CreateLWeapon(LW_SCRIPT1); //LW Type
+            fireRod->UseSprite(rodSprite);  //Graphics
+            fireRod->Damage = rodPower; //Damage
+            fireRod->Step = rodSpeed; //Speed of projectile/  
+            Link->Action = LA_ATTACKING; 
+            
+            if ( Link->Dir == DIR_DOWN ){   //Sprite selection/rotation
+                fireRod->Flip = 3;
+                fireRod->X = Link->X;
+                fireRod->Y = (Link->Y + rodDistance); //Modifies X/Y position of weapon based on direction fired.
+            }
+            else if ( Link->Dir == DIR_UP ){                            
+                fireRod->X = Link->X;
+                fireRod->Y = (Link->Y - rodDistance);
+            }
+            else if ( Link->Dir == DIR_LEFT ){
+                //fireRod->Tile++; //Enable if using directional tiles.
+                fireRod->Flip = 1;
+                fireRod->X = (Link->X - rodDistance);
+                fireRod->Y = Link->Y;
+            }
+            else if ( Link->Dir == DIR_RIGHT ){
+                //fireRod->Tile++; //Enable if using directional tiles.
+                fireRod->X = (Link->X + rodDistance);
+                fireRod->Y = Link->Y;
+            }
+        }
+        else {
+            Game->PlaySound(errorSound);
+        }
+    }
+}

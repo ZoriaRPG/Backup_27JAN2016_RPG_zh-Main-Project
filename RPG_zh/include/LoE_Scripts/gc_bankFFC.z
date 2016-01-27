@@ -1,0 +1,4 @@
+ffc script bank{
+    void run(){
+    }
+}

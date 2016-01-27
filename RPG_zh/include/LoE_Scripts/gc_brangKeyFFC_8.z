@@ -1,0 +1,95 @@
+////////////////////
+/// Item Pick-Up ///
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// This script creates an FFC, that gives Link a key, and clears the FFC if the FFC is touched by the      ///
+/// boomerang, or the hookshot. This is useful if you want the boomerang/hookshot to pick up keys as in Z3, ///
+/// without also allowing them to pick up other special items (per quest rules for Z3 boomerang.            ///
+///                                                                                                         ///
+/// Note: The pick-up is instantaneous, and does not need to wait for Link to touch the item.               ///
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// D0 : Item Class (Positive Number), or Item Number (negative Number) of primary trigger.                ///
+/// Standard value is 1 (IC_BRANG).                                                                        ///
+/// D1 : Item Class (positive Number), or Item Number (negative Number) of secondary trigger.              ///
+/// Standard value is 21 (IC_HOOKSHOT).                                                                    ///
+/// D2: Set to 0 to give a normal key, or 1 to give a key specific to the level that the player is inside. ///
+/// Set to a negative number to give a specific item, other than a key, or a level key.                    ///
+/// D3: Set this to the Sound Effect to play on giving the player the item, from Quest->Audio->SFX Data.   ///
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+ffc script Z3_Key_Pickup {
+    void run(int trigger, int trigger2, int level, int SFX) {
+    
+        bool waiting = true;
+            while(waiting){
+                if ( Screen->D[0] >= 1 ) {   // If the FFC has already run on the screen
+                    this->Data = 0; //Remove sprite
+                    return; //Quit
+                }
+          
+                else if ( Screen->D[0] == 0 ) {
+                    for (int i = 1; i <= Screen->NumLWeapons(); i++) {   // Loop through all LWeapons on screen.
+                    lweapon lw = Screen->LoadLWeapon(i);
+                    
+                        if (lw->CollDetection && Collision(this, lw)) {     // If the LWeapon is touching us.
+
+                            if (trigger > 0) {      // If <trigger> is positive, test the lweapon for being the correct item class.
+                                if (IsFromItemClass(lw, trigger) || IsFromItemClass(lw, trigger2)) {
+                                        waiting = false;
+                                        if ( level == 0 ) {
+                                        Game->Counter[CR_KEYS] += 1;
+                                        Game->PlaySound(SFX);
+                                        Screen->D[0] = 1;
+                                        this->Data = 0; //Remove sprite
+                                        return; //Quit
+                                    }
+                                    else if ( level > 0 ) {
+                                        item levelKeyGiven = Screen->CreateItem(I_LEVELKEY);
+                                        levelKeyGiven->X = Link->X;
+                                        levelKeyGiven->Y = Link->Y;
+                                        levelKeyGiven->Z = Link->Z;
+                                        Game->PlaySound(SFX);
+                                        Screen->D[0] = 1;
+                                        this->Data = 0; //Remove sprite
+                                        return; //Quit
+                                    }
+                                    else if ( level < 0 ) {
+                                        item levelKeyGiven = Screen->CreateItem(-level);
+                                        levelKeyGiven->X = Link->X;
+                                        levelKeyGiven->Y = Link->Y;
+                                        levelKeyGiven->Z = Link->Z;
+                                        Game->PlaySound(SFX);
+                                        Screen->D[0] = 1;
+                                        this->Data = 0; //Remove sprite
+                                        return; //Quit
+                                    }
+                                }
+                            }
+                          
+    //                        else {      // If <trigger> is negative, test the lweapon for being the correct item number.
+    //                            if (IsFromItem(lw, -trigger) || IsFromItem(lw trigger2)) {
+    //                                waiting = false;
+    //                            }
+    //                        }
+                        }
+                    }
+                      
+                    Waitframe();
+                    //Screen->D[0] = 1;
+                    //this->Data = 0; //Remove sprite
+                    //return; //Quit
+                }
+                
+                        
+                
+                
+                
+                
+                
+                // Do stuff
+                
+            }
+          
+
+          // Clear the FFC if needed
+    }
+}

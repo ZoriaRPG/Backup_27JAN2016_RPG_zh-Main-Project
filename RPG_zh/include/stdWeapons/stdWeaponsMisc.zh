@@ -1,0 +1,204 @@
+bool InsideScreen (lweapon lw){
+	if ((!(lw->X>=0-lw->HitWidth))||(!(lw->Y<=256))) return false;
+	if ((!(lw->Y>=0-lw->HitHeight))||(!(lw->Y<=176))) return false;
+	return true;
+}
+
+bool InsideScreen (eweapon ew){
+	if ((!(ew->X>=0-ew->HitWidth))||(!(ew->Y<=256))) return false;
+	if ((!(ew->Y>=0-ew->HitHeight))||(!(ew->Y<=176))) return false;
+	return true;
+}
+
+// Returns TRUE if FFC is currently within screen boundaries
+bool InsideScreen (ffc f){
+	if ((!(f->X>=0-f->EffectWidth))||(!(f->Y<=256))) return false;
+	if ((!(f->Y>=0-f->EffectHeight))||(!(f->Y<=176))) return false;
+	return true;
+}
+
+bool InsideScreen (item itm){
+	if ((!(itm->X>=0-itm->HitWidth))||(!(itm->Y<=256))) return false;
+	if ((!(itm->Y>=0-itm->HitHeight))||(!(itm->Y<=176))) return false;
+	return true;
+}
+
+bool OnScreenEdge(lweapon lw){
+	if ((lw->X>=0-lw->HitWidth)&&(lw->X<=0)){
+		if (InsideScreen(lw)) return true;
+	}
+	if ((lw->Y>=0-lw->HitHeight)&&(lw->Y<=0)){
+		if (InsideScreen(lw)) return true;
+		}
+	if ((lw->X>=256-lw->HitWidth)&&(lw->Y<=256)){
+		if (InsideScreen(lw)) return true;
+		}
+	if ((lw->Y>=176-lw->HitHeight)&&(lw->Y<=176)){
+		if (InsideScreen(lw)) return true;
+		}
+	return false;
+}
+
+bool OnScreenEdge(eweapon ew){
+	if ((ew->X>=0-ew->HitWidth)&&(ew->X<=0)){
+		if (InsideScreen(ew)) return true;
+	}
+	if ((ew->Y>=0-ew->HitHeight)&&(ew->Y<=0)){
+		if (InsideScreen(ew)) return true;
+		}
+	if ((ew->X>=256-ew->HitWidth)&&(ew->Y<=256)){
+		if (InsideScreen(ew)) return true;
+		}
+	if ((ew->Y>=176-ew->HitHeight)&&(ew->Y<=176)){
+		if (InsideScreen(ew)) return true;
+		}
+	return false;
+}
+
+//Returns TRUE if FFC`s hitbox intersects screen edge.
+bool OnScreenEdge(ffc f){
+	if ((f->X>=0-f->EffectWidth)&&(f->X<=0)){
+		if (InsideScreen(f)) return true;
+	}
+	if ((f->Y>=0-f->EffectHeight)&&(f->Y<=0)){
+		if (InsideScreen(f)) return true;
+		}
+	if ((f->X>=256-f->EffectWidth)&&(f->Y<=256)){
+		if (InsideScreen(f)) return true;
+		}
+	if ((f->Y>=176-f->EffectHeight)&&(f->Y<=176)){
+		if (InsideScreen(f)) return true;
+		}
+	return false;
+}
+
+bool OnScreenEdge(item itm){
+	if ((itm->X>=0-itm->HitWidth)&&(itm->X<=0)){
+		if (InsideScreen(itm)) return true;
+	}
+	if ((itm->Y>=0-itm->HitHeight)&&(itm->Y<=0)){
+		if (InsideScreen(itm)) return true;
+		}
+	if ((itm->X>=256-itm->HitWidth)&&(itm->Y<=256)){
+		if (InsideScreen(itm)) return true;
+		}
+	if ((itm->Y>=176-itm->HitHeight)&&(itm->Y<=176)){
+		if (InsideScreen(itm)) return true;
+		}
+	return false;
+}
+
+//Turns Lweapon into a bigger one.
+void BigLweapon(lweapon lw, int Xsize, int Ysize){
+	lw->Extend=3;
+	lw->HitWidth=Xsize*16;
+	lw->HitHeight=Ysize*16;
+	lw->TileWidth=Xsize;
+	lw->TileHeight=Ysize;
+}
+
+//Ditto for Eweapons.
+void BigEweapon(eweapon ew, int Xsize, int Ysize){
+	ew->Extend=3;
+	ew->HitWidth=Xsize*16;
+	ew->HitHeight=Ysize*16;
+	ew->TileWidth=Xsize;
+	ew->TileHeight=Ysize;
+}
+
+//Call this every frame for Lweapon to penetrate enemies.
+void PenetratorUpdate(lweapon lw){
+	if (InsideScreen(lw)) lw->DeadState=WDS_ALIVE;
+}
+
+//Ditto for Eweapons for penetrating Link.
+void PenetratorUpdate(eweapon ew){
+	if (InsideScreen(ew)) ew->DeadState=WDS_ALIVE;
+}
+
+bool WallCollision4way(lweapon lw){
+	int COLL_POINTSX[4]={lw->X, lw->X+lw->HitWidth, lw->X ,lw->X+lw->HitWidth};
+	int COLL_POINTSY[4]={lw->Y, lw->Y, lw->Y+lw->HitHeight, lw->Y+lw->HitHeight};
+	for (int i=0; i<=3; i++){
+		if (Screen->isSolid(COLL_POINTSX[i], COLL_POINTSY[i])) return true;
+	}
+	return false;
+}
+
+//Returns TRUE if lweapon contacts with solid combos. May fail with BigLweapons
+bool WallCollision8way(lweapon lw){
+	int COLL_POINTSX[8]={lw->X, lw->X+lw->HitWidth/2, lw->X+lw->HitWidth, lw->X, lw->X+lw->HitWidth, lw->X, lw->X+lw->HitWidth/2, lw->X+lw->HitWidth};
+	int COLL_POINTSY[8]={lw->Y, lw->Y, lw->Y, lw->Y+lw->HitHeight/2, lw->Y+lw->HitHeight/2, lw->Y+lw->HitHeight, lw->Y+lw->HitHeight, lw->Y+lw->HitHeight};
+	for (int i=0; i<=7; i++){
+		//Screen->PutPixel(0, COLL_POINTSX[i], COLL_POINTSY[i], 1, 0, 0, 0, 128);
+		if (Screen->isSolid(COLL_POINTSX[i], COLL_POINTSY[i])) return true;
+	}
+	return false;
+}
+
+bool WallCollision4way(eweapon ew){
+	int COLL_POINTSX[4]={ew->X, ew->X+ew->HitWidth, ew->X ,ew->X+ew->HitWidth};
+	int COLL_POINTSY[4]={ew->Y, ew->Y, ew->Y+ew->HitHeight, ew->Y+ew->HitHeight};
+	for (int i=0; i<=3; i++){
+		if (Screen->isSolid(COLL_POINTSX[i], COLL_POINTSY[i])) return true;
+	}
+	return false;
+}
+
+//Collision with walls for Eweapons
+bool WallCollision8way(eweapon ew){
+	int COLL_POINTSX[8]={ew->X, ew->X+ew->HitWidth/2, ew->X+ew->HitWidth, ew->X, ew->X+ew->HitWidth, ew->X, ew->X+ew->HitWidth/2, ew->X+ew->HitWidth};
+	int COLL_POINTSY[8]={ew->Y, ew->Y, ew->Y, ew->Y+ew->HitHeight/2, ew->Y+ew->HitHeight/2, ew->Y+ew->HitHeight, ew->Y+ew->HitHeight, ew->Y+ew->HitHeight};
+	for (int i=0; i<=7; i++){
+		if (Screen->isSolid(COLL_POINTSX[i], COLL_POINTSY[i])) return true;
+	}
+	return false;
+}
+
+bool WallCollision4way(ffc f){
+	int COLL_POINTSX[4]={f->X, f->X+f->EffectWidth, f->X ,f->X+f->EffectWidth};
+	int COLL_POINTSY[4]={f->Y, f->Y, f->Y+f->EffectHeight, f->Y+f->EffectHeight};
+	for (int i=0; i<=3; i++){
+		if (Screen->isSolid(COLL_POINTSX[i], COLL_POINTSY[i])) return true;
+	}
+	return false;
+}
+
+//Retuns TRUE if FFC hits a solid combo.
+bool WallCollision8way(ffc f){
+	int COLL_POINTSX[8]={f->X, f->X+f->EffectWidth/2, f->X+f->EffectWidth, f->X, f->X+f->EffectWidth, f->X, f->X+f->EffectWidth/2, f->X+f->EffectWidth};
+	int COLL_POINTSY[8]={f->Y, f->Y, f->Y, f->Y+f->EffectHeight/2, f->Y+f->EffectHeight/2, f->Y+f->EffectHeight, f->Y+f->EffectHeight, f->Y+f->EffectHeight};
+	for (int i=0; i<=7; i++){
+		//Screen->PutPixel(0, COLL_POINTSX[i], COLL_POINTSY[i], 1, 0, 0, 0, 128);
+		if (Screen->isSolid(COLL_POINTSX[i], COLL_POINTSY[i])) return true;
+	}
+	return false;
+}
+
+//Causes Lweapon to drag dropped items around or instantly deliver items straight to Link.
+void ItemPickup (lweapon l, bool instant){
+	for (int i=1; i<= Screen->NumItems(); i++){
+		item it = Screen->LoadItem(i);
+		if ((it->Pickup&0x806)==0){
+			if (Collision(l,it)){
+				if (instant){
+					it->X = Link->X;
+					it->Y = Link->Y;
+				}
+				else{
+					it->X = l->X;
+					it->Y = l->Y;
+				}
+			}
+		}
+	}
+}
+
+//Run this function every frame and lweapon will emit sounds continuously.
+int ContiniousSFX(int counter, int delay, int sound){
+	counter++;
+	if (counter>=delay){
+		Game->PlaySound(sound);
+		counter = 0;
+	}
+}

@@ -1,0 +1,57 @@
+//==== * SHOP, ETC * ==========================================================
+//START = BUY; A = EQUIP
+//D0: Price of item
+//D1: Item to give (doesn't apply to upgrades)
+//D2 & D3: Each item must have a unique combination PER SCREEN, each variable is 0 to 7
+//D4: Info about this item (press A before buying only)
+//D5: 'Dummy' item that unlocks this one (optional)
+
+const int S_NOTENOUGH = 30;
+const int S_BOUGHT = 29;
+const int S_UPGRADED = 31;
+ffc script shopItem{
+        void run ( int price, int giveItem, int type, int bit, int infoString, int unlocker ){
+                int origData = this->Data;
+                
+                //Secret shop: Items don't appear unless they have been unlocked (check for unlocker item)
+                if ( unlocker > 0 && !Link->Item[unlocker] ){ //If unlocker is enabled but not obtained
+                        this->Data = 0; //Remove sprite
+                        return; //Quit
+                }
+                
+                while( (type < 4 && !GetScreenDBit(type, bit)) ){ //Until item purchased                        
+                       // Screen->DrawInteger( 6, this->X, this->Y-4, FONT_S, COLOR_TEXT, COLOR_BG, -1, -1, price, 0, 128); //Draw the price
+                        
+                        if ( DistanceLink(this->X+8,this->Y+8) < 14 && Link->PressL ){ //If press L, display info
+                                if(infoString) Screen->Message(infoString); //Display item info if any
+                                Link->InputL = false;
+                        }
+                        
+                        else if ( DistanceLink(this->X+8,this->Y+8) < 14 && Link->PressStart ){ //If press Start, buy it
+                                if ( Game->Counter[CR_RUPEES] < price ){//Check for sufficient funds
+                                        Game->PlaySound(SFX_ALARM);
+                                        Screen->Message(S_NOTENOUGH);
+                                }
+                                else{
+                                        Game->Counter[CR_RUPEES] -= price;
+                                        Game->PlaySound(SFX_PICKUP); //Play fanfare
+										
+										item givenitem = Screen->CreateItem(giveItem);
+										givenitem->X = Link->X; //Added this myself, as the original code does not seem to actually give me the item.
+										givenitem->Y = Link->Y; //Added this myself, as the original code does not seem to actually give me the item.
+										givenitem->Z = Link->Z; //Added this myself, as the original code does not seem to actually give me the item.
+										//Added this myself, as the original code does not seem to actually give me the item.
+										Link->Action = LA_HOLD2LAND;
+										Link->HeldItem = giveItem;
+
+										
+										//Link->Item(giveItem) = true; //Added this myself, as the original code does not seem to actually give me the item.
+                                        SetScreenDBit(type, bit, true); //Mark item purchased
+                                        Screen->Message(S_BOUGHT); //Display "Item purchased" string
+                                }
+                                Link->InputStart = false;
+                        }
+                        Waitframe();
+                } //Loop exits when item (or all upgrades) is bought
+        }
+}

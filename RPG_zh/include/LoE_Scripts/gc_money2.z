@@ -1,0 +1,99 @@
+item script moneyObject {
+    void run(int currencyObjectSize, int currencyObjectValue, int altValue, int altCurrencyType, int pickUpSound, int setMaxCounter, int errorMessage, int errorSound) {
+    
+        //Calculate difference between total Wallet & Pocket space, and available space.
+    
+        if ( freeSpace >= currencyObjectSize ) {
+        
+            //Compare to the size of this currency object.
+        
+        
+        
+                //If the player has space in wallets, add this to the wallets.
+            
+            if ( freeWalletSpace >= currencyObjectSize ){
+                walletSpaceUsed += currencyObjectSize;
+            
+            
+                noFreeSpace = false; //Reset the error message boolean.
+            }
+            
+                //If the player doens't have wallet space, but does have enough pocket space...
+            
+            else if ( freeWalletSpace < currencyObjectSize && freePocketSpace >= currencyObjectSize ) {
+                pocketSpaceUsed += currencyObjectSize;
+            }
+            
+            //else if ( freeWalletSpace < currencyObjectSize && freePocketSpace < currencyObjectSize && freeSpace >= currencyObjectSize ) {
+            //    freeSpace -= currencyObjectSize;
+            //}
+            
+            if ( pickUpSound > 0 ) {
+                Game->PlaySound(pickUpSound);
+                Trace(freeWalletSpace);
+                Trace(freePocketSpace);
+                Trace(walletSpaceUsed);
+                Trace(pocketSpaceUsed);
+                Trace(totalPocketAndWalletSpace);
+                Trace(freeSpace);
+            }
+        
+                //If the player has room for this object, play the sound, and add it to the space used, 
+                //and add its value to current current currecny total.
+        
+                //Give the value of the item to the player...
+        
+            if ( altCurrencyType == 0 ) {
+                Game->Counter[CR_RUPEES] += currencyObjectValue;
+            }
+            
+                //If using an alternative currency type, add it to that counter instead.
+            
+            
+            else if ( altCurrencyType > 0 ) {
+                Game->Counter[CR_MERKS] += currencyObjectValue;
+            }
+        
+                //Increase maxCounter if applicable.
+            if ( setMaxCounter > 0 ){
+                if ( altCurrencyType == 0 ) {
+                    Game->MCounter[CR_RUPEES] = setMaxCounter;
+                }
+                else if ( altCurrencyType > 0 ) {
+                    Game->MCounter[CR_MERKS] = setMaxCounter;
+                }
+            }
+        }
+            
+    
+        //If the player is out of space...
+        
+        else {
+        
+            //Play the error SFX...
+            Game->PlaySound(errorSound);
+        
+                //...and they have not seen the error message.
+            if ( noFreeSpace == false ) {
+                
+                if ( errorMessage > 0 ) {
+                    //If an error message is set.
+                    noFreeSpace = true; //Set a flah to prevent further error messages.
+                    Screen->Message(errorMessage);
+                }
+            }
+        
+                //...and they *have* seen the error message.
+                //Need a better routine to clear the message, when space is returned to the player.
+        
+        }
+    }
+}
+
+item script WalletSpace{
+    void run(int walletsNumber, int extraVolume) {
+    walletsOwned += walletsNumber;
+    totalWalletSpace += extraVolume;
+    }
+}
+    

@@ -1,0 +1,86 @@
+// RPG_Extra_Waitframes.zlib
+// Additional Waityframes for Global 'FOR' Loops/Loop Emulation
+
+int WaitframeClock[255];
+
+int ExtraWaitframe(int slot){
+	return ( Timers[slot] % 60 == 0 );
+}
+
+int SetWaitframeClock(int slot, int value){
+	WaitframeClock[slot] = value;
+}
+
+int WaitframeSlot(int slot) {
+	return WaitframeClock[slot];
+}
+	
+void SetWaitframeClocks(){
+	for ( int q = 0; q < 255; q++ ) WaitframeClock[q] = 60;
+}
+
+void RunWaitframeClocks(){
+	for ( int q = 0; q < 255; q++ ) {
+		if ( WaitframeClock[q] > 1 ) WaitframeClock[q]--;
+		else if ( WaitframeClock[q] ) <= 1 ) WaitframeClock[q] = 60;
+}
+
+global script Init(){
+	SetWaitframeClocks();
+}
+
+const int EXTRA_WAITFRAME_GENERIC = 1; 
+
+global script active(){
+	SetWaitframeClocks();
+	while(true){
+		
+		DrawThingie();
+
+		//if ( ExtraWaitframe(EXTRA_WAITFRAME_GENERIC) ) do_this();
+            
+		Waitdraw();
+		
+		RunWaitframeClocks();
+		
+		Waitframe();
+		}
+	}
+}
+
+//Transform this for loop, needing a waitframe() into a while loop that shares a waitframe.
+//void DrawThingie(){
+//	if ( diff < r->Misc[MISC_HP_MAX] ) {
+//		for ( int w = showFor; w > 0; w-- ) {
+//			npcX = r->X;
+//			drawX = npcX + xOffset;
+//			npcY = r->Y;
+//			drawY = npcY + yOffset;
+//			//Try fonts: Z3 Small (2)
+//			if ( outline ){
+//				Screen->DrawInteger(outlineLayer, drawX+1, drawY+1, useFont, outlineColour, -1, widthPX, heightPX, diff, floatingPlaces, opacity);
+//			}
+//			Screen->DrawInteger(thisLayer, drawX, drawY, useFont, healColour, -1, widthPX, heightPX, diff, floatingPlaces, opacity);
+//			Waitframe();
+//		}
+//	}
+//}
+
+void DrawThingie(){
+	if ( diff < r->Misc[MISC_HP_MAX] ) {
+		int useSlot = 2;
+		SetWaitframeSlot(useSlot, 100);
+		while ( ExtraWaitframe(useSlot) ) {
+			npcX = r->X;
+			drawX = npcX + xOffset;
+			npcY = r->Y;
+			drawY = npcY + yOffset;
+			//Try fonts: Z3 Small (2)
+			if ( outline ){
+				Screen->DrawInteger(outlineLayer, drawX+1, drawY+1, useFont, outlineColour, -1, widthPX, heightPX, diff, floatingPlaces, opacity);
+			}
+			Screen->DrawInteger(thisLayer, drawX, drawY, useFont, healColour, -1, widthPX, heightPX, diff, floatingPlaces, opacity);
+		}
+	}
+}
+

@@ -1,0 +1,19 @@
+item script gogglesOfRevealing{
+    void run(int onSFX, int offSFX, int duration, int Script_ID, int ErrorSFX){
+	int args[4] = {onSFX, offSFX, duration, Script_ID};
+        if ( !Is(GOGGLESON) && Link->MP > 0 ){
+			RunFFCScript(Script_ID, args);
+            Is(GOGGLESON,true);
+            Game->PlaySound(onSFX);
+            Link->Item[I_AMULET1] = true;
+        }
+        else if ( Is(GOGGLESON) ){
+			RunFFCScript(Script_ID, args);
+            Is(GOGGLESON,false);
+            Game->PlaySound(offSFX);
+        }
+		else if ( !Is(GOGGLESON) && Link->MP <= 0 ){
+		Game->PlaySound(ErrorSFX);
+		}
+    }
+}

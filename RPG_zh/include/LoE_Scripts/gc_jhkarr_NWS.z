@@ -1,0 +1,49 @@
+item script StaffofJhkarr{
+    void run(int CaneonSFX, int CaneoffSFX, int dieType, int cap){
+    
+    int currLevel = Game->Counter[CR_LEVEL];
+        int halfLevel = currLevel * 0.5;
+        
+        int itemdamage;
+        
+        int baseItemDamage = ( rollDie(3) );
+        int levelDamage = ( diePerLevel(dieType, cap) % 2 );
+        int totalItemDamage = baseItemDamage + levelDamage;
+        itemdamage = totalItemDamage;
+        currentDamage = itemdamage;
+        
+        if ( Game->Counter[CR_MAGIC] > 0 ) {
+        if ( !Is(BYRNAON) && Link->MP > 0 ){
+            Is(BYRNAON,true);
+            Game->PlaySound(CaneonSFX);
+            //WeaponCreated[LW_CANEOFBYRNA] = true;
+            
+            Link->CollDetection = false;
+            Link->Invisible = false;
+        }
+        else if ( Is(BYRNAON) ){
+            Is(BYRNAON,false);
+            Game->PlaySound(CaneoffSFX);
+            //WeaponCreated[LW_CANEOFBYRNA] = false;
+        }
+    }
+    else {
+    Game->PlaySound(SFX_ERROR);
+    WeaponCreated[LW_CANEOFBYRNA] = false;
+    }
+}
+}
+
+item script staffPickup{
+    void run(){
+    Is(OWNSTAFF,true);
+    }
+}
+
+item script falseStaff {
+    void run() {
+    if ( Link->MP > 0 && Is(OWNSTAFF) ) {
+    Link->Item[88] = true;
+    }
+    }
+    }

@@ -1,0 +1,527 @@
+//Item Rental v 0.3.1
+//Extension to RPG_Itms.zlib for RPG.zh v0.97.3
+
+float TimedItems[512]; //Arbitrary value, at least 256. The standard ZC items are 0 to 255, but it 
+			//is *technically possible* to exceed that with tricks, so you may use a larger array if needed.
+			//The array index saize must be **TWICE** the number of items in a game. The latter half
+			//of the array is used to store if a timer is running.
+			
+const int MAX_INVENTORY_ITEMS = 255; //This is based on an array, so the value is 0 to 255, for the standard 256 items.
+const int T_INVENTORY_RUNNING = 256; //The value for a running timer is offset by this many index positions. 
+
+const int STR_RENTED_ITEM = 0; //The default message to show when renting an item.
+const int SFX_RENTED_ITEM = 63; //The default sound to play when renting an item.
+const int RENTAL_TIME = 1800; //5 minutes = 5 * 60 (seconds) * 60 (frames)
+const int STR_RENTAL_EXPIRED = 1; //The default message to show when a rental expires. 
+const int SFX_RENTAL_EXPIRED = 64; //The default sound to play when a rental expires. 
+
+const int DO_NOT_RENT = 2; //If the index of TimedItems[256+it] == 2, do not remove it from inventory, as it's fully owned. 
+//No, this isn;t needed, as if the player fully buys the item, we need to set TimedItems[it] to 0. 
+
+//Running the timers...
+
+//Call every frame before Waitdraw()
+void RunItemTimers(){
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q+T_INVENTORY_RUNNING] == 1 ) {
+			TimedItems[q]--;
+		}
+	}
+}
+
+//Pause item timers, until resumed. This is an **IMPORTANT** courtesy function. You want to call this in 
+//scripts that create lengthy dialogue.
+void SuspendItemTimers(){
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q+T_INVENTORY_RUNNING] == 1 ) {
+			TimedItems[q+T_INVENTORY_RUNNING] = 0;
+		}
+	}
+}
+
+//This resumes item timers that are suspended. 
+void ResumeItemTimers(){
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q+T_INVENTORY_RUNNING] <= 0 ) {
+			TimedItems[q+T_INVENTORY_RUNNING] = 1;
+		}
+	}
+}
+
+//Removes all rented items if the player dies, and nullifies their timers. Call every frame, after Waitdraw(), 
+//and **after** any functions that refill HP (e.g. extra lives)
+void RemoveItemsOnDeath(){
+	if ( Link->HP <= 0 ) {
+		for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+			if ( TimedItems[q] && Link->Item[q] ) {
+				TimedItems[q] = 0;
+				TimedItems[q+T_INVENTORY_RUNNING] = 0;
+				Link->Item[q] = false;
+			}
+			//If we want to remove items on death, without a STRICT timer (timer set to -1)
+			if ( TimedItems[q] == -1 ) && Link->Item[q] ) {
+				TimedItems[q] = 0;
+				TimedItems[q+T_INVENTORY_RUNNING] = 0;
+				Link->Item[q] = false;
+				
+			]
+		}
+	}
+}
+
+//Call to arbitrarily remove all rented items at any time, and nullify their timers.
+void RemoveRentedItems(){
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q] && Link->Item[q] ) {
+			TimedItems[q] = 0;
+			TimedItems[q+T_INVENTORY_RUNNING] = 0;
+			Link->Item[q] = false;
+		}
+	}
+}
+
+//Rent without a timer, but take away when player dies. 
+void RentUntilDeath(int itm){
+	TimedItems[itm] = -1;
+	if ( ! Link->Item[itm] ) {
+		Link->Item[itm] = true;
+	}
+}
+
+//Call to arbitrarily remove a specific rented item at any time, and nullify its timer.
+void RemoveRentedItem(int it){
+	if ( TimedItems[it] && Link->Item[it] ) {
+		TimedItems[it] = 0;
+		TimedItems[it+T_INVENTORY_RUNNING] = 0;
+		Link->Item[it] = false;
+	}
+}
+
+
+//Function to disable items, and handle alerting the player ( RentalTimerExpired().
+//Run every frame after RunItemTimers() and before Waitdraw().
+//use only one of the two variations of this, not both. 
+
+//Use this version if you do not want to display a message when a timer expires. 
+//It will play a sound by default, set by constant SFX_RENTAL_EXPIRED.
+//The message, and sound will play only once per frame, even if the player loses more than one item at 
+//precisely the same moment. 
+void RentalTimeExpired(){
+	bool playedSound = false;
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q+T_INVENTORY_RUNNING] > 0 && TimedItems[q] < 1 ) {
+			if ( Link->Item[q] ){
+				if ( ! playSound ) {
+					playedSound = true;
+					Game->PlaySound(SFX_RENTAL_EXPIRED);
+				}
+				Link->Item[q] = false;
+			}
+			TimedItems[q] = 0;
+			TimedItems[q+T_INVENTORY_RUNNING] = 0;
+		}
+	}
+	
+}
+
+
+//Use this version if you **DO** want to display a message when a timer expires. 
+//If you wish to use a default message, set by constant STR_RENTAL_EXPIRED, set arg msg to '0'
+//Otherwise, specify a string manually. It will play a sound by default, set by constant SFX_RENTAL_EXPIRED.
+//The message, and sound will play only once per frame, even if the player loses more than one item at 
+//precisely the same moment. 
+void RentalTimeExpired(int msg){
+	bool playedSound = false;
+	for ( int q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		if ( TimedItems[q+T_INVENTORY_RUNNING] > 0 && TimedItems[q] < 1 ) {
+			if ( Link->Item[q] ){
+				if ( ! playSound ) {
+					playedSound = true;
+					Game->PlaySound(SFX_RENTAL_EXPIRED);
+				}
+				if ( msg ) {
+					Screen->Message(msg); //Play a string with a value greater than 0.
+				}
+				if ( ! msg ) {
+					Screen->Message(STR_RENTAL_EXPIRED); //if you feel lazy, use a constant. 
+				}
+				Link->Item[q] = false;
+			}
+			TimedItems[q] = 0;
+			TimedItems[q+T_INVENTORY_RUNNING] = 0;
+		}
+	}
+	
+}
+
+//Functions to set rental timers.
+
+
+//Sets a timer for one item specified by arg it, to the amount of the constant RENTAL_TIME (defaults as 5 mins)
+	//and starts timer. 
+void SetTimedItemTimer(int it){
+	TimedItems[it] = RENTAL_TIME;
+	TimedItems[it+T_INVENTORY_RUNNING] = 1;
+}
+
+
+//Timer settings allowing an imput. 
+//Choose the format for time that you wish to use, enable that function, and disable the others of this type. 
+
+//Sets a timer for one item specified by arg it for duration specified by arg rentalTime; and starts timer.
+//Uses an integer as full minutes for arg rentalTime, so a value of 00010.0000 is ten minutes, *NOT* tem frames. 
+//This is the default version. A version below allows seconds, and a third uses an absolute value in frames. 
+//DISABLE THIS if you wish to use seconds, or absolute frames for the rentalTime arg.
+void SetTimedItemTimer(int it, int rentalTime){
+	if ( rentalTime != -1 ) {
+		TimedItems[it] = RentalTime(rentalTime);
+	}
+	else if ( rentalTime == -1 ) {
+		TimedItems[it] = -1;
+	}
+	if ( rentalTime != -1 ) {
+		TimedItems[it+T_INVENTORY_RUNNING] = 1;
+	}
+}
+
+
+//Sets a timer for one item specified by arg it for duration specified by arg rentalTime; and starts timer.
+//Uses time as a float, where the ones place (and higher) is minutes, and the THOUSANDTHS place is SECONDS.
+//e.g. 00005.0010 is 5 minues 1 (ONE) second. ; 00005.0001 is five minutes, and 1/10 seconds. 
+//Enable this if you wish to pass rentalTime in this format.
+//void SetTimedItemTimer(int it, float rentalTime){
+//	if ( rentalTime != -1 ) {
+//		TimedItems[it] = RentalTime(rentalTime);
+//	}
+//	else if ( rentalTime == -1 ) {
+//		TimedItems[it] = -1;
+//	}
+//	if ( rentalTime != -1 ) {
+//		TimedItems[it+T_INVENTORY_RUNNING] = 1;
+//	}
+//}
+
+//Sets a timer for one item specified by arg it for duration specified by arg rentalTime; and starts timer.
+//Uses time in absolute frames.
+//Enable this if you wish to pass rentalTime in this format.
+//void SetTimedItemTimer(int it, int rentalTime){
+//	TimedItems[it] = rentalTime;
+//	if ( rentalTime != -1 ) {
+//		TimedItems[it+T_INVENTORY_RUNNING] = 1;
+//	}
+//}
+
+
+//Gauges
+
+const int GAUGE_A_BUTTON_LENGTH_X = 50;
+const int GAUGE_A_BUTTON_LENGTH_Y = 50;
+const int GAUGE_A_BUTTON_OFFSET_X = 0;
+const int GAUGE_A_BUTTON_OFFSET_Y = 0;
+const int RENTAL_GAUGE_LAYER = 7; //Display gauge on layer 7.
+const int RENTAL_GAUGE_COLOUR = 10; //Set to colour for gauges. 
+
+
+//Draws rental gauge for item in slot A, if it's rented.
+void DrawRentalGaugeA(int posX, int posY, int width, int colour, bool horizontal, bool transparent, int opacity){
+	int itemOnA = GetEquipmentA();
+	int remTime = TimedItems[it];
+	int barLengthX;
+	int barLengthY;
+	if ( horizontal ) {
+		barLengthX = ( GAUGE_A_BUTTON_LENGTH_X / 100 ) * ( remTime / 360 );
+		barLengthY = width;
+	}
+	if ( ! horizontal ) {
+		barLengthX = width;
+		barLengthY = ( GAUGE_A_BUTTON_LENGTH_X / 100 ) * ( remTime / 360 );
+	}
+	if ( IsRented( itemOnA ) {
+		Screen->Rectangle(RENTAL_GAUGE_LAYER, posX, posY, posX+barLengthX, posY+barLengthY, RENTAL_GAUGE_COLOUR, 1, 0, 0, 0, transparent, opacity);
+	}
+	
+}
+
+
+//Draws rental gauge for item in slot B, if it's rented.
+void DrawRentalGaugeB(int posX, int posY, int length, int width, int colour, bool horizontal, bool transparent, int opacity){
+	int itemOnB = GetEquipmentB();
+	int remTime = TimedItems[it];
+	int barLengthX;
+	int barLengthY;
+	if ( horizontal ) {
+		barLengthX = ( GAUGE_B_BUTTON_LENGTH_X / 100 ) * ( remTime / 360 );
+		barLengthY = width;
+	}
+	if ( ! horizontal ) {
+		barLengthX = width;
+		barLengthY = ( GAUGE_B_BUTTON_LENGTH_X / 100 ) * ( remTime / 360 );
+	}
+	if ( IsRented( itemOnB ) {
+		Screen->Rectangle(RENTAL_GAUGE_LAYER, posX, posY, posX+barLengthX, posY+barLengthY, RENTAL_GAUGE_COLOUR, 1, 0, 0, 0, transparent, opacity);
+	}
+	
+}
+
+//Returns the value of an item if it is rented.
+int IsRented(int it){
+	int itm;
+	for ( q = 0; q <= ( SizeOfArray(TimedItems) * 0.5 ) q++ ){
+		itm = TimedItems[q];
+		if ( it == itm ) return itm;
+	}
+	return -1;
+}
+
+
+
+
+const int CHARGE_GAUGE = 0; //Index position of array index to store value of charge gauge.
+const int MAX_CHARGE_AMOUNT = 60;
+const int CHARGE_REFILL_RATE = 1; //pixels per second. 
+
+void ReduceChargeGauge(int amount){
+	ChargeItems[CHARGE_GAUGE] -= amount;
+}
+
+void RefillChargeGauge(){
+	if ( ChargeItems[CHARGE_GAUGE] != MAX_CHARGE_AMOUNT ) {
+		ChargeItems[CHARGE_GAUGE] += ( CHARGE_REFILL_RATE / 60 );
+	}
+}
+
+float ChargeItems[]={  0, 	I_BOMB, 	CR_BOMBS, 
+				I_ARROW1, 	CR_ARROWS, 
+				I_ARROW2, 	CR_ARROWS, 
+				I_ARROW3, 	CR_ARROWS, 
+				I_SBOMB, 	CR_SBOMBS, 
+				I_ROCSFEATHER, 	CR_SCRIPT25 };
+	//Format: Duration of gauge (index 0), Item constant (1) , item counter constant (2), item 2 constant (3), item counter 2 constant (4), . 
+	
+
+	
+//Replenishes ammo for items when gauge is full:
+//Accepts an array inout as list[]
+void ChargeGauge(int list){
+	for ( int q = 1; q <= SizeOfArray(list); q += 2 ) {
+		if ( list[CHARGE_GAUGE] > 0 ) {
+			if ( list[q] && list[q+1] ) { //If the value stored in the index is not zero...
+				if ( Link->Item[q] ) {
+					if ( Game->MCounter[q+1] != 100 ) {
+						Game->MCounter[q+1] = 100;
+					}
+					if ( Game->Counter[q+1] != 100 ) {
+						Game->Counter[q+1] = 100;
+					}
+				}
+			}
+		}
+	}
+}
+
+const int CHARGE_GAUGE_X = 0;
+const int CHARGE_GAUGE_Y = 8;
+const int CHARGE_GAUGE_WIDTH = 8;
+const int CHARGE_GAUGE_HEIGHT = 8;
+const int CHARGE_GAUGE_COLOUR = 16;
+const int CHARGE_GAUGE_OPACITY = 50;
+const int CHARGE_GAUGE_LAYER = 6;
+
+
+void DisplayChargeGauge(int posX, int posY, int length, int width, int colour, bool transparent, int opacity){
+	Screen->Rectangle(CHARGE_GAUGE_LAYER, posX, posY, posX+length, posY+width, CHARGE_GAUGE_COLOUR, 1, 0, 0, 0, transparent, opacity);
+}
+
+
+
+int RemCharge(){
+	return ChargeGauge[CHARGE_GAUGE];
+}
+
+//The following two functions likely have no useful purpose, unless this header is expanded to give two 
+//separate charge values for A and B slots, although doing that would only invite cheating. . 
+
+//Draws item charge gauge for item in slot A.
+void DrawItemGaugeA(int posX, int posY, int length, int width, int colour, bool transparent, int opacity){
+	int itemOnA = GetEquipmentA();
+	int remTime = RemCharge();
+	int barLengthX;
+	int barLengthY;
+	if ( horizontal ) {
+		barLengthX = ( GAUGE_A_BUTTON_LENGTH_X / 100 ) * ( remTime / 360 );
+		barLengthY = width;
+	}
+	if ( ! horizontal ) {
+		barLengthX = width;
+		barLengthY = ( GAUGE_A_BUTTON_LENGTH_X / 100 ) * ( remTime / 360 );
+	}
+	Screen->Rectangle(RENTAL_GAUGE_LAYER, posX, posY, posX+barLengthX, posY+barLengthY, RENTAL_GAUGE_COLOUR, 1, 0, 0, 0, transparent, opacity);
+	
+}
+
+//Draws item charge gauge for item in slot B.
+void DrawItemGaugeB(int posX, int posY, int length, int width, int colour, bool transparent, int opacity){
+	int itemOnB = GetEquipmentB();
+	int remTime = RemCharge();
+	int barLengthX;
+	int barLengthY;
+	if ( horizontal ) {
+		barLengthX = ( GAUGE_A_BUTTON_LENGTH_X / 100 ) * ( remTime / 360 );
+		barLengthY = width;
+	}
+	if ( ! horizontal ) {
+		barLengthX = width;
+		barLengthY = ( GAUGE_A_BUTTON_LENGTH_X / 100 ) * ( remTime / 360 );
+	}
+	Screen->Rectangle(RENTAL_GAUGE_LAYER, posX, posY, posX+barLengthX, posY+barLengthY, RENTAL_GAUGE_COLOUR, 1, 0, 0, 0, transparent, opacity);
+	
+}
+
+// Pick-Up Script for Rented Items with a TIMER
+// Arguments:
+// D0: The item number of the item given.
+// D1: The amount of time that the player should keep the item.
+	//If '0', the constant RENTAL_TIME is used as a default. 
+// D2: A message to display. Must be a string greater than '0'.
+// D3: A sound to play. 
+// D4: Set to a value of '1' to hold the item up with one hand. Set to a value of '2' to hold up with BOTH hands.
+item script PickupRentalItem{
+	void run(int it, int time, int message, int sound, int holdup){
+		if ( message ) {
+			Screen->Message(message);
+		}
+		if ( !message ) {
+			Screen->Message(STR_RENTED_ITEM);
+		}
+		if ( sound ) {
+			Game->PlaySound(sound);
+		}
+		if ( !sound ) {
+			Game->PlaySound(SFX_RENTED_ITEM);
+		}
+		if ( time ) {
+			SetTimedItemTimer(it, time);
+		}
+		if ( !time ) {
+			SetTimedItemTimer(it);
+		}
+		if ( holdup == 1 ) {
+			Link->Action = LA_HOLD1LAND;
+			Link->HeldItem = it;
+		}
+		if ( holdup == 2 ) {
+			Link->Action = LA_HOLD2LAND;
+			Link->HeldItem = it;
+		}
+	}
+}
+
+
+// Pick-Up Script for Rented Items **WITHOUT** a timer. 
+// Arguments:
+// D0: The item number of the item given. 
+// D1: A message to display. Must be a string greater than '0'.
+// D2: A sound to play. 
+// D3: Set to a value of '1' to hold the item up with one hand. Set to a value of '2' to hold up with BOTH hands.
+item script RentItemUntilDeath{
+	void run(int it, int message, int sound, int holdup){
+		SetTimedItemTimer(it, -1);
+		if ( message ) {
+			Screen->Message(message);
+		}
+		if ( !message ) {
+			Screen->Message(STR_RENTED_ITEM);
+		}
+		if ( sound ) {
+			Game->PlaySound(sound);
+		}
+		if ( !sound ) {
+			Game->PlaySound(SFX_RENTED_ITEM);
+		}
+		if ( holdup == 1 ) {
+			Link->Action = LA_HOLD1LAND;
+			Link->HeldItem = it;
+		}
+		if ( holdup == 2 ) {
+			Link->Action = LA_HOLD2LAND;
+			Link->HeldItem = it;
+		}
+	}
+}
+
+
+
+
+//Item script to add to any item, to reduce the charge gauge. Normally used instead of ammunition. 
+item script ReduceCharges{
+	void run(int chargecost){
+		ChargeItems[CHARGE_GAUGE] -= chargecost;
+	}
+}
+
+//Item to refill charge gauge. Set D0 to the amount that the item should replenish, or set to '0' if 100%. 
+item script ChargeGaugeRefill{
+	void run(int amount) {
+		if ( amount ) {
+			ChargeItems[CHARGE_GAUGE] += amount;
+		}
+		else { 
+			ChargeItems[CHARGE_GAUGE] = MAX_CHARGE_AMOUNT;
+		}
+	}
+}
+
+//Attach item script below to items that you want to allow the player to fully own, ...
+	//or call this function in an item script, or any FFC script. 
+
+void FullyOwnItem(int it){
+	TimedItems[it] = 0;
+	TimedItems[it+T_INVENTORY_RUNNING] = 0;
+}
+
+void FullyOwnItem(int it, bool give){
+	TimedItems[it] = 0;
+	TimedItems[it+T_INVENTORY_RUNNING] = 0;
+	if ( give && !Link->Item[it] ) {
+		Link->Item[it] = true;
+	}
+}
+
+item script FullyBuyItem {
+	void run(int it){
+		FullyOwnItem(it);
+	}
+}
+	
+global script activeExample {
+	void run(){
+		while(true){
+			RunItemTimers();
+			RentalTimeExpired();
+			DisplayChargeGauge(CHARGE_GAUGE_X, CHARGE_GAUGE_Y, RemCharge(), CHARGE_GAUGE_WIDTH, CHARGE_GAUGE_COLOUR, true, CHARGE_GAUGE_OPACITY);
+			Waitdraw();
+			RemoveItemsOnDeath();
+			Waitframe();
+			
+		}
+	}
+}
+
+int RentalSeconds(float seconds){
+		int timer_seconds = (seconds - (seconds >> 0)) * 10000;
+		return timer_seconds * 6;
+}
+	
+int RentalMinutes(float mins){
+		int rental_minutes = ( mins >> 0 ) ;
+		return rental_minutes * 360;
+}
+		
+//Returns total time in frames, so that ZC understands it.
+
+int RentalTime(float val){
+	int mins = RentalMinutes(val);
+	int seconds = RentalSeconds(val);
+	return mins+seconds;
+}
+

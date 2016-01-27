@@ -1,0 +1,103 @@
+//General Arrays- Integers
+
+BrangBushes[20]//Combo types which can be destroyed by a boomerang.
+
+EnemiesNotToBump[]//An array with enemy ids not to be increased by script.
+
+EnemyStatBoosts[4]//An array for tracking how the stats of an enemy have been boosted.
+
+PlayerSprites[3074]//An array to store all possible players sprite options for all possible Dmaps.
+
+bottleArray[9]={
+                    0, // [0] Number of Bottles
+                    0, // [1] Bottle 1 Contents
+                    0, // [2] Bottle 1 Uses
+                    0, // [3] Bottle 2 Contents
+                    0, // [4] Bottle 2 Uses
+                    0, // [5] Bottle 3 Contents
+                    0, // [6]Bottle 3 Uses
+                    0, // [7] Bottle 4 Contents
+                    0}; // [8] Bottle 4 Uses
+
+conjureArray[8] = {0,0,0,0,
+                    3600, //The initial timer value.
+                    32, //The base MP cost required to conjure an item.
+                    7, //The base, bonded item.
+                    50}; //The special item, to be conjured.
+//Using a global array, will save the state of a conjured item, and the count of the timer, and MP, between games.
+//The initial time is set to 3,600 frames, but you may change this; and you may use item scripts to change this value.
+
+// A list of Boss enemies, by Enemy ID
+// Add, or remove values from this list, to increase, or decrease the enemies treated 
+// as Bosses for determining the number of explosions.
+BossList[]={	58,	61,	62,	63, 
+			64, 	65, 	71, 	72, 
+			73, 	76, 	77, 	93, 	
+			94, 	103, 	104, 	105, 	
+			109, 	110, 	111, 	112, 	
+			114, 	121, 	122};
+			
+// A list of Mini-boss enemies by Enemy ID
+// Add, or remove values from this list, to increase, or decrease the enemies treated 
+// as Mini-bosses for determining the number of explosions.
+MiniBossList[]={	59, 	66,	67,	68,	
+			69, 	70,	71,	74,	
+			75};
+			
+dalekSounds[10] = {DALEK_SFX1, DALEK_SFX1, DALEK_SFX3, DALEK_SFX4, DALEK_SFX5, 
+                        DALEK_SFX6, DALEK_SFX7, DALEK_SFX8, DALEK_SFX9, DALEK_SFX10};
+
+dalekSoundDuration[10] = {DALEK_SFX_DURATION1, DALEK_SFX_DURATION2, DALEK_SFX_DURATION3, DALEK_SFX_DURATION4, DALEK_SFX_DURATION5, 
+                            DALEK_SFX_DURATION6, DALEK_SFX_DURATION7, DALEK_SFX_DURATION8, DALEK_SFX_DURATION9, DALEK_SFX_DURATION10};
+
+//There is a similar boolean array.							
+							
+dalekEventsAsInt[8] = { 0, 0, 0, 0, 0, 0, 0, 0 }
+
+savingThrows[22]={  0, // Posion
+                        0, // Stun
+                        0, // Fatigue
+                        0, // Magic
+                        0, // Psychic
+                        0, // Fire
+                        0, // Water
+                        0, // Air
+                        0, // Earth
+                        0, // Light
+                        0, // Darkness
+                        0, // Sonic
+                        0, // Petrification
+                        0, // Fear
+                        0, // Death
+                        0, // Horror
+                        0, // Insanity
+                        0, // Corruption
+                        0, // Depravity
+                        0, // Righteousness
+                        0, // Purity
+                        0}; // Fate
+
+elementalResistance[7]={0, //Fire & Heat
+                            0, //Water & Ice
+                            0, //Air & Electricity
+                            0, //Earth & Acid
+                            0, //Light
+                            0, //Darkness
+                            0}; //Sonic
+                            
+taintArray[4]={ 0, //Corruption
+                    0, //Depravity
+                    0, //Righteusness
+                    0}; //Purity
+
+spellsSet[18] = {0,0,0,0,0,0,0,0,0
+                    0,0,0,0,0,0,0,0,0}
+					
+buffedStats[6]={0,0,0,0,0,0}//Array to hold stat buffs.
+
+/// { MUSC, BODY, MIND, MYST, INFL, LUCK
+      LoreMyst, LoreHistory, LoreXeno, LoreDivine, Swordsman, Marksman }
+statArray[12] = { 10, 10, 10, 10, 10, 10, 
+                    10, 10, 10, 10, 10, 10 }
+					
+fireArray[8]={1,0,1,0,0,0,0,0}					

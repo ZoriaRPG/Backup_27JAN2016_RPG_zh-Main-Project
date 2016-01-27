@@ -1,0 +1,1304 @@
+import "std.zh"
+import "string.zh"
+import "ffcscript.zh"
+import "ghost.zh"
+
+SVS_ST_DIRECTIONAL = 0; //Shoots a non angular weapon the direction the enemy's facing
+SVS_ST_AIMED = 1; //Shoots an angular weapon directly at Link
+SVS_ST_AIMEDRAPIDFIRE = 2; //Shoots a series of angular weapons directly at Link
+SVS_ST_AIMEDSPREAD = 3; //Shoots an angular spreadshot aimed at Link
+SVS_ST_BREATH = 4; //Shoots out eweapons at random angles in the direction the enemy is facing
+SVS_ST_THROW = 5; //Throws a weapon in an arc
+SVS_ST_SUMMON = 6; //Summons enemies
+
+const int SIDEVIEW_ATTRIB_TURNEDGE = 0;
+
+
+const int SIDEVIEW_ATTRIB_DIR = 1;
+const int SIDEVIEW_ATTRIB_COMBO = 10;
+
+const int SVS_CAN_TURN_ON_EDGES = 1; //THe enemy is allowed to crawl around corners of platforms.
+
+const int SV_ENEM_INVINCIBILITY_FRAMES = 32; //The number of invincibility (flashing) frames for an enemy.
+
+const int SV_PACE_PLATFORMS = 0;
+const int SV_CAN_PACE = 1; //Can urn on platform edges...
+
+const int SV_INIT_MOVE_DIR = 1;
+
+
+ffc script Sideview_Walker{
+	void run(int enemyid){ //D0 arg set by ghost.zh
+		npc ghost = Ghost_InitAutoGhost(this, enemyid); //Create the enemy...
+		Ghost_SetFlag(GHF_NORMAL); //Give it ordinary movement and flags.
+		int TurnEdge = ghost->Attributes[0]; //Determine if it will change direction on the edge of platforms (pace).
+		int Dir = ghost->Attributes[1]; //The initial movement direction.
+		//! These may need to be swapped for consistent use of constants.
+		int Combo = ghost->Attributes[SIDEVIEW_ATTRIB_COMBO]; //The enemy sprite.
+		//! Why combos, and not tiles?
+		int FlashCounter; //A timer, for enemy invincibility frames.
+		while(true){
+		//! I'd suggest while ( ghost->HP > 0 ) here, so that you can run removal routines, unless you
+		//! are relying on ghost_waitdraw to remove it. I suppose that also works. 
+			if ( Ghost_GotHit() ) //If the enemy was hit, and damaged...
+				FlashCounter = SV_ENEM_INVINCIBILITY_FRAMES; 
+			else if ( FlashCounter > 0 )
+				FlashCounter--;
+			//Keep it moving at a constant rate...
+			if ( Ghost_CanMove(DIR_DOWN, 1, 0) || FlashCounter > 0 ){ //If t5he enemy can move, or is invincible...
+				//Why DIR_DOWN? I understand that it should always have a platform under it, but that platform 
+				//will never be walkable. Does CanMove() ignore solidity for a frame?
+				if( Dir == DIR_LEFT ){ //if the enemy is facing left...
+					Ghost_Move(DIR_LEFT, ghost->Step/100, 0); //Move 1/100 its step speed left this frame.
+					if(!Ghost_CanMove(DIR_LEFT, 1, 0)){ //If it cannot move left...
+						Ghost_Data = Combo + 1; //Advance its combo to a right-facing combo...
+						//! This is where using tiles would be more efficient, as you could just flip it.
+						//! In fact, can't you flip it anyway, rather than wasting combos?
+						Dir = DIR_RIGHT; //Change its direction to face right.
+					}
+					//! This will not work with shielded enemies, as you are not actually changing the enemy direction.
+					//! This meaning, that yoiu aren;t using a pointer with this variable.
+					//! In fact, I would call it dir, not Dir, to avoid confusion with the internal
+					//! Dir variable, as that normally is used with pointers ( e.g. ghost->Dir ).
+				}
+				else{ //if it is facing right...
+					Ghost_Move( DIR_RIGHT, ghost->Step/100, 0 ); //Move it at 1/100 its stwp speed in pixels this frame
+					//Would step calculations work better at 1/60, or 1/120 instead of 1/100?
+					if ( !Ghost_CanMove(DIR_RIGHT, 1, 0) ){ //If it can't movwe right...
+						Ghost_Data = Combo; //Change its combo to left facing
+						Dir = DIR_RIGHT; //Set its dir back to right.
+					}
+				}
+				//! This if/else statement block may have a potential bug: if the enemy can move neither left, nor right, 
+				//! It will just flip between sprites EVERY FRAME that it is invincible. 
+				//! This would be better...
+				
+				// if ( Dir == DIR_LEFT && Ghost_CanMove(DIR_LEFT, 1, 0) ) {
+				// else if ( Dir == DIR_RIGHT && Ghost_CanMove(DIR_RIGHT, 1, 0)){
+				// else ( do something else )
+				
+				//! It sets up a routine that will do something with the enemy if it's blocked on both sides, which
+				//! is a very strong liklihood with moving solid objects (e.g. blocks) in a quest.
+			}
+			else{ //If it can't move down, and isn't invincible...
+				if ( Dir == DIR_LEFT ){ //If it's facing left...
+					float Step = ghost->Step/100; //Set the value of its step speed. 
+					//! I would rename this variable, to avoid confusion with the pointer variable of the same declaration.
+					//! svStep would work. 
+					for(int i=0; i<Floor(ghost->Step/100); i++){ //Floor the step speed to move it using a for loop.
+						Ghost_Move(DIR_LEFT, 1, 0); //Move it left one pixel.
+						//! Why are you moving it one pixel here in this loop, and also moving it based on step below?
+						Step--; //Reduce the value of this variable.
+						if ( !Ghost_CanMove(DIR_LEFT, 1, 0) ){ //If it can;t move left...
+							Ghost_Data = Combo+1; //Advance it to a right-facing combo.
+							Dir = DIR_RIGHT; //Change its direction. 
+								//Shouldn't it only turn if TurnEdge == 0 ?
+						}
+						//! This is redundant, is it not? Both of these statements change the enemy direction.
+						else if ( TurnEdge == SV_CAN_PACE ){ //if the enemy can pace platforms...
+							if ( CanWalk(Ghost_X-16, Ghost_Y, DIR_DOWN, 1, true) ){ //If it is still on a platform...
+								Ghost_Data = Combo+1; //Advance to a right-facing combo.
+								Dir = DIR_RIGHT; //Change its direction.
+							}
+						}
+					}
+					if ( Step > 0 ){ //If the movement counter is not zero...
+						
+						Ghost_Move(DIR_LEFT, Step, 0); //Move the enemy by its full step speel.
+						if ( !Ghost_CanMove(DIR_LEFT, 1, 0) ){ //If it can't move left...
+							Ghost_Data = Combo+1; //Change it to use a right-facing combo.
+							Dir = DIR_RIGHT; //Change its direction to right.
+						}
+						//! Again, I'm not seeing how an enemy can just walk off-screen. 
+						//! Enemies always seem to flip directions, despite if TurnEdge == 0. 
+						else if ( TurnEdge == SV_CAN_PACE ){ //if it can pace on platforms...
+							if ( CanWalk(Ghost_X-16, Ghost_Y, DIR_DOWN, 1, true) ){ //If it can turn around...
+								Ghost_Data = Combo+1; //Change it to a right-facing combo...
+								Dir = DIR_RIGHT; //Change its direction.
+							}
+						}
+					}
+				}
+				else{ //It's facing right...
+					// Reset step once it reaches zero and run additional frame of movement. 
+					//! Can't we simplify this by adding:
+					//! if ( Step == 0 ) Step = ghost->Step 
+					//! at the top of the loop?
+					//! A routine to check where it can move, and validate if it is allowed to turn, at
+					//! the head of the loop, would also be ideal.
+					//! that way, we set its direction at the top of the loop, and just move it, rather
+					//! than making all of these extra checks. 
+					//! If that wouldn't work, I;d like to know why.
+					float Step = ghost->Step/100; //Assign the value of ghost->Step/100 to this variable for use.
+					for ( int i = 0; i < Floor(ghost->Step/100); i++ ){ //Floor the value to use it in a loop. 
+						Ghost_Move(DIR_RIGHT, 1, 0); //Move the enemy one pixel to the right.
+						Step--; //Reduce the step counter.
+						if ( !Ghost_CanMove(DIR_RIGHT, 1, 0) ){ //if it can't move to the right...
+							Ghost_Data = Combo; //Change it back to a left-facing combo.
+							Dir = DIR_LEFT; //Change its direction.
+						}
+						else if ( TurnEdge == SV_CAN_PACE ){ //If it can pace platforms.
+							if ( CanWalk(Ghost_X+16, Ghost_Y, DIR_DOWN, 1, true) ){ //...and can move left...
+								Ghost_Data = Combo; //Set it back to a left-facing combo.
+								Dir = DIR_LEFT; //Change its direction.
+							}
+						}
+					}
+					if ( Step > 0 ){ //If the internal step timer hasn't reached zero...
+						Ghost_Move(DIR_RIGHT, Step, 0); //Move its speed ( ghost->Step / 100) to the right.
+						if ( !Ghost_CanMove(DIR_RIGHT, 1, 0) ){ //If it can't move right...
+							Ghost_Data = Combo; //Set it back to a left-facing combo.
+							Dir = DIR_LEFT; //Change its direction.
+						}
+						else if ( TurnEdge == SV_CAN_PACE ){ //if it can pace platforms...
+							if ( CanWalk(Ghost_X+16, Ghost_Y, DIR_DOWN, 1, true) ){ //If it can move left...
+								Ghost_Data = Combo; //Change it back to a left-facing combo...
+								Dir = DIR_LEFT; //Change its direction.
+							}
+						}
+					}
+				}
+			}
+			Ghost_Waitframe(this, ghost); //Paude, do clean-up if needed, and restart loop if the enemy is still alive.
+		}
+	}
+}
+
+ffc script Sideview_Jumper{
+	void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_SetFlag(GHF_NORMAL);
+		int MinJumpHeight = Ghost_GetAttribute(ghost, 0, 24);
+		int MaxJumpHeight = Ghost_GetAttribute(ghost, 1, MinJumpHeight);
+		int MinJumpPause = Ghost_GetAttribute(ghost, 2, 48);
+		int MaxJumpPause = Ghost_GetAttribute(ghost, 3, MinJumpPause);
+		int MoveOnGround = ghost->Attributes[4];
+		int StartDir = ghost->Attributes[5];
+		int Dir = StartDir%2;
+		int Combo = ghost->Attributes[10];
+		int Pause = 0;
+		while(true){
+			if(Pause>0)
+				Pause--;
+			else if(!Ghost_CanMove(DIR_DOWN, 1, 0)&&Ghost_Jump==0){
+				if(Pause==-1){
+					if(MinJumpPause>0){
+						if(Dir==0)
+							Ghost_Data = Combo;
+						else
+							Ghost_Data = Combo+1;
+					}
+					Pause = Rand(MinJumpPause, MaxJumpPause);
+				}
+				else{
+					if(Dir==0)
+						Ghost_Data = Combo+2;
+					else
+						Ghost_Data = Combo+3;
+					Pause = -1;
+					Ghost_Jump = Rand(MinJumpHeight, MaxJumpHeight)/10;
+				}
+			}
+			if(StartDir>1&&Pause>0){
+				if(CenterLinkX()<CenterX(ghost)){
+					Dir = 0;
+					if(Pause>0)
+						Ghost_Data = Combo;
+					else
+						Ghost_Data = Combo+2;
+				}
+				else if(CenterLinkX()>CenterX(ghost)){
+					Dir = 1;
+					if(Pause>0)
+						Ghost_Data = Combo+1;
+					else
+						Ghost_Data = Combo+3;
+				}
+			}
+			if((MoveOnGround==0&&Ghost_CanMove(DIR_DOWN, 1, 0))||MoveOnGround!=0){
+				if(Dir==0){
+					Ghost_Move(DIR_LEFT, ghost->Step/100, 0);
+					if(!Ghost_CanMove(DIR_LEFT, 1, 0)){
+						if(Pause>0)
+							Ghost_Data = Combo+1;
+						else
+							Ghost_Data = Combo+3;
+						Dir = 1;
+					}
+				}
+				else if(Dir==1){
+					Ghost_Move(DIR_RIGHT, ghost->Step/100, 0);
+					if(!Ghost_CanMove(DIR_RIGHT, 1, 0)){
+						if(Pause>0)
+							Ghost_Data = Combo;
+						else
+							Ghost_Data = Combo+2;
+						Dir = 0;
+					}
+				}
+			}
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}
+
+///////////////////////////////////
+/// Hovering, or Floating Enemy ///
+/// v1.1 (ALPHA)                ///
+///////////////////////////////////////////////////////////////////////////////////////
+/// This enemy type can hover, or float, in a horizontal pattern, or a vertical     ///
+/// pattern, by setting Sine and Cosine values for its movement.                    ///
+///                                                                                 ///
+/// Attributes 1, and 2 are the HORIZONTAL Sine, and Cosine values respectively     ///
+/// while Attributes 3, and 4 are the Sine and Cosine values for VERTICAL motion    ///
+///                                                                                 ///
+/// Setting all four of these values permits PARAMETRIC or CIRCULAR patterns of     ///
+/// movement, and Attribute 5 allows you to set an INITIAL TANGENT.                 ///
+///                                                                                 ///
+/// The minimum setting for movement in any direction is '1':                       ///
+/// You must set Attributes 1 and 2, or 3 and 4 in pairs, with neither value of a   ///
+/// single pair as '0'.                                                             ///
+///                                                                                 ///
+/// Setting EITHER (or both) Attributes '1', or '2', to a value of '0' will disable ///
+/// horizontal movement, whereas setting EITHER (or both) Attributes '3' or '4' to  ///
+/// a value of '0' will disable vertical movement. Setting all four to a value of   ///
+/// '0' will cause the enemy to be stationary, in air.                              ///
+///////////////////////////////////////////////////////////////////////////////////////
+
+//! These move constants no longer used.
+//const int SV_HOVER_MOVE_TYPE = 0; //Misc Attr 0
+//const int SV_MOVE_STATIONARY = 0;
+//const int SV_MOVE_HORIZONTAL = 1;
+//const int SV_MOVE_VERTICAL = 2;
+//const int SV_MOVE_PARAMETRIC = 3;
+
+//! These constants are correct to this version, but I advide moving each down one value. (See below.)
+const int SV_HORIZONTAL_MOVE_SPEED = 1;
+const int SV_HORIZONTAL_MOVE_DEGREES = 2;
+const int SV_VERTICAL_MOVE_SPEED = 3;
+const int SV_VERTICAL_MOVE_DEGREES = 4;
+const int SV_INITIAL_TANGENT = 5;
+
+//! Initial work in setting up a flags system that can be used with a single combined value as a parameter.
+const int SV_IGNORE_TERRAIN = 5;
+const int SV_IGNORE_NOENEMY_FLAGS = 6;
+
+// if ( ghost->Attributes[SV_IGNORE_TERRAIN] ) {
+//	Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+//}
+
+const int SV_GHOST_FLAGS = 10; //Misc Attr 10 for combining flags.
+
+ffc script Sideview_Hover{
+	void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_SetFlag(GHF_STUN); //The enemy can be stunned.
+		Ghost_SetFlag(GHF_CLOCK); //The enemy is affected by clocks (GhostZHClock Item)
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN); //The enemu ignores solidity, water, and other terrain flags.
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY); //The enemy ignores Flags 95, 96
+		Ghost_SetFlag(GHF_MOVE_OFFSCREEN); //The enemy is allowed to move offscreen.
+			//! What bis the maximum dist. off-screen, out of curiosity? This seems as if
+			//! it would change by ZC version.
+		Ghost_SetFlag(GHF_NO_FALL); //The enemy is not affected by gravity.
+		//int HVS = ghost->Attributes[0]; //Horizontal, vertical, or stationary movement.
+		//! We no longer need this parameter. We can move the others up one position
+		//! each, if desired.
+		int Misc1 = ghost->Attributes[1]; //Horizontal movement speeed in pixels.
+		int Misc2 = ghost->Attributes[2]; //Horizonral Sine (degrees) value.
+		// ! Is the value in degrees, or radians?
+		int Misc3 = ghost->Attributes[3]; //Vertical movement speed in pixels.
+		int Misc4 = ghost->Attributes[4]; //Vertical sine (degrees) value.
+		int T = ghost->Attributes[5]; //Initial tangent; default '0'.
+		
+		// ! We need some default values here.
+		
+		int StartX = Ghost_X; //Create loca variables to modify
+		int StartY = Ghost_Y; //assigned to initial ghost values.
+		while(true){
+			T++;
+			if(T<360)
+				T -= 360;
+			
+			// ! Why are we increasing T and then lowering it every frame?
+			// ! Tangent can never exceed 360 in this loop.
+			if( Misc1 && Misc2 ){ //If we move horizontal
+				Ghost_X = StartX + Misc1*Sin(Misc2*T);
+			}
+			if( Misc3 && Misc4 ){ //If we move vertical
+				Ghost_Y = StartY+Misc3*Cos(Misc4*T);
+				//Keep attributes fixed, don't change their functions.
+				//Ghost_Y = StartY + Misc1*Sin(Misc2*T);
+			}
+			//! If we move both morizontal, and vertical, we do both. 
+			//! We no longer need Attr[0] to set the type. 
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}
+
+ffc script Sideview_WallCrawl{
+	bool WC_OnWall(int ClingDir, int CCW){
+		if(CCW==0){
+			if(ClingDir==DIR_UP){
+				if(CanWalk(Ghost_X, Ghost_Y, ClingDir, 1, true)&&CanWalk(Ghost_X-16, Ghost_Y, ClingDir, 1, true))
+					return false;
+				else
+					return true;
+			}
+			else if(ClingDir==DIR_DOWN){
+				if(CanWalk(Ghost_X, Ghost_Y, ClingDir, 1, true)&&CanWalk(Ghost_X+16, Ghost_Y, ClingDir, 1, true))
+					return false;
+				else
+					return true;
+			}
+			else if(ClingDir==DIR_LEFT){
+				if(CanWalk(Ghost_X, Ghost_Y, ClingDir, 1, true)&&CanWalk(Ghost_X, Ghost_Y+16, ClingDir, 1, true))
+					return false;
+				else
+					return true;
+			}
+			else if(ClingDir==DIR_RIGHT){
+				if(CanWalk(Ghost_X, Ghost_Y, ClingDir, 1, true)&&CanWalk(Ghost_X, Ghost_Y-16, ClingDir, 1, true))
+					return false;
+				else
+					return true;
+			}
+		}
+		else{
+			if(ClingDir==DIR_UP){
+				if(CanWalk(Ghost_X, Ghost_Y, ClingDir, 1, true)&&CanWalk(Ghost_X+16, Ghost_Y, ClingDir, 1, true))
+					return false;
+				else
+					return true;
+			}
+			else if(ClingDir==DIR_DOWN){
+				if(CanWalk(Ghost_X, Ghost_Y, ClingDir, 1, true)&&CanWalk(Ghost_X-16, Ghost_Y, ClingDir, 1, true))
+					return false;
+				else
+					return true;
+			}
+			else if(ClingDir==DIR_LEFT){
+				if(CanWalk(Ghost_X, Ghost_Y, ClingDir, 1, true)&&CanWalk(Ghost_X, Ghost_Y-16, ClingDir, 1, true))
+					return false;
+				else
+					return true;
+			}
+			else if(ClingDir==DIR_RIGHT){
+				if(CanWalk(Ghost_X, Ghost_Y, ClingDir, 1, true)&&CanWalk(Ghost_X, Ghost_Y+16, ClingDir, 1, true))
+					return false;
+				else
+					return true;
+			}
+		}
+	}
+	void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_4WAY);
+		Ghost_SetFlag(GHF_NO_FALL);
+		int CCW = ghost->Attributes[0]; //Whether or not the enemy goes counterclock
+		if(ghost->Attributes[1]>=1) //0 = Don't move offscreen, 1 = Move offscreen, 2 = Move offscreen and die if offscreen
+			Ghost_SetFlag(GHF_MOVE_OFFSCREEN);
+		int Combo = ghost->Attributes[10];
+		int ClingDir = -1;
+		int FlashCounter;
+		float FakeJump;
+		for(int i=0; i<4; i++){
+			if(!Ghost_CanMove(OppositeDir(i), 1, 0)){
+				ClingDir = OppositeDir(i);
+				break;
+			}
+		}
+		while(true){
+			if(Ghost_GotHit())
+				FlashCounter = 32;
+			else if(FlashCounter>0)
+				FlashCounter--;
+			if(ClingDir==-1){
+				FakeJump = Min(FakeJump+GH_GRAVITY, GH_TERMINAL_VELOCITY);
+				Ghost_MoveXY(0, FakeJump, 0);
+				for(int i=0; i<4; i++){
+					if(!CanWalk(Ghost_X, Ghost_Y, OppositeDir(i), 1, true)){
+						ClingDir = OppositeDir(i);
+						break;
+					}
+				}
+			}
+			else if(FlashCounter==0){
+				float Step = ghost->Step/100;
+				for(int i=0; i<Step; i++){
+					if(CCW==0){
+						if(!WC_OnWall(ClingDir, CCW)){
+							ClingDir = -1;
+							FakeJump = 0;
+						}
+						if(ClingDir==DIR_UP){
+							Ghost_Dir = DIR_DOWN;
+							Ghost_Move(DIR_LEFT, Min(1, Step), 0);
+							if(!Ghost_CanMove(DIR_LEFT, 1, 0))
+								ClingDir = DIR_LEFT;
+							else if(Ghost_CanMove(DIR_UP, 1, 0)){
+								ClingDir = DIR_RIGHT;
+								Ghost_Move(DIR_UP, 1, 0);
+							}
+						}
+						else if(ClingDir==DIR_DOWN){
+							Ghost_Dir = DIR_UP;
+							Ghost_Move(DIR_RIGHT, Min(1, Step), 0);
+							if(!Ghost_CanMove(DIR_RIGHT, 1, 0))
+								ClingDir = DIR_RIGHT;
+							else if(Ghost_CanMove(DIR_DOWN, 1, 0)){
+								ClingDir = DIR_LEFT;
+								Ghost_Move(DIR_DOWN, 1, 0);
+							}
+						}
+						else if(ClingDir==DIR_LEFT){
+							Ghost_Dir = DIR_RIGHT;
+							Ghost_Move(DIR_DOWN, Min(1, Step), 0);
+							if(!Ghost_CanMove(DIR_DOWN, 1, 0))
+								ClingDir = DIR_DOWN;
+							else if(Ghost_CanMove(DIR_LEFT, 1, 0)){
+								ClingDir = DIR_UP;
+								Ghost_Move(DIR_LEFT, 1, 0);
+							}
+						}
+						else if(ClingDir==DIR_RIGHT){
+							Ghost_Dir = DIR_LEFT;
+							Ghost_Move(DIR_UP, Min(1, Step), 0);
+							if(!Ghost_CanMove(DIR_UP, 1, 0))
+								ClingDir = DIR_UP;
+							else if(Ghost_CanMove(DIR_RIGHT, 1, 0)){
+								ClingDir = DIR_DOWN;
+								Ghost_Move(DIR_RIGHT, 1, 0);
+							}
+						}
+					}
+					else{
+						if(!WC_OnWall(ClingDir, CCW)){
+							ClingDir = -1;
+							FakeJump = 0;
+						}
+						if(ClingDir==DIR_UP){
+							Ghost_Dir = DIR_DOWN;
+							Ghost_Move(DIR_RIGHT, Min(1, Step), 0);
+							if(!Ghost_CanMove(DIR_RIGHT, 1, 0))
+								ClingDir = DIR_RIGHT;
+							else if(Ghost_CanMove(DIR_UP, 1, 0)){
+								ClingDir = DIR_LEFT;
+								Ghost_Move(DIR_UP, 1, 0);
+							}
+						}
+						else if(ClingDir==DIR_DOWN){
+							Ghost_Dir = DIR_UP;
+							Ghost_Move(DIR_LEFT, Min(1, Step), 0);
+							if(!Ghost_CanMove(DIR_LEFT, 1, 0))
+								ClingDir = DIR_LEFT;
+							else if(Ghost_CanMove(DIR_DOWN, 1, 0)){
+								ClingDir = DIR_RIGHT;
+								Ghost_Move(DIR_DOWN, 1, 0);
+							}
+						}
+						else if(ClingDir==DIR_LEFT){
+							Ghost_Dir = DIR_RIGHT;
+							Ghost_Move(DIR_UP, Min(1, Step), 0);
+							if(!Ghost_CanMove(DIR_UP, 1, 0))
+								ClingDir = DIR_UP;
+							else if(Ghost_CanMove(DIR_LEFT, 1, 0)){
+								ClingDir = DIR_DOWN;
+								Ghost_Move(DIR_LEFT, 1, 0);
+							}
+						}
+						else if(ClingDir==DIR_RIGHT){
+							Ghost_Dir = DIR_LEFT;
+							Ghost_Move(DIR_DOWN, Min(1, Step), 0);
+							if(!Ghost_CanMove(DIR_DOWN, 1, 0))
+								ClingDir = DIR_DOWN;
+							else if(Ghost_CanMove(DIR_RIGHT, 1, 0)){
+								ClingDir = DIR_UP;
+								Ghost_Move(DIR_RIGHT, 1, 0);
+							}
+						}
+					}
+					Step--;
+				}
+			}
+			if(ghost->Attributes[1]==2&&Ghost_X<=-16||Ghost_X>=256||Ghost_Y<=-16||Ghost_Y>=176){
+				Ghost_HP = -1000;
+			}
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}
+
+//Script by Alucard648, edited by Moosh
+
+const int MEDUSA_STATE_WAITING = 0;
+const int MEDUSA_STATE_FLYING = 1;
+
+ffc script Sideview_SineWave{
+	int LinkAlign(int HF){
+		int imprecision = 256-HF;
+		int miny = Link->Y - imprecision;
+		int maxy = Link->Y + imprecision;
+		return Rand(miny, maxy);
+	}
+	void run(int enemyID){
+		npc ghost = Ghost_InitAutoGhost(this, enemyID);
+		
+		int HF = ghost->Homing;//Controls the chance of spawning at Link`s Y-posotion.
+		int SPD = ghost->Step; //Medusa`s horizontal movement speed. Default is 150.
+		if(SPD==0)
+			SPD = 150;
+		
+		int Amplitude = Ghost_GetAttribute(ghost, 0, 24); //Y-scale of sine wave period. Set to negative for cosine wave motion.
+		int Period = Ghost_GetAttribute(ghost, 1, 96); //X-scale of sine wave period.
+		int initdirection = Ghost_GetAttribute(ghost, 2, 0); //Movement direction. 0 - random, 1 - left-to-right,
+		int direction = initdirection;
+		// 2 - Right-to-left, 3 - furthest away from Link.
+		int minrespawntime = Ghost_GetAttribute(ghost, 3, 30); //Minimum and maximum wait time between flight cycles.
+ 		int maxrespawntime = Ghost_GetAttribute(ghost, 4, 90);
+		int respawn = ghost->Attributes[5];
+		int Combo = ghost->Attributes[10];
+		
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+		Ghost_SetFlag(GHF_NO_FALL);
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY);
+		Ghost_SetFlag(GHF_MOVE_OFFSCREEN);
+		
+		//which is needed for animation routine,
+		int MedusaState = MEDUSA_STATE_WAITING; //Current enemy AI state.
+		int AxisY = 0; //Axis of sine wave. 
+		int CurAngle = Rand(360);//Current angular position used for calculating sine wave position.
+		int anglestep = 360/Period; //Used for calculating 
+		int haltcounter = Rand(minrespawntime, maxrespawntime);//Randomize respawn time after flying off screen.
+		int LeftThreshold = -(Ghost_TileWidth*16);// Screen boundary thresholds.
+		int RightThreshold = 256; 
+		
+		//Determine flight direction and starting X-position.
+		if (initdirection == 0) direction = Rand(1,2);
+		else if (initdirection == 3){
+			if(Link->X > 128) direction = 1;
+			else direction = 2;
+		}
+		if (direction == 1) Ghost_X = LeftThreshold;
+		else Ghost_X = RightThreshold;
+		
+		while(true){
+			if (MedusaState==MEDUSA_STATE_WAITING){
+				haltcounter--;
+				if (haltcounter == 0){
+					if (initdirection == 0) direction = Rand(1,2);
+					else if (initdirection == 3){
+						if(Link->X > 128) direction = 1;
+						else direction = 2;
+					}
+					if (direction == 1) Ghost_X = LeftThreshold;
+					else Ghost_X = RightThreshold;
+					CurAngle = Rand(360);
+					AxisY = LinkAlign(HF);
+					MedusaState=MEDUSA_STATE_FLYING;
+				}
+			}
+			
+			else if (MedusaState==MEDUSA_STATE_FLYING){
+				if (direction == 1){
+					Ghost_ForceDir(DIR_RIGHT);
+					Ghost_X += SPD/100;
+					if (Ghost_X >= RightThreshold){
+						Ghost_Vx=0;
+						Ghost_X = LeftThreshold;
+						haltcounter = Rand(minrespawntime, maxrespawntime);
+						MedusaState = MEDUSA_STATE_WAITING;
+					}
+				}
+				else if (direction == 2){
+					Ghost_ForceDir(DIR_LEFT);
+					Ghost_X -= SPD/100;
+					if (Ghost_X <= LeftThreshold){
+						Ghost_Vx=0;					
+					Ghost_X = RightThreshold;
+					haltcounter = Rand(minrespawntime, maxrespawntime);
+					MedusaState = MEDUSA_STATE_WAITING;
+				}
+				}
+				CurAngle += anglestep;
+				Ghost_Y = AxisY+ Amplitude*Sin(CurAngle);
+			}
+			//debugValue(1, direction);
+			if(Ghost_Dir==DIR_LEFT)
+				Ghost_Data = Combo;
+			else if(Ghost_Dir==DIR_RIGHT)
+				Ghost_Data = Combo+1;
+			if(!Ghost_Waitframe(this, ghost, true, false)){
+				npc n = Screen->CreateNPC(ghost->ID);
+				this->Data = 0;
+				Quit();
+			}
+		}
+	}
+}
+
+ffc script Sideview_WallBounce{
+	void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_NO_FALL);
+		int Angle = Ghost_GetAttribute(ghost, 0, Choose(-135, -45, 45, 135)); //The initial angle the enemy starts at
+		float VX = VectorX(ghost->Step/100, Angle);
+		float VY = VectorY(ghost->Step/100, Angle);
+		int FlashCounter;
+		while(true){
+			if(Ghost_GotHit())
+				FlashCounter = 32;
+			else if(FlashCounter>0)
+				FlashCounter--;
+			if(FlashCounter==0){
+				Ghost_MoveXY(VX, VY, 0);
+				if((!Ghost_CanMove(DIR_UP, 1, 0)&&VY<0)||(!Ghost_CanMove(DIR_DOWN, 1, 0)&&VY>0)){
+					VY = -VY;
+				}
+				if((!Ghost_CanMove(DIR_LEFT, 1, 0)&&VX<0)||(!Ghost_CanMove(DIR_RIGHT, 1, 0)&&VX>0)){
+					VX = -VX;
+				}
+			}
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}
+
+const int THWOMP_STATE_DEFAULT = 0;
+const int THWOMP_STATE_FALLING = 1;
+const int THWOMP_STATE_ON_GROUND = 2;
+const int THWOMP_STATE_RISING = 3;
+
+const int SFX_THWOMP_CRASH = 3; // Sound effect for Thwomp hitting ground.
+const int SFX_THWOMP_DROP = 38; //Sound effect to play, when Thwomp starts falling.
+
+ffc script Sideview_Thwomp{
+	void run(int enemyID){
+		npc ghost = Ghost_InitAutoGhost(this, enemyID);
+		
+		int SPD = ghost->Step; //Speed of Thwomp rising after fall.
+		int WPND = ghost->WeaponDamage; // Damage dealt by shards form Skree
+		
+		int KineticDamage = Ghost_GetAttribute(ghost, 0, 0); //Set to 1 and Thwomp will deal variable
+		//damage depending on the speed in the moment of hitting Link, ranging from half a heart to the original damage at terminal velocity.
+		int NumShards = Ghost_GetAttribute(ghost, 1, 0); //Setting to any number above 0 will turn Thwomp 
+		//into Skree that breaks into given number of shards (Rock eweapons) upon hitting ground.
+		int SizeX = Ghost_GetAttribute(ghost, 2, 2); // Thwomp size, in tiles.
+		int SizeY = Ghost_GetAttribute(ghost, 3, 2); // X and Y, of course.
+		int ShardSpeed = Ghost_GetAttribute(ghost, 4, 175); //Speed of Skree`s shards.
+		int proximity = Ghost_GetAttribute(ghost, 5, 16); //Thwomp`s proximity trigger X-distance, in pixels.
+		int ShardSprite = Ghost_GetAttribute(ghost, 6, 18); //Sprite used for Skree's shards
+		int Combo = ghost->Attributes[10];
+		Ghost_SetFlag(GHF_NORMAL);
+		Ghost_SetFlag(GHF_NO_FALL);
+		Ghost_SetFlag(GHF_MOVE_OFFSCREEN);
+		
+		Ghost_Transform(this, ghost, Combo, ghost->CSet, SizeX, SizeY);
+		Ghost_X += SizeX*16/2-8;
+		Ghost_Y += SizeY*16/2-8;
+		
+		int State = THWOMP_STATE_DEFAULT;
+		int haltcounter = -1;
+		int OrigY = Ghost_Y;
+		int OrigDamage = ghost->Damage;
+		
+		
+		while(true){
+			if(KineticDamage>0){
+				int velocity = Abs(Ghost_Jump);
+				ghost->Damage = Clamp(OrigDamage*(velocity/GH_TERMINAL_VELOCITY), 2, OrigDamage);
+			}
+			if (State==THWOMP_STATE_DEFAULT){
+				int distance = Abs((CenterLinkX() - CenterX(ghost)));
+				if (distance<=proximity){
+					if (Link->Y > Ghost_Y){
+						Ghost_UnsetFlag(GHF_NO_FALL);
+						Game->PlaySound(SFX_THWOMP_DROP);
+						State = THWOMP_STATE_FALLING;
+					}
+				}
+			}
+			if (State==THWOMP_STATE_FALLING){
+				Ghost_Data = Combo+1;
+				if (Ghost_OnSideviewPlatform(ghost,2)){
+					Game->PlaySound(SFX_THWOMP_CRASH);
+					Screen->Quake=30;
+					State = THWOMP_STATE_ON_GROUND;
+					ghost->Damage = OrigDamage;
+					haltcounter = 120;
+					Ghost_SetFlag(GHF_NO_FALL);
+					if (NumShards>0){
+						float angle = -(PI/(NumShards))/2;
+						float anglediff = (PI/(NumShards));
+						for (int i=1; i<=NumShards; i++){
+							eweapon shard = FireEWeapon(EW_ROCK, CenterX(ghost)-8, CenterY(ghost)-8, angle, ShardSpeed, ghost->WeaponDamage, ShardSprite, -1, 0);
+							angle = angle - anglediff;
+						}
+						ghost->ItemSet=0;
+						Ghost_HP = -1000;
+					}
+				}
+			}
+			if (State == THWOMP_STATE_ON_GROUND){
+				Ghost_Jump = 0;
+				Ghost_Data = Combo;
+				haltcounter--;
+				if (haltcounter==0){
+					State = THWOMP_STATE_RISING;
+				}
+			}
+			if(State == THWOMP_STATE_RISING){
+				Ghost_Jump = 0;
+				Ghost_Move(DIR_UP, SPD/100, 2);
+				if (Ghost_Y<= OrigY){
+					State = THWOMP_STATE_DEFAULT;
+					Ghost_Y = OrigY;
+				}
+			}
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}
+
+//Returns TRUE, if the enemy is currently on platform. Used in sideview areas.
+//Imprecision used to ignore certain amount of pixels on the edges, so Enemy can drop trough gaps that 
+//are as wide as enemy itself.
+bool Ghost_OnSideviewPlatform(npc ghost, int imprecision){
+	if (!IsSideview()) return ((ghost->Z)==0);
+	int ghx = ghost->X;
+	int ghy = ghost->Y;
+	int ghOffX = ghost->HitXOffset;
+	int ghOffY = ghost->HitYOffset;
+	int ghwidth = ghost->HitWidth;
+	int ghheight = ghost->HitHeight;
+	int TghX = ghx+ghOffX;
+	int TghY = ghy+ghOffY;
+	bool OnGround = false; 
+	if (Screen->isSolid((TghX+imprecision), (TghY+ghheight+1))) OnGround = true;
+	if (Screen->isSolid((CenterX(ghost)), (TghY+ghheight+1))) OnGround = true;
+	if (Screen->isSolid((TghX+ghwidth-imprecision), (TghY+ghheight+1))) OnGround = true;
+	return OnGround;
+} 
+
+ffc script Sideview_Leever{
+	void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		int Teleport = ghost->Attributes[0];
+		int SubmergeTime = Ghost_GetAttribute(ghost, 1, 90);
+		int EmergeTime = Ghost_GetAttribute(ghost, 2, 120);
+		int EmergeSpeed = Ghost_GetAttribute(ghost, 3, 8);
+		int Randomness = Ghost_GetAttribute(ghost, 4, 0);
+		int Combo = ghost->Attributes[10];
+		Ghost_SetFlag(GHF_NORMAL);
+		Ghost_SetFlag(GHF_4WAY);
+		Ghost_Data = GH_INVISIBLE_COMBO;
+		ghost->CollDetection = false;
+		int Counter = -1;
+		for(int i=0; i<SubmergeTime; i++){
+			Ghost_Waitframe(this, ghost);
+		}
+		int ValidCount = 0;
+		int ValidCombos[176];
+		for(int i=0; i<176; i++){
+			if(!ComboFI(i, CF_NOENEMY)&&!ComboFI(i, CF_NOGROUNDENEMY)&&Screen->ComboS[i]==0000b&&Screen->ComboS[i+16]==1111b&&Distance(ComboX(i), ComboY(i), Link->X, Link->Y)>32){
+				ValidCombos[ValidCount] = i;
+				ValidCount++;
+			}
+		}
+		int TargetCombo = ValidCombos[Rand(0, Min(0, ValidCount-1))];
+		Ghost_X = ComboX(TargetCombo);
+		Ghost_Y = ComboY(TargetCombo);
+		while(true){
+			Ghost_Data = Combo;
+			Ghost_Waitframes(this, ghost, EmergeSpeed);
+			Ghost_Data = Combo+4;
+			Ghost_Waitframes(this, ghost, EmergeSpeed);
+			Ghost_Data = Combo+8;
+			ghost->CollDetection = true;
+			for(int i=0; i<EmergeTime||Ghost_CanMove(DIR_DOWN, 1, 0)||Rand(0, Randomness)!=0||!(Ghost_X%16==0&&Ghost_Y%16==0); i++){
+				Counter = Ghost_ConstantWalk4(Counter, ghost->Step, ghost->Rate, ghost->Homing, ghost->Hunger);
+				Ghost_Waitframe(this, ghost);
+			}
+			Ghost_X = Floor(Ghost_X/16)*16;
+			Ghost_Y = Floor(Ghost_Y/16)*16;
+			ghost->CollDetection = false;
+			Ghost_Data = Combo+4;
+			Ghost_Waitframes(this, ghost, EmergeSpeed);
+			Ghost_Data = Combo;
+			Ghost_Waitframes(this, ghost, EmergeSpeed);
+			Ghost_Data = GH_INVISIBLE_COMBO;
+			Counter = -1;
+			for(int i=0; i<SubmergeTime; i++){
+				Ghost_Waitframe(this, ghost);
+			}
+			if(Teleport==1){
+				ValidCount = 0;
+				for(int i=0; i<176; i++){
+					if(!ComboFI(i, CF_NOENEMY)&&!ComboFI(i, CF_NOGROUNDENEMY)&&Screen->ComboS[i]==0000b&&Screen->ComboS[i+16]==1111b&&Distance(ComboX(i), ComboY(i), Link->X, Link->Y)>32){
+						ValidCombos[ValidCount] = i;
+						ValidCount++;
+					}
+				}
+				TargetCombo = ValidCombos[Rand(0, Min(0, ValidCount-1))];
+				Ghost_X = ComboX(TargetCombo);
+				Ghost_Y = ComboY(TargetCombo);
+			}
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}
+
+ffc script Sideview_Shooter{
+	void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_SetFlag(GHF_NORMAL);
+		Ghost_SetFlag(GHF_4WAY);
+		int ShotType = Ghost_GetAttribute(ghost, 0, 0);
+		int ShotSpeed = Ghost_GetAttribute(ghost, 1, 150);
+		int ShotMisc1 = ghost->Attributes[2];
+		int ShotMisc2 = ghost->Attributes[3];
+		if(ShotMisc1==0&&ShotMisc2==0){
+			if(ShotType==2){
+				ShotMisc1 = 0;
+				ShotMisc2 = 5;
+			}
+			else if(ShotType==3){
+				ShotMisc1 = 30;
+				ShotMisc2 = 3;
+			}
+			else if(ShotType==4){
+				ShotMisc1 = 40;
+				ShotMisc2 = 16;
+			}
+			else if(ShotType==6){
+				ShotMisc1 = 38;
+				ShotMisc2 = 3;
+			}
+		}
+		int ShotSprite = Ghost_GetAttribute(ghost, 4, -1);
+		int ShotSound = Ghost_GetAttribute(ghost, 5, -1);
+		int Combo = ghost->Attributes[10];
+		int EWID = WeaponTypeToID(ghost->Weapon);
+		int Counter = -1;
+		int OldDir;
+		while(true){
+			Ghost_Data = Combo;
+			Counter = Ghost_HaltingWalk4(Counter, ghost->Step, ghost->Rate, ghost->Homing, ghost->Hunger, ghost->Haltrate, 48);
+			if(Counter>0){
+				Ghost_Data = Combo+4;
+				if(Counter==16&&(Ghost_Dir==DIR_LEFT||Ghost_Dir==DIR_RIGHT)){
+					eweapon e;
+					Ghost_UnsetFlag(GHF_KNOCKBACK);
+					OldDir = Ghost_Dir;
+					if(ShotType==0){
+						int Flags;
+						if(EWID==EW_MAGIC||EWID==EW_ARROW||EWID==EW_BEAM||EWID==EW_BOMB||EWID==EW_SBOMB)
+							Flags = EWF_ROTATE;
+						e = FireNonAngularEWeapon(EWID, Ghost_X, Ghost_Y, Ghost_Dir, ShotSpeed, ghost->WeaponDamage, ShotSprite, ShotSound, Flags);
+						if(ShotMisc1>0){
+							SetEWeaponMovement(e, EWM_SINE_WAVE, ShotMisc1, ShotMisc2);
+						}
+					}
+					else if(ShotType==1){
+						int Flags;
+						if(EWID==EW_MAGIC||EWID==EW_ARROW||EWID==EW_BEAM||EWID==EW_BOMB||EWID==EW_SBOMB)
+							Flags = EWF_ROTATE;
+						Ghost_Dir = AngleDir4(Angle(Ghost_X, Ghost_Y, Link->X, Link->Y));
+						e = FireAimedEWeapon(EWID, Ghost_X, Ghost_Y, 0, ShotSpeed, ghost->WeaponDamage, ShotSprite, ShotSound, Flags);
+						if(ShotMisc1>0){
+							SetEWeaponMovement(e, EWM_SINE_WAVE, ShotMisc1, ShotMisc2);
+						}
+					}
+					else if(ShotType==2){
+						int Flags;
+						if(EWID==EW_MAGIC||EWID==EW_ARROW||EWID==EW_BEAM||EWID==EW_BOMB||EWID==EW_SBOMB)
+							Flags = EWF_ROTATE;
+						Ghost_Dir = AngleDir4(Angle(Ghost_X, Ghost_Y, Link->X, Link->Y));
+						int AngleLink = Angle(Ghost_X, Ghost_Y, Link->X, Link->Y);
+						for(int i=0; i<ShotMisc2; i++){
+							if(ShotMisc1==0)
+								e = FireAimedEWeapon(EWID, Ghost_X, Ghost_Y, 0, ShotSpeed, ghost->WeaponDamage, ShotSprite, ShotSound, Flags);
+							else
+								e = FireEWeapon(EWID, Ghost_X, Ghost_Y, DegtoRad(AngleLink), ShotSpeed, ghost->WeaponDamage, ShotSprite, ShotSound, Flags);
+							Ghost_Waitframes(this, ghost, 8);
+						}
+					}
+					else if(ShotType==3){
+						int Flags;
+						if(EWID==EW_MAGIC||EWID==EW_ARROW||EWID==EW_BEAM||EWID==EW_BOMB||EWID==EW_SBOMB)
+							Flags = EWF_ROTATE;
+						Ghost_Dir = AngleDir4(Angle(Ghost_X, Ghost_Y, Link->X, Link->Y));
+						int InitAng = -ShotMisc1*(ShotMisc2-1);
+						for(int i=0; i<ShotMisc2; i++){
+							e = FireAimedEWeapon(EWID, Ghost_X, Ghost_Y, DegtoRad(InitAng+ShotMisc1*i), ShotSpeed, ghost->WeaponDamage, ShotSprite, ShotSound, Flags);
+						}
+					}
+					else if(ShotType==4){
+						int Flags;
+						if(EWID==EW_MAGIC||EWID==EW_ARROW||EWID==EW_BEAM||EWID==EW_BOMB||EWID==EW_SBOMB)
+							Flags = EWF_ROTATE;
+						for(int i=0; i<ShotMisc2; i++){
+							e = FireEWeapon(EWID, Ghost_X, Ghost_Y, DegtoRad(DirAngle(Ghost_Dir)+Rand(-ShotMisc1/2, ShotMisc1/2)), ShotSpeed, ghost->WeaponDamage, ShotSprite, ShotSound, Flags);
+							Ghost_Waitframes(this, ghost, 8);
+						}
+					}
+					else if(ShotType==5){
+						int Flags;
+						if(EWID==EW_MAGIC||EWID==EW_ARROW||EWID==EW_BEAM||EWID==EW_BOMB||EWID==EW_SBOMB)
+							Flags = EWF_ROTATE;
+						e = FireEWeapon(EWID, Ghost_X, Ghost_Y, DegtoRad(DirAngle(Ghost_Dir)), ShotSpeed, ghost->WeaponDamage, ShotSprite, ShotSound, Flags);
+						int FakeJump = -ShotMisc1/10;
+						if(ShotMisc1==0)
+							FakeJump = -Rand(16, 32)/10;
+						int LastJump = FakeJump;
+						int Y = e->Y;
+						while(e->isValid()){
+							FakeJump = Clamp(FakeJump+GH_GRAVITY, -GH_TERMINAL_VELOCITY, GH_TERMINAL_VELOCITY);
+							Y += FakeJump;
+							e->Y = Y;
+							if(FakeJump>0&&!CanWalk(e->X, e->Y, DIR_DOWN, 1, true)&&ShotMisc2!=2){
+								if(LastJump<-1&&ShotMisc2==1){
+									FakeJump = LastJump/2;
+									LastJump = FakeJump;
+								}
+								else{
+									e->DeadState = 0;
+								}
+							}
+							Ghost_Waitframe(this, ghost);
+						}
+					}
+					else if(ShotType==6){
+						if(ShotSound>0)
+							Game->PlaySound(ShotSound);
+						if(Screen->NumNPCs()<32){
+							for(int i=0; i<ShotMisc2; i++){
+								npc n = CreateNPCAt(ShotMisc1, Ghost_X, Ghost_Y);
+							}
+						}
+					}
+					if(EWID==EW_BRANG){
+						for(int i=0; i<180&&e->isValid(); i++){
+							Ghost_Waitframe(this, ghost);
+						}
+					}
+					Ghost_SetFlag(GHF_KNOCKBACK);
+				}
+				else if(Counter==1){
+					Ghost_Dir = OldDir;
+				}
+			}
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}
+
+//Converts a direction to an angle
+int DirAngle(int Dir){
+	if(Dir==DIR_UP)return -90;
+	else if(Dir==DIR_DOWN)return 90;
+	else if(Dir==DIR_LEFT)return 180;
+	else if(Dir==DIR_RIGHT)return 0;
+	else if(Dir==DIR_LEFTUP)return -135;
+	else if(Dir==DIR_RIGHTUP)return -45;
+	else if(Dir==DIR_LEFTDOWN)return 135;
+	else if(Dir==DIR_RIGHTDOWN)return 45;
+}
+
+ffc script Sideview_WizzrobeFix{
+	void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_Data = GH_INVISIBLE_COMBO;
+		while(true){
+			ghost->Jump = 0;
+			Ghost_Waitframe2(this, ghost);
+		}
+	}
+}
+
+ffc script Sideview_Boo{
+	void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_NO_FALL);
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+		Ghost_SetFlag(GHF_MOVE_OFFSCREEN);
+		int Homing = ghost->Attributes[0];
+		int Combo = ghost->Attributes[10];
+		if(Link->X<Ghost_X)
+			Ghost_Data = Combo;
+		else if(Link->X>Ghost_X)
+			Ghost_Data = Combo+1;
+		int AngleLink = Angle(Ghost_X, Ghost_Y, Link->X, Link->Y);
+		int StoredDefenses[18];
+		Ghost_StoreDefenses(ghost, StoredDefenses);
+		while(true){
+			if(AngleDir4(Angle(Link->X, Link->Y, Ghost_X, Ghost_Y))==Link->Dir){
+				if(Link->X<Ghost_X)
+					Ghost_Data = Combo+2;
+				else if(Link->X>Ghost_X)
+					Ghost_Data = Combo+3;
+				Ghost_SetAllDefenses(ghost, NPCDT_IGNORE);
+			}
+			else{
+				if(Link->X<Ghost_X)
+					Ghost_Data = Combo;
+				else if(Link->X>Ghost_X)
+					Ghost_Data = Combo+1;
+				Ghost_SetDefenses(ghost, StoredDefenses);
+				if(Homing==0){
+					Ghost_MoveTowardLink(ghost->Step/50, 0);
+				}
+				else{
+					AngleLink = RadtoDeg(TurnTowards(Ghost_X, Ghost_Y, Link->X, Link->Y, DegtoRad(AngleLink), Homing/100));
+					Ghost_MoveAtAngle(AngleLink, ghost->Step/100, 0);
+				}
+			}
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}
+
+
+ffc script Sideview_WallHopper{
+		void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_NO_FALL);
+		Ghost_SetFlag(GHF_MOVE_OFFSCREEN);
+		Ghost_SetFlag(GHF_4WAY);
+		int HV = ghost->Attributes[0];
+		int Delay = ghost->Attributes[1];
+		int Sensitivity = Ghost_GetAttribute(ghost, 2, 16);
+		int Combo = ghost->Attributes[10];
+		if(HV==0){
+			if(!Ghost_CanMove(DIR_LEFT, 1, 0))
+				Ghost_Dir = DIR_RIGHT;
+			else if(!Ghost_CanMove(DIR_RIGHT, 1, 0))
+				Ghost_Dir = DIR_LEFT;
+			else
+				Ghost_Dir = Choose(DIR_LEFT, DIR_RIGHT);
+		}
+		else if(HV==1){
+			if(!Ghost_CanMove(DIR_UP, 1, 0))
+				Ghost_Dir = DIR_DOWN;
+			else if(!Ghost_CanMove(DIR_DOWN, 1, 0))
+				Ghost_Dir = DIR_UP;
+			else
+				Ghost_Dir = Choose(DIR_UP, DIR_DOWN);
+		}
+		while(true){
+			if(Delay<=-1){
+				while(Abs(Link->Y-Ghost_Y)>Sensitivity){
+					Ghost_Waitframe(this, ghost);
+				}
+			}
+			else{
+				for(int i=0; i<Delay; i++){
+					Ghost_Waitframe(this, ghost);
+				}
+			}
+			Ghost_Data = Combo+4;
+			while(Ghost_CanMove(Ghost_Dir, 1, 0)){
+				Ghost_Move(Ghost_Dir, ghost->Step/100, 0);
+				Ghost_Waitframe(this, ghost);
+			}
+			Ghost_Data = Combo;
+			Ghost_Dir = OppositeDir(Ghost_Dir);
+			if(Delay<=-1){
+				Ghost_Waitframes(this, ghost, 20);
+				if(Delay==-1){
+					while(Abs(Link->Y-Ghost_Y)<=Sensitivity){
+						Ghost_Waitframe(this, ghost);
+					}
+				}
+			}
+		}
+	}
+}
+
+ffc script Sideview_LazyChase{
+		void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_NO_FALL);
+		Ghost_SetFlag(GHF_MOVE_OFFSCREEN);
+		int Accel = Ghost_GetAttribute(ghost, 0, 50)/1000;
+		int MaxV = Ghost_GetAttribute(ghost, 1, 200)/100;
+		int Pierce = Ghost_GetAttribute(ghost, 2, 0);
+		if(Pierce==1){
+			Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+		}
+		int Type = Ghost_GetAttribute(ghost, 3, 0);
+		int DrainSpeed = Ghost_GetAttribute(ghost, 4, 8);
+		int DrainSound = Ghost_GetAttribute(ghost, 5, 0);
+		int DrainDamage = ghost->WeaponDamage;
+		int Combo = ghost->Attributes[10];
+		int VX;
+		int VY;
+		int MetroidCooldown;
+		while(true){
+			VX = Clamp(VX+Sign(Link->X-Ghost_X)*Accel, -MaxV, MaxV);
+			VY = Clamp(VY+Sign(Link->Y-Ghost_Y)*Accel, -MaxV, MaxV);
+			Ghost_MoveXY(VX, VY, 0);
+			if(Pierce==0){
+				if((VX<0&&!Ghost_CanMove(DIR_LEFT, 1, 0))||(VX>0&&!Ghost_CanMove(DIR_RIGHT, 1, 0))){
+					VX = -VX;
+				}
+				if((VY<0&&!Ghost_CanMove(DIR_UP, 1, 0))||(VY>0&&!Ghost_CanMove(DIR_DOWN, 1, 0))){
+					VY = -VY;
+				}
+			}
+			if(MetroidCooldown>0)
+				MetroidCooldown--;
+			else if(Type>0&&LinkCollision(ghost)&&MetroidCooldown==0){
+				ghost->CollDetection = false;
+				this->Flags[FFCF_OVERLAY] = true;
+				int DrainCounter;
+				int MoveCounter;
+				int XOff = Ghost_X-Link->X;
+				int YOff = Ghost_Y-Link->Y;
+				float Expand = 0;
+				while(MetroidCooldown==0){
+					DrainCounter++;
+					if(DrainCounter>DrainSpeed){
+						if(DrainSound>0)
+							Game->PlaySound(DrainSound);
+						DrainCounter -= DrainSpeed;
+						if(Type==1)
+							Link->HP = Max(0, Link->HP-DrainDamage);
+						else if(Type==2)
+							Link->MP = Max(0, Link->MP-DrainDamage);
+						else if(Type==3)
+							Game->Counter[CR_RUPEES] = Max(0, Game->Counter[CR_RUPEES]-DrainDamage);
+					}
+					MoveCounter++;
+					if(MoveCounter>360)
+						MoveCounter-=360;
+					if(Abs(XOff)>1)
+						XOff += VectorX(0.5, Angle(XOff, YOff, 0, 0));
+					if(Abs(YOff)>1)
+						YOff += VectorY(0.5, Angle(XOff, YOff, 0, 0));
+					if(Expand<8)
+						Expand += 0.2;
+					Ghost_X = Link->X+Expand*Cos(3*MoveCounter)+XOff;
+					Ghost_Y = Link->Y+Expand*Sin(4*MoveCounter)+YOff;
+					for(int i=1; i<=Screen->NumLWeapons(); i++){
+						lweapon l = Screen->LoadLWeapon(i);
+						if((l->ID==LW_BOMBBLAST&&Distance(CenterX(ghost), CenterY(ghost), CenterX(l), CenterY(l))<24)||(l->ID==LW_SBOMBBLAST&&Distance(CenterX(ghost), CenterY(ghost), CenterX(l), CenterY(l))<40)){
+							VX = VectorX(MaxV, Angle(l->X, l->Y, Ghost_X, Ghost_Y));
+							VY = VectorY(MaxV, Angle(l->X, l->Y, Ghost_X, Ghost_Y));
+							MetroidCooldown = 60;
+						}
+					}
+					Ghost_Waitframe(this, ghost);
+				}
+				ghost->CollDetection = true;
+				this->Flags[FFCF_OVERLAY] = false;
+			}
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}
+
+
+//! Skeleton framework for a integer flag function (for assigning ghost flags). Needs 64, or more values. 
+//! Flags combine with simple addition, using integers, instead of binary, to pass as int args. 
+
+const int SV_STUN = 1;
+const int SV_CLOCK = 2;
+const int SV_IGNORE_ALL_TERRAIN = 4;
+const int SV_IGNORE_NO_ENEMY = 8;
+const int SV_MOVE_OFFSCREEN = 16;
+const int SV_NO_FALL = 32;
+
+void SV_GhostFlags(int flag){
+	if ( flag == 0 ) {
+		
+	}
+	if ( flag == 1 ) { //1
+		Ghost_SetFlag(GHF_STUN);
+	}
+	if ( flag == 2 ) { //2
+		Ghost_SetFlag(GHF_CLOCK);
+	}
+	
+	if ( flag == 3 ) { //1+2
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_CLOCK);
+		
+	}
+	if ( flag == 4 ) { //4
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+	}
+	if ( flag == 5 ) { //4+1
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+	}
+	
+	if ( flag == 6 ) { //4+2
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+	}
+	
+	if ( flag == 7 ) { //4+2+1
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+		
+	}
+	
+	if ( flag == 8 ) { //8
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY);
+	}
+	
+	if ( flag == 9 ) { //8+1
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY);
+		
+	}
+	if ( flag == 10 ) { //8+2
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY);
+	}
+	if ( flag == 11 ) { //8+2+1
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY);
+	}
+	if ( flag == 12 ) { //8+4
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY);
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+		
+	}
+	if ( flag == 13 ) { //8+4+1
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY);
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+		
+	}
+	if ( flag == 14 ) { //8+4+2
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY);
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+		
+	}
+	if ( flag == 15 ) { //8+4+2+1
+		Ghost_SetFlag(GHF_STUN);
+		Ghost_SetFlag(GHF_CLOCK);
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY);
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+	}
+		//16: Ghost_SetFlag(GHF_MOVE_OFFSCREEN);
+		//32: Ghost_SetFlag(GHF_NO_FALL);
+}
+

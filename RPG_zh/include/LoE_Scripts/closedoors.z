@@ -1,0 +1,6 @@
+void CloseDoors(){ //If Link hit a friendly NPC on a screen with doors, or otherwise angered a friendly NPC...
+	//READ THE SCREEN COMBOS
+	//LOOK FOR OPEN DOOR COMBOS
+	//PLACE GATE COMBOS ON LAYER 1 UNTIL ENEMIES DEFEATED.
+	//IF ENEMIES DEFEATED, AND GATES ON SCREEN, REMOVE GATES
+}

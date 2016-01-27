@@ -1,0 +1,11 @@
+import "stdWeapons/stdWeaponsMisc.zh"
+import "stdWeapons/stdWeaponsCommon.zh"
+import "stdWeapons/stdWeaponsMovement.zh"
+import "stdWeapons/stdWeaponsDestroy.zh"
+import "stdWeapons/stdWeaponsEnemies.zh"
+import "stdWeapons/launcher.z"
+
+const int LWM_STRAIGHT=0;
+const int LWM_CIRCLE=1;
+const int LWM_SPIRAL=2;
+const int LWM_SPLINE=3;

@@ -1,0 +1,19 @@
+const int ZAP_DAMAGE = 8;
+
+//Read LWeapons on the screen
+
+for(int j = 1; j <= Screen->NumLWeapons(); j++){
+    lweapon l = Screen->LoadLWeapon(j);
+
+    //If collision 
+    if(Collision(l, this)){
+    //...with a melee weapon:
+        if( l->ID == LW_SWORD || l->ID == LW_WAND || l->ID == LW_HAMMER ){
+            //Reduce Link HP
+            Link->HP -= ZAP_DAMAGE;
+            //If you have a Link stun function, place it here.
+            //LinkStun();
+        }
+    }
+}
+            

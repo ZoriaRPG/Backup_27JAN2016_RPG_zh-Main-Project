@@ -1,0 +1,4 @@
+import "gc_tango/gc_menus_GameMenu.z"
+import "gc_tango/gc_menus_SaveMenu.z"
+import "gc_tango/gc_menus_RestoreMenu.z"
+import "gc_tango/gc_menus_DebugMenu.z"

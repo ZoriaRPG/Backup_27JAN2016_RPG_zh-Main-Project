@@ -1,0 +1,16 @@
+//D0 = Rupeegain
+
+ffc script GetRupees{
+    void run(int rup){
+    Game->Counter[CR_RUPEES]+rup;
+    }
+}
+
+
+//Rupee Loss - Jinx
+
+ffc script LoseRupees{
+    void run(int rup){
+    Game->Counter[CR_RUPEES]-rup;
+    }
+}

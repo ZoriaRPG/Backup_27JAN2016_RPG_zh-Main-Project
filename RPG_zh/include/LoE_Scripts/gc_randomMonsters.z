@@ -1,0 +1,156 @@
+int monsterTable[100]={0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0,
+                    0,0,0,0,0,0,0,0,0,0};
+                    
+
+
+const int MONSTER_ONE = 0;
+const int MONSTER_TWO = 1;
+const int MONSTER_THREE = 2;
+const int MONSTER_FOUR = 3;
+const int MONSTER_FIVE = 4;
+const int MONSTER_SIX = 5;
+const int MONSTER_SEVEN = 6;
+const int MONSTER_EIGHT = 7;
+const int MONSTER_NINE = 8;
+const int MONSTER_TEN = 9;
+
+const itn MONSTER_LEVEL = 10;
+
+void summonMonster(int level){
+    int monsterLevel = level * MONSTER_LEVEL;
+    int monsterSummoned = (Rand(10) + monsterLevel);
+    Screen->CreateNPC(monsterSummoned);
+}
+
+void summonMonster(int level, int mX, int mY){
+    int monsterLevel = level * MONSTER_LEVEL;
+    int monsterSummoned = (Rand(10) + monsterLevel);
+    Screen->CreateNPC(monsterSummoned);
+    monsterSummoned->X = mx;
+    monsterSummoned->Y = mY;
+}
+
+int returnMonster(int level){
+    int monsterLevel = level * MONSTER_LEVEL;
+    int monsterSummoned = (Rand(10) + monsterLevel);
+    return monsterSummoned;
+}
+
+void randomMonster(){
+    int creatureID_Max = SizeOfArray(monsterTable);
+    for (i = 0; i < creatureID_Max; I++) {
+        //
+    }
+}
+
+void setMonsterPosition(){
+    int monsterPositionsX[16]={0,16,32,48,6
+                                4,80,96,112,
+                                128,144,160,176,
+                                192,208,224,240};
+    int monsterPositionsY[11]={0,16,32,48,6
+                                4,80,96,112,
+                                128,144,160};
+    int randX = Rand(16);
+    int randY = Rand(11);
+    int monsterX = monsterPositionsX[randX];
+    int monsterY = monsterPositionsY[randY];
+    int monsterLevel = Game->Counter[CR_LEVEL];
+    summonMonster(monsterLevel, int monsterX, int monsterY);
+}
+
+void setMonsterPosition(bool grid){
+    int monsterPositionsX[16]={0,16,32,48,6
+                                4,80,96,112,
+                                128,144,160,176,
+                                192,208,224,240};
+    int monsterPositionsY[11]={0,16,32,48,6
+                                4,80,96,112,
+                                128,144,160};
+    int randX = Rand(16);
+    int randY = Rand(11);
+    if ( grid == true ) {
+        int monsterX = CenterX(monsterPositionsX[randX]);
+        int monsterY = CenterY(monsterPositionsY[randY]);
+    }
+    else if ( grid == false ) {
+        int monsterX = monsterPositionsX[randX];
+        int monsterY = monsterPositionsY[randY];
+    }
+    int monsterLevel = Game->Counter[CR_LEVEL];
+    summonMonster(monsterLevel, int monsterX, int monsterY);
+}
+    
+    
+void setMonsterPosition(bool grid, bool nonSolid){
+    int monsterPositionsX[16]={0,16,32,48,
+                                64,80,96,112,
+                                128,144,160,176,
+                                192,208,224,240};
+    int monsterPositionsY[11]={0,16,32,48,
+                                64,80,96,112,
+                                128,144,160};
+                                
+    int monsterSquareX[16] = {0,1,2,3,4,5,6,7,8
+                            9,10,11,12,13,14,15};
+                            
+    int monsterSquareY[11] = {0,1,2,3,4,5,6,7,8
+                            9,10,11};
+                            
+    int monsterSquareColumn;
+    int monsterSquareRow;
+    
+    int monsterSquarePosition = monsterSquareColumn + ( monsterSquareRow * 16 );
+
+    
+    
+                                
+    int randX = Rand(16);
+    int randY = Rand(11);
+    int linkPosX = Link->X;
+    int linkPosY = Link->Y;
+    if ( grid == true ) {
+        int monsterX;
+        int monsterY;
+        int monsterSpace;
+        bool solidCombos[176]={};
+        if ( nonSolid == true ){
+            for ( i = 0; 0 <  176; i ++ ) {
+                //Check combo solidity for each combo.
+                //Store solidity true/false in array solidCombos[]
+                //Randomly select a location to place the monster.
+                //Check that the location is not the same as the player.
+                //Divine ComboD location, compared to monsterX and Y locations...
+                //Using above arryas and formulas.   
+                    //If the spot selected doesn;t have a solid combo...
+                    //and if the spot is not the location of the player
+                    //Place a monster.
+                    //Otherwise, locate a new position.                    
+                                
+        int monsterX = CenterX(monsterPositionsX[randX]);
+        int monsterY = CenterY(monsterPositionsY[randY]);
+        monsterSpace = monsterX + ( 1 * 
+    }
+    else if ( grid == false ) {
+        int monsterX = monsterPositionsX[randX];
+        int monsterY = monsterPositionsY[randY];
+    }
+    int monsterLevel = Game->Counter[CR_LEVEL];
+    summonMonster(monsterLevel, int monsterX, int monsterY);
+}
+
+
+void randomScreenMonster(int ffcScript){
+    //run FFC script to summon monsters, based on global conditions, and timers.
+}
+    
+    
+    

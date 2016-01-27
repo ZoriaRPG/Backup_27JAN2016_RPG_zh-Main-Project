@@ -1,0 +1,111 @@
+//An FFC script to give a player an item if he has another item.
+//Runs based on a screen register. Awards the item only if the register is zero.
+
+//Args:
+// D0: The ScreenD[] register to use.
+// D1: THe require Item ID.
+// D2: The Item ID of the item to award.
+// D3: The string to play when awarding the item. Set to '0' if you do not wish to play a string.
+// D4: A sound to play. Set to a value above zero, and a sound effect with this ID will play.
+// D5: a hold-up action:
+//	0 = None
+//	1 = Hold up, with one hand
+//	2 = Hold up, with two hands.
+//	3 = Hold up, in water, with one hand.
+//	4 = Hold up, in water, with two hands.
+ffc script GiveItemifPlayerHasItem{
+	void run(int reg, int needItem, int giveItem, int playString, int playSFX, int holdUp){
+		int curScreen = Game->GetCurScreen(); //Store the current screen.
+		int dat = GetScreenD(curScreen,reg); //Store the value of ScreenD[reg].
+		if ( !dat ) { //If the register specified as arg D0 is zero
+			if ( Link->Item[needItem] ) { //if the player has the item specified by arg D1.
+				if ( playString ) { //if arg D2 is greater than zero
+					Screen->Message(playString); //Play a message with an ID specified by arg D3.
+				}
+				if ( playSFX ){ //if arg D4 is not zero...
+					Game->PlaySound(playSFX); //Play the sound specified by arg D4.
+				}
+				item itm = Screen->CreateItem(giveItem); //Make the item specified by arg D2.
+					//If it has a Pick-up script, that will *still run*.
+				itm->X = Link->X; //Place it at Link's coordinates.
+				itm->Y = Link->Y; //..
+				itm->Z = Link->Z; //..
+				if ( holdUp == 1 ) { //If arg D5 is set to a value of '1'.
+					Link->Action = LA_HOLD1LAND; //Cause Link to hold it up with on ehand, on land.
+					Link->HeldItem = giveItem; //Set the item Link holds, manually.
+				}
+				if ( holdUp == 2 ) { //If arg D5 is set to a value of '2'.
+					Link->Action = LA_HOLD2LAND; //Cause Link to hold it up with two hands, on land.
+					Link->HeldItem = giveItem; //Set the item Link holds, manually.
+				}
+				if ( holdUp == 3 ) { //If arg D5 is set to a value of '3'.
+					Link->Action = LA_HOLD1WATER; //Cause Link to hold it up with one hand, in water.
+					Link->HeldItem = giveItem; //Set the item Link holds, manually.
+				}
+				if ( holdUp == 4 ) { //If arg D5 is set to a value of '4'.
+					Link->Action = LA_HOLD2WATER; //Cause Link to hold it up with two hands, in water.
+					Link->HeldItem = giveItem; //Set the item Link holds, manually.
+				}
+					//if holdUp is set to 0, or any other value, Link will not hold the item up, 
+					//unless a screen flag is set to force it. 
+				SetScreenD(curScreen,reg,0.0001); //Make the value of this register non-zero.
+					//Use a decimal place here, so that we can easily modify it later with other decimal values.
+					//Allows more flexible use of registers.
+			}
+		}
+	}
+}
+
+//An FFC script to give a player an item if he has another item.
+//This version does not use ScreenD[], but instead, awards the item 
+//only if the player does not already have it.
+
+//Args:
+// D0: THe require Item ID.
+// D1: The Item ID of the item to award.
+// D2: The string to play when awarding the item. Set to '0' if you do not wish to play a string.
+// D3: A sound to play. Set to a value above zero, and a sound effect with this ID will play.
+// D4: a hold-up action:
+//	0 = None
+//	1 = Hold up, with one hand
+//	2 = Hold up, with two hands.
+//	3 = Hold up, in water, with one hand.
+//	4 = Hold up, in water, with two hands.
+ffc script GiveItemifPlayerHasItem_NoScreenD{
+	void run(int needItem, int giveItem, int playString, int playSFX, int holdUp){
+		if ( !Link->Item[giveItem] ) { //If Link does not have the item to award...
+			if ( Link->Item[needItem] ) { //if the player has the item specified by arg D1.
+				if ( playString ) { //if arg D2 is greater than zero
+					Screen->Message(playString); //Play a message with an ID specified by arg D2.
+				}
+				if ( playSFX ){ //if arg D3 is not zero...
+					Game->PlaySound(playSFX); //Play the sound specified by arg D3.
+				}
+				item itm = Screen->CreateItem(giveItem); //Make the item specified by arg D1.
+					//If it has a Pick-up script, that will *still run*.
+				itm->X = Link->X; //Place it at Link's coordinates.
+				itm->Y = Link->Y; //..
+				itm->Z = Link->Z; //..
+				if ( holdUp == 1 ) { //If arg D4 is set to a value of '1'.
+					Link->Action = LA_HOLD1LAND; //Cause Link to hold it up with on ehand, on land.
+					Link->HeldItem = giveItem; //Set the item Link holds, manually.
+				}
+				if ( holdUp == 2 ) { //If arg D4 is set to a value of '2'.
+					Link->Action = LA_HOLD2LAND; //Cause Link to hold it up with two hands, on land.
+					Link->HeldItem = giveItem; //Set the item Link holds, manually.
+				}
+				if ( holdUp == 3 ) { //If arg D4 is set to a value of '3'.
+					Link->Action = LA_HOLD1WATER; //Cause Link to hold it up with one hand, in water.
+					Link->HeldItem = giveItem; //Set the item Link holds, manually.
+				}
+				if ( holdUp == 4 ) { //If arg D4 is set to a value of '4'.
+					Link->Action = LA_HOLD2WATER; //Cause Link to hold it up with two hands, in water.
+					Link->HeldItem = giveItem; //Set the item Link holds, manually.
+				}
+					//if holdUp is set to 0, or any other value, Link will not hold the item up, 
+					//unless a screen flag is set to force it. 
+			}
+		}
+	}
+}
+			

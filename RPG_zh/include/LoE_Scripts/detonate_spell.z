@@ -1,0 +1,29 @@
+void detonateSpell() {
+    if (usebombodo == 1) {            
+        slower ++;
+        if (slower == 5){  
+            rad++;
+            slower = 0;
+        }  
+        angle = (angle + ORBIT_SPEED) % 360;          
+        f1 = 100 + rad * Cos(angle);
+        f2 = 100 + rad * Sin(angle);
+	    //Screen->FastCombo(6, f1, f2, 95, 2, 128);
+					
+        r1 = 40+Rand(150);
+        r2 = 40+Rand(100);
+					
+        slowera++;
+        if (slowera  == 20) {
+            slowera = 0;
+            if (bombs < 30) {
+                bombs ++;  
+                lweapon bomb = CreateLWeaponAt(LW_BOMBBLAST, r1, r2);
+                Game->PlaySound(SFX_BOMB);
+                if (bombs == 30) {
+                    usebombodo = 0;
+                }
+            }
+        }
+    }
+}

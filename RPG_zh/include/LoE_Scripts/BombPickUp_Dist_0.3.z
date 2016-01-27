@@ -1,0 +1,181 @@
+import "std.zh"
+
+//Disable the following four constants if you already call them with RPG.zh, LA.zh, BowAndArrowPickup.z, or any other header.
+
+const int ITM_HOLD1LAND = 1;
+const int ITM_HOLD2LAND = 2;
+const int ITM_HOLD1WATER = 3;
+const int ITM_HOLD2WATER = 4;
+
+void _Bomb_HoldUpItem(int itm, int holdType){
+	if ( holdType == ITM_HOLD1LAND ) {
+		Link->Action = LA_HOLD1LAND;
+		Link->HeldItem = itm;
+	}
+	if ( holdType == ITM_HOLD2LAND ) {
+		Link->Action = LA_HOLD2LAND;
+		Link->HeldItem = itm;
+	}
+	if ( holdType == ITM_HOLD1WATER ) {
+		Link->Action = LA_HOLD1WATER;
+		Link->HeldItem = itm;
+	}
+	if ( holdType == ITM_HOLD2WATER ) {
+		Link->Action = LA_HOLD2WATER;
+		Link->HeldItem = itm;
+	}
+}
+
+
+//The following does not require FFCScript, but it can't increase the number of super bombs ( MCounter[CR_SBOMBS] ), 
+//because for whatever reason, ZC needs to wait one frame to do that.
+
+// D0: Number of starting bombs to give with this bomb bag. If positive, the player will be given that many bombs.
+	//You may pass a negative value here, to award super-bombs, instead. 
+// D1: Bomb Bag to Give: Small Bag ( 81 ), Medium Bag ( 82 ), Large Bag ( 83 ), Magic Bag ( 106 ) , or custom.
+// D2: Override counnter increase? : No ( 0 ), Yes ( Enter amount ).
+// D3: Sound Effect to play: Special Item ( 20 ), or custom.
+// D4: Message String ID to display (if any). None ( 0 ), or custom. 
+// D5: Hold-Up Animation to use: None ( 0 ) , 1-Hand ( 1 ), 2-Hand ( 2 ) , 1-Hand-Water ( 3 ), 2-Hand-Water ( 4 ).
+// D6: Bomb to give (PICK-UP ANIMATION): Bomb ( 3 ) , Bomb Ammo 1 ( 77 ), Ammo 4 ( 78 ), Ammo 8 ( 79 ), Ammo 30 ( 80 ), 
+				       //Bomb Bag ( 81 ), Medium Bomb Bag ( 82 ) , Large Bomb Bag ( 83 ), 
+				       //Magic Bomb Bag ( 106 ), SBomb ( 48 ) or custom. 
+	//This should match the item ID to which you attach this script!
+
+item script BombPickupNoFFC{
+	void run(int giveBombs, int bombBag, int bombMaxOverride, int playSFX, int showMessage, int holdUp, int bombID){
+		int bombMax;
+		if ( bombBag && !Link->Item[bombBag] ) {
+			Link->Item[bombBag] = true;
+			itemdata bombIT = Game->LoadItemData(bombBag);
+			bombMax = bombIT->Max;
+		}
+		if ( Game->MCounter[CR_BOMBS] < bombMax && bombMaxOverride < 1 ) Game->MCounter[CR_BOMBS] = bombMax;
+		if ( bombMaxOverride && Game->MCounter[CR_BOMBS] != bombMaxOverride ) Game->MCounter[CR_BOMBS] = bombMaxOverride;
+		if ( giveBombs ) Game->Counter[CR_BOMBS] += giveBombs;
+		if ( giveBombs < 0 ) Game->Counter[CR_SBOMBS] -= giveBombs;
+		if ( playSFX ) Game->PlaySound(playSFX);
+		if ( holdUp && bombID ) _Bomb_HoldUpItem(bombID,holdUp);
+		if ( Game->Counter[CR_BOMBS] > Game->MCounter[CR_BOMBS] ) Game->Counter[CR_BOMBS] = Game->MCounter[CR_BOMBS];
+		if ( showMessage ) Screen->Message(showMessage);
+		
+		
+	}
+}
+
+//The following REQUIRES FFCScript.zh, and can increase the number of super bombs by any arbitrary amount. 
+	
+// D0: Number of starting bombs to give with this bomb bag. If positive, the player will be given that many bombs.
+	//You may pass a negative value here, to award super-bombs, instead. 
+// D1: Bomb Bag to Give: Small Bag ( 81 ), Medium Bag ( 82 ), Large Bag ( 83 ), Magic Bag ( 106 ) , or custom.
+// D2: Override counnter increase? : No ( 0 ), Yes ( Enter amount ).
+// D3: Sound Effect to play: Special Item ( 20 ), or custom.
+// D4: Message String ID to display (if any). None ( 0 ), or custom. 
+// D5: Hold-Up Animation to use: None ( 0 ) , 1-Hand ( 1 ), 2-Hand ( 2 ) , 1-Hand-Water ( 3 ), 2-Hand-Water ( 4 ).
+// D6: Bomb to give (PICK-UP ANIMATION): Bomb ( 3 ) , Bomb Ammo 1 ( 77 ), Ammo 4 ( 78 ), Ammo 8 ( 79 ), Ammo 30 ( 80 ), 
+				       //Bomb Bag ( 81 ), Medium Bomb Bag ( 82 ) , Large Bomb Bag ( 83 ), 
+				       //Magic Bomb Bag ( 106 ), SBomb ( 48 ) or custom. 
+	//This should match the item ID to which you attach this script!
+// D7: SuperBomb Maximum Increase: None ( 0 ) , or ( specify amount ). If a positive number, the maximum number of Super Bombs
+	//that the player can carry, will be *increased* by this value. 
+	//Pass a negative value here, to set Super Bombs to a specific, arbitrary cap. 
+
+
+import "ffcscript.zh"
+
+const int FFC_BOMB_INCREASE = 1; //Set to the ID of the slot of the FFC 'BombPickupFFC'
+
+item script BombPickupWithFFC{
+	void run(int giveBombs, int bombBag, int bombMaxOverride, int playSFX, int showMessage, int holdUp, int bombID, int SBombMaxPlus){
+		int bombMax;
+		int ffcname[]="BombPickupFFC";
+		int runff = Game->GetFFCScript(ffcname);
+		if ( bombBag && !Link->Item[bombBag] ) {
+			Link->Item[bombBag] = true;
+			itemdata bombIT = Game->LoadItemData(bombBag);
+			bombMax = bombIT->Max;
+		}
+		if ( Game->MCounter[CR_BOMBS] < bombMax && bombMaxOverride < 1 ) {
+			Game->MCounter[CR_BOMBS] = bombMax;
+			Game->MCounter[CR_SBOMBS] = ( bombMax * 0.25);
+		}
+		if ( bombMaxOverride && Game->MCounter[CR_BOMBS] != bombMaxOverride ) {
+			Game->MCounter[CR_BOMBS] = bombMaxOverride;
+			int sBombMaxOverride = bombMaxOverride * 0.25;
+			if ( sBombMaxOverride > 1 ) {
+				Game->MCounter[CR_SBOMBS] = ( bombMaxOverride * 0.25);
+			}
+			else Game->MCounter[CR_SBOMBS] = 1;
+		}
+		int args[2] = { showMessage, SBombMaxPlus };
+		if ( giveBombs ) Game->Counter[CR_BOMBS] += giveBombs;
+		if ( giveBombs < 0 ) Game->Counter[CR_SBOMBS] -= giveBombs;
+		if ( playSFX ) Game->PlaySound(playSFX);
+		if ( holdUp && bombID ) _Bomb_HoldUpItem(bombID,holdUp);
+		if ( Game->Counter[CR_BOMBS] > Game->MCounter[CR_BOMBS] ) Game->Counter[CR_BOMBS] = Game->MCounter[CR_BOMBS];
+		if ( SBombMaxPlus || showMessage ) RunFFCScript(runff,args);
+		
+		
+	}
+}
+
+
+ffc script BombPickupFFC{
+	void run (int showMessage, int SBombMaxPlus){
+		bool increased = false;
+		bool playedMessage = false;
+		while(true){
+			
+			if ( SBombMaxPlus && !increased ) {
+				increased = true;
+				if ( SBombMaxPlus < 0 ){
+					Game->MCounter[CR_SBOMBS] = ( SBombMaxPlus * -1 );
+					Waitframes(1);
+				}
+				else {
+					Game->MCounter[CR_SBOMBS] += SBombMaxPlus;
+					Waitframes(1);
+				}
+				
+			}
+			if ( showMessage && !playedMessage ){
+				playedMessage = true;
+				Screen->Message(showMessage);
+			}
+			if ( !SBombMaxPlus && !showMessage ) break;
+			if ( increased && showMessage ) break;
+			Waitframe();
+		}
+	}
+}
+			
+
+//Tried various ways to increase Game->COunter[CR_SBOMBS] by arbitrary value in the same frame that the normal CR_BOMBS MCounter
+//is set, but even the most basic failed to dp this. It seems that it is mandatory to wait one frame after setting MCounter CR_BOMBS
+//before the value of MCOunter CR_SBOMBS may be modified. 
+//This is an experimental script that attempts to force the value in one frame, and fails to do that. 
+item script BombPickupExp1{
+	void run(int giveBombs, int bombBag, int bombMaxOverride, int playSFX, int showMessage, int holdUp, int bombID, int SBombMaxPlus){
+		int bombMax;
+		if ( bombBag && !Link->Item[bombBag] ) {
+			Link->Item[bombBag] = true;
+			itemdata bombIT = Game->LoadItemData(bombBag);
+			bombMax = bombIT->Max;
+		}
+		Game->MCounter[CR_BOMBS] = bombMaxOverride;
+		Game->MCounter[CR_SBOMBS] = 3;
+		//if ( bombMaxOverride ) {
+			//if ( SBombMaxPlus ) Game->MCounter[CR_SBOMBS] = ( bombMax * 0.25) + SBombMaxPlus;
+			//else Game->MCounter[CR_SBOMBS] = ( bombMax * 0.25);
+		//	Game->MCounter[CR_BOMBS] = bombMaxOverride;
+		//	Game->MCounter[CR_SBOMBS] = 3;
+			//else Game->MCounter[CR_SBOMBS] = ( bombMaxOverride * 0.25);
+		//}
+		
+		if ( playSFX ) Game->PlaySound(playSFX);
+		if ( holdUp && bombID ) _Bomb_HoldUpItem(bombID,holdUp);
+		//if ( showMessage ) Screen->Message(showMessage);
+		
+		
+	}
+}

@@ -1,0 +1,119 @@
+///////////////////////////////////
+/// Hovering, or Floating Enemy ///
+/// v1.2 (ALPHA)                ///
+///////////////////////////////////////////////////////////////////////////////////////
+/// This enemy type can hover, or float, in a horizontal pattern, or a vertical     ///
+/// pattern, by setting Sine and Cosine values for its movement.                    ///
+///                                                                                 ///
+/// Attributes 1, and 2 are the HORIZONTAL Sine, and Cosine values respectively     ///
+/// while Attributes 3, and 4 are the Sine and Cosine values for VERTICAL motion    ///
+/// Attribute 1, 3: Approximately '8' is one tile of movement (combined).           ///
+///										    ///
+/// Setting all four of these values permits PARAMETRIC or CIRCULAR patterns of     ///
+/// movement, and Attribute 5 allows you to set an INITIAL TANGENT.                 ///
+///                                                                                 ///
+///                              DISTANCE VALUES                                    ///
+///                              ---------------                                    ///
+/// Attributes 1 (H) and 3 (V) set the effective DISTANCE of movement, while the    ///
+/// Atrribbutes 3, and 4) (respectively SINE, and COSINE) set the effective SPEED.  ///
+///                                                                                 ///
+/// Distance is calculated in PIXELS from start, in each direction, this, a value   ///
+/// of '16' will create a pattern like this:                                        ///
+///                                                                                 ///
+///                               16 <- 0 -> 16                                     ///
+///                                                                                 ///
+/// Increasing this to a value of '32' will change the pattern as follows:          ///
+///                                                                                 ///
+///                         32 <- 16 <- 0 -> 16 -> 32                               ///
+///										    ///
+///                               SPEED VALUES                                      ///
+///                               ------------                                      ///
+/// The SPEED [Sine (H) and Cosine(V)] value is approximately four (eight?) pixels  ///
+/// per second...								    ///
+/// Thus, a value of '1' will move the enemy approximately four (eight?) pixels     ///
+/// per second; while a value of 2, will move approximately one tile per second.    ///
+///                                                                                 ///
+///                                                                                 ///
+///                             SETTING MINIMUMS                                    ///
+///                             ----------------                                    ///
+/// The minimum setting for movement in any direction is '1':                       ///
+/// You must set Attributes 1 and 2, or 3 and 4 in pairs, with neither value of a   ///
+/// single pair as '0'.                                                             ///
+///                                                                                 ///
+/// Setting EITHER (or both) Attributes '1', or '2', to a value of '0' will disable ///
+/// horizontal movement, whereas setting EITHER (or both) Attributes '3' or '4' to  ///
+/// a value of '0' will disable vertical movement. Setting all four to a value of   ///
+/// '0' will cause the enemy to be stationary, in air.                              ///
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+//! These move constants no longer used.
+//const int SV_HOVER_MOVE_TYPE = 0; //Misc Attr 0
+//const int SV_MOVE_STATIONARY = 0;
+//const int SV_MOVE_HORIZONTAL = 1;
+//const int SV_MOVE_VERTICAL = 2;
+//const int SV_MOVE_PARAMETRIC = 3;
+
+//! These constants are correct to this version, but I advide moving each down one value. (See below.)
+const int SV_HORIZONTAL_MOVE_SPEED = 1;
+const int SV_HORIZONTAL_MOVE_DEGREES = 2;
+const int SV_VERTICAL_MOVE_SPEED = 3;
+const int SV_VERTICAL_MOVE_DEGREES = 4;
+const int SV_INITIAL_TANGENT = 5;
+
+//! Initial work in setting up a flags system that can be used with a single combined value as a parameter.
+const int SV_IGNORE_TERRAIN = 5;
+const int SV_IGNORE_NOENEMY_FLAGS = 6;
+
+// if ( ghost->Attributes[SV_IGNORE_TERRAIN] ) {
+//	Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN);
+//}
+
+const int SV_GHOST_FLAGS = 10; //Misc Attr 10 for combining flags.
+
+ffc script Sideview_Hover{
+	void run(int enemyid){
+		npc ghost = Ghost_InitAutoGhost(this, enemyid);
+		Ghost_SetFlag(GHF_STUN); //The enemy can be stunned.
+		Ghost_SetFlag(GHF_CLOCK); //The enemy is affected by clocks (GhostZHClock Item)
+		Ghost_SetFlag(GHF_IGNORE_ALL_TERRAIN); //The enemu ignores solidity, water, and other terrain flags.
+		Ghost_SetFlag(GHF_IGNORE_NO_ENEMY); //The enemy ignores Flags 95, 96
+		Ghost_SetFlag(GHF_MOVE_OFFSCREEN); //The enemy is allowed to move offscreen.
+			//! What bis the maximum dist. off-screen, out of curiosity? This seems as if
+			//! it would change by ZC version.
+		Ghost_SetFlag(GHF_NO_FALL); //The enemy is not affected by gravity.
+		//int HVS = ghost->Attributes[0]; //Horizontal, vertical, or stationary movement.
+		//! We no longer need this parameter. We can move the others up one position
+		//! each, if desired.
+		int Misc1 = ghost->Attributes[1]; //Horizontal movement speeed in pixels.
+		int Misc2 = ghost->Attributes[2]; //Horizonral Sine (degrees) value. Equates to 'speed'.
+		// ! Is the value in degrees, or radians?
+		int Misc3 = ghost->Attributes[3]; //Vertical movement speed in pixels.
+		int Misc4 = ghost->Attributes[4]; //Vertical sine (degrees) value. Equates to 'speed'.
+		int T = ghost->Attributes[5]; //Initial tangent; default '0'.
+		
+		// ! We need some default values here.
+		
+		int StartX = Ghost_X; //Create loca variables to modify
+		int StartY = Ghost_Y; //assigned to initial ghost values.
+		while(true){
+			T++;
+			if(T<360)
+				T -= 360;
+			
+			// ! Why are we increasing T and then lowering it every frame?
+			// ! Tangent can never exceed 360 in this loop.
+			if( Misc1 && Misc2 ){ //If we move horizontal
+				Ghost_X = StartX + (Misc1*Sin(Misc2*T) * 0.1);
+			}
+			if( Misc3 && Misc4 ){ //If we move vertical
+				Ghost_Y = StartY + (Misc3*Cos(Misc4*T) * 0.1);
+				//Keep attributes fixed, don't change their functions.
+				//Ghost_Y = StartY + Misc1*Sin(Misc2*T);
+			}
+			//! If we move both morizontal, and vertical, we do both. 
+			//! We no longer need Attr[0] to set the type. 
+			Ghost_Waitframe(this, ghost);
+		}
+	}
+}

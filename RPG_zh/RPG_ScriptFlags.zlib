@@ -1,0 +1,19 @@
+void ExplodeOnContact(int CFlag, int weap, int newFlag){
+	for ( int q = 0; q < 176; q++){
+		int cmb = Screen->ComboF[q];
+		int locX = ComboX(cmb->X);
+		int locY = ComboY(cmb->Y);
+		int ( w = 1; w <= Screen->NumLWeapons(); w++) {
+			lweapon lw = Screen->LoadLWeapon(w);
+			if ( Collision(cmb,lw) {
+				if ( cmb == CFlag && lw->ID == weap ) {
+				
+					//Produce explosion.
+					lweapon explode = CreateLWeaponAt(LW_BOMBBLAST, locX, locY);
+					//Change flag.
+					Screen->ComboF[q] = newFlag;
+				}
+			}
+		}
+	}
+}

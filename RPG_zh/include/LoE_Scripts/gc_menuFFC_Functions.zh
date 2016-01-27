@@ -1,0 +1,54 @@
+//Returns difference between Link`s and FFC`s X coordinates.
+int DistanceXfromFFC(ffc f){
+	if ((Link->X) > (f->X)) return (Link->X) - (f->X);
+	else return (f->X) - (Link->X); 
+}
+
+//Returns difference between Link`s and FFC`s Y coordinates.
+int DistanceYfromFFC(ffc f){
+	if ((Link->Y) > (f->Y)) return (Link->Y) - (f->Y);
+	else return (f->Y) - (Link->Y); 
+}
+
+//Returns TRUE if Link is facing FFC and is sufficiently close to it`s side.
+bool FacingFFC(ffc f, int distance){
+	int curx = Link->X;
+	int cury = Link->Y;
+	int npcx = f->X;
+	int npcy = f->Y;
+	int borderx = f->EffectWidth;
+	int bordery = f->EffectHeight;
+	if (RectCollision(curx, cury, (curx+16), (cury+16), npcx, (npcy - distance), (npcx + borderx), npcy)){
+		if (Link->Dir == DIR_DOWN) return true;
+	}
+	if (RectCollision(curx, cury, (curx+16), (cury+16), npcx, (npcy + bordery), (npcx+borderx), (npcy+bordery+distance))){
+		if (Link->Dir == DIR_UP) return true;
+	}
+	if (RectCollision(curx, cury, (curx+16), (cury+16), (npcx-distance), npcy, npcx, (npcy+bordery))){
+		if (Link->Dir == DIR_RIGHT) return true;
+	}
+	if (RectCollision(curx, cury, (curx+16), (cury+16), (npcx+borderx), npcy, (npcx+borderx+distance), (npcy+bordery))){
+		if (Link->Dir == DIR_LEFT) return true;
+	}
+	return false;
+}
+
+//Returns TRUE if Link is facing right side of FFC and is sufficiently close to it.
+bool LinkRightRelativeToFFC( ffc f, int distance){
+	return ((FacingFFC(f, distance))&&(Link->Dir == DIR_LEFT));
+}
+
+//Returns TRUE if Link is facing left side of FFC and is sufficiently close to it.
+bool LinkLeftRelativeToFFC( ffc f, int distance){
+	return ((FacingFFC(f, distance))&&(Link->Dir == DIR_RIGHT));
+}
+
+//Returns TRUE if Link is facing top side of FFC and is sufficiently close to it.
+bool LinkUpRelativeToFFC( ffc f, int distance){
+	return ((FacingFFC(f, distance))&&(Link->Dir == DIR_DOWN));
+}
+
+//Returns TRUE if Link is facing bottom side of FFC and is sufficiently close to it.
+bool LinkDownRelativeToFFC( ffc f, int distance){
+	return ((FacingFFC(f, distance))&&(Link->Dir == DIR_UP));
+}
